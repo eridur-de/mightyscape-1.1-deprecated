@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+   <_name>Remove Duplicate Guides</_name>
+   <id>fablabchemnitz.removeduplicateguides</id>
+   <effect>
+      <object-type>all</object-type>
+      <effects-menu>
+         <submenu _name="FabLab Chemnitz">
+            <submenu _name="Grids/Guides" />
+         </submenu>
+      </effects-menu>
+   </effect>
+   <script>
+      <command location="inx" interpreter="python">fablabchemnitz_RemoveDuplicateGuides.py</command>
+   </script>
+</inkscape-extension>

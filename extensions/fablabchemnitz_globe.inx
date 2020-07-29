@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <_name>Globe</_name>
+    <id>fablabchemnitz.de.globe</id>
+    <_param name="description" type="description">Renders a globe.</_param>
+    <param name="longitudeLineCount" type="int" min="0" max="16" _gui-text="Longitude line count" _gui-description="Number of longitude rings to draw">8</param>
+    <param name="latitudeLineCount" type="int" min="0" max="17" _gui-text="Latitude line count" _gui-description="Number of latitude rings to draw">5</param>
+    <param name="rotationYDegrees" type="float" min="-180" max="180" _gui-text="Rotation angle (around Y axis) (degrees)" _gui-description="Degrees to rotate the globe around its axis">0</param>
+    <param name="rotationXDegrees" type="float" min="-180" max="180" _gui-text="Tilt forward angle (around X axis) (degrees)" _gui-description="Degrees to tilt the globe forward">0</param>
+    <param name="isSeeThrough" type="boolean" _gui-text="Make lines on back side of globe visible" _gui-description="Select this option to draw a see-through globe (makes the lines on the back side of the globe visible)">false</param>
+    <effect>
+        <object-type>path</object-type>
+        <effects-menu>
+            <submenu _name="FabLab Chemnitz">
+                <submenu _name="Shape/Pattern from Generator" />
+            </submenu>
+        </effects-menu>
+    </effect>
+    <script>
+        <command reldir="extensions" interpreter="python">fablabchemnitz_globe.py</command>
+    </script>
+</inkscape-extension>

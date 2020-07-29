@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+   <_name>AI compatible EPS output</_name>
+   <id>fablabchemnitz.de.ai_eps_output</id>
+   <output>
+      <extension>.eps</extension>
+      <mimetype>application/eps</mimetype>
+      <_filetypename>Encapsulated PostScript - AI compatible (*.eps)</_filetypename>
+      <_filetypetooltip>Adobe Illustrator 7 compatible EPS</_filetypetooltip>
+   </output>
+   <script>
+      <command reldir="extensions" interpreter="python">fablabchemnitz_ai_eps_output.py</command>
+   </script>
+</inkscape-extension>

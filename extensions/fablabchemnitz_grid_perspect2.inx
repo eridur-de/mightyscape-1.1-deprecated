@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <_name>Perspective Grid</_name>
+    <id>fablabchemnitz.de.grid_perspect2</id>
+    <param name="size_unit" type="optiongroup" appearance="minimal" _gui-text="Geometry units">
+        <_option value="px">Pixels</_option>
+        <_option value="pt">Points</_option>
+        <_option value="cm">Centimeters</_option>
+        <_option value="mm">Millimeters</_option>
+        <_option value="in">Inches</_option>
+    </param>
+    <param name="width" type="int" min="1" max="1000" _gui-text="Width of window">500</param>
+    <param name="height" type="int" min="1" max="1000" _gui-text="Height of window">300</param>
+    <param name="horizon" type="float" min="-1000" max="1000" _gui-text="Horizon y coordinate">150</param>
+    <param name="left_x" type="float" min="-1000" max="1000" _gui-text="Left perspective point">-100.0</param>
+    <param name="right_x" type="float" min="-1000" max="1000" _gui-text="Right perspective point">600</param>
+    <param name="p_divs" type="int" min="1" max="1000" _gui-text="Perspective angle divisions">10</param>
+    <param name="border_th" type="float" min="0" max="1000" _gui-text="Border Thickness [px]">3</param>
+    <param name="div_th" type="float" min="0" max="1000" _gui-text="Major grid division Thickness [px]">2</param>
+    <param name="div_color" type="color" _gui-text="Major grid division color">black</param>
+    <effect>
+        <object-type>all</object-type>
+        <effects-menu>
+            <submenu _name="FabLab Chemnitz">
+                <submenu _name="Grids/Guides" />
+            </submenu>
+        </effects-menu>
+    </effect>
+    <script>
+        <command reldir="extensions" interpreter="python">fablabchemnitz_grid_perspect2.py</command>
+    </script>
+</inkscape-extension>

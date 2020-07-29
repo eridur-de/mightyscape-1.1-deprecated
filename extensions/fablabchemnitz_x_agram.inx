@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <_name>X-Agram</_name>
+    <id>fablabchemnitz.de.x-agram</id>
+    <param name="tab" type="notebook">
+        <page name="settings" _gui-text="Settings">
+            <param name="points" type="int" min="3" max="15" _gui-text="Num Points (Sides)">5</param>
+            <param name="skip" type="int" min="1" max="14" _gui-text="Vertex Skip Count">2</param>
+            <param name="rotate" type="float" min="0" max="360" _gui-text="Rotate (Clockwise)">0</param>
+            <param name="inner_circle" type="boolean" _gui-text="Connect via Inner Circle">false</param>
+            <param name="show_inner_circle" type="boolean" _gui-text="Show Inner Circle">true</param>
+            <param name="inner_ratio" type="int" min="1" max="100" _gui-text="Inner Circle Radius %">50</param>
+        </page>
+        <page name="help" _gui-text="Help">
+            <_param name="help_info" type="description">
+This extension inscribes a star polygon (pentagram, hexagram, et al.) into the currently selected circle or ellipse.
+
+If an inner-circle is enabled, then the outer vertices are connected through a point on the inner circle. This inner connection point is located at an angle halfway between the angles of the two outer vertices.
+
+The components that make up the x-agram are left as separate objects so that additional processing can be performed.
+	</_param>
+        </page>
+    </param>
+    <effect>
+        <object-type>path</object-type>
+        <effects-menu>
+        <submenu _name="FabLab Chemnitz">
+            <submenu _name="Shape/Pattern from existing Object(s)" />
+        </submenu>
+        </effects-menu>
+    </effect>
+    <script>
+        <command reldir="extensions" interpreter="python">fablabchemnitz_x_agram.py</command>
+    </script>
+</inkscape-extension>

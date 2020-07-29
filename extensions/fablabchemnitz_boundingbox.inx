@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <_name>Bounding Box</_name>
+    <id>fablabchemnitz.de.boundingbox</id>
+    <param name="help_text" type="description">Draws bounding boxes around selected objects, useful for debugging. Author: Pawel Mosakowski</param>
+    <effect>
+        <object-type>all</object-type>
+        <effects-menu>
+            <submenu _name="FabLab Chemnitz">
+                <submenu _name="Shape/Pattern from existing Path(s)" />
+            </submenu>
+        </effects-menu>
+    </effect>
+    <script>
+        <command reldir="extensions" interpreter="python">fablabchemnitz_boundingbox.py</command>
+    </script>
+</inkscape-extension>

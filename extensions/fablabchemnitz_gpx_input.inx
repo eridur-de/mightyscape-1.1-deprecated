@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+	<_name>GPX Import</_name>
+	<id>fablabchemnitz.de.pgx_input</id>
+	<dependency type="executable" location="extensions">fablabchemnitz_gpx2svg.py</dependency>
+	<param name="tab" type="notebook">
+		<page name="options" _gui-text="Options">
+		  <_param name="m" type="int" _gui-text="Maximum width or height of the SVG in pixels" min="0" max="100000">3000</_param>
+		  <_param name="d" type="boolean" _gui-text="Drop single points" _gui-description="Default: draw a circle with 1px diameter" >true</_param>
+		  <_param name="r" type="boolean" _gui-text="Raw conversion" _gui-description="Create on SVG path per track segment, don't try to combine paths that end with the starting piont of another path" >true</_param>
+		  <_param name="j" type="boolean" _gui-text="Join all segments" _gui-description="Join all segments to a big one in the order of the gpx file. This can create an oun-scattered path if the default combining algorthm does not work because there are no matching pints across segments (implies raw conversion)" >true</_param>
+		</page>
+		<page name="help" _gui-text="Help">
+		  <_param name="helptext" type="description" xml:space="preserve">
+		    Homepage:  https://efossils.somxslibres.net/fossil/user/mono/repository/inkgpx2svg/index
+		    based on gpx2svg: https://nasauber.de/opensource/gpx2svg/
+		  </_param>
+		</page>
+	</param>
+	<input>
+		<extension>.gpx</extension>
+		<mimetype>application/gpx+xml</mimetype>
+		<_filetypename>GPS eXchange Format (*.gpx)</_filetypename>
+		<_filetypetooltip>Import GPX Format</_filetypetooltip>
+	</input>
+	<script>
+		<command reldir="extensions" interpreter="python">fablabchemnitz_gpx2svg.py</command>
+	</script>
+</inkscape-extension>

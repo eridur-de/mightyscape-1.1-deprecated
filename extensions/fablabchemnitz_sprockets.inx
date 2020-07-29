@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+   <_name>Sprocket</_name>
+   <id>fablabchemnitz.de.sprockets</id>
+   <param name="teeth" type="int" min="6" max="360" _gui-text="Number of teeth">24</param>
+   <param name="size" type="enum" _gui-text="Chain size">
+      <_item value="ANSI #25">ANSI #25</_item>
+      <_item value="ANSI #35">ANSI #35</_item>
+      <_item value="ANSI #40">ANSI #40</_item>
+      <_item value="ANSI #50">ANSI #50</_item>
+      <_item value="ANSI #60">ANSI #60</_item>
+      <_item value="ANSI #80">ANSI #80</_item>
+      <_item value="ANSI #100">ANSI #100</_item>
+      <_item value="ANSI #120">ANSI #120</_item>
+      <_item value="ANSI #140">ANSI #140</_item>
+      <_item value="ANSI #160">ANSI #160</_item>
+      <_item value="ANSI #180">ANSI #180</_item>
+      <_item value="ANSI #200">ANSI #200</_item>
+      <_item value="ANSI #240">ANSI #240</_item>
+   </param>
+   <effect needs-live-preview="true">
+      <object-type>all</object-type>
+      <effects-menu>
+         <submenu _name="FabLab Chemnitz">
+            <submenu _name="Gears" />
+         </submenu>
+      </effects-menu>
+   </effect>
+   <script>
+      <command reldir="extensions" interpreter="python">fablabchemnitz_sprockets.py</command>
+   </script>
+</inkscape-extension>

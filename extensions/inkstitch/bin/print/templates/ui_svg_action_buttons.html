@@ -1,0 +1,15 @@
+<figcaption>{{ _('Scale') }} <span class="scale" data-field-name="svg-scale" contenteditable="true" data-placeholder=""></span>%</figcaption>
+<div>
+  <button class="svg-fit">{{ _('Fit') }}</button>
+  <button class="svg-full">100%</button>
+  <button class="svg-apply">{{ _('Apply to all') }}</button>
+  <button class="svg-realistic">
+    {% if loop_index is defined %}
+      <input type="checkbox" id="realistic-color-block-{{ loop_index }}" data-field-name="block{{ loop_index }}" class="realistic" />
+      <label for="realistic-color-block-{{ loop_index }}" class="realistic">{{ _('Realistic') }}</label>
+    {% else %}
+      <input type="checkbox" id="{{ realistic_id }}" data-field-name="overview" class="realistic" />
+      <label for="{{ realistic_id }}" class="realistic">{{ _('Realistic') }}</label>
+    {% endif %}
+  </button>
+</div>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+   <_name>Apollonian Gasket</_name>
+   <id>fablabchemnitz.de.apollonian</id>
+   <param name="active_tab" type="notebook">
+      <page name="title" _gui-text="Settings">
+         <param name="depth" type="int" min="2" max="7" _gui-text="Depth">3</param>
+         <_param name="curvatures" type="description" xml:space="preserve">------------------------------</_param>
+         <param name="c1" type="float" min="0.1" max="10.0" precision="2" _gui-text="c1">2.0</param>
+         <param name="c2" type="float" min="0.1" max="10.0" precision="2" _gui-text="c2">3.0</param>
+         <param name="c3" type="float" min="0.1" max="10.0" precision="2" _gui-text="c3">3.0</param>
+         <_param name="help" type="description" xml:space="preserve">------------------------------</_param>
+         <param name="shrink" type="boolean" _gui-text="shrink circles for cutting">true</param>
+      </page>
+      <page name="Usage1" _gui-text="Usage">
+         <!-- space:preserve read for neat layout -->
+         <_param name="use1" type="description" xml:space="preserve">
+		Make an apollonian gasket:
+		
+		Depth = depth in search tree
+		
+		c1,c2,c3 = curvatures of first 3 osculating circles
+		
+		See https://en.wikipedia.org/wiki/Apollonian_gasket
+		for details of construction.
+		 </_param>
+      </page>
+      <page name="Usage2" _gui-text="Help">
+         <_param name="use2" type="description" xml:space="preserve">
+			No help needed.
+		 </_param>
+      </page>
+   </param>
+   <effect>
+      <object-type>all</object-type>
+      <effects-menu>
+         <submenu _name="FabLab Chemnitz">
+            <submenu _name="Shape/Pattern from Generator" />
+         </submenu>
+      </effects-menu>
+   </effect>
+   <script>
+      <command reldir="extensions" interpreter="python">fablabchemnitz_apollonian.py</command>
+   </script>
+</inkscape-extension>

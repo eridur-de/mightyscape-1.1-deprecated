@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <_name>Rounder</_name>
+    <id>fablabchemnitz.de.rounder</id>
+    <_param name="titleMain" type="description">Rounding helpers.</_param>
+    <_param name="precision" type="int" min="0" max="20" _gui-text="Rounding precission">2</_param>
+    <_param name="paths" type="boolean" _gui-text="Round nodes">true</_param>
+    <_param name="ctrl" type="boolean" _gui-text="Round handles">false</_param>
+    <_param name="along" type="boolean" _gui-text="Move handles following node movement">true</_param>
+    <_param name="half" type="boolean" _gui-text="Allow round to half if nearest">false</_param>
+    <_param name="strokewidth" type="boolean" _gui-text="Round stroke width">false</_param>
+    <_param name="widthheight" type="boolean" _gui-text="Round width and height">false</_param>
+    <_param name="position" type="boolean" _gui-text="Round position X and Y">false</_param>
+    <_param name="opacity" type="boolean" _gui-text="Round global opacity">false</_param>
+    <_param name="strokeopacity" type="boolean" _gui-text="Round stroke opacity">false</_param>
+    <_param name="fillopacity" type="boolean" _gui-text="Round fill opacity">false</_param>
+    <effect>
+        <effects-menu>
+            <submenu _name="FabLab Chemnitz">
+                <submenu _name="Various" />
+            </submenu>
+        </effects-menu>
+    </effect>
+    <script>
+        <command reldir="extensions" interpreter="python">fablabchemnitz_rounder.py</command>
+    </script>
+</inkscape-extension>

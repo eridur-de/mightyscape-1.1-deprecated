@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <_name>Box Maker - Mehr Boxes</_name>
+    <id>fablabchemnitz.de.mehrbox</id>
+    <param name="page" type="notebook">
+        <page name="page_1" _gui-text="Sizes">
+            <param name="unit" _gui-text="Unit" type="enum">
+                <_item value="mm">mm</_item>
+                <_item value="cm">cm</_item>
+                <_item value="in">in</_item>
+            </param>
+            <param name="name" type="description" appearance="header">Size Options</param>
+            <param name="inside" type="enum" _gui-text="Box Dimensions">
+                <_item value="1">Inside</_item>
+                <_item value="0">Outside</_item>
+            </param>
+            <param name="X_size" type="float" precision="2" min="0.0" max="1000000.0" _gui-text="X axis lenght">100.0</param>
+            <param name="Y_size" type="float" precision="2" min="0.0" max="1000000.0" _gui-text="Y axis lenght">100.0</param>
+            <param name="Z_size" type="float" precision="2" min="0.0" max="1000000.0" _gui-text="Z axis lenght">100.0</param>
+            <param name="name" type="description" appearance="header">Tab Options</param>
+            <param name="tab_mode" _gui-text="Tab Mode" type="enum">
+                <_item value="number">amount</_item>
+                <_item value="size">size</_item>
+            </param>
+            <param name="tab_size" type="float" precision="2" min="0.0" max="10000.0" _gui-text="target tab size">4.0</param>
+            <param name="X_tabs" type="int" min="0" max="100000" _gui-text="Tabs in X axis">3</param>
+            <param name="Y_tabs" type="int" min="0" max="100000" _gui-text="Tabs in Y axis">3</param>
+            <param name="Z_tabs" type="int" min="0" max="100000" _gui-text="Tabs in Z axis">3</param>
+            <param name="name" type="description" appearance="header">Material Options</param>
+            <param name="thickness" type="float" precision="2" min="0.0" max="10000.0" _gui-text="Material Thickness">4.0</param>
+            <param name="kerf" type="float" precision="3" min="0.0" max="10000.0" _gui-text="Beam diameter">0.2</param>
+            <param name="spaceing" type="float" precision="2" min="0.0" max="10000.0" _gui-text="Space Between Parts">1.0</param>
+        </page>
+        <page name="page_2" _gui-text="Draw sides">
+            <param name="d_top" type="boolean" _gui-text="Draw top side (XxY)">true</param>
+            <param name="d_bottom" type="boolean" _gui-text="Draw bottom side (XxY)">true</param>
+            <param name="d_left" type="boolean" _gui-text="Draw left side (YxZ)">true</param>
+            <param name="d_right" type="boolean" _gui-text="Draw right side(YxZ)">true</param>
+            <param name="d_front" type="boolean" _gui-text="Draw front side (XxZ)">true</param>
+            <param name="d_back" type="boolean" _gui-text="Draw back side (XxZ)">true</param>
+        </page>
+        <page name="page_3" _gui-text="Compartments">
+            <param name="name" type="description" appearance="header">Compartments on the X Axis</param>
+            <param name="X_compartments" type="int" min="1" max="100000" _gui-text="X Compartments">1</param>
+            <param name="X_mode" type="enum" _gui-text="Mode">
+                <_item value="even">even</_item>
+                <_item value="relative">relative</_item>
+                <_item value="absolut">absolut</_item>
+            </param>
+            <param name="X_divisions" type="string" _gui-text="Distances">20.0;40.0</param>
+            <param name="X_fit" type="boolean" _gui-text="fit axis lenght to compartments">false</param>
+            <param name="name" type="description" appearance="header">Compartments on the Y Axis</param>
+            <param name="Y_compartments" type="int" min="1" max="100000" _gui-text="Y Compartments">1</param>
+            <param name="Y_mode" type="enum" _gui-text="Mode">
+                <_item value="even">even</_item>
+                <_item value="relative">relative</_item>
+                <_item value="absolut">absolut</_item>
+            </param>
+            <param name="Y_divisions" type="string" _gui-text="Distances">20.0;40.0</param>
+            <param name="Y_fit" type="boolean" _gui-text="fit axis lenght to compartments">false</param>
+        </page>
+    </param>
+    <effect>
+        <object-type>all</object-type>
+        <effects-menu>
+            <submenu _name="FabLab Chemnitz">
+                <submenu _name="Finger-jointed/Tabbed Boxes" />
+            </submenu>
+        </effects-menu>
+    </effect>
+    <script>
+        <command reldir="extensions" interpreter="python">fablabchemnitz_mehrbox.py</command>
+    </script>
+</inkscape-extension>

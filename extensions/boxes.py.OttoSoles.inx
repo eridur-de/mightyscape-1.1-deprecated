@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+  <_name>OttoSoles</_name>
+  <dependency type="executable" location="extensions">boxes.exe</dependency>
+  <id>info.festi.boxes.py.OttoSoles</id>
+
+  <param name="generator" type="string" gui-hidden="true">ottosoles</param>
+  <param name="tab" type="notebook">
+
+    <page name="0" _gui-text="OttoSoles">
+      <param name="x" type="float" precision="2" max="9999" _gui-text="x" gui-description="inner width in mm (unless outside selected)">56.0</param>
+      <param name="y" type="float" precision="2" max="9999" _gui-text="y" gui-description="inner depth in mm (unless outside selected)">36.0</param>
+      <param name="width" type="float" precision="2" max="9999" _gui-text="width" gui-description="width of sole stripe">4.0</param>
+      <param name="chamfer" type="float" precision="2" max="9999" _gui-text="chamfer" gui-description="chamfer at the corners">5.0</param>
+      <param name="num" type="int" max="9999" _gui-text="num" gui-description="number of soles">2</param>
+    </page>
+
+    <page name="1" _gui-text="Default">
+      <param name="thickness" type="float" precision="2" max="9999" _gui-text="thickness" gui-description="thickness of the material">3.0</param>
+      <param name="tabs" type="float" precision="2" max="9999" _gui-text="tabs" gui-description="width of tabs holding the parts in place in mm (not supported everywhere)">0.0</param>
+      <param name="debug" type="boolean" max="9999" _gui-text="debug" gui-description="print surrounding boxes for some structures">false</param>
+      <param name="reference" type="float" precision="2" max="9999" _gui-text="reference" gui-description="print reference rectangle with given length (zero to disable)">100</param>
+      <param name="burn" type="float" precision="2" max="9999" _gui-text="burn" gui-description='burn correction in mm (bigger values for tighter fit). Use BurnTest in "Parts and Samples" to find the right value.'>0.1</param>
+    </page>
+
+  </param>
+  <effect>
+    <object-type>all</object-type>
+      <effects-menu>
+        <submenu _name="Boxes.py">
+         <submenu _name="Misc"/>
+        </submenu>
+      </effects-menu>
+  </effect>
+  <script>
+    <command reldir="extensions">boxes.exe</command>
+  </script>
+</inkscape-extension>

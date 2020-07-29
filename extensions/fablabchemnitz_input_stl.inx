@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <_name>Slic3r STL Input</_name>
+    <id>fablabchemnitz.de.input_stl</id>
+    <param name="tab" type="notebook">
+        <page name="options" _gui-text="Options">
+            <param name="layer_height" type="string" _gui-text="Layer height [mm]:">1.0</param>
+            <param name="rx" type="float" precision="1" min="-360.0" max="360.0" _gui-text="3D-Rotate X-Axis [deg]:">0</param>
+            <param name="ry" type="float" precision="1" min="-360.0" max="360.0" _gui-text="3D-Rotate Y-Axis [deg]:">0</param>
+            <param name="numbers" type="boolean" _gui-text="Add layer numbers">false</param>
+            <param name="center" type="boolean" _gui-text="Add center marks">false</param>
+        </page>
+        <page name="slic3r" _gui-text="Slic3r Settings">
+            <param name="slic3r_cmd" type="string" _gui-text="Slic3r Command">slic3r</param>
+            <_param name="slic3r_cmd_help" type="description" xml:space="preserve">
+The slic3r command name depends on your operating system, and how slic3r was installed.
+Typical values are:
+
+$HOME/Downloads/Slic3r-1.3.0-x86_64.AppImage	(Linux)
+$HOME/Slic3r/Slic3r-console.exe 		(Windows)
+
+			</_param>
+        </page>
+        <page name="help" _gui-text="Help">
+            <_param name="inputhelp" type="description" xml:space="preserve">
+- Projects an STL file on the X-Y plane by cutting the objects into "slices".
+- Each "slice" is a group of polygons, with a label indicating its z position.
+- The polygons are converted to paths for better editing in inkscape.
+
+- Use Object -&gt; Rows &amp; Columns ... distribute the slices in a grid.
+
+https://github.com/jnweiger/inkscape-input-stl
+(C) 2018 by Jürgen Weigert &lt;jnweiger@gmail.com&gt;
+Version 0.6
+
+Distribute under GPLv2 or ask.
+			</_param>
+        </page>
+    </param>
+    <input>
+        <extension>.stl</extension>
+        <mimetype>application/sla</mimetype>
+        <_filetypename>Stereolitography File (*.stl)</_filetypename>
+        <_filetypetooltip>Import STL Files</_filetypetooltip>
+    </input>
+    <script>
+        <command reldir="extensions" interpreter="python">fablabchemnitz_input_stl.py</command>
+    </script>
+</inkscape-extension>

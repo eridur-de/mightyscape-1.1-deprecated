@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+   <_name>Polyhedra - Archimedean Dual</_name>
+   <id>fablabchemnitz.de.polyhedra.archimedeandual</id>
+   <param name="poly" _gui-text="Polyhedra to render net for" type="optiongroup" appearance="minimal">
+      <_option value="DeltoidalHexecontahedron">DeltoidalHexecontahedron</_option>
+      <_option value="DeltoidalIcositetrahedron">DeltoidalIcositetrahedron</_option>
+      <_option value="DisdyakisDodecahedron">DisdyakisDodecahedron</_option>
+      <_option value="DisdyakisTriacontahedron">DisdyakisTriacontahedron</_option>
+      <_option value="PentagonalIcositetrahedron">PentagonalIcositetrahedron</_option>
+      <_option value="PentagonalHexecontahedron">PentagonalHexecontahedron</_option>
+      <_option value="PentakisDodecahedron">PentakisDodecahedron</_option>
+      <_option value="RhombicDodecahedron">RhombicDodecahedron</_option>
+      <_option value="RhombicTriacontahedron">RhombicTriacontahedron</_option>
+      <_option value="SmallTriakisOctahedron">SmallTriakisOctahedron</_option>
+      <_option value="TetrakisHexahedron">TetrakisHexahedron</_option>
+      <_option value="TriakisIcosahedron">TriakisIcosahedron</_option>
+      <_option value="TriakisTetrahedron">TriakisTetrahedron</_option>
+   </param>
+   <param name="size" type="float" min="1.0" max="1000.0" _gui-text="length of first edge, px">100.0</param>
+   <param name="tabs" type="enum" _gui-text="Tab style">
+      <_item value="0">Tab and Slot</_item>
+      <_item value="1">Double Tabs</_item>
+      <_item value="2">Single Tabs</_item>
+      <_item value="3">None</_item>
+   </param>
+   <effect>
+      <object-type>all</object-type>
+      <effects-menu>
+         <submenu _name="FabLab Chemnitz">
+            <submenu _name="Paper/Cardboard Boxes" />
+         </submenu>
+      </effects-menu>
+   </effect>
+   <script>
+      <command reldir="extensions" interpreter="python">fablabchemnitz_polyhedra.py</command>
+   </script>
+</inkscape-extension>

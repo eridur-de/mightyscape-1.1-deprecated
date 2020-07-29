@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ink/Stitch Print Preview</title>
+    <!-- https://stackoverflow.com/a/37480521/4249120 -->
+    <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+    <script src="resources/jquery-3.3.1.min.js"></script>
+    <script src="resources/inkstitch.js"></script>
+    <link rel="stylesheet" href="resources/style.css" />
+    <link rel="shortcut icon" type="image/png" href="/favicon.png"/>
+</head>
+<body>
+    {% include 'ui.html' %}
+{# client overview #}    
+    <div class="page client-overview" style="display: {{ 'block' if view.client_overview else 'none' }}">{% include 'print_overview.html' %}</div>
+        
+{# client detailedview #}    
+    {% set printview = 'detailedview' %}
+    {% for color_block in color_blocks %}
+        {% set outer_loop = loop %}
+        <div class="page client-detailedview" style="display: {{ 'block' if view.client_detailedview else 'none' }}">{% include 'print_detail.html' %}</div>
+    {% endfor %}
+
+{# operator overview #}    
+    <div class="page operator-overview" style="display: {{ 'block' if view.operator_overview else 'none' }}">{% include 'operator_overview.html' %}</div>
+    
+{# operator detailed view #}
+    {% include 'operator_detailedview.html' %}
+
+{# custom pages #}
+    <div class="page custom-page" style="display: {{ 'block' if view.custom_page else 'none' }}">{% include 'custom-page.html' %}</div>
+</body>
+</html>

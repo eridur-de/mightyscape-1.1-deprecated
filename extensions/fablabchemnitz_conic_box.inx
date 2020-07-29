@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <_name>Box Maker - Conical</_name>
+    <id>fablabchemnitz.de.conic_box</id>
+    <param name="unit" type="enum" _gui-text="Unit">
+        <_item value="mm">mm</_item>
+        <_item value="cm">cm</_item>
+        <_item value="m">m</_item>
+        <_item value="km">km</_item>
+        <_item value="in">in</_item>
+        <_item value="ft">ft</_item>
+        <_item value="yd">yd</_item>
+        <_item value="pt">pt</_item>
+        <_item value="px">px</_item>
+        <_item value="pc">pc</_item>
+    </param>
+    <param name="thickness" type="float" min="1.0" max="10.0" _gui-text="Material thickness">3.0</param>
+    <param name="d1" type="float" min="30.0" max="1000.0" _gui-text="Diameter small circle">100.0</param>
+    <param name="d2" type="float" min="31.0" max="1000.0" _gui-text="Diameter large circle">150.0</param>
+    <param name="zc" type="float" min="15.0" max="1000.0" _gui-text="Cone height">50.0</param>
+    <param name="inner_size" type="boolean" _gui-text="Internal dimensions">true</param>
+    <effect>
+        <object-type>all</object-type>
+        <effects-menu>
+            <submenu _name="FabLab Chemnitz">
+                <submenu _name="Finger-jointed/Tabbed Boxes" />
+            </submenu>
+        </effects-menu>
+    </effect>
+    <script>
+        <command reldir="extensions" interpreter="python">fablabchemnitz_conic_box.py</command>
+    </script>
+</inkscape-extension>

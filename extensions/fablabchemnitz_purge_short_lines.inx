@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <_name>Purge Short Lines</_name>
+    <id>fablabchemnitz.de.purge_short_lines</id>
+    <param name="length" type="float" min="0" max="100" _gui-text="Minimum Allowed Path Length">10</param>
+    <effect>
+        <object-type>all</object-type>
+        <effects-menu>
+            <submenu _name="FabLab Chemnitz">
+                <submenu _name="Nesting/Cut Optimization" />
+            </submenu>
+        </effects-menu>
+    </effect>
+    <script>
+        <command reldir="extensions" interpreter="python">fablabchemnitz_purge_short_lines.py</command>
+    </script>
+</inkscape-extension>

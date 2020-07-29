@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <_name>Ellipse by 5 Points</_name>
+    <id>fablabchemnitz.de.ellipse_5pts</id>
+    <script>
+        <command reldir="extensions" interpreter="python">fablabchemnitz_ellipse_5pts.py</command>
+    </script>
+    <dependency type="executable" location="extensions">fablabchemnitz_ellipse_5pts.py</dependency>
+    <dependency type="executable" location="extensions">inkex.py</dependency>
+    <dependency type="executable" location="extensions">simplepath.py</dependency>
+    <effect>
+        <object-type>path</object-type>
+        <effects-menu>
+            <submenu _name="FabLab Chemnitz">
+                <submenu _name="Shape/Pattern from existing Path(s)" />
+            </submenu>
+        </effects-menu>
+    </effect>
+</inkscape-extension>

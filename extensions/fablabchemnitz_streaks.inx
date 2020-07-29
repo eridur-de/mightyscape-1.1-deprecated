@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <_name>Streaks</_name>
+    <id>fablabchemnitz.de.streaks</id>
+    <param type="notebook" name="Nmain">
+        <page name="top" _gui-text="Color">
+            <_param name="h" type="description">Fills a box with a texture
+      made of vertical line segments.</_param>
+            <param name="strokeColour" type="color" gui-text="Line colour: ">0</param>
+            <_param name="help" type="description" xml:space="preserve">
+	-----------
+      </_param>
+            <param name="strokeWidth" type="int" gui-text="Line width: ">2</param>
+        </page>
+        <page name="main" _gui-text="Main">
+            <param max="256" name="blur" type="int" _gui-text="Blur">2</param>
+            <param max="1000" name="linno" type="int" _gui-text="# of columns">50</param>
+            <param name="xrand" type="boolean" _gui-text="Lines randomized">true</param>
+            <_param name="help" type="description" xml:space="preserve">-----------</_param>
+            <param name="pagep" type="boolean" _gui-text="Default box to page size?">true</param>
+            <param max="10000" name="cusx" type="int" _gui-text="Custom size x">500</param>
+            <param max="10000" name="cusy" type="int" _gui-text="Custom size y">500</param>
+        </page>
+        <page name="vert" _gui-text="Each column">
+            <param min="1" max="256" name="segLen" type="int" _gui-text="# of segments">8</param>
+            <param name="yrand" type="boolean" _gui-text="Lengths randomized">true</param>
+            <param name="dashp" type="boolean" _gui-text="Use dashes?">true</param>
+            <param name="blankp" type="boolean" _gui-text="Use blanks?">true</param>
+            <param name="dotp" type="boolean" _gui-text="Use dots?">true</param>
+            <param max="1000" name="dots" type="int" _gui-text="Dots per height">100</param>
+            <_param name="h" type="description">This sets the size of a dot relative to
+      the total height. Higher is shorter.</_param>
+        </page>
+    </param>
+    <effect>
+        <object-type>all</object-type>
+        <effects-menu>
+            <submenu _name="FabLab Chemnitz">
+				<submenu _name="Shape/Pattern from Generator"/>
+			</submenu>
+        </effects-menu>
+    </effect>
+    <script>
+        <command reldir="extensions" interpreter="python">fablabchemnitz_streaks.py</command>
+    </script>
+</inkscape-extension>

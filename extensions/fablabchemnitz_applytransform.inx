@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+	<_name>Apply Transformations</_name>
+	<id>fablabchemnitz.de.applytransform</id>
+	<effect>
+		<object-type>all</object-type>
+		<effects-menu>
+			<submenu _name="FabLab Chemnitz">
+				<submenu _name="Modify existing Path(s)" />
+			</submenu>
+		</effects-menu>
+	</effect>
+	<script>
+		<command reldir="extensions" interpreter="python">fablabchemnitz_applytransform.py</command>
+	</script>
+</inkscape-extension>

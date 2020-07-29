@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <_name>Scale To Path Length</_name>
+    <id>fablabchemnitz.de.paste_length</id>
+    <param name="tab" type="notebook">
+        <page name="pasteLength" _gui-text="Paste Length">
+            <param name="scaleFrom" type="enum" _gui-text="Scale From:">
+                <_item value="center">Center</_item>
+                <_item value="topLeft">Top Left</_item>
+                <_item value="topRight">Top Right</_item>
+                <_item value="bottomLeft">Bottom Left</_item>
+                <_item value="bottomRight">Bottom Right</_item>
+            </param>
+            <param name="scale" type="float" _gui-text="Scale Factor:">1</param>
+            <param name="precision" type="int" default="5" min="0" max="10" _gui-text="Precision:">5</param>
+        </page>
+        <page name="desc" _gui-text="Help">
+            <_param name="pasteLengthhelp" type="description" xml:space="preserve">This effect makes the length of all the destination paths the same as that of the source path, while maintaining their shapes. The source is the topmost path in the selection. Precision field denotes the number of significant digits, to which the length is rounded.
+            </_param>
+        </page>
+    </param>
+    <effect>
+        <object-type>path</object-type>
+        <effects-menu>
+            <submenu _name="FabLab Chemnitz">
+                <submenu _name="Modify existing Path(s)" />
+            </submenu>
+        </effects-menu>
+    </effect>
+    <script>
+        <command reldir="extensions" interpreter="python">fablabchemnitz_paste_length.py</command>
+    </script>
+</inkscape-extension>

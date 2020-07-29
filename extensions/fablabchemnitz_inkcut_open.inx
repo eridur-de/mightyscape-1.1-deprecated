@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <_name>Inkcut - Open current document</_name>
+    <id>fablabchemnitz.de.inkcut_open</id>
+    <effect>
+        <object-type>all</object-type>
+        <effects-menu>
+            <submenu _name="FabLab Chemnitz">
+				<submenu _name="Import/Export/Transfer"/>
+			</submenu>
+        </effects-menu>
+    </effect>
+    <script>
+        <command reldir="extensions" interpreter="python">fablabchemnitz_inkcut_open.py</command>
+    </script>
+</inkscape-extension>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <_name>Line Shading</_name>
+    <id>fablabchemnitz.de.endurance_line_shading</id>
+    <param name="active-tab" type="notebook">
+        <page name="Options" _gui-text="Options">
+            <param name="waveform" type="optiongroup" gui-text="Waveform">
+                <option value="sin">Sinusoidal</option>
+                <option value="saw">Triangle wave</option>
+                <option value="square">Square wave</option>
+            </param>
+            <param name="num_lines" type="int" min="1" max="1000000000" _gui-text="Number of lines :">20</param>
+            <param name="min_period" type="float" min="0.05" max="1000000000" precision="2" _gui-text="Min period:">0.1</param>
+            <param name="max_period" type="float" min="0.05" max="1000000000" precision="2" _gui-text="Max period:">2.0</param>
+            <param name="min_amplitude" type="float" min="0.0" max="1000000000" precision="2" _gui-text="Min amplitude:">0.0</param>
+            <param name="max_amplitude" type="float" min="0.0" max="1000000000" precision="2" _gui-text="Max amplitude:">1.0</param>
+            <param name="gamma" type="float" min="0.1" max="10.0" precision="2" _gui-text="Gamma:">2.2</param>
+        </page>
+        <page name="Help" _gui-text="Help">
+            <_param name="title" type="description">This extension converts the selected 
+image into a wavy shading.</_param>
+        </page>
+    </param>
+    <param name="line_width" type="float" min="0.01" max="1000" precision="2" _gui-text="Line Width:">0.25</param>
+    <param name="units" type="optiongroup" _gui-text=" " appearance="minimal">
+        <option value="mm">mm</option>
+        <option value="px">px</option>
+        <option value="pt">pt</option>
+        <option value="pc">pc</option>
+        <option value="in">in</option>
+    </param>
+    <param name="remove" type="boolean" _gui-text="Remove image">false</param>
+    <effect>
+        <object-type>all</object-type>
+        <effects-menu>
+            <submenu _name="FabLab Chemnitz">
+			    <submenu _name="Tracing/Edge Detection" />
+			</submenu>	
+        </effects-menu>
+    </effect>
+    <script>
+        <command reldir="extensions" interpreter="python">fablabchemnitz_endurance_line_shading.py</command>
+    </script>
+</inkscape-extension>

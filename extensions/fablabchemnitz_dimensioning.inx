@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+   <_name>Dimensioning</_name>
+   <id>fablabchemnitz.de.dimensioning</id>
+   <param name="tab" type="notebook">
+      <page name="general" _gui-text="General Settings">
+         <param name="orientation" type="optiongroup" _gui-text="Orientation">
+            <_option value="horizontal">horizontal</_option>
+            <_option value="vertical">vertical</_option>
+            <_option value="parallel">parallel</_option>
+         </param>
+         <param name="arrow_orientation" type="optiongroup" _gui-text="Orientation of the arrows">
+            <_option value="auto">auto</_option>
+            <_option value="inside">inside</_option>
+            <_option value="outside">outside</_option>
+         </param>
+         <param name="line_scale" type="float" _gui-text="Line scale factor:" min="0.1" max="10">1</param>
+         <param name="overlap" type="float" _gui-text="Helpline overlap:" min="0" max="30">5</param>
+         <param name="distance" type="float" _gui-text="Helpline distance:" min="0" max="50">0</param>
+         <param name="position" type="float" _gui-text="Position:" min="-1000" max="1000">100</param>
+         <param name="flip" type="boolean" _gui-text="Flip side:">false</param>
+      </page>
+      <page name="annotation" _gui-text="Annotation">
+         <param name="scale_factor" type="float" _gui-text="Scalefactor (1:#):" min="0" max="10000">1</param>
+         <param name="unit" type="enum" _gui-text="Units">
+            <_item value="px">px</_item>
+            <_item value="pt">pt</_item>
+            <_item value="mm">mm</_item>
+            <_item value="cm">cm</_item>
+            <_item value="m">m</_item>
+         </param>
+         <param name="digit" type="int" min="-3" max="5" _gui-text="Precision">0</param>
+         <!--
+    		<param name="digit" type="enum" _gui-text="Precision">
+    	  		<_item value="0">no digit - 11</_item>
+    	  		<_item value="-1">rounded one digit - 10</_item>
+    	     	<_item value="1">one digit - 11.1</_item>
+    	     	<_item value="2">two digits - 11.11</_item>
+    	  		<_item value="3">three digits - 11.111</_item>
+    	  	</param> -->
+         <param name="rotate" type="boolean" _gui-text="Rotate Annotation">true</param>
+      </page>
+      <page name="help" _gui-text="Help">
+         <param name="some_name" type="description">This tool draws beautiful DIN-Style dimensioning arrows.
+    		Draw a path. The dimensioning will go from the start point to the end point of the path.</param>
+      </page>
+   </param>
+   <effect>
+      <object-type>path</object-type>
+      <effects-menu>
+         <submenu _name="FabLab Chemnitz">
+            <submenu _name="Dimensioning/Measuring" />
+         </submenu>
+      </effects-menu>
+   </effect>
+   <script>
+      <command reldir="extensions" interpreter="python">fablabchemnitz_dimensioning.py</command>
+   </script>
+</inkscape-extension>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <_name>Netting</_name>
+    <id>fablabchemnitz.de.netting</id>
+    <dependency type="executable" location="extensions">fablabchemnitz_netting.py</dependency>
+    <dependency type="executable" location="extensions">inkex.py</dependency>
+    <_param name="title" type="description">This effect net in the a path alternately.</_param>
+    <param name="s_width" type="float" _gui-text="Stroke Width, px">1.0</param>
+    <effect>
+        <object-type>path</object-type>
+        <effects-menu>
+            <submenu _name="FabLab Chemnitz">
+                <submenu _name="Shape/Pattern from existing Path(s)" />
+            </submenu>
+        </effects-menu>
+    </effect>
+    <script>
+        <command reldir="extensions" interpreter="python">fablabchemnitz_netting.py</command>
+    </script>
+</inkscape-extension>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+  <_name>SlatwallPlaneHolder</_name>
+  <dependency type="executable" location="extensions">boxes.exe</dependency>
+  <id>info.festi.boxes.py.SlatwallPlaneHolder</id>
+
+  <param name="generator" type="string" gui-hidden="true">slatwallplaneholder</param>
+  <param name="tab" type="notebook">
+
+    <page name="0" _gui-text="SlatwallPlaneHolder">
+      <param name="width" type="float" precision="2" max="9999" _gui-text="width" gui-description="width of the plane">80</param>
+      <param name="length" type="float" precision="2" max="9999" _gui-text="length" gui-description="legth of the plane">250</param>
+      <param name="hold_length" type="float" precision="2" max="9999" _gui-text="hold_length" gui-description="legth of the part hiolding the plane over the front">30</param>
+      <param name="height" type="float" precision="2" max="9999" _gui-text="height" gui-description="height of the front of plane">80</param>
+    </page>
+
+    <page name="1" _gui-text="Default">
+      <param name="thickness" type="float" precision="2" max="9999" _gui-text="thickness" gui-description="thickness of the material">3.0</param>
+      <param name="tabs" type="float" precision="2" max="9999" _gui-text="tabs" gui-description="width of tabs holding the parts in place in mm (not supported everywhere)">0.0</param>
+      <param name="debug" type="boolean" max="9999" _gui-text="debug" gui-description="print surrounding boxes for some structures">false</param>
+      <param name="reference" type="float" precision="2" max="9999" _gui-text="reference" gui-description="print reference rectangle with given length (zero to disable)">100</param>
+      <param name="burn" type="float" precision="2" max="9999" _gui-text="burn" gui-description='burn correction in mm (bigger values for tighter fit). Use BurnTest in "Parts and Samples" to find the right value.'>0.1</param>
+    </page>
+
+    <page name="2" _gui-text="Finger Joints">
+      <param name="FingerJoint_angle" type="float" precision="2" max="9999" _gui-text="angle" gui-description="">90.0</param>
+      <param name="FingerJoint_style" type="enum" _gui-text="style" gui-description="style of the fingers">
+        <item value="rectangular" selected="selected">rectangular</item>
+        <item value="springs">springs</item>
+      </param>
+      <param name="FingerJoint_surroundingspaces" type="float" precision="2" max="9999" _gui-text="surroundingspaces" gui-description="maximum space at the start and end in multiple of normal spaces">2.0</param>
+      <param name="FingerJoint_edge_width" type="float" precision="2" max="9999" _gui-text="edge_width" gui-description="space below holes of FingerHoleEdge">1.0</param>
+      <param name="FingerJoint_finger" type="float" precision="2" max="9999" _gui-text="finger" gui-description="width of the fingers">2.0</param>
+      <param name="FingerJoint_play" type="float" precision="2" max="9999" _gui-text="play" gui-description="extra space to allow finger move in and out">0.0</param>
+      <param name="FingerJoint_space" type="float" precision="2" max="9999" _gui-text="space" gui-description="space between fingers">2.0</param>
+      <param name="FingerJoint_width" type="float" precision="2" max="9999" _gui-text="width" gui-description="width of finger holes">1.0</param>
+    </page>
+
+    <page name="3" _gui-text="SlatWallEdges">
+      <param name="SlatWall_bottom_hook" type="enum" _gui-text="bottom_hook" gui-description='"spring", "stud" or "none"'>
+        <item value="hook" selected="selected">hook</item>
+        <item value="spring">spring</item>
+        <item value="stud">stud</item>
+        <item value="none">none</item>
+      </param>
+      <param name="SlatWall_edge_width" type="float" precision="2" max="9999" _gui-text="edge_width" gui-description="space below holes of FingerHoleEdge">1.0</param>
+      <param name="SlatWall_hook_extra_height" type="float" precision="2" max="9999" _gui-text="hook_extra_height" gui-description="space surrounding connectors (in multiples of thickness)">2.0</param>
+    </page>
+
+  </param>
+  <effect>
+    <object-type>all</object-type>
+      <effects-menu>
+        <submenu _name="Boxes.py">
+         <submenu _name="SlatWall"/>
+        </submenu>
+      </effects-menu>
+  </effect>
+  <script>
+    <command reldir="extensions">boxes.exe</command>
+  </script>
+</inkscape-extension>
