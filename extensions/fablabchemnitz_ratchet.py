@@ -37,10 +37,6 @@ import inkex
 import math
 from lxml import etree
 
-Line_style =   { 'stroke'        : '#000000',
-                 'stroke-width'  : self.svg.unittouu(str(0.1) + "mm"),
-                 'fill'          : 'none' }
-
 def draw_SVG_circle(parent, r, cx, cy, name, style):
     " structure an SVG circle entity under parent "
     circ_attribs = {'style': str(inkex.Style(style)),
@@ -62,6 +58,7 @@ class Ratchet(inkex.Effect):
         self.arg_parser.add_argument('--htooth_shape', default='curve', help="Shape of tooth")
 
     def effect(self):
+        Line_style = {'stroke':'#000000','stroke-width':self.svg.unittouu(str(0.1) + "mm"),'fill':'none'}
         # sort out the options
         teeth = self.options.teeth
         diam_in = self.options.diam_in
