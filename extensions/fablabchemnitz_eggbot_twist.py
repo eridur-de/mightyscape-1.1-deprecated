@@ -31,11 +31,10 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-from inkex import bezier
-import cspsubdiv
-from inkex.paths import Path, CubicSuperPath
 import inkex
 from inkex import Transform
+from inkex import bezier
+from inkex.paths import Path, CubicSuperPath
 from lxml import etree
 
 def subdivideCubicPath(sp, flat, i=1):
