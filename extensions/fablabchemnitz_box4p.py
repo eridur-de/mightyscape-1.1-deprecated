@@ -38,8 +38,6 @@ class GenerarEstuche(inkex.EffectExtension):
         pars.add_argument("--width", type=float, default=25.0, help="Ancho de la caja")
         pars.add_argument("--height", type=float, default=25.0, help="Alto de la caja")
         pars.add_argument("--depth", type=float, default=25.0, help="Largo de la caja")
-        pars.add_argument("--use_material_compensation", type=inkex.Boolean, default=False, help="Aplicar compensación de material")
-        pars.add_argument("--material_compensation", type=float, default=0.2, help="Grueso del material.")
         pars.add_argument("--unit", default="mm", help="Tipo de unidades")
 
     def effect(self):
@@ -51,11 +49,7 @@ class GenerarEstuche(inkex.EffectExtension):
         ancho_caja = self.svg.unittouu(str(self.options.width) + self.options.unit)
         alto_caja = self.svg.unittouu(str(self.options.height) + self.options.unit)
         largo_caja = self.svg.unittouu(str(self.options.depth) + self.options.unit)
-        compensacion=0.0
-		
-        if self.options.use_material_compensation==True:
-            compensacion=self.svg.unittouu(str(self.options.material_compensation) + self.options.unit)
-            
+
         if self.options.unit=="cm":
             medida_pestana1=0.2
 			
@@ -81,9 +75,9 @@ class GenerarEstuche(inkex.EffectExtension):
         line = group.add(inkex.PathElement(id=id_caja + '-perfil-exterior'))
         line.path = [
 			['M', [0, 0]],
-			['l', [alto_caja+compensacion,0]],
+			['l', [alto_caja,0]],
 			['l', [ancho_caja,0]],
-			['l', [alto_caja+compensacion,0]],
+			['l', [alto_caja,0]],
 			['l', [0,alto_caja-medida1_pestanas_laterales]],
 			['l', [0-(alto_caja-medida1_pestanas_laterales),0]],
 			['l', [0-medida1_pestanas_laterales,medida1_pestanas_laterales]],
@@ -93,15 +87,15 @@ class GenerarEstuche(inkex.EffectExtension):
 			['l', [medida1_pestanas_laterales,medida1_pestanas_laterales]],
 			['l', [alto_caja-medida1_pestanas_laterales,0]],
 			['l', [0,alto_caja-medida1_pestanas_laterales]],
-			['l', [0-(alto_caja+compensacion),0]],
+			['l', [0-(alto_caja),0]],
 			['l', [0-(ancho_caja),0]],
-			['l', [0-(alto_caja+compensacion),0]],
+			['l', [0-(alto_caja),0]],
 			['l', [0,0-(alto_caja-medida1_pestanas_laterales)]],
 			['l', [alto_caja-medida1_pestanas_laterales,0]],
 			['l', [medida1_pestanas_laterales,0-medida1_pestanas_laterales]],
-			['l', [0-(alto_caja+compensacion),0]],
+			['l', [0-(alto_caja),0]],
 			['l', [0,0-largo_caja]],
-			['l', [alto_caja++compensacion,0]],
+			['l', [alto_caja,0]],
 			['l', [0-medida1_pestanas_laterales,0-medida1_pestanas_laterales]],
 			['l', [0-(alto_caja-medida1_pestanas_laterales),0]],
 			['Z', []]

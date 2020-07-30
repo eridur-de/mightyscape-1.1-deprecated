@@ -1,5 +1,4 @@
-#! /usr/bin/env python
-# coding=utf-8
+#! /usr/bin/env python3
 #
 # 
 # This script draws the outer profile of the box cut in a single 
@@ -77,7 +76,7 @@ class GenerateBox(inkex.EffectExtension):
 			['l', [0,0]],
 			['l', [0,eyelash_width]],
 			['l', [eyelash_width,0]],
-			['l', [0-(eyelash_width-eyelash_measure1),box_height-eyelash_measure1]],
+			['l', [0-(eyelash_width-eyelash_measure1),box_height-eyelash_measure4]],
 			['l', [0-eyelash_measure1,eyelash_measure2]],
 			['l', [0,eyelash_measure1]],
 			['l', [box_height-eyelash_measure3,eyelash_measure3]],
@@ -115,7 +114,7 @@ class GenerateBox(inkex.EffectExtension):
 			['l', [eyelash_measure1,0]],
 			['l', [eyelash_measure3,0-(box_height-eyelash_measure3)]],
 			['l', [(box_height-eyelash_measure3),0-eyelash_measure3]],
-			['l', [0,0-eyelash_measure4]],
+			['l', [0,0-eyelash_measure1]],
 			['l', [0-eyelash_measure1,0-eyelash_measure2]],
 			['l', [0-(eyelash_width-eyelash_measure1),0-(box_height-eyelash_measure4)]],
 			['l', [eyelash_width,0]],
@@ -142,7 +141,7 @@ class GenerateBox(inkex.EffectExtension):
         
         line = group.add(inkex.PathElement(id=id_box + '-profile-splits-3'))
         line.path = [
-			['M', [0-box_height,((box_height*2)+eyelash_width)+eyelash_measure2]],
+			['M', [0-box_height,((box_height*2)+eyelash_width)]],
 			['l', [box_width+(box_height*2),0]],
 			['Z', []]
 		]
@@ -150,7 +149,7 @@ class GenerateBox(inkex.EffectExtension):
         
         line = group.add(inkex.PathElement(id=id_box + '-profile-splits-4'))
         line.path = [
-			['M', [0-box_height,(((box_height*2)+eyelash_width)+box_length)+eyelash_measure2]],
+			['M', [0-box_height,(((box_height*2)+eyelash_width)+box_length)]],
 			['l', [box_width+(box_height*2),0]],
 			['Z', []]
 		]
@@ -158,7 +157,7 @@ class GenerateBox(inkex.EffectExtension):
         
         line = group.add(inkex.PathElement(id=id_box + '-profile-splits-5'))
         line.path = [
-			['M', [0,(box_height*3)+box_length+eyelash_width+eyelash_measure2]],
+			['M', [0,(box_height*3)+box_length+eyelash_width]],
 			['l', [box_width,0]],
 			['Z', []]
 		]
@@ -166,7 +165,7 @@ class GenerateBox(inkex.EffectExtension):
         
         line = group.add(inkex.PathElement(id=id_box + '-profile-splits-6'))
         line.path = [
-			['M', [0,(box_height*4)+box_length+eyelash_width+eyelash_measure2]],
+			['M', [0,(box_height*4)+box_length+eyelash_width]],
 			['l', [box_width,0]],
 			['Z', []]
 		]
@@ -175,7 +174,7 @@ class GenerateBox(inkex.EffectExtension):
         line = group.add(inkex.PathElement(id=id_box + '-profile-splits-7'))
         line.path = [
 			['M', [0,eyelash_width]],
-			['l', [0,box_length+(box_height*4)+eyelash_measure2]],
+			['l', [0,box_length+(box_height*4)]],
 			['Z', []]
 		]
         line.style = cleft_line_style
@@ -183,14 +182,14 @@ class GenerateBox(inkex.EffectExtension):
         line = group.add(inkex.PathElement(id=id_box + '-profile-splits-8'))
         line.path = [
 			['M', [box_width,eyelash_width]],
-			['l', [0,box_length+(box_height*4)+eyelash_measure2]],
+			['l', [0,box_length+(box_height*4)]],
 			['Z', []]
 		]
         line.style = cleft_line_style
         
         line = group.add(inkex.PathElement(id=id_box + '-profile-splits-9'))
         line.path = [
-			['M', [0-box_height,eyelash_width+(box_height*2)+eyelash_measure2]],
+			['M', [0-box_height,eyelash_width+(box_height*2)]],
 			['l', [0,box_length]],
 			['Z', []]
 		]
@@ -198,7 +197,7 @@ class GenerateBox(inkex.EffectExtension):
         
         line = group.add(inkex.PathElement(id=id_box + '-profile-splits-10'))
         line.path = [
-			['M', [box_width+box_height,eyelash_width+(box_height*2)+eyelash_measure2]],
+			['M', [box_width+box_height,eyelash_width+(box_height*2)]],
 			['l', [0,box_length]],
 			['Z', []]
 		]
@@ -206,7 +205,7 @@ class GenerateBox(inkex.EffectExtension):
         
         line = group.add(inkex.PathElement(id=id_box + '-profile-splits-11'))
         line.path = [
-			['M', [0,eyelash_width+(box_height*2)+eyelash_measure2]],
+			['M', [0,eyelash_width+(box_height*2)]],
 			['l', [0-(box_height-eyelash_measure3),0-(box_height-eyelash_measure3)]],
 			['Z', []]
 		]
@@ -214,7 +213,7 @@ class GenerateBox(inkex.EffectExtension):
         
         line = group.add(inkex.PathElement(id=id_box + '-profile-splits-12'))
         line.path = [
-			['M', [box_width,eyelash_width+(box_height*2)+eyelash_measure2]],
+			['M', [box_width,eyelash_width+(box_height*2)]],
 			['l', [box_height-eyelash_measure3,0-(box_height-eyelash_measure3)]],
 			['Z', []]
 		]
@@ -222,7 +221,7 @@ class GenerateBox(inkex.EffectExtension):
         
         line = group.add(inkex.PathElement(id=id_box + '-profile-splits-13'))
         line.path = [
-			['M', [box_width,eyelash_width+(box_height*2)+box_length+eyelash_measure2]],
+			['M', [box_width,eyelash_width+(box_height*2)+box_length]],
 			['l', [box_height-eyelash_measure3,box_height-eyelash_measure3]],
 			['Z', []]
 		]
@@ -230,7 +229,7 @@ class GenerateBox(inkex.EffectExtension):
         
         line = group.add(inkex.PathElement(id=id_box + '-profile-splits-14'))
         line.path = [
-			['M', [0,eyelash_width+(box_height*2)+box_length+eyelash_measure2]],
+			['M', [0,eyelash_width+(box_height*2)+box_length]],
 			['l', [0-(box_height-eyelash_measure3),box_height-eyelash_measure3]],
 			['Z', []]
 		]

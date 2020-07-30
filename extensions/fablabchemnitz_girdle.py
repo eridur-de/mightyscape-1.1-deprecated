@@ -39,8 +39,6 @@ class GenerarEstuche(inkex.EffectExtension):
         pars.add_argument("--height", type=float, default=25.0, help="Alto de la caja")
         pars.add_argument("--depth", type=float, default=25.0, help="Largo de la caja")
         pars.add_argument("--glue_tab", type=float, default=5.0, help="Ancho pestaña de engomado")
-        pars.add_argument("--use_material_compensation", type=inkex.Boolean, default=False, help="Aplicar compensación de material")
-        pars.add_argument("--material_compensation", type=float, default=0.2, help="Grueso del material.")
         pars.add_argument("--unit", default="mm", help="Tipo de unidades")
 
     def effect(self):
@@ -56,11 +54,7 @@ class GenerarEstuche(inkex.EffectExtension):
         alto_caja = self.svg.unittouu(str(self.options.height) + self.options.unit)
         largo_caja = self.svg.unittouu(str(self.options.depth) + self.options.unit)
         ancho_pestana_cola = self.svg.unittouu(str(self.options.glue_tab) + self.options.unit)
-        compensacion=0.0
-		
-        if self.options.use_material_compensation==True:
-            compensacion=self.svg.unittouu(str(self.options.material_compensation) + self.options.unit)
-            
+
         if self.options.unit=="cm":
             medida_pestana1=0.5
             medida_pestana2=0.1
@@ -97,11 +91,11 @@ class GenerarEstuche(inkex.EffectExtension):
 			['M', [0, 0]],
 			['l', [ancho_caja,0]],
 			['l', [largo_caja,0]],
-			['l', [ancho_caja-compensacion,0]],
-			['l', [largo_caja-compensacion,0]],
+			['l', [ancho_caja,0]],
+			['l', [largo_caja,0]],
 			['l', [0,alto_caja]],
-			['l', [0-(largo_caja-compensacion),0]],
-			['l', [0-(ancho_caja-compensacion),0]],
+			['l', [0-(largo_caja),0]],
+			['l', [0-(ancho_caja),0]],
 			['l', [0-largo_caja,0]],
 			['l', [0-ancho_caja,0]],
 			['l', [0-ancho_pestana_cola,0-ancho_pestana_cola]],
@@ -129,7 +123,7 @@ class GenerarEstuche(inkex.EffectExtension):
         
         line = group.add(inkex.PathElement(id=id_caja + '-perfil-hendidos-3'))
         line.path = [
-			['M', [ancho_caja+largo_caja-compensacion,0]],
+			['M', [ancho_caja+largo_caja,0]],
 			['l', [0,alto_caja]],
 			['Z', []]
 		]
@@ -137,7 +131,7 @@ class GenerarEstuche(inkex.EffectExtension):
         
         line = group.add(inkex.PathElement(id=id_caja + '-perfil-hendidos-4'))
         line.path = [
-			['M', [ancho_caja+ancho_caja+largo_caja-(compensacion*2),0]],
+			['M', [ancho_caja+ancho_caja+largo_caja,0]],
 			['l', [0,alto_caja]],
 			['Z', []]
 		]

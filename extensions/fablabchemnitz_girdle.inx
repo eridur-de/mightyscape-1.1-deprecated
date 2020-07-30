@@ -10,9 +10,6 @@
     <param name="depth"  type="float" min="0.1" max="300.0" gui-text="L - length:">25.0</param>
     <param name="height" type="float" min="0.1" max="300.0" gui-text="H - height:">25.0</param>
     <param name="glue_tab" type="float" min="0.1" max="300.0" gui-text="P - Width glue tab">5.0</param>
-    <param name="use_material_compensation" type="bool" gui-text="Apply material compensation (only in mm)">false</param>
-    <label>This option only works with mm, make sure it is unchecked if you do not use this unit.</label>
-    <param name="material_compensation" type="float" min="0.2" max="50.0" gui-text="Thickness of the material:">0.250</param>
     <effect>
         <object-type>all</object-type>
         <effects-menu>

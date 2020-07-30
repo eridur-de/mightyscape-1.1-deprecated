@@ -41,8 +41,6 @@ class GenerarEstuche(inkex.EffectExtension):
         pars.add_argument("--glue_tab", type=float, default=5.0, help="Ancho pestaña de engomado")
         pars.add_argument("--close_tab", type=float, default=5.0, help="Alto pestaña de cierre")
         pars.add_argument("--side_tabs", type=float, default=5.0, help="Alto pestañas laterales de cierre")
-        pars.add_argument("--use_material_compensation", type=inkex.Boolean, default=False, help="Aplicar compensación de material")
-        pars.add_argument("--material_compensation", type=float, default=0.2, help="Grueso del material.")
         pars.add_argument("--unit", default="mm", help="Tipo de unidades")
 
     def effect(self):
@@ -61,11 +59,7 @@ class GenerarEstuche(inkex.EffectExtension):
         ancho_pestana_cola = self.svg.unittouu(str(self.options.glue_tab) + self.options.unit)
         alto_pestana_cierre = self.svg.unittouu(str(self.options.close_tab) + self.options.unit)
         alto_pestana = self.svg.unittouu(str(self.options.side_tabs) + self.options.unit)
-        compensacion=0.0
-		
-        if self.options.use_material_compensation==True:
-            compensacion=self.svg.unittouu(str(self.options.material_compensation) + self.options.unit)
-            
+
         if self.options.unit=="cm":
             medida_pestana1=0.5
             medida_pestana2=0.1
@@ -104,55 +98,55 @@ class GenerarEstuche(inkex.EffectExtension):
         line.path = [
 			['M', [0, 0]],
 			['l', [ancho_caja, 0]],
-			['l', [0,compensacion]],
-			['l', [compensacion, 0]],
+			['l', [0,0]],
+			['l', [0, 0]],
 			['l', [0, 0-medida1_pestanas_laterales]],
 			['l', [medida2_pestanas_laterales, 0-medida2_pestanas_laterales]],
 			['l', [medida3_pestanas_laterales, 0-(alto_pestana-medida2_pestanas_laterales-medida1_pestanas_laterales)]], 
-			['l', [(largo_caja-compensacion-medida2_pestanas_laterales-medida3_pestanas_laterales-medida4_pestanas_laterales), 0]],
+			['l', [(largo_caja-medida2_pestanas_laterales-medida3_pestanas_laterales-medida4_pestanas_laterales), 0]],
 			['l', [0,alto_pestana-medida4_pestanas_laterales]],
 			['l', [medida4_pestanas_laterales, medida4_pestanas_laterales]],
-			['l', [0, 0-largo_caja-compensacion]],
-			['l', [compensacion, 0]],
+			['l', [0, 0-largo_caja]],
+			['l', [0, 0]],
 			['q', [0,0-alto_pestana_cierre,alto_pestana_cierre, 0-alto_pestana_cierre]],
-			['l', [ancho_caja-(alto_pestana_cierre*2)-(compensacion*2), 0]],
+			['l', [ancho_caja-(alto_pestana_cierre*2), 0]],
 			['q', [alto_pestana_cierre,0,alto_pestana_cierre,alto_pestana_cierre]],
-			['l', [compensacion, 0]],
-			['l', [0, (largo_caja-compensacion)]],
+			['l', [0, 0]],
+			['l', [0, (largo_caja)]],
 			['l', [medida4_pestanas_laterales, 0-medida4_pestanas_laterales]],
 			['l', [0,0-(alto_pestana-medida4_pestanas_laterales)]],
-			['l', [(largo_caja-compensacion-medida2_pestanas_laterales-medida3_pestanas_laterales-medida4_pestanas_laterales-compensacion), 0]],
+			['l', [(largo_caja-medida2_pestanas_laterales-medida3_pestanas_laterales-medida4_pestanas_laterales), 0]],
 			['l', [medida3_pestanas_laterales, (alto_pestana-medida2_pestanas_laterales-medida1_pestanas_laterales)]],
 			['l', [medida2_pestanas_laterales, medida2_pestanas_laterales]],
 			['l', [0, medida1_pestanas_laterales]],
-			['l', [0,compensacion]],
+			['l', [0,0]],
 			['l', [0, alto_caja]],
 			['l', [0,(largo_caja*0.5)+medida1_pestanas_cierre]],
-			['l', [0-(largo_caja-compensacion)*0.5,0]],
+			['l', [0-(largo_caja)*0.5,0]],
 			['l', [0,0-medida1_pestanas_cierre]],
-			['l', [0-(largo_caja-compensacion)*0.5,0-((largo_caja)*0.5)]],
+			['l', [0-(largo_caja)*0.5,0-((largo_caja)*0.5)]],
 			['l', [0,(largo_caja*0.5)+medida1_pestanas_cierre]],
-			['l', [0-(ancho_caja-compensacion)*0.25,0]],
+			['l', [0-(ancho_caja)*0.25,0]],
 			['l', [0, 0-medida1_pestanas_cierre]],
-			['l', [0-(ancho_caja-compensacion)*0.5,0]],
+			['l', [0-(ancho_caja)*0.5,0]],
 			['l', [0, medida1_pestanas_cierre]],
-			['l', [0-(ancho_caja-compensacion)*0.25,0]],
+			['l', [0-(ancho_caja)*0.25,0]],
 			['l', [0,0-((largo_caja*0.5)+medida1_pestanas_cierre)]],
-			['l', [0-(largo_caja-compensacion)*0.5,((largo_caja*0.5))]],
+			['l', [0-(largo_caja)*0.5,((largo_caja*0.5))]],
 			['l', [0,medida1_pestanas_cierre]],
-			['l', [0-(largo_caja-compensacion)*0.5,0]],
+			['l', [0-(largo_caja)*0.5,0]],
 			['l', [0,0-((largo_caja*0.5)+medida1_pestanas_cierre)]],
 			['l', [0-ancho_caja*0.25,(largo_caja*0.5)]],
 			['l', [0,medida1_pestanas_cierre]],
 			['l', [0-ancho_caja*0.5,0]],
 			['l', [0,0-medida1_pestanas_cierre]],
 			['l', [0-ancho_caja*0.25,0-(largo_caja*0.5)]],
-			['l', [0-compensacion, 0]],
-			['l', [0, 0-compensacion]],
+			['l', [0, 0]],
+			['l', [0, 0]],
 			['l', [0, 0-medida2_pestanas_laterales]],
-			['l', [0-ancho_pestana_cola, 0-(ancho_pestana_cola/2)-compensacion]],
-			['l', [0, 0-(alto_caja-ancho_pestana_cola-(medida2_pestanas_laterales*2)-(compensacion*2))]],
-			['l', [ancho_pestana_cola, 0-(ancho_pestana_cola/2)-compensacion]],
+			['l', [0-ancho_pestana_cola, 0-(ancho_pestana_cola/2)]],
+			['l', [0, 0-(alto_caja-ancho_pestana_cola-(medida2_pestanas_laterales*2))]],
+			['l', [ancho_pestana_cola, 0-(ancho_pestana_cola/2)]],
 			['Z', []]
         ]
         line.style = estilo_linea_cortes
@@ -169,7 +163,7 @@ class GenerarEstuche(inkex.EffectExtension):
         line = group.add(inkex.PathElement(id=id_caja + '-perfil-hendidos-2'))
         line.path = [
 			['M', [ancho_caja,0]],
-			['l', [0,alto_caja-compensacion]],
+			['l', [0,alto_caja]],
 			['Z', []]
 		]
         line.style = estilo_linea_hendidos
@@ -192,8 +186,8 @@ class GenerarEstuche(inkex.EffectExtension):
         
         line = group.add(inkex.PathElement(id=id_caja + '-perfil-hendidos-5'))
         line.path = [
-			['M', [ancho_caja,compensacion]],
-			['l', [largo_caja-compensacion,0]],
+			['M', [ancho_caja,0]],
+			['l', [largo_caja,0]],
 			['Z', []]
 		]
         line.style = estilo_linea_hendidos
@@ -201,22 +195,22 @@ class GenerarEstuche(inkex.EffectExtension):
         line = group.add(inkex.PathElement(id=id_caja + '-perfil-hendidos-6'))
         line.path = [
 			['M', [largo_caja+ancho_caja,0]],
-			['l', [ancho_caja-(compensacion)*2,0]],
+			['l', [ancho_caja,0]],
 			['Z', []]
 		]
         line.style = estilo_linea_hendidos
         
         line = group.add(inkex.PathElement(id=id_caja + '-perfil-hendidos-7'))
         line.path = [
-			['M', [(ancho_caja*2)+largo_caja-(compensacion*3),compensacion]],
-			['l', [largo_caja-compensacion,0]],
+			['M', [(ancho_caja*2)+largo_caja,0]],
+			['l', [largo_caja,0]],
 			['Z', []]
 		]
         line.style = estilo_linea_hendidos
         
         line = group.add(inkex.PathElement(id=id_caja + '-perfil-hendidos-8'))
         line.path = [
-			['M', [ancho_caja+largo_caja-(compensacion*2),0-largo_caja-compensacion]],
+			['M', [ancho_caja+largo_caja,0-largo_caja]],
 			['l', [ancho_caja,0]],
 			['Z', []]
 		]
