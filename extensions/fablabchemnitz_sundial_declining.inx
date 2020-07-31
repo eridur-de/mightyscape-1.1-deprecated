@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+   <_name>Sundial Declining</_name>
+   <id>fablabchemnitz.de.sundialdeclining</id>
+   <param name="tab" type="notebook">
+      <page name="input" appearance="minimal" _gui-text="Options">
+         <param name="desc1" type="description" appearance="header">Location coordinates</param>
+         <param name="latitude" type="float" min="10" max="70" precision="3" _gui-text="Latitude:   ">50</param>
+         <param name="longitude" type="float" min="-180" max="180" precision="3" _gui-text="Longitude:  ">16</param>
+         <param name="timezone" type="int" min="-12" max="12" precision="0" _gui-text="Time zone:    ">0</param>
+         <param name="summer_time" type="boolean" gui-text="Summer time:">false</param>
+      </page>
+      <page name="input_2" appearance="minimal" _gui-text="Add">
+         <param name="note1" type="description" appearance="header">Add 1</param>
+         <param name="gnom" type="float" min="10" max="50" precision="1" _gui-text="Length of the gnomon:   ">40</param>
+         <param name="decl" type="float" min="-90" max="90" precision="1" _gui-text="Azimuth wall:    ">40</param>
+         <_param name="instructions" type="description" xml:space="preserve"> ( + West; - East)</_param>
+         <param name="incl" type="float" min="-45" max="45" precision="1" _gui-text="Slope of the wall:    ">0</param>
+         <_param name="instructions" type="description" xml:space="preserve"> ( + x; - x)</_param>
+      </page>
+      <page name="input_3" appearance="minimal" _gui-text="Draw">
+         <param name="note2" type="description" appearance="header">Add 2</param>
+         <param name="DL" type="enum" _gui-text="Number of data lines:">
+            <item value="0">0</item>
+            <item value="3">3</item>
+            <item value="7">7</item>
+         </param>
+      </page>
+   </param>
+   <param name="instructions" type="description" xml:space="preserve">
+* Latitude   from +10 to +70
+* Longitude (+ to E) from -180 to 180
+* Time Zone (+ to E) from -12 to 12
+</param>
+   <effect>
+      <object-type>all</object-type>
+      <effects-menu>
+        <submenu _name="FabLab Chemnitz">
+            <submenu _name="Shape/Pattern from Generator" />
+        </submenu>
+      </effects-menu>
+   </effect>
+   <script>
+      <command reldir="extensions" interpreter="python">fablabchemnitz_sundial_declining.py</command>
+   </script>
+</inkscape-extension>
