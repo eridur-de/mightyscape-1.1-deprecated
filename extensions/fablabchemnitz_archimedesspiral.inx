@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+   <_name>The Spiral of Archimedes</_name>
+   <id>fablabchemnitz.de.archimedesspiral</id>
+   <param name="name" appearance="header" type="description">R = r + aθ</param>
+   <param name="r" type="int" min="0" max="1000000" _gui-text="r (mm)">50</param>
+   <param name="a" type="float" min="0" max="1000000" _gui-text="a">3</param>
+   <param name="step" type="int" min="1" max="300" _gui-text="Step">50</param>
+   <param name="trl" type="optiongroup" _gui-text="Turn direction">
+      <option value="0">Left</option>
+      <option value="1">Right</option>
+   </param>
+   <param name="length" type="float" min="0" max="1000000" _gui-text="Length (mm)">0</param>
+   <param name="turns" type="int" min="1" max="1000000" _gui-text="Turns">5</param>
+   <param name="desc" appearance="header" type="description">Notes</param>
+   <param name="desc_text" type="description">
+The option "turns" only works if you set "length (mm)" to 0.0. 
+Otherwise the length value will be used to calculate the 
+spiral for given length. The higher the "step" value is 
+set the better the accuracy is. If you set the step value 
+really low the resulting length will not be precise and 
+the curve is maybe not drawn at all. You can validate the 
+length by using the extension "Visualize Path > Measure Path"
+   </param>
+   <effect>
+      <object-type>all</object-type>
+      <effects-menu>
+         <submenu _name="FabLab Chemnitz">
+            <submenu _name="Shape/Pattern from Generator" />
+         </submenu>
+      </effects-menu>
+   </effect>
+   <script>
+      <command reldir="extensions" interpreter="python">fablabchemnitz_archimedesspiral.py</command>
+   </script>
+</inkscape-extension>
