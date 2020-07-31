@@ -215,14 +215,14 @@ class Polyhedra(inkex.Effect):
 				gear_attribs = {'style':str(inkex.Style(perfStyle)), 'd':path}
 				gear = etree.SubElement(tab_group, inkex.addNS('path','svg'), gear_attribs )
 			
-			gsub_attribs = {inkex.addNS('label','inkscape'):'Polygon ' + str( poly ) + 'inside' }
-			gsub = etree.SubElement(g, 'g', gsub_attribs)
+		gsub_attribs = {inkex.addNS('label','inkscape'):'Polygon ' + str( poly ) + 'inside' }
+		gsub = etree.SubElement(g, 'g', gsub_attribs)
 		
-			for edge in iEI:
-				points = [(eC[edge[0]-1][0] * scale, eC[edge[0]-1][1] * scale), (eC[edge[1]-1][0] * scale, eC[edge[1]-1][1] * scale)]
-				path = points_to_svgd( points )
-				perf_attribs = {'style':str(inkex.Style(perfStyle)), 'd':path}
-				gear = etree.SubElement(gsub, inkex.addNS('path','svg'), perf_attribs )
+		for edge in iEI:
+			points = [(eC[edge[0]-1][0] * scale, eC[edge[0]-1][1] * scale), (eC[edge[1]-1][0] * scale, eC[edge[1]-1][1] * scale)]
+			path = points_to_svgd( points )
+			perf_attribs = {'style':str(inkex.Style(perfStyle)), 'd':path}
+			gear = etree.SubElement(gsub, inkex.addNS('path','svg'), perf_attribs )
 		
 if __name__ == '__main__':
 	Polyhedra().run()
