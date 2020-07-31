@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+# We will use the inkex module with the predefined Effect base class.
 import inkex
 import math
 from lxml import etree
@@ -34,7 +35,7 @@ class inkcape_polar:
         etree.SubElement(self.group, inkex.addNS('path', 'svg'), line_attribs)
 
 class CurvedSurface:
-    def __init__(self, L1, L2, nombre_pas, angle_par_pas, taille_exacte_pas, epaisseur, parent, xOffset, yOffset):
+    def __init__(self, L1, L2, nombre_pas, angle_par_pas, taille_exacte_pas, nb_parts, epaisseur, parent, xOffset, yOffset):
         self.L1 = L1
         self.L2 = L2
         self.nombre_pas = nombre_pas
@@ -42,7 +43,9 @@ class CurvedSurface:
         self.taille_exacte_pas = taille_exacte_pas
         self.epaisseur = epaisseur
         self.parent = parent
-        self.Offset = (xOffset, yOffset)
+        self.OffsetX = xOffset
+        self.OffsetY = yOffset
+        self.nb_parts = nb_parts
 
     def genere_element_1(self, angle):
         path = inkcape_polar(self.Offset, self.group)
@@ -184,18 +187,25 @@ class CurvedSurface:
 
 
     def GeneratePaths(self):
-        group = etree.SubElement(self.parent, 'g')
-        self.group = group
         #Taille traits courts et longs entre les dents
         self.TailleTraitCourt = (self.L2 - self.L1) / 6 - 1
         self.TailleTraitLong = (self.L2 - self.L1- 2) / 3
+        pas_par_bloc = int(self.nombre_pas/self.nb_parts)
         #genere les pas du "flex"
-        current_pas = 0
-        self.genere_pas_debut()
-        while current_pas < self.nombre_pas:
-            self.genere_pas(current_pas)
-            current_pas += 1
-        self.genere_pas_fin(current_pas)
+        for i in range(self.nb_parts):
+            group = etree.SubElement(self.parent, 'g')
+            self.group = group
+            current_pas = 0
+            pas_pour_ce_bloc = pas_par_bloc
+            self.Offset = (self.OffsetX, self.OffsetY)
+            self.OffsetX += self.L2*2+ 5
+            if i == self.nb_parts - 1:
+                pas_pour_ce_bloc = self.nombre_pas - i * pas_par_bloc
+            self.genere_pas_debut()
+            while current_pas < pas_pour_ce_bloc:
+                self.genere_pas(current_pas)
+                current_pas += 1
+            self.genere_pas_fin(pas_pour_ce_bloc)
 
 def gen_cercle(diametre, nombre_pas, epaisseur, xOffset, yOffset, parent):
     group = etree.SubElement(parent, 'g')
@@ -216,21 +226,34 @@ def gen_cercle(diametre, nombre_pas, epaisseur, xOffset, yOffset, parent):
     path.GenPath()
 
 class ConicalBox(inkex.Effect):
+    """
+    Creates a new layer with the drawings for a parametrically generaded box.
+    """
     def __init__(self):
         inkex.Effect.__init__(self)
         self.knownUnits = ['in', 'pt', 'px', 'mm', 'cm', 'm', 'km', 'pc', 'yd', 'ft']
-
         self.arg_parser.add_argument('--unit', default = 'mm', help = 'Unit, should be one of ')
-        self.arg_parser.add_argument('--thickness', type = float, default = '3.0',  help = 'Material thickness')
-        self.arg_parser.add_argument('--d1', type = float, default = '50.0', help = 'Small circle diameter')
-        self.arg_parser.add_argument('--d2', type = float, default = '100.0', help = 'Large circle diameter')
-        self.arg_parser.add_argument('--zc', type = float, default = '50.0', help = 'Cone height')
-        self.arg_parser.add_argument('--inner_size', type = inkex.Boolean, default = 'true', help = 'Dimensions are internal')
+        self.arg_parser.add_argument('--thickness', type = float, default = 3.0, help = 'Material thickness')
+        self.arg_parser.add_argument('--d1', type = float, default = 50.0,  help = 'Small circle diameter')
+        self.arg_parser.add_argument('--d2', type = float, default = 100.0, help = 'Large circle diameter')
+        self.arg_parser.add_argument('--zc', type = float, default = 50.0, help = 'Cone height')
+        self.arg_parser.add_argument('--nb_pieces', type = int, default = 1, help = '# pieces for cone')
+        self.arg_parser.add_argument('--inner_size', type = inkex.Boolean, default = True,  help = 'Dimensions are internal')
 
-        def unittouu(self, unit):
-            return self.svg.unittouu(unit)
+    try:
+        inkex.Effect.unittouu   # unitouu has moved since Inkscape 0.91
+    except AttributeError:
+        try:
+            def unittouu(self, unit):
+                return inkex.unittouu(unit)
+        except AttributeError:
+            pass
 
     def effect(self):
+        """
+        Draws a conic box, based on provided parameters
+        """
+
         # input sanity check
         error = False
         if self.options.zc < 15:
@@ -252,11 +275,15 @@ class ConicalBox(inkex.Effect):
         if error:
             exit()
 
+
         # convert units
         unit = self.options.unit
         d1 = self.svg.unittouu(str(self.options.d1) + unit)
         d2 = self.svg.unittouu(str(self.options.d2) + unit)
         zc = self.svg.unittouu(str(self.options.zc) + unit)
+        
+        nb_parts = self.options.nb_pieces
+        
         thickness = self.svg.unittouu(str(self.options.thickness) + unit)
         #Si prend dimensions externes, corrige les tailles
         if self.options.inner_size == False:
@@ -281,8 +308,8 @@ class ConicalBox(inkex.Effect):
         #calcul nombre de pas (sauf premeirs et derniers) pour D1, avec 2*2 mm par pas
         nombre_pas = round((d1 * math.pi - 6) / 4)
         #calcul angle par pas, ajoute 1.5 pour tenir compte des premiers et derniers pas qui font 3/4 de pas.
-        angle_par_pas = alpha / (nombre_pas+1.5)
-        taille_exacte_pas = math.pi * d1 / (nombre_pas+1.5)
+        angle_par_pas = alpha / (nombre_pas+1.5*nb_parts)
+        taille_exacte_pas = math.pi * d1 / (nombre_pas+1.5*nb_parts)
 
         # do not put elements right at the edge of the page.
         # Drawing will max left will be L2*cos(alpha) - thickness
@@ -312,7 +339,7 @@ class ConicalBox(inkex.Effect):
             ymax = (L2+thickness)*math.sin(alpha)
 
         #dessine la partie "souple"        
-        PartieSouple = CurvedSurface(L1, L2, nombre_pas, angle_par_pas, taille_exacte_pas, thickness, layer, xOffset, yOffset)
+        PartieSouple = CurvedSurface(L1, L2, nombre_pas, angle_par_pas, taille_exacte_pas, nb_parts, thickness, layer, xOffset, yOffset)
         PartieSouple.GeneratePaths()
         #génère maintenant le path du grand cercle
         #Un pas de plus pour les cercles, pour tenir compte du début et de la fin
@@ -322,4 +349,5 @@ class ConicalBox(inkex.Effect):
         #puis pour le petit cercle
         gen_cercle(d1, nombre_pas, thickness, -xmax - d1/2 + xOffset + 10,  d1/2 + yOffset - ymin + 10, layer)                                  
 
+# Create effect instance and apply it.
 ConicalBox().run()
