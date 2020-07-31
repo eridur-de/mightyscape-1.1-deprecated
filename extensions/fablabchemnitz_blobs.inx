@@ -6,7 +6,7 @@
         <page name="top" _gui-text="All">
             <_param name="h" type="description">Fills a box with blobs.</_param>
             <param max="256" name="nb" type="int" _gui-text="How many blobs?">10</param>
-            <param name="pgsizep" type="boolean" _gui-text="Default rectangle to page size?">True</param>
+            <param name="pgsizep" type="boolean" _gui-text="Default rectangle to page size?">true</param>
             <param max="10000" name="rx" type="int" _gui-text="Work area x">1000</param>
             <param max="10000" name="ry" type="int" _gui-text="Work area y">1000</param>
         </page>
