@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension>
+	<_name>Image Triangulation</_name>
+	<id>fablabchemnitz.de.triangulation</id>
+	<param name="tab" type="notebook">
+		<page name="tab" _gui-text="Options">
+			<param name="num_points" type="int" min="20" max="10000" _gui-text="Sampled points:">150</param>
+			<param name="edge_thresh_min" type="int" min="0" max="255" _gui-text="Edge detection min">200</param>
+			<param name="edge_thresh_max" type="int" min="0" max="255" _gui-text="Edge detection max">255</param>
+			<param name="gradient_fill" type="boolean" _gui-text="Gradient fill">0</param>
+			<param name="add_corners" type="boolean" _gui-text="Add corners">0</param>
+		</page>
+	</param>
+
+	<effect>
+		<object-type>image</object-type>
+		<effects-menu>
+         <submenu _name="FabLab Chemnitz">
+            <submenu _name="Various" />
+         </submenu>
+		</effects-menu>
+	</effect>
+	<script>
+		<command reldir="extensions" interpreter="python">fablabchemnitz_triangulation.py</command>
+	</script>
+</inkscape-extension>
