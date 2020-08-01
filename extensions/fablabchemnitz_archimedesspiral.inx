@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-   <_name>The Spiral of Archimedes</_name>
+   <_name>The Spiral Of Archimedes</_name>
    <id>fablabchemnitz.de.archimedesspiral</id>
    <param name="name" appearance="header" type="description">R = r + aθ</param>
    <param name="r" type="int" min="0" max="1000000" _gui-text="r (mm)">50</param>

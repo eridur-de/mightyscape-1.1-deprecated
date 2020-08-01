@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <_name>Grid strip creator (qlocktwo)</_name>
+    <_name>Grid Strip Creator (qlocktwo)</_name>
     <id>fablabchemnitz.de.gridstrip_creator</id>
     <param name="length" type="float" min="0.0" max="500.0" precision="3" _gui-text="Length">230.0</param>
     <param name="width" type="float" min="0.0" max="500.0" precision="3" _gui-text="Width">20.0</param>

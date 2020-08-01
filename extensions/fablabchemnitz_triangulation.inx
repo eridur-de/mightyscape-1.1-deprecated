@@ -16,7 +16,7 @@
 		<object-type>image</object-type>
 		<effects-menu>
          <submenu _name="FabLab Chemnitz">
-            <submenu _name="Various" />
+            <submenu _name="Tracing/Edge Detection" />
          </submenu>
 		</effects-menu>
 	</effect>
