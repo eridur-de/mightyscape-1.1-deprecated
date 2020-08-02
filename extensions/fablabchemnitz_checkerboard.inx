@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+  <_name>Checkerboard</_name>
+  <id>fablabchemnitz.de.checkerboard</id>
+  <param name="tab" type="notebook">
+    <page name="params" _gui-text="Params">
+      <param name="size" type="string" _gui-text="Cell size">50</param>
+      <param name="rows" type="int" min="0" max="1000" _gui-text="Rows">10</param>
+      <param name="cols" type="int" min="0" max="1000" _gui-text="Columns">10</param>
+      <param name="layer"  type="boolean" _gui-text="Create in current layer">true</param>
+    </page>
+    <page name="color1" _gui-text="1st color">
+      <param name="color1" type="color" _gui-text="Color 1">#000000ff</param>
+    </page>
+    <page name="color2" _gui-text="2nd color">
+      <param name="color2" type="color" _gui-text="Color 2">#ffffffff</param>
+    </page>
+    <page name="help" _gui-text="Help">
+        <param name="help_text" type="description">Create a checkerboard
+
+1. On the Params tab, choose the cell size
+    (size of the constituent squares), number
+    of rows and columns, and whether to add
+    the checkerboard to the current layer
+    (if unchecked, the checkerboard will be
+    added to the root layer)
+2. On the 1st color and 2nd color tabs,
+    select the colors for the two sets of
+    squares
+3. Click Apply
+
+More information and source code:
+https://github.com/jeffkayser/inkscape-checkerboard</param>
+    </page>
+  </param>
+  <effect>
+    <object-type>all</object-type>
+      <effects-menu>
+            <submenu _name="FabLab Chemnitz">
+                <submenu _name="Shape/Pattern from Generator" />
+            </submenu>
+      </effects-menu>
+  </effect>
+  <script>
+    <command reldir="extensions" interpreter="python">fablabchemnitz_checkerboard.py</command>
+  </script>
+</inkscape-extension>
