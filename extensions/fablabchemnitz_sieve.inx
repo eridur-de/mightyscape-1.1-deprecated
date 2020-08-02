@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <_name>Small Area Filter</_name>
+    <id>fablabchemnitz.de.small_area_filter</id>
+    <param name="use" type="description" xml:space="preserve">Paths with area smaller than the given area threshold will be deleted</param>
+    <param name="unit" _gui-text="Unit" type="enum">
+        <_item value="mm">mm^2</_item>
+        <_item value="cm">cm^2</_item>
+        <_item value="m">m^2</_item>
+    </param>
+    <param name="area" type="float" min="0.0" max="10000000.0" _gui-text="Area (Unit^2):">1.0</param>
+    <effect>
+        <object-type>all</object-type>
+        <effects-menu>
+            <submenu _name="FabLab Chemnitz">
+                <submenu _name="Nesting/Cut Optimization" />
+            </submenu>
+        </effects-menu>
+    </effect>
+    <script>
+        <command reldir="extensions" interpreter="python">fablabchemnitz_sieve.py</command>
+    </script>
+</inkscape-extension>
