@@ -26,7 +26,7 @@
         <object-type>path</object-type>
         <effects-menu>
             <submenu _name="FabLab Chemnitz">
-                <submenu _name="Modify existing Path(s)" />
+                <submenu _name="Legacy Tools" />
             </submenu>
         </effects-menu>
     </effect>
