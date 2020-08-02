@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <_name>Filter Small Things</_name>
+    <id>fablabchemnitz.de.small_things_filter</id>
+    <param name="use" type="description" xml:space="preserve">Paths with value smaller than the given threshold will be deleted</param>
+    <param name="unit" _gui-text="Unit" type="enum">
+        <_item value="mm">mm</_item>
+        <_item value="cm">cm</_item>
+        <_item value="m">m</_item>
+    </param>
+    <param name="threshold" type="float" min="0.0" max="10000000.0" _gui-text="Threshold">1.0</param>
+    <param name="measure" type="optiongroup" appearance="minimal" _gui-text="Measure by">
+        <option value="length">Length (Unit)</option>
+        <option value="area">Area (Unit^2)</option>
+    </param>
+    <effect>
+        <object-type>all</object-type>
+        <effects-menu>
+            <submenu _name="FabLab Chemnitz">
+                <submenu _name="Nesting/Cut Optimization" />
+            </submenu>
+        </effects-menu>
+    </effect>
+    <script>
+        <command reldir="extensions" interpreter="python">fablabchemnitz_small_things_filter.py</command>
+    </script>
+</inkscape-extension>
