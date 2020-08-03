@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+  <_name>Rotations - Minimum Width</_name>
+  <id>fablabchemnitz.de.rotateminwidth</id>
+  <effect>
+    <object-type>all</object-type>
+      <effects-menu>
+            <submenu _name="FabLab Chemnitz">
+			    <submenu _name="Nesting/Cut Optimization" />
+			</submenu>
+      </effects-menu>
+  </effect>
+  <script>
+    <command reldir="extensions" interpreter="python">fablabchemnitz_rotate_min_width.py</command>
+  </script>
+</inkscape-extension>
