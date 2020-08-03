@@ -73,7 +73,7 @@ class BouwkampCodeExtension(inkex.Effect):
         try:
             self.exception_on_invalid_bouwkamp_code(bouwkamp_code)
         except ValueError as exception:
-            inkex.errormsg(_(exception.message))
+            inkex.errormsg(_(str(exception)))
             return
 
         # draw the bouwkamp code
