@@ -38,7 +38,9 @@ The Tolerance parameter affects how precisely the hatches try to fill the input 
    <effect needs-live-preview="true">
       <object-type>all</object-type>
       <effects-menu>
-         <submenu _name="gh:_dapperfu" />
+        <submenu _name="FabLab Chemnitz">
+			<submenu _name="Shape/Pattern from existing Path(s)"/>
+		</submenu>
       </effects-menu>
    </effect>
    <script>
