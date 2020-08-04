@@ -15,13 +15,8 @@ class Sieve(inkex.Effect):
         self.arg_parser.add_argument('--measure', default="length")
 		
     def effect(self):
-        namedView = self.document.getroot().find(inkex.addNS('namedview', 'sodipodi'))
-        doc_units = namedView.get(inkex.addNS('document-units', 'inkscape'))
-        #inkex.utils.debug("document unit is " + doc_units)
-        self.options.threshold = self.svg.unittouu(str(self.options.threshold) + doc_units)
+        self.options.threshold = self.svg.unittouu(str(self.options.threshold) + self.svg.unit)
         unit_factor = 1.0 / self.svg.uutounit(1.0,self.options.unit)
-        #inkex.utils.debug("unit_factor is " + str(unit_factor))
-		
         if self.options.threshold == 0:
             return
 
