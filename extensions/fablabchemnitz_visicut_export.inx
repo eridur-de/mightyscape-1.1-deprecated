@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <_name>Open in VisiCut (Add)</_name>
+    <name>Open in VisiCut (Add)</name>
     <id>fablabchemnitz.de.visicut.add</id>
-    <param name="import" type="boolean" gui-hidden="true">true</param>
+    <param name="import" type="bool" gui-hidden="true">true</param>
     <effect needs-live-preview="false">
         <object-type>path</object-type>
         <effects-menu>
-            <submenu _name="FabLab Chemnitz">
-                <submenu _name="Import/Export/Transfer" />
+            <submenu name="FabLab Chemnitz">
+                <submenu name="Import/Export/Transfer"/>
             </submenu>
         </effects-menu>
     </effect>

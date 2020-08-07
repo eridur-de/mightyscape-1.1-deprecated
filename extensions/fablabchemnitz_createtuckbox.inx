@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <_name>Tuckbox</_name>
+    <name>Tuckbox</name>
     <id>fablabchemnitz.de.createtuckbox</id>
-    <param name="type" type="enum" gui-text="Box type">
-        <item value="TUCKBOX">Tuckbox</item>
-        <item value="SLIPCASE">Slipcase/Deck band</item>
-        <item value="MATCHBOX">MatchBox</item>
+    <param name="type" type="optiongroup" appearance="combo" gui-text="Box type">
+        <option value="TUCKBOX">Tuckbox</option>
+        <option value="SLIPCASE">Slipcase/Deck band</option>
+        <option value="MATCHBOX">MatchBox</option>
     </param>
     <param name="num_flaps" type="int" precision="1" min="1" max="2" gui-text="Number of Flaps">1</param>
     <param name="deck_width" type="float" precision="1" min="5" max="1000" gui-text="Box width (mm)">63.5</param>
@@ -15,8 +15,8 @@
     <effect>
         <object-type>all</object-type>
         <effects-menu>
-			<submenu _name="FabLab Chemnitz">
-				<submenu _name="Paper/Cardboard Boxes" />
+			<submenu name="FabLab Chemnitz">
+				<submenu name="Paper/Cardboard Boxes"/>
 			</submenu>
         </effects-menu>
     </effect>

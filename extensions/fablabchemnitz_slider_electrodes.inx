@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <_name>Slider Electrodes</_name>
+    <name>Slider Electrodes</name>
     <id>fablabchemnitz.de.slider_electrodes</id>
-    <param name="count" type="int" _gui-text="Number of electrodes:" min="1" max="50">5</param>
-    <param name="spikes" type="int" _gui-text="Number of spikes:" min="1" max="10">5</param>
+    <param name="count" type="int" gui-text="Number of electrodes:" min="1" max="50">5</param>
+    <param name="spikes" type="int" gui-text="Number of spikes:" min="1" max="10">5</param>
     <effect>
         <object-type>all</object-type>
         <effects-menu>
-            <submenu _name="FabLab Chemnitz">
-                <submenu _name="Shape/Pattern from Generator" />
+            <submenu name="FabLab Chemnitz">
+                <submenu name="Shape/Pattern from Generator"/>
             </submenu>
         </effects-menu>
     </effect>

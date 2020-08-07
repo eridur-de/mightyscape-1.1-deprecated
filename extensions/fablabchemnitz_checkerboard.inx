@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-  <_name>Checkerboard</_name>
+  <name>Checkerboard</name>
   <id>fablabchemnitz.de.checkerboard</id>
   <param name="tab" type="notebook">
-    <page name="params" _gui-text="Params">
-      <param name="size" type="string" _gui-text="Cell size">50</param>
-      <param name="rows" type="int" min="0" max="1000" _gui-text="Rows">10</param>
-      <param name="cols" type="int" min="0" max="1000" _gui-text="Columns">10</param>
-      <param name="layer"  type="boolean" _gui-text="Create in current layer">true</param>
+    <page name="params" gui-text="Params">
+      <param name="size" type="string" gui-text="Cell size">50</param>
+      <param name="rows" type="int" min="0" max="1000" gui-text="Rows">10</param>
+      <param name="cols" type="int" min="0" max="1000" gui-text="Columns">10</param>
+      <param name="layer"  type="bool" gui-text="Create in current layer">true</param>
     </page>
-    <page name="color1" _gui-text="1st color">
-      <param name="color1" type="color" _gui-text="Color 1">#000000ff</param>
+    <page name="color1" gui-text="1st color">
+      <param name="color1" type="color" gui-text="Color 1">#000000ff</param>
     </page>
-    <page name="color2" _gui-text="2nd color">
-      <param name="color2" type="color" _gui-text="Color 2">#ffffffff</param>
+    <page name="color2" gui-text="2nd color">
+      <param name="color2" type="color" gui-text="Color 2">#ffffffff</param>
     </page>
-    <page name="help" _gui-text="Help">
+    <page name="help" gui-text="Help">
         <param name="help_text" type="description">Create a checkerboard
 
 1. On the Params tab, choose the cell size
@@ -36,8 +36,8 @@ https://github.com/jeffkayser/inkscape-checkerboard</param>
   <effect>
     <object-type>all</object-type>
       <effects-menu>
-            <submenu _name="FabLab Chemnitz">
-                <submenu _name="Shape/Pattern from Generator" />
+            <submenu name="FabLab Chemnitz">
+                <submenu name="Shape/Pattern from Generator"/>
             </submenu>
       </effects-menu>
   </effect>

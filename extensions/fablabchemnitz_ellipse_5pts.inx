@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <_name>Ellipse by 5 Points</_name>
+    <name>Ellipse by 5 Points</name>
     <id>fablabchemnitz.de.ellipse_5pts</id>
     <effect>
         <object-type>path</object-type>
         <effects-menu>
-            <submenu _name="FabLab Chemnitz">
-                <submenu _name="Legacy Tools" />
+            <submenu name="FabLab Chemnitz">
+                <submenu name="Legacy Tools"/>
             </submenu>
         </effects-menu>
     </effect>

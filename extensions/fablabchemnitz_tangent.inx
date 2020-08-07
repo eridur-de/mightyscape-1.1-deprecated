@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-	<_name>Circle Tangents</_name>
+	<name>Circle Tangents</name>
 	<id>fablabchemnitz.de.tangent</id>
-	<param name="position" type="optiongroup" _gui-text="Outer or inner?">
-		<_option value="inner">Inner</_option>
-		<_option value="outer">Outer</_option>
+	<param name="position" type="optiongroup" appearance="combo" gui-text="Outer or inner?">
+		<option value="inner">Inner</option>
+		<option value="outer">Outer</option>
 	</param>
-	<param name="selector" type="optiongroup" _gui-text="Which tangents?">
-		<_option value="first">First</_option>
-		<_option value="second">Second</_option>
-		<_option value="both">Both</_option>
+	<param name="selector" type="optiongroup" appearance="combo" gui-text="Which tangents?">
+		<option value="first">First</option>
+		<option value="second">Second</option>
+		<option value="both">Both</option>
 	</param>
 	<effect>
 		<object-type>all</object-type>
 		<effects-menu>
-            <submenu _name="FabLab Chemnitz">
-			    <submenu _name="Shape/Pattern from existing Path(s)" />
+            <submenu name="FabLab Chemnitz">
+			    <submenu name="Shape/Pattern from existing Path(s)"/>
 			</submenu>
 		</effects-menu>
 	</effect>

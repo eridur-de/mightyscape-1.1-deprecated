@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-   <_name>Knob Scale</_name>
+   <name>Knob Scale</name>
    <id>fablabchemnitz.de.render_knob_scale</id>
    <param name="tab" type="notebook">
       <page name="general_settings" gui-text="General">
@@ -12,8 +12,8 @@
          <param name="draw_arc" type="bool" gui-text="Draw Arc">true</param>
          <param name="draw_centering_circle" type="bool" gui-text="Draw Centering Circle">false</param>
          <param name="units" type="optiongroup" gui-text="Units" appearance="combo">
-            <item value="px">px</item>
-            <item value="mm">mm</item>
+            <option value="px">px</option>
+            <option value="mm">mm</option>
          </param>
       </page>
       <page name="ticks_settings" gui-text="Marks">
@@ -22,9 +22,9 @@
          <param name="n_subticks" type="int" min="0" max="100" gui-text="Number of subticks:">1</param>
          <param name="subticksize" type="float" min="0.001" max="1000" precision="3" gui-text="Subtick size: ">5</param>
          <param name="style" type="optiongroup" gui-text="Scale style" appearance="combo">
-            <item value="marks_inwards">Marks inwards</item>
-            <item value="marks_outwards">Marks outwards</item>
-            <item value="marks_circles">Dots</item>
+            <option value="marks_inwards">Marks inwards</option>
+            <option value="marks_outwards">Marks outwards</option>
+            <option value="marks_circles">Dots</option>
          </param>
       </page>
       <page name="labels_settings" gui-text="Labels">
@@ -39,8 +39,8 @@
    <effect>
       <object-type>all</object-type>
       <effects-menu>
-         <submenu _name="FabLab Chemnitz">
-            <submenu _name="Shape/Pattern from Generator" />
+         <submenu name="FabLab Chemnitz">
+            <submenu name="Shape/Pattern from Generator"/>
          </submenu>
       </effects-menu>
    </effect>

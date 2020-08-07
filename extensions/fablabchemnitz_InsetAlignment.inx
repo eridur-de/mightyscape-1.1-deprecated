@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-   <_name>Inset Alignment</_name>
+   <name>Inset Alignment</name>
    <id>fablabchemnitz.de.insetalignment</id>
    <param name="anchor_node" type="optiongroup" appearance="combo" gui-text="Inset relative to">
-      <item value="FIRST_SEL">First selected</item>
-      <item value="LAST_SEL">Last selected</item>
-      <item value="LARGEST">Largest</item>
+      <option value="FIRST_SEL">First selected</option>
+      <option value="LAST_SEL">Last selected</option>
+      <option value="LARGEST">Largest</option>
    </param>
    <param name="relative_to_v" type="optiongroup" appearance="radio" gui-text="Vertical alignment">
-      <item value="TOP">Top</item>
-      <item value="CENTRE">Centre</item>
-      <item value="BOTTOM">Bottom</item>
+      <option value="TOP">Top</option>
+      <option value="CENTRE">Centre</option>
+      <option value="BOTTOM">Bottom</option>
    </param>
    <param name="relative_to_h" type="optiongroup" appearance="radio" gui-text="Horizontal alignment">
-      <item value="LEFT">Left</item>
-      <item value="MIDDLE">Middle</item>
-      <item value="RIGHT">Right</item>
+      <option value="LEFT">Left</option>
+      <option value="MIDDLE">Middle</option>
+      <option value="RIGHT">Right</option>
    </param>
    <param name="inset_x" type="float" precision="1" min="-1000" max="1000" gui-text="Horizontal inset (mm)">10</param>
    <param name="inset_y" type="float" precision="1" min="-1000" max="1000" gui-text="Vertical inset (mm)">10</param>
    <effect>
       <object-type>all</object-type>
       <effects-menu>
-         <submenu _name="FabLab Chemnitz">
-            <submenu _name="Grids/Guides" />
+         <submenu name="FabLab Chemnitz">
+            <submenu name="Grids/Guides"/>
          </submenu>
       </effects-menu>
    </effect>

@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-  <_name>Clones In Perspective</_name>
+  <name>Clones In Perspective</name>
   <id>org.ekips.filter.clonesPerspective</id>
-  <dependency type="executable" location="extensions">fablabchemnitz_clonesperspective.py</dependency>
-  <dependency type="executable" location="extensions">inkex.py</dependency>
-  <param max="256" name="num" type="int" _gui-text="How many?">5</param>
-  <param max="1.0" name="ratio" type="float" _gui-text="relative size">0.9</param>
+  <param max="256" name="num" type="int" gui-text="How many?">5</param>
+  <param max="1.0" name="ratio" type="float" gui-text="relative size">0.9</param>
   <effect>
     <object-type>all</object-type>
     <effects-menu>
-			<submenu _name="FabLab Chemnitz">
-				<submenu _name="Shape/Pattern from existing Path(s)" />
+			<submenu name="FabLab Chemnitz">
+				<submenu name="Shape/Pattern from existing Path(s)"/>
 			</submenu>
     </effects-menu>
   </effect>

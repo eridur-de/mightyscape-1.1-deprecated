@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-   <_name>Scale To Real</_name>
+   <name>Scale To Real</name>
    <id>fablabchemnitz.de.realscale</id>
    <param name="tab" type="notebook">
-      <page name="realscale" _gui-text="RealScale">
-         <_param name="measurement" type="description" appearance="header">Measurement</_param>
-         <param name="length" type="float" min="0.1" max="100000.0" precision="3" _gui-text="Length of scaling path: " _gui-description="Real-world length of the scaling path">100.0</param>
-         <param name="unit" type="optiongroup" appearance="minimal" _gui-text="Unit: " _gui-description="Real-world unit for drawing">
+      <page name="realscale" gui-text="RealScale">
+         <param name="measurement" type="description" appearance="header">Measurement</param>
+         <param name="length" type="float" min="0.1" max="100000.0" precision="3" gui-text="Length of scaling path: " gui-description="Real-world length of the scaling path">100.0</param>
+         <param name="unit" type="optiongroup" appearance="combo" gui-text="Unit: " gui-description="Real-world unit for drawing">
             <option value="px">px</option>
             <option value="pt">pt</option>
             <option value="in">in</option>
@@ -17,53 +17,53 @@
             <option value="m">m</option>
             <option value="km">km</option>
          </param>
-         <_param name="scale_drawing" type="description" appearance="header">Scale Drawing</_param>
-         <param name="choosescale" _gui-text="Scale Category" appearance="minimal" _gui-description="Select which kind of scaling you would like to use, then select the actual scale in the corresponding dropdown." type="optiongroup">
+         <param name="scale_drawing" type="description" appearance="header">Scale Drawing</param>
+         <param name="choosescale" gui-text="Scale Category"  gui-description="Select which kind of scaling you would like to use, then select the actual scale in the corresponding dropdown." type="optiongroup" appearance="combo">
             <option value="metric">Metric</option>
             <option value="imperial">Imperial</option>
             <option value="custom">Custom</option>
          </param>
-         <param name="metric" type="enum" _gui-text="Metric Scale:      " appearance="minimal" _gui-description="Metric scales for drawings">
-            <item value="1">1:1</item>
-            <item value="2">1:2</item>
-            <item value="5">1:5</item>
-            <item value="10">1:10</item>
-            <item value="20">1:20</item>
-            <item value="25">1:25</item>
-            <item value="50">1:50</item>
-            <item value="100">1:100</item>
-            <item value="200">1:200</item>
-            <item value="250">1:250</item>
-            <item value="500">1:500</item>
-            <item value="1000">1:1000</item>
-            <item value="1250">1:1250</item>
-            <item value="2500">1:2500</item>
+         <param name="metric" type="optiongroup" appearance="combo" gui-text="Metric Scale:      "  gui-description="Metric scales for drawings">
+            <option value="1">1:1</option>
+            <option value="2">1:2</option>
+            <option value="5">1:5</option>
+            <option value="10">1:10</option>
+            <option value="20">1:20</option>
+            <option value="25">1:25</option>
+            <option value="50">1:50</option>
+            <option value="100">1:100</option>
+            <option value="200">1:200</option>
+            <option value="250">1:250</option>
+            <option value="500">1:500</option>
+            <option value="1000">1:1000</option>
+            <option value="1250">1:1250</option>
+            <option value="2500">1:2500</option>
          </param>
-         <param name="imperial" type="enum" _gui-text="Imperial Scale:     " _gui-description="Imperial scales for drawings">
-            <item value="1">1:1</item>
-            <item value="2">1:2</item>
-            <item value="4">1:4</item>
-            <item value="8">1:8</item>
-            <item value="16">1:16</item>
-            <item value="24">1:24</item>
-            <item value="32">1:32</item>
-            <item value="48">1:48</item>
-            <item value="64">1:64</item>
-            <item value="96">1:96</item>
-            <item value="128">1:128</item>
+         <param name="imperial" type="optiongroup" appearance="combo" gui-text="Imperial Scale:     " gui-description="Imperial scales for drawings">
+            <option value="1">1:1</option>
+            <option value="2">1:2</option>
+            <option value="4">1:4</option>
+            <option value="8">1:8</option>
+            <option value="16">1:16</option>
+            <option value="24">1:24</option>
+            <option value="32">1:32</option>
+            <option value="48">1:48</option>
+            <option value="64">1:64</option>
+            <option value="96">1:96</option>
+            <option value="128">1:128</option>
          </param>
-         <param name="custom_scale" type="float" min="0.00001" max="2000000" _gui-text="Custom Scale Value (1: value)" precision="5" _gui-description="Enter a custom drawing scale factor. Enlarge your drawing by entering a value smaller than 1.">45</param>
-         <_param name="scale_rule" type="description" appearance="header">Scale Rule</_param>
-         <param name="showscale" type="boolean" _gui-text="Generate Scale Rule" _gui-description="Draw the scale rule on the page">true</param>
-         <param name="unitlength" type="optiongroup" appearance="minimal" _gui-text="Half scale length                                " _gui-description="Number of units in one half of scale rule">
+         <param name="custom_scale" type="float" min="0.00001" max="2000000" gui-text="Custom Scale Value (1: value)" precision="5" gui-description="Enter a custom drawing scale factor. Enlarge your drawing by entering a value smaller than 1.">45</param>
+         <param name="scale_rule" type="description" appearance="header">Scale Rule</param>
+         <param name="showscale" type="bool" gui-text="Generate Scale Rule" gui-description="Draw the scale rule on the page">true</param>
+         <param name="unitlength" type="optiongroup" appearance="combo" gui-text="Half scale length                                " gui-description="Number of units in one half of scale rule">
             <option value="1">1</option>
             <option value="10">10</option>
             <option value="100">100</option>
          </param>
       </page>
       <page name="help" gui-text="Help">
-         <_param name="usage" type="description" appearance="header">Usage</_param>
-         <_param name="Instructions" type="description" xml:space="preserve">Scale an object (or a group) by indicating the length of a scaling path in real-life units (useful for scaling architectural drawings, for example):
+         <param name="usage" type="description" appearance="header">Usage</param>
+         <param name="Instructions" type="description" xml:space="preserve">Scale an object (or a group) by indicating the length of a scaling path in real-life units (useful for scaling architectural drawings, for example):
             
 • Create a straight two-point line of known length by drawing on the object you want to scale (e.g. if you know how long a wall is in your drawing, draw the line from one end of the wall to the other).
 
@@ -75,14 +75,14 @@
 
 • Scale Drawing: Select a scale category, then a value other than 1:1 from the dropdown for the selected scale category to scale the drawing. For upscaling, select "Custom" and enter a custom value smaller than 1.
 
-• Scale Rule: You can display the scale with a ruler. The number of units used along the ruler can be selected (e.g. to make the ruler show marks for one, ten or one hundred centimeters).</_param>
+• Scale Rule: You can display the scale with a ruler. The number of units used along the ruler can be selected (e.g. to make the ruler show marks for one, ten or one hundred centimeters).</param>
       </page>
    </param>
    <effect needs-live-preview="true">
       <object-type>all</object-type>
       <effects-menu>
-         <submenu _name="FabLab Chemnitz">
-            <submenu _name="Modify existing Path(s)" />
+         <submenu name="FabLab Chemnitz">
+            <submenu name="Modify existing Path(s)"/>
          </submenu>
       </effects-menu>
    </effect>

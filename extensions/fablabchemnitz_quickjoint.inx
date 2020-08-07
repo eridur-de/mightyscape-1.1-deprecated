@@ -1,36 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <_name>Quick Joint</_name>
+    <name>Quick Joint</name>
     <id>fablabchemnitz.de.quickjoint</id>
     <param name="qjuse" type="description" xml:space="preserve">Adding box joint tabs or slots to selected object!
     </param>
     <param name="qjver" type="description" xml:space="preserve">Version 0.3
     </param>
     <param name="activetab" type="notebook">
-        <page name="tabpage" _gui-text="Tabs">
-            <param name="side" type="int" min="0" max="512" _gui-text="Side:">0</param>
-            <param name="numtabs" type="int" min="1" max="512" _gui-text="Number of tabs:">1</param>
+        <page name="tabpage" gui-text="Tabs">
+            <param name="side" type="int" min="0" max="512" gui-text="Side:">0</param>
+            <param name="numtabs" type="int" min="1" max="512" gui-text="Number of tabs:">1</param>
         </page>
-        <page name="slotpage" _gui-text="Slots">
-            <param name="numslots" type="int" min="1" max="512" _gui-text="Number of slots:">1</param>
+        <page name="slotpage" gui-text="Slots">
+            <param name="numslots" type="int" min="1" max="512" gui-text="Number of slots:">1</param>
         </page>
     </param>
-    <param name="thickness" type="float" min="0.0" max="1000.0" precision="3" _gui-text="Material thickness:">3.0</param>
-    <param name="kerf" type="float" min="0.0" max="1000.0" precision="5" _gui-text="Laser kerf:">0.14</param>
-    <param name="units" type="enum" _gui-text="Units:">
-        <item value="mm">mm</item>
-        <item value="px">px</item>
-        <item value="pt">pt</item>
-        <item value="in">in</item>
-        <item value="cm">cm</item>
+    <param name="thickness" type="float" min="0.0" max="1000.0" precision="3" gui-text="Material thickness:">3.0</param>
+    <param name="kerf" type="float" min="0.0" max="1000.0" precision="5" gui-text="Laser kerf:">0.14</param>
+    <param name="units" type="optiongroup" appearance="combo" gui-text="Units:">
+        <option value="mm">mm</option>
+        <option value="px">px</option>
+        <option value="pt">pt</option>
+        <option value="in">in</option>
+        <option value="cm">cm</option>
     </param>
-    <param name="edgefeatures" type="boolean" _gui-text="Features on edges">false</param>
-    <param name="flipside" type="boolean" _gui-text="Flip side">false</param>
+    <param name="edgefeatures" type="bool" gui-text="Features on edges">false</param>
+    <param name="flipside" type="bool" gui-text="Flip side">false</param>
     <effect needs-live-preview="true">
         <object-type>path</object-type>
         <effects-menu>
-            <submenu _name="FabLab Chemnitz">
-                <submenu _name="Finger-jointed/Tabbed Boxes" />
+            <submenu name="FabLab Chemnitz">
+                <submenu name="Finger-jointed/Tabbed Boxes"/>
             </submenu>
         </effects-menu>
     </effect>

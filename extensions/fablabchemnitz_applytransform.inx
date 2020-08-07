@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-	<_name>Apply Transformations</_name>
+	<name>Apply Transformations</name>
 	<id>fablabchemnitz.de.applytransform</id>
 	<effect>
 		<object-type>all</object-type>
 		<effects-menu>
-			<submenu _name="FabLab Chemnitz">
-				<submenu _name="Modify existing Path(s)" />
+			<submenu name="FabLab Chemnitz">
+				<submenu name="Modify existing Path(s)"/>
 			</submenu>
 		</effects-menu>
 	</effect>

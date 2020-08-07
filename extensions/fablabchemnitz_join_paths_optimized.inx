@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <_name>Join Paths</_name>
+    <name>Join Paths</name>
     <id>fablabchemnitz.de.join_paths_optimized</id>
     <param name="tab" type="notebook">
-        <page name="subdividePath" _gui-text="Join Paths">
-            <param name="optimized" type="boolean" default="True" _gui-text="Optimized" />
+        <page name="subdividePath" gui-text="Join Paths">
+            <param name="optimized" type="bool" default="True" gui-text="Optimized"/>
         </page>
-        <page name="desc" _gui-text="Help">
-            <_param name="subdividePathhelp" type="description" xml:space="preserve">This effect joins the Bezier curves, with straight line segments. If the end nodes are close enough, they are merged into a single one. With the optimized option selected, the new curve starts from the top most curve from the selection. The curves are then joined based on the distance of their closest end point to the previous curve.
-            </_param>
+        <page name="desc" gui-text="Help">
+            <param name="subdividePathhelp" type="description" xml:space="preserve">This effect joins the Bezier curves, with straight line segments. If the end nodes are close enough, they are merged into a single one. With the optimized option selected, the new curve starts from the top most curve from the selection. The curves are then joined based on the distance of their closest end point to the previous curve.
+            </param>
         </page>
     </param>
     <effect>
         <object-type>path</object-type>
         <effects-menu>
-            <submenu _name="FabLab Chemnitz">
-                <submenu _name="Modify existing Path(s)" />
+            <submenu name="FabLab Chemnitz">
+                <submenu name="Modify existing Path(s)"/>
             </submenu>
         </effects-menu>
     </effect>

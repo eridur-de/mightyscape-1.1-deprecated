@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <_name>Cards Layout Guides</_name>
+    <name>Cards Layout Guides</name>
     <id>fablabchemnitz.de.CardLayoutGuides</id>
-    <param name="layout" type="enum" gui-text="Layout Type">
-        <item value="SIMPLE">Simple Grid</item>
-        <item value="FOLDING">Folding Grid</item>
+    <param name="layout" type="optiongroup" appearance="combo" gui-text="Layout Type">
+        <option value="SIMPLE">Simple Grid</option>
+        <option value="FOLDING">Folding Grid</option>
     </param>
     <param name="card_width" type="float" precision="1" min="5" max="1000" gui-text="Card width (mm)">60</param>
     <param name="card_height" type="float" precision="1" min="5" max="1000" gui-text="Card height (mm)">30</param>
-    <param name="orientation" type="enum" gui-text="Card Orientation">
-        <item value="HORIZONTAL">Horizontal</item>
-        <item value="VERTICAL">Vertical</item>
+    <param name="orientation" type="optiongroup" appearance="combo" gui-text="Card Orientation">
+        <option value="HORIZONTAL">Horizontal</option>
+        <option value="VERTICAL">Vertical</option>
     </param>
     <param name="card_margin" type="float" precision="1" min="0" max="200" gui-text="Card margin(mm)">2</param>
     <param name="bleed_margin" type="float" precision="1" min="0" max="200" gui-text="Bleed margin(mm)">2</param>
@@ -18,8 +18,8 @@
     <effect>
         <object-type>all</object-type>
         <effects-menu>
-			<submenu _name="FabLab Chemnitz">
-				<submenu _name="Grids/Guides" />
+			<submenu name="FabLab Chemnitz">
+				<submenu name="Grids/Guides"/>
 			</submenu>
         </effects-menu>
     </effect>

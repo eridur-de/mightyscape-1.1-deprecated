@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <_name>Purge Duplicate Path Segments</_name>
+    <name>Purge Duplicate Path Segments</name>
     <id>fablabchemnitz.de.remove_redundant</id>
     <effect>
         <object-type>path</object-type>
         <effects-menu>
-            <submenu _name="FabLab Chemnitz">
-                <submenu _name="Nesting/Cut Optimization" />
+            <submenu name="FabLab Chemnitz">
+                <submenu name="Nesting/Cut Optimization"/>
             </submenu>
         </effects-menu>
     </effect>

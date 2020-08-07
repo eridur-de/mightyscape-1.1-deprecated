@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-   <_name>Polar Grid</_name>
+   <name>Polar Grid</name>
    <id>fablabchemnitz.de.lace_polar</id>
    <param name="description" type="description">Creates a printable polar grid of dots with a constant number of dots per circle and the distance between circles changing at the same speed as the distance between the dots on a circle.</param>
    <param name="filllabel" type="description" appearance="header">Grid style</param>
    <hbox indent="1">
-      <param name="angle" type="float" precision="2" min="15" max="80" _gui-text="Grid angle (degrees):">45.0</param>
+      <param name="angle" type="float" precision="2" min="15" max="80" gui-text="Grid angle (degrees):">45.0</param>
    </hbox>
    <hbox indent="1">
-      <param name="dots" type="int" precision="2" min="4" max="400" _gui-text="Number of dots per circle:">180.0</param>
+      <param name="dots" type="int" precision="2" min="4" max="400" gui-text="Number of dots per circle:">180.0</param>
    </hbox>
    <hbox indent="1">
-      <param name="variant" type="enum" _gui-text="Pattern:">
+      <param name="variant" type="optiongroup" appearance="combo" gui-text="Pattern:">
          <_item value="">diamond</_item>
          <_item value="rectangle">rectangle</_item>
          <_item value="hexagon1">hexagon (30°)</_item>
@@ -25,8 +25,8 @@
    </hbox>
    <param name="filllabel" type="description" appearance="header">Grid size</param>
    <hbox indent="1">
-      <param name="outerDiameter" type="float" precision="2" min="0.5" max="500" _gui-text="Outside diameter:">160</param>
-      <param name="circleDiameterUnits" gui-text="" type="optiongroup" appearance="minimal">
+      <param name="outerDiameter" type="float" precision="2" min="0.5" max="500" gui-text="Outside diameter:">160</param>
+      <param name="circleDiameterUnits" gui-text=" " type="optiongroup" appearance="combo">
          <option value="mm">mm</option>
          <option value="cm">cm</option>
          <option value="in">in</option>
@@ -35,18 +35,18 @@
       </param>
    </hbox>
    <hbox indent="1">
-      <param name="innerDiameter" type="float" precision="2" min="0.5" max="500" _gui-text="Inside diameter:">100</param>
+      <param name="innerDiameter" type="float" precision="2" min="0.5" max="500" gui-text="Inside diameter:">100</param>
    </hbox>
    <hbox indent="1">
-      <param name="alignment" type="optiongroup" appearance="minimal" _gui-text="Align to:">
-         <_option value="outside">outside circle</_option>
-         <_option value="inside">inside circle</_option>
+      <param name="alignment" type="optiongroup" appearance="combo" gui-text="Align to:">
+         <option value="outside">outside circle</option>
+         <option value="inside">inside circle</option>
       </param>
    </hbox>
    <param name="filllabel" type="description" appearance="header">Dot properties</param>
    <hbox indent="1">
-      <param name="size" type="float" precision="2" min="0.001" max="10" _gui-text="Diameter:">0.5</param>
-      <param name="dotUnits" gui-text="" type="optiongroup" appearance="minimal">
+      <param name="size" type="float" precision="2" min="0.001" max="10" gui-text="Diameter:">0.5</param>
+      <param name="dotUnits" gui-text=" " type="optiongroup" appearance="combo">
          <option value="px">px</option>
          <option value="mm">mm</option>
          <option value="cm">cm</option>
@@ -55,13 +55,13 @@
       </param>
    </hbox>
    <hbox indent="1">
-      <param name="fill" type="color" appearance="colorbutton" _gui-text="Color:">255</param>
+      <param name="fill" type="color" appearance="colorbutton" gui-text="Color:">255</param>
    </hbox>
    <effect needs-live-preview="true">
       <object-type>all</object-type>
       <effects-menu>
-         <submenu _name="FabLab Chemnitz">
-            <submenu _name="Bobbin Lace" />
+         <submenu name="FabLab Chemnitz">
+            <submenu name="Bobbin Lace"/>
          </submenu>
       </effects-menu>
    </effect>

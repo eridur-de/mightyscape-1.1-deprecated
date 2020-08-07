@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <_name>Replace Color And Alpha</_name>
+    <name>Replace Color And Alpha</name>
     <id>fablabchemnitz.de.color_alpha_replace</id>
-    <param name="from_color" type="string" max_length="8" _gui-text="Replace color (RRGGBB and optional AA): #">000000</param>
-    <param name="to_color" type="string" max_length="8" _gui-text="By color (RRGGBBAA): #">000000</param>
+    <param name="from_color" type="string" max_length="8" gui-text="Replace color (RRGGBB and optional AA): #">000000</param>
+    <param name="to_color" type="string" max_length="8" gui-text="By color (RRGGBBAA): #">000000</param>
     <effect needs-document="no">
         <object-type>all</object-type>
         <effects-menu>
-			<submenu _name="FabLab Chemnitz">
-				<submenu _name="Various" />
+			<submenu name="FabLab Chemnitz">
+				<submenu name="Various"/>
 			</submenu>
         </effects-menu>
     </effect>

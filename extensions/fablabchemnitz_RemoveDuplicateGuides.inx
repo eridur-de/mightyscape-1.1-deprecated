@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-   <_name>Remove Duplicate Guides</_name>
+   <name>Remove Duplicate Guides</name>
    <id>fablabchemnitz.removeduplicateguides</id>
    <effect>
       <object-type>all</object-type>
       <effects-menu>
-         <submenu _name="FabLab Chemnitz">
-            <submenu _name="Grids/Guides" />
+         <submenu name="FabLab Chemnitz">
+            <submenu name="Grids/Guides"/>
          </submenu>
       </effects-menu>
    </effect>

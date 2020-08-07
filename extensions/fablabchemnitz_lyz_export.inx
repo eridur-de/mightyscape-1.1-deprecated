@@ -1,25 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-   <_name>LaserDraw LYZ Export</_name>
+   <name>LaserDraw LYZ Export</name>
    <id>fablabchemnitz.de.lyz_export</id>
-   <dependency type="extension">org.inkscape.output.svg.inkscape</dependency>
-   <dependency type="executable" location="extensions">fablabchemnitz_lyz_inkex.py</dependency>
-   <dependency type="executable" location="extensions">fablabchemnitz_lyz_simplestyle.py</dependency>
-   <dependency type="executable" location="extensions">fablabchemnitz_lyz_simpletransform.py</dependency>
-   <dependency type="executable" location="extensions">fablabchemnitz_lyz_cubicsuperpath.py</dependency>
-   <dependency type="executable" location="extensions">fablabchemnitz_lyz_cspsubdiv.py</dependency>
-   <dependency type="executable" location="extensions">fablabchemnitz_lyz_library.py</dependency>
    <!--
-    <param name="area_select" type="optiongroup" _gui-text="Area: ">
-    <option value="page_area" >Page Area (use for engrave and cut)</option>
-    <option value="object_area" >Object Area (for single operations only)</option>
+    <param name="area_select" type="optiongroup" appearance="combo" gui-text="Area: ">
+    <option value="page_area">Page Area (use for engrave and cut)</option>
+    <option value="object_area">Object Area (for single operations only)</option>
     </param>
     -->
-   <_param name="texthelp" type="description">Formating can be used to break a design into separate
+   <param name="texthelp" type="description">Formating can be used to break a design into separate
     cutting and engraving files.  Red lines indicate cutting,
     blue lines indicate engraving, black indicates raster
-    engraving.</_param>
-   <param name="cut_select" type="optiongroup" _gui-text="Type: ">
+    engraving.</param>
+   <param name="cut_select" type="optiongroup" appearance="combo" gui-text="Type: ">
       <option value="vector_red">Vector Cuts (export red lines)</option>
       <option value="vector_blue">Vector Engrave (export blue lines)</option>
       <option value="raster">Raster Engrave (export everything else)</option>
@@ -28,11 +21,11 @@
    </param>
    <param name="resolution" type="int" min="100" max="1000" gui-text="Raster Image Resolution">1000</param>
    <param name="margin" type="float" precision="1" min="0" max="9999" gui-text="Laser Draw Margin Size">2.0</param>
-   <param name="txt2paths" type="boolean" gui-text="Convert Text to Paths">false</param>
-   <param name="inkscape_version" type="enum" gui-text="Inkscape Version:">
-      <item value="100">1.00 or Newer</item>
-      <item value="92">0.92 to 0.99</item>
-      <item value="91">0.91 or Older</item>
+   <param name="txt2paths" type="bool" gui-text="Convert Text to Paths">false</param>
+   <param name="inkscape_version" type="optiongroup" appearance="combo" gui-text="Inkscape Version:">
+      <option value="100">1.00 or Newer</option>
+      <option value="92">0.92 to 0.99</option>
+      <option value="91">0.91 or Older</option>
    </param>
    <output>
       <extension>.lyz</extension>

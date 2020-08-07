@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-	<_name>Box Maker - Generic Generator</_name>
+	<name>Box Maker - Generic Generator</name>
 	<id>fablabchemnitz.de.gen_box</id>
 	<param name="Topic" type="notebook">
-		<page name="dimensions" _gui-text="Box dimensions">
-			<param name="unit" type="enum" _gui-text="Unit">
+		<page name="dimensions" gui-text="Box dimensions">
+			<param name="unit" type="optiongroup" appearance="combo" gui-text="Unit">
 				<_item value="mm">mm</_item>
 				<_item value="cm">cm</_item>
 				<_item value="m">m</_item>
@@ -16,23 +16,23 @@
 				<_item value="px">px</_item>
 				<_item value="pc">pc</_item>
 			</param>
-			<_param name="name" type="description" appearance="header">External dimensions for the box</_param>
-			<param name="x" type="float" min="10.0" max="1000.0" _gui-text="width">80.0</param>
-			<param name="y" type="float" min="10.0" max="1000.0" _gui-text="depth">60.0</param>
-			<param name="z" type="float" min="10.0" max="1000.0" _gui-text="height">40.0</param>
-			<param name="thickness" type="float" min="1.0" max="10.0" _gui-text="thickness of material">3.0</param>
-			<param name="burn" type="float" min="0.0" max="2.0" _gui-text="Burn factor">0.1</param>
+			<param name="name" type="description" appearance="header">External dimensions for the box</param>
+			<param name="x" type="float" min="10.0" max="1000.0" gui-text="width">80.0</param>
+			<param name="y" type="float" min="10.0" max="1000.0" gui-text="depth">60.0</param>
+			<param name="z" type="float" min="10.0" max="1000.0" gui-text="height">40.0</param>
+			<param name="thickness" type="float" min="1.0" max="10.0" gui-text="thickness of material">3.0</param>
+			<param name="burn" type="float" min="0.0" max="2.0" gui-text="Burn factor">0.1</param>
 		</page>
-		<page name="corners" _gui-text="Round corners">
-			<param name="StraigthCorners" type="boolean" _gui-text="Straight corners">true</param>
-			<_param name="name" type="description">If not straight corners, radius of each corner</_param>
-			<param name="back_left_radius" type="float" min="0.0" max="100.0" _gui-text="Back left radius">10.0</param>
-			<param name="back_right_radius" type="float" min="0.0" max="100.0" _gui-text="Back right radius">10.0</param>
-			<param name="front_left_radius" type="float" min="0.0" max="100.0" _gui-text="Front left radius">10.0</param>
-			<param name="front_right_radius" type="float" min="0.0" max="100.0" _gui-text="Front right radius">10.0</param>
+		<page name="corners" gui-text="Round corners">
+			<param name="StraigthCorners" type="bool" gui-text="Straight corners">true</param>
+			<param name="name" type="description">If not straight corners, radius of each corner</param>
+			<param name="back_left_radius" type="float" min="0.0" max="100.0" gui-text="Back left radius">10.0</param>
+			<param name="back_right_radius" type="float" min="0.0" max="100.0" gui-text="Back right radius">10.0</param>
+			<param name="front_left_radius" type="float" min="0.0" max="100.0" gui-text="Front left radius">10.0</param>
+			<param name="front_right_radius" type="float" min="0.0" max="100.0" gui-text="Front right radius">10.0</param>
 		</page>
-		<page name="Lid" _gui-text="Lid style">
-			<param name="lid_type" type="enum" _gui-text="Lid style">
+		<page name="Lid" gui-text="Lid style">
+			<param name="lid_type" type="optiongroup" appearance="combo" gui-text="Lid style">
 				<_item value="Without">Without lid</_item>
 				<_item value="Closed">Closed box</_item>				
 				<_item value="Simple">Simple top</_item>
@@ -41,28 +41,28 @@
 				<_item value="SteelHinge">Steel hinge</_item>
 				<_item value="Coffin">Coffin</_item>
 			</param>
-			<_param name="name" type="description" appearance="header">Only used with real lid</_param>
-			<param name="z_lid" type="float" min="15.0" max="1000.0" _gui-text="Lid height">20.0</param>
-			<_param name="name" type="description" appearance="header">Only used with coffin lid</_param>
-			<param name="z_dome_lid" type="float" min="15.0" max="1000.0" _gui-text="dome lid height">20.0</param>
-			<param name="SkipFlexLines" type="boolean" _gui-text="Skip flex lines when possible">true</param>
+			<param name="name" type="description" appearance="header">Only used with real lid</param>
+			<param name="z_lid" type="float" min="15.0" max="1000.0" gui-text="Lid height">20.0</param>
+			<param name="name" type="description" appearance="header">Only used with coffin lid</param>
+			<param name="z_dome_lid" type="float" min="15.0" max="1000.0" gui-text="dome lid height">20.0</param>
+			<param name="SkipFlexLines" type="bool" gui-text="Skip flex lines when possible">true</param>
 		</page>
-		<page name="Slots" _gui-text="Internal slots">
-			<param name="n_slot_x" type="int" min="1" max="20" _gui-text="Number of columns">1</param>
-			<param name="n_slot_y" type="int" min="1" max="20" _gui-text="Number of rows">1</param>
+		<page name="Slots" gui-text="Internal slots">
+			<param name="n_slot_x" type="int" min="1" max="20" gui-text="Number of columns">1</param>
+			<param name="n_slot_y" type="int" min="1" max="20" gui-text="Number of rows">1</param>
 		</page>
-		<page name="Joints" _gui-text="Joints">
-			<param name="AutoSize" type="boolean" _gui-text="Finger size computed from box dimensions">true</param>
-			<param name="x_joint" type="float" min="1.0" max="100.0" _gui-text="Finger size for joints in X direction">5.0</param>
-			<param name="y_joint" type="float" min="1.0" max="100.0" _gui-text="Finger size for joints in Y direction">5.0</param>
-			<param name="z_joint" type="float" min="1.0" max="100.0" _gui-text="Finger size for joints in Z direction">5.0</param>
+		<page name="Joints" gui-text="Joints">
+			<param name="AutoSize" type="bool" gui-text="Finger size computed from box dimensions">true</param>
+			<param name="x_joint" type="float" min="1.0" max="100.0" gui-text="Finger size for joints in X direction">5.0</param>
+			<param name="y_joint" type="float" min="1.0" max="100.0" gui-text="Finger size for joints in Y direction">5.0</param>
+			<param name="z_joint" type="float" min="1.0" max="100.0" gui-text="Finger size for joints in Z direction">5.0</param>
 		</page>
 	</param>	
 	<effect>
 		<object-type>all</object-type>
 		<effects-menu>
-         <submenu _name="FabLab Chemnitz">
-            <submenu _name="Finger-jointed/Tabbed Boxes" />
+         <submenu name="FabLab Chemnitz">
+            <submenu name="Finger-jointed/Tabbed Boxes"/>
          </submenu>
 		</effects-menu>
 	</effect>

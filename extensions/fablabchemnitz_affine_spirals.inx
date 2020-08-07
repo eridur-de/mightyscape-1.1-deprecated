@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-   <_name>Affine Spirals</_name>
-   <id>fablabchemnitz.de.affine_torus</id>
+   <name>Affine Spirals</name>
+   <id>fablabchemnitz.de.affine_spirals</id>
    <param name="active-tab" type="notebook">
-      <page name="title" _gui-text="Settings">
-         <param name="num_lines" type="int" min="1" max="6" _gui-text="Depth">3</param>
-         <param name="num_petals" type="int" min="2" max="8" _gui-text="petals">2</param>
-         <param name="shrink_ratio" type="float" min="0.1" max="0.9" precision="2" _gui-text="shrink factor">0.8</param>
-         <_param name="help" type="description" xml:space="preserve">------------------------------</_param>
-         <!--<param name="mk_full" type="boolean" _gui-text="Full Koch">true</param>
-			<param name="mk_filled" type="boolean" _gui-text="Filled">false</param>-->
+      <page name="title" gui-text="Settings">
+         <param name="num_lines" type="int" min="1" max="6" gui-text="Depth">3</param>
+         <param name="num_petals" type="int" min="2" max="8" gui-text="petals">2</param>
+         <param name="shrink_ratio" type="float" min="0.1" max="0.9" precision="2" gui-text="shrink factor">0.8</param>
+         <!--<param name="mk_full" type="bool" gui-text="Full Koch">true</param>
+			<param name="mk_filled" type="bool" gui-text="Filled">false</param>-->
       </page>
    </param>
    <effect>
       <object-type>all</object-type>
       <effects-menu>
-         <submenu _name="FabLab Chemnitz">
-			<submenu _name="Shape/Pattern from Generator" />
+         <submenu name="FabLab Chemnitz">
+			<submenu name="Shape/Pattern from Generator"/>
          </submenu>
       </effects-menu>
    </effect>

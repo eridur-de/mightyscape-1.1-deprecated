@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-   <_name>Polyhedra - Platonic</_name>
+   <name>Polyhedra - Platonic</name>
    <id>fablabchemnitz.de.polyhedra.platonic</id>
-   <param name="poly" _gui-text="Polyhedra to render net for" type="optiongroup" appearance="minimal">
-      <_option value="Tetrahedron">Tetrahedron</_option>
-      <_option value="Cube">Cube</_option>
-      <_option value="Octahedron">Octahedron</_option>
-      <_option value="Dodecahedron">Dodecahedron</_option>
-      <_option value="Icosahedron">Icosahedron</_option>
+   <param name="poly" gui-text="Polyhedra to render net for" type="optiongroup" appearance="combo">
+      <option value="Tetrahedron">Tetrahedron</option>
+      <option value="Cube">Cube</option>
+      <option value="Octahedron">Octahedron</option>
+      <option value="Dodecahedron">Dodecahedron</option>
+      <option value="Icosahedron">Icosahedron</option>
    </param>
-   <param name="size" type="float" min="1.0" max="1000.0" _gui-text="length of first edge, px">100.0</param>
-   <param name="tabs" type="enum" _gui-text="Tab style">
+   <param name="size" type="float" min="1.0" max="1000.0" gui-text="length of first edge, px">100.0</param>
+   <param name="tabs" type="optiongroup" appearance="combo" gui-text="Tab style">
       <_item value="0">Tab and Slot</_item>
       <_item value="1">Double Tabs</_item>
       <_item value="2">Single Tabs</_item>
@@ -19,8 +19,8 @@
    <effect>
       <object-type>all</object-type>
       <effects-menu>
-         <submenu _name="FabLab Chemnitz">
-            <submenu _name="Paper/Cardboard Boxes" />
+         <submenu name="FabLab Chemnitz">
+            <submenu name="Paper/Cardboard Boxes"/>
          </submenu>
       </effects-menu>
    </effect>

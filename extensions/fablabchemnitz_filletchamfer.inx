@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <_name>Fillet And Chamfer</_name>
+    <name>Fillet And Chamfer</name>
     <id>fablabchemnitz.de.filletchamfer</id>
-    <param name="fillet_type" type="enum" _gui-text="Fillet or Chamfer:">
+    <param name="fillet_type" type="optiongroup" appearance="combo" gui-text="Fillet or Chamfer:">
         <_item value="fillet">Fillet</_item>
         <_item value="chamfer">Chamfer</_item>
     </param>
-    <param name="radius" type="float" min="0.0" max="1000.0" _gui-text="Radius:">5.0</param>
-    <param name="unit" _gui-text="Unit" type="enum">
+    <param name="radius" type="float" min="0.0" max="1000.0" gui-text="Radius:">5.0</param>
+    <param name="unit" gui-text="Unit" type="optiongroup" appearance="combo">
         <_item value="mm">mm</_item>
         <_item value="cm">cm</_item>
         <_item value="in">in</_item>
         <_item value="px">px</_item>
     </param>
-	<param name="remove" type="boolean" _gui-text="Remove control object">false</param>
+	<param name="remove" type="bool" gui-text="Remove control object">false</param>
     <effect>
         <object-type>all</object-type>
         <effects-menu>
-            <submenu _name="FabLab Chemnitz">
-                <submenu _name="Legacy Tools" />
+            <submenu name="FabLab Chemnitz">
+                <submenu name="Legacy Tools"/>
             </submenu>
         </effects-menu>
     </effect>

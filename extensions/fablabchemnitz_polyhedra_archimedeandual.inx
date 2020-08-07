@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-   <_name>Polyhedra - Archimedean Dual</_name>
+   <name>Polyhedra - Archimedean Dual</name>
    <id>fablabchemnitz.de.polyhedra.archimedeandual</id>
-   <param name="poly" _gui-text="Polyhedra to render net for" type="optiongroup" appearance="minimal">
-      <_option value="DeltoidalHexecontahedron">DeltoidalHexecontahedron</_option>
-      <_option value="DeltoidalIcositetrahedron">DeltoidalIcositetrahedron</_option>
-      <_option value="DisdyakisDodecahedron">DisdyakisDodecahedron</_option>
-      <_option value="DisdyakisTriacontahedron">DisdyakisTriacontahedron</_option>
-      <_option value="PentagonalIcositetrahedron">PentagonalIcositetrahedron</_option>
-      <_option value="PentagonalHexecontahedron">PentagonalHexecontahedron</_option>
-      <_option value="PentakisDodecahedron">PentakisDodecahedron</_option>
-      <_option value="RhombicDodecahedron">RhombicDodecahedron</_option>
-      <_option value="RhombicTriacontahedron">RhombicTriacontahedron</_option>
-      <_option value="SmallTriakisOctahedron">SmallTriakisOctahedron</_option>
-      <_option value="TetrakisHexahedron">TetrakisHexahedron</_option>
-      <_option value="TriakisIcosahedron">TriakisIcosahedron</_option>
-      <_option value="TriakisTetrahedron">TriakisTetrahedron</_option>
+   <param name="poly" gui-text="Polyhedra to render net for" type="optiongroup" appearance="combo">
+      <option value="DeltoidalHexecontahedron">DeltoidalHexecontahedron</option>
+      <option value="DeltoidalIcositetrahedron">DeltoidalIcositetrahedron</option>
+      <option value="DisdyakisDodecahedron">DisdyakisDodecahedron</option>
+      <option value="DisdyakisTriacontahedron">DisdyakisTriacontahedron</option>
+      <option value="PentagonalIcositetrahedron">PentagonalIcositetrahedron</option>
+      <option value="PentagonalHexecontahedron">PentagonalHexecontahedron</option>
+      <option value="PentakisDodecahedron">PentakisDodecahedron</option>
+      <option value="RhombicDodecahedron">RhombicDodecahedron</option>
+      <option value="RhombicTriacontahedron">RhombicTriacontahedron</option>
+      <option value="SmallTriakisOctahedron">SmallTriakisOctahedron</option>
+      <option value="TetrakisHexahedron">TetrakisHexahedron</option>
+      <option value="TriakisIcosahedron">TriakisIcosahedron</option>
+      <option value="TriakisTetrahedron">TriakisTetrahedron</option>
    </param>
-   <param name="size" type="float" min="1.0" max="1000.0" _gui-text="length of first edge, px">100.0</param>
-   <param name="tabs" type="enum" _gui-text="Tab style">
+   <param name="size" type="float" min="1.0" max="1000.0" gui-text="length of first edge, px">100.0</param>
+   <param name="tabs" type="optiongroup" appearance="combo" gui-text="Tab style">
       <_item value="0">Tab and Slot</_item>
       <_item value="1">Double Tabs</_item>
       <_item value="2">Single Tabs</_item>
@@ -27,8 +27,8 @@
    <effect>
       <object-type>all</object-type>
       <effects-menu>
-         <submenu _name="FabLab Chemnitz">
-            <submenu _name="Paper/Cardboard Boxes" />
+         <submenu name="FabLab Chemnitz">
+            <submenu name="Paper/Cardboard Boxes"/>
          </submenu>
       </effects-menu>
    </effect>

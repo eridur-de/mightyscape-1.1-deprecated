@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-   <_name>Bezier Envelope</_name>
+   <name>Bezier Envelope</name>
    <id>fablabchemnitz.de.envelope</id>
    <effect>
       <object-type>path</object-type>
         <effects-menu>
-            <submenu _name="FabLab Chemnitz">
-                <submenu _name="Legacy Tools" />
+            <submenu name="FabLab Chemnitz">
+                <submenu name="Legacy Tools"/>
 			</submenu>
         </effects-menu>
    </effect>

@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-   <_name>Ground from Template</_name>
+   <name>Ground from Template</name>
    <id>fablabchemnitz.de.lace_ground</id>
    <param name="description" type="description" appearance="header" xml:space="preserve">Fill a rectangular patch with a lace ground pattern from selected template file.</param>
-   <param name="file" type="path" _gui-text="Template file name (full path):" mode="file" filetypes="txt" />
+   <param name="file" type="path" gui-text="Template file name (full path):" mode="file" filetypes="txt"/>
    <param name="filllabel" type="description" appearance="header">Grid description</param>
    <hbox indent="1">
-      <param name="angle" type="float" precision="1" min="30" max="89" _gui-text="Angle (degrees):">45.0</param>
+      <param name="angle" type="float" precision="1" min="30" max="89" gui-text="Angle (degrees):">45.0</param>
    </hbox>
    <hbox indent="1">
-      <param name="distance" type="float" precision="2" min="0.01" max="1000.0" _gui-text="Distance between footside pins:">5.0</param>
-      <param name="pinunits" gui-text="" type="optiongroup" appearance="minimal">
+      <param name="distance" type="float" precision="2" min="0.01" max="1000.0" gui-text="Distance between footside pins:">5.0</param>
+      <param name="pinunits" gui-text=" " type="optiongroup" appearance="combo">
          <option value="mm">mm</option>
          <option value="cm">cm</option>
          <option value="in">in</option>
@@ -20,8 +20,8 @@
    </hbox>
    <param name="filllabel" type="description" appearance="header">Patch description</param>
    <hbox indent="1">
-      <param name="width" type="float" precision="2" min="0.1" max="1000" _gui-text="Width:">50</param>
-      <param name="patchunits" gui-text="" type="optiongroup" appearance="minimal">
+      <param name="width" type="float" precision="2" min="0.1" max="1000" gui-text="Width:">50</param>
+      <param name="patchunits" gui-text=" " type="optiongroup" appearance="combo">
          <option value="mm">mm</option>
          <option value="cm">cm</option>
          <option value="in">in</option>
@@ -30,12 +30,12 @@
       </param>
    </hbox>
    <hbox indent="1">
-      <param name="height" type="float" precision="2" min="0.1" max="1000" _gui-text="Height:">50</param>
+      <param name="height" type="float" precision="2" min="0.1" max="1000" gui-text="Height:">50</param>
    </hbox>
    <param name="lineheading" type="description" appearance="header">Line Appearance</param>
    <hbox indent="1">
-      <param name="linewidth" type="float" precision="2" min="0.01" max="1000" _gui-text="Width:">1</param>
-      <param name="lineunits" gui-text="" type="optiongroup" appearance="minimal">
+      <param name="linewidth" type="float" precision="2" min="0.01" max="1000" gui-text="Width:">1</param>
+      <param name="lineunits" gui-text=" " type="optiongroup" appearance="combo">
          <option value="px">px</option>
          <option value="mm">mm</option>
          <option value="cm">cm</option>
@@ -44,13 +44,13 @@
       </param>
    </hbox>
    <hbox indent="1">
-      <param name="linecolor" type="color" appearance="colorbutton" _gui-text="Color:">255</param>
+      <param name="linecolor" type="color" appearance="colorbutton" gui-text="Color:">255</param>
    </hbox>
    <effect needs-live-preview="true">
       <object-type>all</object-type>
       <effects-menu>
-         <submenu _name="FabLab Chemnitz">
-            <submenu _name="Bobbin Lace" />
+         <submenu name="FabLab Chemnitz">
+            <submenu name="Bobbin Lace"/>
          </submenu>
       </effects-menu>
    </effect>

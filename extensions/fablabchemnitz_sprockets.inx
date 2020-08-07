@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-   <_name>Sprocket</_name>
+   <name>Sprocket</name>
    <id>fablabchemnitz.de.sprockets</id>
-   <param name="teeth" type="int" min="6" max="360" _gui-text="Number of teeth">24</param>
-   <param name="size" type="enum" _gui-text="Chain size">
+   <param name="teeth" type="int" min="6" max="360" gui-text="Number of teeth">24</param>
+   <param name="size" type="optiongroup" appearance="combo" gui-text="Chain size">
       <_item value="ANSI #25">ANSI #25</_item>
       <_item value="ANSI #35">ANSI #35</_item>
       <_item value="ANSI #40">ANSI #40</_item>
@@ -21,8 +21,8 @@
    <effect needs-live-preview="true">
       <object-type>all</object-type>
       <effects-menu>
-         <submenu _name="FabLab Chemnitz">
-            <submenu _name="Gears" />
+         <submenu name="FabLab Chemnitz">
+            <submenu name="Gears"/>
          </submenu>
       </effects-menu>
    </effect>

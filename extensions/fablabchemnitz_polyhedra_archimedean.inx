@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-   <_name>Polyhedra - Archimedean</_name>
+   <name>Polyhedra - Archimedean</name>
    <id>fablabchemnitz.de.polyhedra.archimedean</id>
-   <param name="poly" _gui-text="Polyhedra to render net for" type="optiongroup" appearance="minimal">
-      <_option value="TruncatedTetrahedron">TruncatedTetrahedron</_option>
-      <_option value="TruncatedCube">TruncatedCube</_option>
-      <_option value="TruncatedOctahedron">TruncatedOctahedron</_option>
-      <_option value="TruncatedDodecahedron">TruncatedDodecahedron</_option>
-      <_option value="TruncatedIcosahedron">TruncatedIcosahedron</_option>
-      <_option value="Cuboctahedron">Cuboctahedron</_option>
-      <_option value="Icosidodecahedron">Icosidodecahedron</_option>
-      <_option value="SmallRhombicosidodecahedron">SmallRhombicosidodecahedron</_option>
-      <_option value="SmallRhombicuboctahedron">SmallRhombicuboctahedron</_option>
-      <_option value="GreatRhombicosidodecahedron">GreatRhombicosidodecahedron</_option>
-      <_option value="GreatRhombicuboctahedron">GreatRhombicuboctahedron</_option>
-      <_option value="SnubCube">SnubCube</_option>
-      <_option value="SnubDodecahedron">SnubDodecahedron</_option>
+   <param name="poly" gui-text="Polyhedra to render net for" type="optiongroup" appearance="combo">
+      <option value="TruncatedTetrahedron">TruncatedTetrahedron</option>
+      <option value="TruncatedCube">TruncatedCube</option>
+      <option value="TruncatedOctahedron">TruncatedOctahedron</option>
+      <option value="TruncatedDodecahedron">TruncatedDodecahedron</option>
+      <option value="TruncatedIcosahedron">TruncatedIcosahedron</option>
+      <option value="Cuboctahedron">Cuboctahedron</option>
+      <option value="Icosidodecahedron">Icosidodecahedron</option>
+      <option value="SmallRhombicosidodecahedron">SmallRhombicosidodecahedron</option>
+      <option value="SmallRhombicuboctahedron">SmallRhombicuboctahedron</option>
+      <option value="GreatRhombicosidodecahedron">GreatRhombicosidodecahedron</option>
+      <option value="GreatRhombicuboctahedron">GreatRhombicuboctahedron</option>
+      <option value="SnubCube">SnubCube</option>
+      <option value="SnubDodecahedron">SnubDodecahedron</option>
    </param>
-   <param name="size" type="float" min="1.0" max="1000.0" _gui-text="length of first edge, px">100.0</param>
-   <param name="tabs" type="enum" _gui-text="Tab style">
+   <param name="size" type="float" min="1.0" max="1000.0" gui-text="length of first edge, px">100.0</param>
+   <param name="tabs" type="optiongroup" appearance="combo" gui-text="Tab style">
       <_item value="0">Tab and Slot</_item>
       <_item value="1">Double Tabs</_item>
       <_item value="2">Single Tabs</_item>
@@ -27,8 +27,8 @@
    <effect>
       <object-type>all</object-type>
       <effects-menu>
-         <submenu _name="FabLab Chemnitz">
-            <submenu _name="Paper/Cardboard Boxes" />
+         <submenu name="FabLab Chemnitz">
+            <submenu name="Paper/Cardboard Boxes"/>
          </submenu>
       </effects-menu>
    </effect>

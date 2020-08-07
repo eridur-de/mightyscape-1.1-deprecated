@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <_name>Shirt Waist (Sara May Allington)</_name>
+    <name>Shirt Waist (Sara May Allington)</name>
     <id>fablabchemnitz.de.shirt_waist</id>
-    <param name="m_unit" type="optiongroup" _gui-text="Select measurement: ">
+    <param name="m_unit" type="optiongroup" appearance="combo" gui-text="Select measurement: ">
         <option value="Inches">Inches</option>
         <option value="Centimeters">Centimeters</option>
     </param>
@@ -22,8 +22,8 @@
     <effect>
         <object-type>all</object-type>
         <effects-menu>
-            <submenu _name="FabLab Chemnitz">
-                <submenu _name="Dimensioning/Measuring" />
+            <submenu name="FabLab Chemnitz">
+                <submenu name="Dimensioning/Measuring"/>
             </submenu>
         </effects-menu>
     </effect>

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-   <_name>Polyhedra - Other</_name>
+   <name>Polyhedra - Other</name>
    <id>fablabchemnitz.de.polyhedra.other</id>
-   <param name="poly" _gui-text="Polyhedra to render net for" type="optiongroup" appearance="minimal">
-      <_option value="ElongatedDodecahedron">ElongatedDodecahedron</_option>
-      <_option value="MathematicaPolyhedron">MathematicaPolyhedron</_option>
+   <param name="poly" gui-text="Polyhedra to render net for" type="optiongroup" appearance="combo">
+      <option value="ElongatedDodecahedron">ElongatedDodecahedron</option>
+      <option value="MathematicaPolyhedron">MathematicaPolyhedron</option>
    </param>
-   <param name="size" type="float" min="1.0" max="1000.0" _gui-text="length of first edge, px">100.0</param>
-   <param name="tabs" type="enum" _gui-text="Tab style">
+   <param name="size" type="float" min="1.0" max="1000.0" gui-text="length of first edge, px">100.0</param>
+   <param name="tabs" type="optiongroup" appearance="combo" gui-text="Tab style">
       <_item value="0">Tab and Slot</_item>
       <_item value="1">Double Tabs</_item>
       <_item value="2">Single Tabs</_item>
@@ -16,8 +16,8 @@
    <effect>
       <object-type>all</object-type>
       <effects-menu>
-         <submenu _name="FabLab Chemnitz">
-            <submenu _name="Paper/Cardboard Boxes" />
+         <submenu name="FabLab Chemnitz">
+            <submenu name="Paper/Cardboard Boxes"/>
          </submenu>
       </effects-menu>
    </effect>

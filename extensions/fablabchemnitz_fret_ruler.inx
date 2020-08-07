@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <_name>Fret Ruler</_name>
+    <name>Fret Ruler</name>
     <id>fablabchemnitz.de.fret_ruler</id>
     <param name="active-tab" type="notebook">
-        <page name="ruler" _gui-text="Ruler ">
+        <page name="ruler" gui-text="Ruler ">
             <param name="descr" type="description">Draw a Ruler for stringed instrument Necks.</param>
-            <param name="draw_style" _gui-text="Draw Style" type="optiongroup" appearance="minimal">
+            <param name="draw_style" gui-text="Draw Style" type="optiongroup" appearance="combo">
                 <option value="ruler">Ruler</option>
                 <option value="template">Router Template</option>
                 <option value="neck">Neck</option>
             </param>
-            <param name="method" _gui-text="Calculation Method" type="optiongroup" appearance="minimal">
+            <param name="method" gui-text="Calculation Method" type="optiongroup" appearance="combo">
                 <option value="12root2">12th Root of 2</option>
                 <option value="18">18</option>
                 <option value="17.817">17.817</option>
@@ -19,48 +19,48 @@
                 <option value="Nroot2">Nth Root of 2</option>
             </param>
             <param name="descr" type="description">Next two, only if method selected.</param>
-            <param name="nth" type="int" min="2" max="500" _gui-text="(Method=Nth Root of 2) -  N=(Notes in Scale):">0</param>
-            <param name="scala_filename" type="string" _gui-text="(Method=Scala) Scala filename:">12tet</param>
+            <param name="nth" type="int" min="2" max="500" gui-text="(Method=Nth Root of 2) -  N=(Notes in Scale):">0</param>
+            <param name="scala_filename" type="string" gui-text="(Method=Scala) Scala filename:">12tet</param>
             <param name="descr" type="description">____</param>
-            <param name="units" _gui-text="Units for following dimensions" type="optiongroup" appearance="minimal">
+            <param name="units" gui-text="Units for following dimensions" type="optiongroup" appearance="combo">
                 <option value="in">in</option>
                 <option value="mm">mm</option>
             </param>
-            <param name="length" type="float" min="1" max="1000.0" precision="2" _gui-text="Scale Length in units (Ruler length)">25.5</param>
-            <param name="width" type="float" min="0.5" max="1000.0" precision="2" _gui-text="Width (Nut) in units">1.35</param>
-            <param name="frets" type="int" min="2" max="500" _gui-text="Number of frets to draw">18</param>
+            <param name="length" type="float" min="1" max="1000.0" precision="2" gui-text="Scale Length in units (Ruler length)">25.5</param>
+            <param name="width" type="float" min="0.5" max="1000.0" precision="2" gui-text="Width (Nut) in units">1.35</param>
+            <param name="frets" type="int" min="2" max="500" gui-text="Number of frets to draw">18</param>
             <param name="descr" type="description">____</param>
-            <param name="fanned" type="boolean" _gui-text="Fanned fret style (Treble and Bass scale lengths)">false</param>
-            <param name="basslength" type="float" min="1" max="1000.0" precision="2" _gui-text="Bass Scale Length">25.5</param>
-            <param name="perpendicular" type="int" min="0" max="500" _gui-text="Fret which is perpendicular to neck">7</param>
+            <param name="fanned" type="bool" gui-text="Fanned fret style (Treble and Bass scale lengths)">false</param>
+            <param name="basslength" type="float" min="1" max="1000.0" precision="2" gui-text="Bass Scale Length">25.5</param>
+            <param name="perpendicular" type="int" min="0" max="500" gui-text="Fret which is perpendicular to neck">7</param>
             <param name="descr" type="description">Styles:</param>
-            <param name="linewidth" type="float" min="0.01" max="2.0" precision="2" _gui-text="Width of lines (mm)">0.1</param>
-            <param name="notch_width" type="float" min="0.0001" max="4.0" precision="4" _gui-text="(Router template) Width of Fret notches">0.125</param>
-            <param name="annotate" type="boolean" _gui-text="Fret numbering">true</param>
-            <param name="centerline" type="boolean" _gui-text="Centerline">true</param>
+            <param name="linewidth" type="float" min="0.01" max="2.0" precision="2" gui-text="Width of lines (mm)">0.1</param>
+            <param name="notch_width" type="float" min="0.0001" max="4.0" precision="4" gui-text="(Router template) Width of Fret notches">0.125</param>
+            <param name="annotate" type="bool" gui-text="Fret numbering">true</param>
+            <param name="centerline" type="bool" gui-text="Centerline">true</param>
         </page>
-        <page name="neck" _gui-text="Neck ">
+        <page name="neck" gui-text="Neck ">
             <param name="descr" type="description">Extra parameters to draw the Neck.</param>
-            <param name="constant_width" type="boolean" _gui-text="Constant width (=Nut)">false</param>
-            <param name="width_bridge" type="float" min="0.5" max="1000.0" precision="2" _gui-text="OR: Width (at Bridge) in units">2.0</param>
-            <param name="show_markers" type="boolean" _gui-text="Show Markers">false</param>
-            <param name="markers" type="string" _gui-text="Marked frets:">3,5,7,10,12,12,15</param>
-            <param name="nutcomp" type="boolean" _gui-text="Include Nut Compensation">false</param>
-            <param name="nutcomp_value" _gui-text="Preset values" type="optiongroup" appearance="minimal">
+            <param name="constant_width" type="bool" gui-text="Constant width (=Nut)">false</param>
+            <param name="width_bridge" type="float" min="0.5" max="1000.0" precision="2" gui-text="OR: Width (at Bridge) in units">2.0</param>
+            <param name="show_markers" type="bool" gui-text="Show Markers">false</param>
+            <param name="markers" type="string" gui-text="Marked frets:">3,5,7,10,12,12,15</param>
+            <param name="nutcomp" type="bool" gui-text="Include Nut Compensation">false</param>
+            <param name="nutcomp_value" gui-text="Preset values" type="optiongroup" appearance="combo">
                 <option value="0.012">0.012in (0.30mm)</option>
                 <option value="0.014">0.014in (0.36mm)</option>
                 <option value="manual">Manual</option>
             </param>
-            <param name="nutcomp_manual" type="string" _gui-text="Manual nut compensation distance">0.014</param>
+            <param name="nutcomp_manual" type="string" gui-text="Manual nut compensation distance">0.014</param>
         </page>
-        <page name="curvature" _gui-text="Curvature ">
+        <page name="curvature" gui-text="Curvature ">
             <param name="descr" type="description">Additional Neck Curvature Ruler</param>
-            <param name="show_curves" type="boolean" _gui-text="Show neck curvature ruler">true</param>
-            <param name="neck_radius" type="float" min="4" max="100.0" precision="2" _gui-text="Radius of Neck curvature in units">9.75</param>
-            <param name="arc_length" type="float" min="1" max="100.0" precision="2" _gui-text="Arc Length (units)">5</param>
-            <param name="block_mode" type="boolean" _gui-text="Draw as a block (vs finger)">true</param>
-            <param name="arc_height" type="float" min="0.1" max="50.0" precision="2" _gui-text="Height of the Arc(units)">0.5</param>
-            <param name="string_spacing" type="float" min="0.1" max="20.0" precision="2" _gui-text="String separation(for finger style) (units)">0.3</param>
+            <param name="show_curves" type="bool" gui-text="Show neck curvature ruler">true</param>
+            <param name="neck_radius" type="float" min="4" max="100.0" precision="2" gui-text="Radius of Neck curvature in units">9.75</param>
+            <param name="arc_length" type="float" min="1" max="100.0" precision="2" gui-text="Arc Length (units)">5</param>
+            <param name="block_mode" type="bool" gui-text="Draw as a block (vs finger)">true</param>
+            <param name="arc_height" type="float" min="0.1" max="50.0" precision="2" gui-text="Height of the Arc(units)">0.5</param>
+            <param name="string_spacing" type="float" min="0.1" max="20.0" precision="2" gui-text="String separation(for finger style) (units)">0.3</param>
             <param name="descr" type="description">Print or Metal Lasercut as a thin radius guide,
 or export to Openscad to make a longer 3d printed neck support or sanding block.
 
@@ -84,17 +84,17 @@ Typical ruler set: 7.25, 9.5, 10, 12, 14, 15, 16, 20
 - Violin - 42mm
 			</param>
         </page>
-        <page name="filters" _gui-text="Scala ">
+        <page name="filters" gui-text="Scala ">
             <param name="descr" type="description">This is a helper tab. It does not contribute to drawing the Fret Ruler/Neck.</param>
             <param name="descr" type="description">It shows you all the scala files matching the search filters below. Enter the filename on the first tab.</param>
             <param name="descr" type="description">This search only works if you can see this tab.</param>
             <param name="descr" type="description">There may be &gt;4000 scala files. So choose wisely.</param>
-            <param name="filter_tones" type="boolean" _gui-text="Filter by number of tones in a scale.">true</param>
-            <param name="scale" type="int" min="2" max="1000" _gui-text="Notes in a scale:">12</param>
-            <param name="filter_label" type="boolean" _gui-text="Filter by word in title / internal description.">true</param>
-            <param name="keywords" type="string" _gui-text="Key word:">diatonic</param>
+            <param name="filter_tones" type="bool" gui-text="Filter by number of tones in a scale.">true</param>
+            <param name="scale" type="int" min="2" max="1000" gui-text="Notes in a scale:">12</param>
+            <param name="filter_label" type="bool" gui-text="Filter by word in title / internal description.">true</param>
+            <param name="keywords" type="string" gui-text="Key word:">diatonic</param>
         </page>
-        <page name="help" _gui-text="Help ">
+        <page name="help" gui-text="Help ">
             <param name="descr" type="description">USE:
 Export as PDF, print in Poster mode for full scale drawing.
 Glue onto fretboard and cut - or lasercut Router template.
@@ -122,7 +122,7 @@ Necks can have one radius (e.g. 7.25) at the nut and a wider radius (e.g. 12) at
 This called a Conical radius (incorrectly a compound radius). It enables easier single string control at the Nut and chords nearer the body.
 			</param>
         </page>
-        <page name="help2" _gui-text="Help2 ">
+        <page name="help2" gui-text="Help2 ">
             <param name="descr" type="description">Fretboard lengths:
 Guitar scale lengths are usually between 24" and 26".
 Bass scale lengths generally stay between 30" to 36".
@@ -157,8 +157,8 @@ Baritone guitar 28.5, 30.2 (724, 767mm)
     <effect needs-live-preview="true">
         <object-type>path</object-type>
         <effects-menu>
-           <submenu _name="FabLab Chemnitz">
-                <submenu _name="Dimensioning/Measuring" />
+           <submenu name="FabLab Chemnitz">
+                <submenu name="Dimensioning/Measuring"/>
             </submenu>
         </effects-menu>
     </effect>

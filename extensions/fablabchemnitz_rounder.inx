@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <_name>Rounder</_name>
+    <name>Rounder</name>
     <id>fablabchemnitz.de.rounder</id>
-    <_param name="titleMain" type="description">Rounding helpers.</_param>
-    <_param name="precision" type="int" min="0" max="20" _gui-text="Rounding precission">2</_param>
-    <_param name="paths" type="boolean" _gui-text="Round nodes">true</_param>
-    <_param name="ctrl" type="boolean" _gui-text="Round handles">false</_param>
-    <_param name="along" type="boolean" _gui-text="Move handles following node movement">true</_param>
-    <_param name="half" type="boolean" _gui-text="Allow round to half if nearest">false</_param>
-    <_param name="strokewidth" type="boolean" _gui-text="Round stroke width">false</_param>
-    <_param name="widthheight" type="boolean" _gui-text="Round width and height">false</_param>
-    <_param name="position" type="boolean" _gui-text="Round position X and Y">false</_param>
-    <_param name="opacity" type="boolean" _gui-text="Round global opacity">false</_param>
-    <_param name="strokeopacity" type="boolean" _gui-text="Round stroke opacity">false</_param>
-    <_param name="fillopacity" type="boolean" _gui-text="Round fill opacity">false</_param>
+    <param name="titleMain" type="description">Rounding helpers.</param>
+    <param name="precision" type="int" min="0" max="20" gui-text="Rounding precission">2</param>
+    <param name="paths" type="bool" gui-text="Round nodes">true</param>
+    <param name="ctrl" type="bool" gui-text="Round handles">false</param>
+    <param name="along" type="bool" gui-text="Move handles following node movement">true</param>
+    <param name="half" type="bool" gui-text="Allow round to half if nearest">false</param>
+    <param name="strokewidth" type="bool" gui-text="Round stroke width">false</param>
+    <param name="widthheight" type="bool" gui-text="Round width and height">false</param>
+    <param name="position" type="bool" gui-text="Round position X and Y">false</param>
+    <param name="opacity" type="bool" gui-text="Round global opacity">false</param>
+    <param name="strokeopacity" type="bool" gui-text="Round stroke opacity">false</param>
+    <param name="fillopacity" type="bool" gui-text="Round fill opacity">false</param>
     <effect>
         <effects-menu>
-            <submenu _name="FabLab Chemnitz">
-                <submenu _name="Various" />
+            <submenu name="FabLab Chemnitz">
+                <submenu name="Various"/>
             </submenu>
         </effects-menu>
     </effect>

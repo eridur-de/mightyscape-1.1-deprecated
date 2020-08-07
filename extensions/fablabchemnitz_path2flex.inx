@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <_name>Box Maker - Path To Flex</_name>
+    <name>Box Maker - Path To Flex</name>
     <id>fablabchemnitz.de.path2flex</id>
-    <dependency type="extension">org.inkscape.output.svg.inkscape</dependency>
-    <param name="unit" type="enum" _gui-text="Unit">
+    <param name="unit" type="optiongroup" appearance="combo" gui-text="Unit">
         <_item value="mm">mm</_item>
         <_item value="cm">cm</_item>
         <_item value="m">m</_item>
@@ -15,16 +14,16 @@
         <_item value="px">px</_item>
         <_item value="pc">pc</_item>
     </param>
-    <param name="thickness" type="float" min="1.0" max="10.0" _gui-text="Material thickness">3.0</param>
-    <param name="zc" type="float" min="15.0" max="1000.0" _gui-text="Structure height">50.0</param>
-    <param name="notch_interval" type="int" min="2" max="10" _gui-text="Interval between notches">2</param>
-    <param name="max_size_flex" type="float" min="200.0" max="100000.0" _gui-text="Limit length of flex band">1000.0</param>
-    <param name="Mode_Debug" type="boolean" _gui-text="Debugging information output">true</param>
+    <param name="thickness" type="float" min="1.0" max="10.0" gui-text="Material thickness">3.0</param>
+    <param name="zc" type="float" min="15.0" max="1000.0" gui-text="Structure height">50.0</param>
+    <param name="notch_interval" type="int" min="2" max="10" gui-text="Interval between notches">2</param>
+    <param name="max_size_flex" type="float" min="200.0" max="100000.0" gui-text="Limit length of flex band">1000.0</param>
+    <param name="Mode_Debug" type="bool" gui-text="Debugging information output">true</param>
     <effect>
         <object-type>all</object-type>
         <effects-menu>
-            <submenu _name="FabLab Chemnitz">
-			    <submenu _name="Finger-jointed/Tabbed Boxes" />
+            <submenu name="FabLab Chemnitz">
+			    <submenu name="Finger-jointed/Tabbed Boxes"/>
 			</submenu>
         </effects-menu>
     </effect>
