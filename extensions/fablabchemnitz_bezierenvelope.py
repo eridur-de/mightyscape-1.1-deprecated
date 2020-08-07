@@ -52,16 +52,10 @@ Finally, after all of the letter's points have been recalculated in this manner,
 the resulting path is taken and replaces the letter's original path.
 
 TODO:
-* Some points of the letter appear outside the envelope, apparently because the bounding box
-calculated by simpletransform.py is only a rough estimate. -> Calculate the real bbox,
-perhaps using other existing extensions, or py2geom.
 * Currently, both letter and envelope must be paths to work.
 -> Arbitrary other shapes like circles and rectangles should be interpreted as paths.
 * It should be possible to select several letters, and squeeze them into one envelope as a group.
 * It should be possible to insert a clone of the letter, instead of replacing it.
-* Bug #241565 prevented the matrix parser constructors from working. This extension can
-only be used with the fixed version of simpletransform.py. As a workaround, two matrix constructors
-were copied into this file.
 * This program was originally written in Java. Maybe for some code, Python shortcuts can be used.
 
 I hope the comments are not too verbose. Enjoy!

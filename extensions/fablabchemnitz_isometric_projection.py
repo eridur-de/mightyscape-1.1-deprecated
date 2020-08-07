@@ -2,7 +2,7 @@
 
 import math
 import inkex
-from simpletransform import Transform
+from inkex import Transform
 inkex.localization.localize()
 
 class IsometricProjectionTools(inkex.Effect):

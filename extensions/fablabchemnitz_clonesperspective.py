@@ -2,7 +2,6 @@
 import sys
 import math
 import inkex
-import simpletransform
 from lxml import etree
 
 class clonesPerspectiveEffect(inkex.Effect):

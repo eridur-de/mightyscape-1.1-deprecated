@@ -23,7 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 import inkex
 from inkex import bezier
 from inkex.paths import CubicSuperPath
-import bezmisc
 import simpletransform
 import copy
 from math import ceil
@@ -99,10 +98,9 @@ class SubdividePathEffect(inkex.Effect):
                 for i, part in enumerate(parts):
                     
                     newSegs = []
-                    for j, seg in enumerate(part):
-                                                
-                        segL = bezmisc.bezierlengthSimpson((seg[0], seg[1], seg[2], seg[3]), tolerance = tolerance)
-                            
+                    for j, seg in enumerate(part):                               
+                        segL = bezier.bezierlength((seg[0], seg[1], seg[2], seg[3]), tolerance = tolerance)
+						
                         if(maxL != None):
                             divL = maxL
                         elif(self.options.unit == 'perc'):
@@ -121,7 +119,7 @@ class SubdividePathEffect(inkex.Effect):
                                 if(s == seg):
                                     sL = segL
                                 else:
-                                    sL = bezmisc.bezierlengthSimpson((s[0], s[1],  s[2], s[3]), tolerance = tolerance)
+                                    sL = bezier.bezierlength((s[0], s[1],  s[2], s[3]), tolerance = tolerance)
                                     
                                 if(floatCmpWithMargin(segL, coveredL + divL)):
                                     s2 = s

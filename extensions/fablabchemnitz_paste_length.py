@@ -22,7 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 '''
 
 import inkex
-import bezmisc
+from inkex import bezier
 from inkex.paths import Path, CubicSuperPath
 
 class PasteLengthEffect(inkex.Effect):
@@ -42,7 +42,7 @@ class PasteLengthEffect(inkex.Effect):
         elif(scaleFrom == 'topRight'):
             oldOrigin= [bbox.right, bbox.bottom]
         elif(scaleFrom == 'bottomLeft'):
-            oldOrigin= [bbox.left, ymax]
+            oldOrigin= [bbox.left, bbox.top]
         elif(scaleFrom == 'bottomRight'):
             oldOrigin= [bbox.right, bbox.top]
         else: #if(scaleFrom == 'center'):
@@ -79,7 +79,7 @@ class PasteLengthEffect(inkex.Effect):
         
         for i, part in enumerate(parts):
             for j, seg in enumerate(part):
-                curveLen += bezmisc.bezierlengthSimpson((seg[0], seg[1], seg[2], seg[3]), tolerance = tolerance)
+                curveLen += bezier.bezierlength((seg[0], seg[1], seg[2], seg[3]), tolerance = tolerance)
                 
         return curveLen
 

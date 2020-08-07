@@ -156,7 +156,7 @@ class node:
 # Operations on nodes
 def dist(n0, n1 = None): return hypot(n1.y - n0.y, n1.x - n0.x) if n1 else hypot(n0.y, n0.x) # For these two functions
 def dirc(n0, n1 = None): return atan2(n1.y - n0.y, n1.x - n0.x) if n1 else atan2(n0.y, n0.x) # n0 is the origin if n1 is present
-def slide(n0, n1, t): return n0 + t * (n1 - n0) # node version of tpoint in bezmisc.py
+def slide(n0, n1, t): return n0 + t * (n1 - n0)
 def dotp(n0, n1): return n0.x * n1.x + n0.y * n1.y
 
 # Operation on vectors: rotation. Positive theta means counterclockwise rotation.
