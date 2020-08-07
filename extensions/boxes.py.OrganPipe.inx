@@ -7,56 +7,56 @@
   <param name="generator" type="string" gui-hidden="true">organpipe</param>
   <param name="tab" type="notebook">
 
-    <page name="0" _gui-text="OrganPipe">
-      <param name="pitch" type="enum" _gui-text="pitch" gui-description="pitch">
-        <item value="c" selected="selected">c</item>
-        <item value="c#">c#</item>
-        <item value="d">d</item>
-        <item value="d#">d#</item>
-        <item value="e">e</item>
-        <item value="f">f</item>
-        <item value="f#">f#</item>
-        <item value="g">g</item>
-        <item value="g#">g#</item>
-        <item value="a">a</item>
-        <item value="a#">a#</item>
-        <item value="b">b</item>
+    <page name="0" gui-text="OrganPipe">
+      <param name="pitch" type="optiongroup" appearance="combo" gui-text="pitch" gui-description="pitch">
+        <option value="c" selected="selected">c</option>
+        <option value="c#">c#</option>
+        <option value="d">d</option>
+        <option value="d#">d#</option>
+        <option value="e">e</option>
+        <option value="f">f</option>
+        <option value="f#">f#</option>
+        <option value="g">g</option>
+        <option value="g#">g#</option>
+        <option value="a">a</option>
+        <option value="a#">a#</option>
+        <option value="b">b</option>
       </param>
-      <param name="octave" type="int" max="9999" _gui-text="octave" gui-description="Octave in International Pitch Notation (2 == C)">2</param>
-      <param name="intonation" type="float" precision="2" max="9999" _gui-text="intonation" gui-description="Intonation Number. 2 for max. efficiency, 3 max.">2.0</param>
-      <param name="mouthratio" type="float" precision="2" max="9999" _gui-text="mouthratio" gui-description="mouth to circumference ratio (0.1 to 0.45). Determines the width to depth ratio">0.25</param>
-      <param name="cutup" type="float" precision="2" max="9999" _gui-text="cutup" gui-description="Cutup to mouth ratio">0.3</param>
-      <param name="mensur" type="int" max="9999" _gui-text="mensur" gui-description="Distance in halftones in the Normalmensur by Töpfer">0</param>
-      <param name="windpressure" type="float" precision="2" max="9999" _gui-text="windpressure" gui-description="uses unit selected below">588.4</param>
-      <param name="windpressure_units" type="enum" _gui-text="windpressure_units" gui-description="in Pa">
-        <item value="Pa" selected="selected">Pa</item>
-        <item value="mBar">mBar</item>
-        <item value="mmHg">mmHg</item>
-        <item value="mmH2O">mmH2O</item>
+      <param name="octave" type="int" max="9999" gui-text="octave" gui-description="Octave in International Pitch Notation (2 == C)">2</param>
+      <param name="intonation" type="float" precision="2" max="9999" gui-text="intonation" gui-description="Intonation Number. 2 for max. efficiency, 3 max.">2.0</param>
+      <param name="mouthratio" type="float" precision="2" max="9999" gui-text="mouthratio" gui-description="mouth to circumference ratio (0.1 to 0.45). Determines the width to depth ratio">0.25</param>
+      <param name="cutup" type="float" precision="2" max="9999" gui-text="cutup" gui-description="Cutup to mouth ratio">0.3</param>
+      <param name="mensur" type="int" max="9999" gui-text="mensur" gui-description="Distance in halftones in the Normalmensur by Töpfer">0</param>
+      <param name="windpressure" type="float" precision="2" max="9999" gui-text="windpressure" gui-description="uses unit selected below">588.4</param>
+      <param name="windpressure_units" type="optiongroup" appearance="combo" gui-text="windpressure_units" gui-description="in Pa">
+        <option value="Pa" selected="selected">Pa</option>
+        <option value="mBar">mBar</option>
+        <option value="mmHg">mmHg</option>
+        <option value="mmH2O">mmH2O</option>
       </param>
-      <param name="stopped" type="boolean" max="9999" _gui-text="stopped" gui-description="pipe is closed at the top">false</param>
+      <param name="stopped" type="bool" max="9999" gui-text="stopped" gui-description="pipe is closed at the top">false</param>
     </page>
 
-    <page name="1" _gui-text="Default">
-      <param name="thickness" type="float" precision="2" max="9999" _gui-text="thickness" gui-description="thickness of the material">3.0</param>
-      <param name="tabs" type="float" precision="2" max="9999" _gui-text="tabs" gui-description="width of tabs holding the parts in place in mm (not supported everywhere)">0.0</param>
-      <param name="debug" type="boolean" max="9999" _gui-text="debug" gui-description="print surrounding boxes for some structures">false</param>
-      <param name="reference" type="float" precision="2" max="9999" _gui-text="reference" gui-description="print reference rectangle with given length (zero to disable)">100</param>
-      <param name="burn" type="float" precision="2" max="9999" _gui-text="burn" gui-description='burn correction in mm (bigger values for tighter fit). Use BurnTest in "Parts and Samples" to find the right value.'>0.1</param>
+    <page name="1" gui-text="Default">
+      <param name="thickness" type="float" precision="2" max="9999" gui-text="thickness" gui-description="thickness of the material">3.0</param>
+      <param name="tabs" type="float" precision="2" max="9999" gui-text="tabs" gui-description="width of tabs holding the parts in place in mm (not supported everywhere)">0.0</param>
+      <param name="debug" type="bool" max="9999" gui-text="debug" gui-description="print surrounding boxes for some structures">false</param>
+      <param name="reference" type="float" precision="2" max="9999" gui-text="reference" gui-description="print reference rectangle with given length (zero to disable)">100</param>
+      <param name="burn" type="float" precision="2" max="9999" gui-text="burn" gui-description='burn correction in mm (bigger values for tighter fit). Use BurnTest in "Parts and Samples" to find the right value.'>0.1</param>
     </page>
 
-    <page name="2" _gui-text="Finger Joints">
-      <param name="FingerJoint_angle" type="float" precision="2" max="9999" _gui-text="angle" gui-description="">90.0</param>
-      <param name="FingerJoint_style" type="enum" _gui-text="style" gui-description="style of the fingers">
-        <item value="rectangular" selected="selected">rectangular</item>
-        <item value="springs">springs</item>
+    <page name="2" gui-text="Finger Joints">
+      <param name="FingerJoint_angle" type="float" precision="2" max="9999" gui-text="angle" gui-description="">90.0</param>
+      <param name="FingerJoint_style" type="optiongroup" appearance="combo" gui-text="style" gui-description="style of the fingers">
+        <option value="rectangular" selected="selected">rectangular</option>
+        <option value="springs">springs</option>
       </param>
-      <param name="FingerJoint_surroundingspaces" type="float" precision="2" max="9999" _gui-text="surroundingspaces" gui-description="maximum space at the start and end in multiple of normal spaces">1.0</param>
-      <param name="FingerJoint_edge_width" type="float" precision="2" max="9999" _gui-text="edge_width" gui-description="space below holes of FingerHoleEdge">1.0</param>
-      <param name="FingerJoint_finger" type="float" precision="2" max="9999" _gui-text="finger" gui-description="width of the fingers">3.0</param>
-      <param name="FingerJoint_play" type="float" precision="2" max="9999" _gui-text="play" gui-description="extra space to allow finger move in and out">0.0</param>
-      <param name="FingerJoint_space" type="float" precision="2" max="9999" _gui-text="space" gui-description="space between fingers">3.0</param>
-      <param name="FingerJoint_width" type="float" precision="2" max="9999" _gui-text="width" gui-description="width of finger holes">1.0</param>
+      <param name="FingerJoint_surroundingspaces" type="float" precision="2" max="9999" gui-text="surroundingspaces" gui-description="maximum space at the start and end in multiple of normal spaces">1.0</param>
+      <param name="FingerJoint_edge_width" type="float" precision="2" max="9999" gui-text="edge_width" gui-description="space below holes of FingerHoleEdge">1.0</param>
+      <param name="FingerJoint_finger" type="float" precision="2" max="9999" gui-text="finger" gui-description="width of the fingers">3.0</param>
+      <param name="FingerJoint_play" type="float" precision="2" max="9999" gui-text="play" gui-description="extra space to allow finger move in and out">0.0</param>
+      <param name="FingerJoint_space" type="float" precision="2" max="9999" gui-text="space" gui-description="space between fingers">3.0</param>
+      <param name="FingerJoint_width" type="float" precision="2" max="9999" gui-text="width" gui-description="width of finger holes">1.0</param>
     </page>
 
   </param>
