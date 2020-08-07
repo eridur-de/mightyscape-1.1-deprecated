@@ -28,31 +28,13 @@ __version__ = '0.7'        # Keep in sync with chain_paths.inx ca line 22
 __author__ = 'Juergen Weigert <juergen@fabmail.org>'
 __credits__ = ['Juergen Weigert', 'Veronika Irvine']
 
-import sys, os, shutil, time, logging, tempfile, math
+import sys
+import math
 import re
-
-#debug = True
-debug = False
-
-# search path, so that inkscape libraries are found when we are standalone.
-sys_platform = sys.platform.lower()
-if sys_platform.startswith('win'):        # windows
-  sys.path.append('C:\Program Files\Inkscape\share\extensions')
-elif sys_platform.startswith('darwin'):   # mac
-  sys.path.append('/Applications/Inkscape.app/Contents/Resources/extensions')
-else:                                     # linux
-  # if sys_platform.startswith('linux'):
-  sys.path.append('/usr/share/inkscape/extensions')
-
-# inkscape libraries
 import inkex
-
 inkex.localization.localize()
-
 from optparse import SUPPRESS_HELP
-
-def uutounit(self, nn, uu):
-    return self.svg.unittouu(str(nn)+uu)
+debug = False
 
 class ChainPaths(inkex.Effect):
 
@@ -86,7 +68,7 @@ class ChainPaths(inkex.Effect):
             - The document units are always irrelevant as
               everything in inkscape is expected to be in 90dpi pixel units
         """
-        dialog_units = uutounit(self, 1.0, units)
+        dialog_units = self.svg.unittouu(str(1.0)+units)
         self.unit_factor = 1.0 / dialog_units
         return self.unit_factor
 
@@ -237,15 +219,15 @@ class ChainPaths(inkex.Effect):
 
             if self.near_ends(end1, seg['end2']):
               # prepend seg to chain
-              self.set_segment_done(seg['id'], seg['n'], 'prepended to ' + id + ' ' + str(cur_idx))
+              self.set_segment_done(seg['id'], seg['n'], 'prepended to ' + str(id) + ' ' + str(cur_idx))
               chain = self.link_segments(seg['seg'], chain)
               end1 = [chain[0][1][0], chain[0][1][1]]
               segments_idx = 0          # this chain changed. re-visit all candidate
               continue
 
             if self.near_ends(end2, seg['end1']):
-              # append seg to chain
-              self.set_segment_done(seg['id'], seg['n'], 'appended to ' + id + ' ' + str(cur_idx))
+              # append seg to chain		  
+              self.set_segment_done(seg['id'], seg['n'], 'appended to ' + str(id) + ' ' + str(cur_idx))
               chain = self.link_segments(chain, seg['seg'])
               end2 = [chain[-1][1][0], chain[-1][1][1]]
               segments_idx = 0          # this chain changed. re-visit all candidate
