@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+   <name>Mutual Cut Line</name>
+   <id>fablabchemnitz.de.mutual_cut_line</id>
+   <effect>
+      <object-type>path</object-type>
+      <effects-menu>
+         <submenu name="PathMonkey" />
+      </effects-menu>
+   </effect>
+   <script>
+      <command reldir="extensions" interpreter="python">fablabchemnitz_mutual_cut_line.py</command>
+   </script>
+</inkscape-extension>
