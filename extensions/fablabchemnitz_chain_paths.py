@@ -262,9 +262,10 @@ class ChainPaths(inkex.Effect):
 
       if not len(new):
         # node.clear()
-        node.getparent().remove(node)
-        obsoleted += 1
-        if debug: inkex.utils.debug("Path node obsoleted: " +str(id))
+        if node.getparent() is not None:
+            node.getparent().remove(node)
+            obsoleted += 1
+            if debug: inkex.utils.debug("Path node obsoleted: " +str(id))
       else:
         remaining += 1
         # BUG: All previously closed loops, are open, after we convert them back with cubicsuperpath.formatPath()
