@@ -36,7 +36,7 @@
         <object-type>all</object-type>
         <effects-menu>
             <submenu name="FabLab Chemnitz">
-                <submenu name="Various"/>
+                <submenu name="Legacy Tools"/>
             </submenu>
         </effects-menu>
     </effect>

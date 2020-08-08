@@ -186,7 +186,7 @@ class Printing_Marks (inkex.Effect):
         for id in self.options.ids:
             sel_area[id] = {}
             for att in [ "x", "y", "width", "height" ]:
-                args = [ "inkscape", "-I", id, "--query-"+att, self.svg_file ]
+                args = [ "inkscape", "-I", id, "--query-"+att, self.options.input_file ]
                 sel_area[id][att] = scale* \
                     float(Popen(args, stdout=PIPE, stderr=PIPE).communicate()[0])
             current_min_x = sel_area[id]["x"]
