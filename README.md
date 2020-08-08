@@ -1,6 +1,6 @@
 # MightyScape for InkScape 1.0 / 1.1dev
 
-Looking to get more productive i started using some more special InkScape extensions. I love InkScape. And i love things like 3d printing, laser cutting, vinyl cutting, pen plotting, maths, physics, geometry, patterns, 2D drawings, 3D CAD and so on. I am also interested to learn embroidery and more stuff. All this you can do with InkScape! After years i recognized that there is no good source to pull them in a quick and clean way. Each developer puts his own code on his hidden/unknown repository. Many plugins are completely unknown and a lot of extensions are forked x times or are unmaintained. So many extensions do not work with recent InkScape or were never tested with newer versions so far.
+Looking to get more productive i started using some more special InkScape extensions. I love InkScape. And i love things like 3d printing, laser cutting, vinyl cutting, pen plotting, maths, physics, geometry, patterns, 2D drawings, 3D CAD and so on. I am also interested to learn embroidery and more stuff. All this you can do with InkScape! After years i recognized that there is no good source to pull extensions in a quick and clean way. Each developer puts his own code on his hidden/unknown repository and often without enough documentation or visible results for understanding. Many plugins are completely unknown and a lot of extensions are forked x times or are unmaintained. So many of them do not work with recent InkScape or were never tested with newer versions so far.
 
 # What and why?
 
@@ -23,7 +23,8 @@ I think this package is ideal for makers who are travelling around and/or using 
 
 # Requirements / Tested environment
 
-   * tested with InkScape portable Version. Definitely works with too InkScape *.msi / *.exe installation too!
+   * tested with InkScape portable Version (1.1dev 2020-07-27). Definitely works with too InkScape *.msi / *.exe installation too!
+   * tested using Python 3.8.5 64 Bit
    * this package is oriented for Windows 10 64 Bit users (sorry for the Linux users - i will try to focus on that later) but most things should run on Linux too
    * some extensions require custom Python installation. So i provide a description on how to do this (see documentation).
    * some extensions require additional packages or other installers (see documentation).
@@ -32,6 +33,7 @@ I think this package is ideal for makers who are travelling around and/or using 
 
   * Implement bug fixes like harmonizing the handling of external application calls 
   * Integrate more extensions
+  * make extension GUIs nicer using recent *.inx feature set
   * clean code
   * make more precise documentation with more examples
 
