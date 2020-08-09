@@ -93,74 +93,75 @@ class SubdividePathEffect(inkex.Effect):
         if(len(paths) > 0):
             for key, cspath in paths:
                 parts = getPartsFromCubicSuper(cspath)
-                partsSplit = False
-                
-                for i, part in enumerate(parts):
-                    
-                    newSegs = []
-                    for j, seg in enumerate(part):                               
-                        segL = bezier.bezierlength((seg[0], seg[1], seg[2], seg[3]), tolerance = tolerance)
-						
-                        if(maxL != None):
-                            divL = maxL
-                        elif(self.options.unit == 'perc'):
-                            divL = segL * self.options.maxLength / 100 
-                        else:
-                            divL = segL / ceil(self.options.maxLength)
-                            
-                        if(segL > divL):
-                            
-                            coveredL = 0
-                            s = seg
-                            s1 = None
-                            s2 = DEF_ERR_MARGIN #Just in case
-                            
-                            while(not floatCmpWithMargin(segL, coveredL)):
-                                if(s == seg):
-                                    sL = segL
-                                else:
-                                    sL = bezier.bezierlength((s[0], s[1],  s[2], s[3]), tolerance = tolerance)
-                                    
-                                if(floatCmpWithMargin(segL, coveredL + divL)):
-                                    s2 = s
-                                    break                                    
-                                else:
-                                    if(segL > (coveredL + divL)):                                                        
-                                        t1L = divL 
-                                    else:
-                                        t1L = segL - coveredL
-                                        
-                                    t1 = bezier.beziertatlength((s[0], s[1], s[2], s[3]),  l = t1L / sL , tolerance = tolerance)                
-                                    s1, s2 = bezier.beziersplitatt((s[0], s[1], s[2], s[3]), t1)
-                                    coveredL += t1L                            
-                                    newSegs.append(s1)
-                                    s = s2
-                            newSegs.append(s2)
-                        else:
-                            newSegs.append(seg)
-                            
-                    if(len(newSegs) > len(part)):
-                        parts[i] = newSegs
-                        partsSplit = True
-                
-                if(partsSplit or separateSegs):
-                    elem = selections[key]
-                    if(separateSegs):
-                        parent = elem.getparent()
-                        idx = parent.index(elem)
-                        parent.remove(elem)
-                        allSegs = [seg for part in parts for seg in part]
-                        idSuffix = 0
-                        for seg in allSegs:
-                            cspath = getCubicSuperFromParts([[seg]])
-                            newElem = copy.copy(elem)
-                            oldId = newElem.get('id')
-                            newElem.set('d', CubicSuperPath(cspath))
-                            newElem.set('id', oldId + str(idSuffix).zfill(5))
-                            parent.insert(idx, newElem)
-                            idSuffix += 1
-                    else:
-                        cspath = getCubicSuperFromParts(parts)
-                        elem.set('d', CubicSuperPath(cspath))
+                partsSplit = False             
+                try:  
+                    for i, part in enumerate(parts):
                         
+                        newSegs = []
+                        for j, seg in enumerate(part):                               
+                            segL = bezier.bezierlength((seg[0], seg[1], seg[2], seg[3]), tolerance = tolerance)
+				    		
+                            if(maxL != None):
+                                divL = maxL
+                            elif(self.options.unit == 'perc'):
+                                divL = segL * self.options.maxLength / 100 
+                            else:
+                                divL = segL / ceil(self.options.maxLength)
+                                
+                            if(segL > divL):
+                                
+                                coveredL = 0
+                                s = seg
+                                s1 = None
+                                s2 = DEF_ERR_MARGIN #Just in case
+                                
+                                while(not floatCmpWithMargin(segL, coveredL)):
+                                    if(s == seg):
+                                        sL = segL
+                                    else:
+                                        sL = bezier.bezierlength((s[0], s[1],  s[2], s[3]), tolerance = tolerance)
+                                        
+                                    if(floatCmpWithMargin(segL, coveredL + divL)):
+                                        s2 = s
+                                        break                                    
+                                    else:
+                                        if(segL > (coveredL + divL)):                                                        
+                                            t1L = divL 
+                                        else:
+                                            t1L = segL - coveredL
+                                            
+                                        t1 = bezier.beziertatlength((s[0], s[1], s[2], s[3]),  l = t1L / sL , tolerance = tolerance)                
+                                        s1, s2 = bezier.beziersplitatt((s[0], s[1], s[2], s[3]), t1)
+                                        coveredL += t1L                            
+                                        newSegs.append(s1)
+                                        s = s2
+                                newSegs.append(s2)
+                            else:
+                                newSegs.append(seg)
+                                
+                        if(len(newSegs) > len(part)):
+                            parts[i] = newSegs
+                            partsSplit = True
+                    
+                    if(partsSplit or separateSegs):
+                        elem = selections[key]
+                        if(separateSegs):
+                            parent = elem.getparent()
+                            idx = parent.index(elem)
+                            parent.remove(elem)
+                            allSegs = [seg for part in parts for seg in part]
+                            idSuffix = 0
+                            for seg in allSegs:
+                                cspath = getCubicSuperFromParts([[seg]])
+                                newElem = copy.copy(elem)
+                                oldId = newElem.get('id')
+                                newElem.set('d', CubicSuperPath(cspath))
+                                newElem.set('id', oldId + str(idSuffix).zfill(5))
+                                parent.insert(idx, newElem)
+                                idSuffix += 1
+                        else:
+                            cspath = getCubicSuperFromParts(parts)
+                            elem.set('d', CubicSuperPath(cspath))
+                except:
+                    pass                
 SubdividePathEffect().run()

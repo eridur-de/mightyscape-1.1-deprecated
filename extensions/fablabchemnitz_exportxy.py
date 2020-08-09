@@ -24,7 +24,7 @@ def warn(*args, **kwargs):
 import warnings
 warnings.warn = warn
 
-class TemplateEffect(inkex.Effect):
+class ExportXY(inkex.Effect):
     def __init__(self):
         inkex.Effect.__init__(self)
     def effect(self):
@@ -41,5 +41,4 @@ class TemplateEffect(inkex.Effect):
                         for csp in subpath:
                             output_nodes += str(csp[1][0]) + "\t" + str(csp[1][1]) + "\n"
             sys.stderr.write(output_nodes)
-TemplateEffect().run()
-sys.exit(0) #helps to keep the selection
+ExportXY().run()
