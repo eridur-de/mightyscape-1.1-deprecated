@@ -131,26 +131,29 @@ class JoinPathsOptimEffect(inkex.Effect):
                 parts = paths[key]
                 # ~ parts = getPartsFromCubicSuper(cspath)
                 start = parts[0][0][0]
-                elem = self.svg.selected[key]
-                
-                if(len(newParts) == 0):
-                    newParts += parts[:]
-                    firstElem = elem
-                else:
-                    if(vectCmpWithMargin(start, newParts[-1][-1][-1], margin = .01)):
-                        newParts[-1] += parts[0]
+                try:
+                    elem = self.svg.selected[key]
+			
+                    if(len(newParts) == 0):
+                        newParts += parts[:]
+                        firstElem = elem
                     else:
-                        newSeg = [newParts[-1][-1][-1], newParts[-1][-1][-1], start, start]
-                        newParts[-1].append(newSeg)                    
-                        newParts[-1] += parts[0]
+                        if(vectCmpWithMargin(start, newParts[-1][-1][-1], margin = .01)):
+                            newParts[-1] += parts[0]
+                        else:
+                            newSeg = [newParts[-1][-1][-1], newParts[-1][-1][-1], start, start]
+                            newParts[-1].append(newSeg)                    
+                            newParts[-1] += parts[0]
+                        
+                        if(len(parts) > 1):
+                            newParts += parts[1:]
                     
-                    if(len(parts) > 1):
-                        newParts += parts[1:]
-                
-                parent = elem.getparent()
-                idx = parent.index(elem)
-                parent.remove(elem)
-
+                    parent = elem.getparent()
+                    idx = parent.index(elem)
+                    parent.remove(elem)
+                except:
+                    pass #elem might come from group item - in this case we need to ignore it
+					
             newElem = copy.copy(firstElem)
             oldId = firstElem.get('id')
             newElem.set('d', CubicSuperPath(getCubicSuperFromParts(newParts)))
