@@ -167,7 +167,7 @@ class ContourScanner(inkex.Effect):
                 if self.options.highlight_selfintersecting or self.options.highlight_intersectionpoints:
                     try: 
                         if len(nodes) > 0: #try to find self-intersecting /overlapping polygons
-                            isect = fablabchemnitz_poly_point_isect.isect_polygon(nodes) # TODO: CREATE MARKERS FOR THIS
+                            isect = fablabchemnitz_poly_point_isect.isect_polygon(nodes) #TODO: FIND OUT HOW TO HANDLE OPEN CONTOURS TO OMIT VIRTUALLY CROSSING LINES (WHICH DO NOT INTERSECT)
                             if len(isect) > 0:
                                 #make dot markings at the intersection points
                                 if self.options.highlight_intersectionpoints:
