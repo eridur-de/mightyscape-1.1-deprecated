@@ -21,8 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
 #	
-#	This extension close paths by adding 'z' before each 'm' if it is not
-#	the first 'm' and it is not prepended by 'z' already.
+#	This extension close paths by adding 'z' before each 'm' if it is not the first 'm' and it is not prepended by 'z' already.
 #
 
 import inkex
