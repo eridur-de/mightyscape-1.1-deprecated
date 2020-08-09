@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <_name>Cutting Optimizer (Nesting)</_name>
+    <name>Cutting Optimizer (Nesting)</name>
     <id>fablabchemnitz.de.cutoptim</id>
-    <param name="unit" type="enum" _gui-text="Unit">
+    <param name="unit" type="optiongroup" appearance="combo" gui-text="Unit">
         <_item value="mm">mm</_item>
         <_item value="cm">cm</_item>
         <_item value="m">m</_item>
@@ -14,11 +14,11 @@
         <_item value="px">px</_item>
         <_item value="pc">pc</_item>
     </param>
-    <param name="distance" type="float" min="0.8" max="10.0" _gui-text="Min distance between objects">2.0</param>
-    <param name="max_length" type="float" min="0" max="1000" _gui-text="Max length of single segment">1000</param>
-    <param name="optimizing_level" type="int" min="1" max="10" _gui-text="Optimizing level">1</param>
-    <param name="original" type="boolean" _gui-text="Keep original layer in output">false</param>
-    <param name="firstpos" type="enum" _gui-text="Select option for largest element placement: ">
+    <param name="distance" type="float" min="0" max="10.0" gui-text="Min distance between objects">2.0</param>
+    <param name="max_length" type="float" min="0" max="1000" gui-text="Max length of single segment">1000</param>
+    <param name="optimizing_level" type="int" min="1" max="10" gui-text="Optimizing level">1</param>
+    <param name="original" type="bool" gui-text="Keep original layer in output">false</param>
+    <param name="firstpos" type="optiongroup" appearance="combo" gui-text="Select option for largest element placement: ">
         <_item value="TL">Top Left</_item>
         <_item value="TC">Top Center</_item>
         <_item value="TR">Top Right</_item>
@@ -29,15 +29,15 @@
         <_item value="BC">Bottom Center</_item>
         <_item value="BR">Bottom Right</_item>
     </param>
-    <param name="free_rot" type="boolean" _gui-text="Allow free rotation of paths, angle parameter not used">true</param>
-    <param name="angle" type="float" min="0" max="180" _gui-text="Try rotation by (0 no rotation allowed)">0</param>
-    <param name="nested" type="boolean" _gui-text="Attach nested path to the bigger one">true</param>
-    <param name="debug_file" type="boolean" _gui-text="Debug file generation">true</param>
+    <param name="free_rot" type="bool" gui-text="Allow free rotation of paths, angle parameter not used">true</param>
+    <param name="angle" type="float" min="0" max="180" gui-text="Try rotation by (0 no rotation allowed)">0</param>
+    <param name="nested" type="bool" gui-text="Attach nested path to the bigger one">true</param>
+    <param name="debug_file" type="bool" gui-text="Debug file generation">true</param>
     <effect>
         <object-type>all</object-type>
         <effects-menu>
-            <submenu _name="FabLab Chemnitz">
-				<submenu _name="Nesting/Cut Optimization"/>
+            <submenu name="FabLab Chemnitz">
+				<submenu name="Nesting/Cut Optimization"/>
 			</submenu>
         </effects-menu>
     </effect>
