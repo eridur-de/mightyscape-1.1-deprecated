@@ -4,6 +4,8 @@
     <id>fablabchemnitz.de.boundingbox</id>
     <param name="help_text" type="description">Draws bounding boxes around selected objects, useful for debugging. Author: Pawel Mosakowski. Modded by Mario Voigt.</param>
     <param min="-10000.0" max="10000.0" name="offset" type="float" gui-text="Offset from object (all directions)">0.0</param>
+    <param name="box" type="bool" gui-text="Draw boxes">true</param>
+    <param name="circle" type="bool" gui-text="Draw circles">false</param>
     <effect>
         <object-type>all</object-type>
         <effects-menu>
