@@ -32,6 +32,7 @@ import sys
 import math
 import re
 import inkex
+from inkex.paths import CubicSuperPath, Path
 inkex.localization.localize()
 from optparse import SUPPRESS_HELP
 debug = False
@@ -149,7 +150,7 @@ class ChainPaths(inkex.Effect):
         inkex.errormsg(_("Object " + id + " is not a path. Try\n  - Path->Object to Path\n  - Object->Ungroup"))
         return
       if debug: inkex.utils.debug("id=" + str(id) + ", tag=" + str(node.tag))
-      path_d = inkex.paths.CubicSuperPath(inkex.paths.Path(node.get('d')))
+      path_d = CubicSuperPath(Path(node.get('d')))
       sub_idx = -1
       for sub in path_d:
         sub_idx += 1
@@ -180,7 +181,7 @@ class ChainPaths(inkex.Effect):
     remaining = 0
     for id in self.svg.selected:
       node = self.svg.selected[id]
-      path_d = inkex.paths.CubicSuperPath(inkex.paths.Path(node.get('d')))
+      path_d = CubicSuperPath(Path(node.get('d')))
       # ATTENTION: for parsePath() it is the same, if first and last point coincide, or if the path is really closed.
       path_closed = True if re.search("z\s*$", node.get('d')) else False
       new = []
@@ -269,7 +270,7 @@ class ChainPaths(inkex.Effect):
       else:
         remaining += 1
         # BUG: All previously closed loops, are open, after we convert them back with cubicsuperpath.formatPath()
-        p_fmt = str(inkex.paths.Path(inkex.paths.CubicSuperPath(new).to_path().to_arrays()))
+        p_fmt = str(Path(CubicSuperPath(new).to_path().to_arrays()))
         if path_closed: p_fmt += " z"
         if debug: inkex.utils.debug("new path: "+str(p_fmt))
         node.set('d', p_fmt)

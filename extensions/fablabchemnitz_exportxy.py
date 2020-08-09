@@ -16,7 +16,7 @@
 #
 import inkex
 import sys
-from inkex import paths
+from inkex.paths import CubicSuperPath
 from inkex import transforms
 
 def warn(*args, **kwargs):
@@ -28,15 +28,15 @@ class ExportXY(inkex.Effect):
     def __init__(self):
         inkex.Effect.__init__(self)
     def effect(self):
-        for node in self.selected.items():
+        for node in self.svg.selected.items():
             output_all = output_nodes = ""
-            for id, node in self.selected.items():
+            for id, node in self.svg.selected.items():
                 if node.tag == inkex.addNS('path','svg'):
                     output_all += ""
                     output_nodes += ""
                     node.apply_transform()
                     d = node.get('d')
-                    p = paths.CubicSuperPath(d)
+                    p = CubicSuperPath(d)
                     for subpath in p:
                         for csp in subpath:
                             output_nodes += str(csp[1][0]) + "\t" + str(csp[1][1]) + "\n"
