@@ -5,7 +5,9 @@
     <effect needs-live-preview="false">
         <object-type>path</object-type>
         <effects-menu>
-            <submenu name="FabLab Chemnitz Dev"/>
+            <submenu name="FabLab Chemnitz">
+                <submenu name="Various"/>
+            </submenu>
         </effects-menu>
     </effect>
     <script>
