@@ -6,17 +6,17 @@ Features
  - helps to find contours which are closed or not. Good for repairing contours, closing contours,...
  - works for paths which are packed into groups or groups of groups. #
  - can break contours apart like in "Path -> Break Apart"
- - implements Bentley-Ottmann algorithm from https://github.com/ideasman42/isect_segments-bentley_ottmann to scan for self-intersecting paths. This only works correctly if your path is within the canvas correctly. Otherwise you might get "assert(event.in_sweep == False) AssertionError". This is commented out yet
+ - implements Bentley-Ottmann algorithm from https://github.com/ideasman42/isect_segments-bentley_ottmann to scan for self-intersecting paths. You might get "assert(event.in_sweep == False) AssertionError". Don't know how to fix rgis
  - colorized paths respective to their type
  - can add dots to intersection points you'd like to fix
  
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 09.08.2020
+Last patch: 11.08.2020
 License: GNU GPL v3
 """
 
-import sys
 from math import *
 import inkex
 from inkex.paths import Path, CubicSuperPath
@@ -24,9 +24,6 @@ from inkex import Style, Color, Circle
 from lxml import etree
 import fablabchemnitz_poly_point_isect
 import copy
-
-def pout(t): 
-    sys.exit()
 
 def adjustStyle(self, node):
     if node.attrib.has_key('style'):
@@ -185,9 +182,9 @@ class ContourScanner(inkex.Effect):
                                 if self.options.remove_selfintersecting:
                                     if node.getparent() is not None: #might be already been deleted by previously checked settings so check again
                                         node.getparent().remove(node)
-                    except AssertionError as e: # we skip AssertionError
-                        pass
-                        #inkex.utils.debug("Found some path which cannot be tested for self-intersecting behaviour")        
+                    except Exception as e: # we skip AssertionError
+                        #inkex.utils.debug("Accuracy Error. Try to reduce the precision of the paths using the extension called Rounder to cutoff unrequired decimals.")        
+                        print(str(e))        
         for child in node:
             self.scanContours(child) 
  
