@@ -38,7 +38,9 @@
    <effect>
       <object-type>all</object-type>
       <effects-menu>
-         <submenu _name="Render" />
+        <submenu name="FabLab Chemnitz">
+            <submenu name="Grids/Guides"/>
+        </submenu>
       </effects-menu>
    </effect>
    <script>
