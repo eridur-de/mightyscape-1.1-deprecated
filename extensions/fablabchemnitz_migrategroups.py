@@ -57,8 +57,9 @@ class MigrateGroups(inkex.Effect):
                     group.getparent().remove(group)
                     
         #remove the selected, now empty group (if it's the case)
-        if self.svg.selected[0].tag == inkex.addNS('g','svg'):
-            self.svg.selected[0].getparent().remove(self.svg.selected[0])
+        if len(self.svg.selected) > 0:
+            if self.svg.selected[0].tag == inkex.addNS('g','svg'):
+                self.svg.selected[0].getparent().remove(self.svg.selected[0])
 
         #TODO: make newGroup selected now. How ?
 MigrateGroups().run()
