@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <name>Optimize Sequence: Travel Distances</name>
+    <id>fablabchemnitz.de.reorder_sequence</id>
+    <param indent="5" name="splashpage" type="description" appearance="header">EggBot Plot Optimization Tool</param>
+    <param name="Header" type="description" xml:space="preserve">
+This utility will re-order objects within each layer of your
+document, to reduce pen-up travel distance and time.
+</param>
+    <param name="reordering" gui-text="Group Handling" type="optiongroup" appearance="combo" indent="2">
+        <option value="2">Reorder within groups</option>
+        <option value="1">Preserve groups</option>
+        <option value="3">Break apart groups</option>
+    </param>
+    <param name="Footer" type="description" indent="3" xml:space="preserve">
+v 2.5. Copyright 2019, Evil Mad Scientist</param>
+    <effect needs-live-preview="false">
+        <object-type>all</object-type>
+        <effects-menu>
+            <submenu name="FabLab Chemnitz">
+				<submenu name="Nesting/Cut Optimization"/>
+			</submenu>
+        </effects-menu>
+    </effect>
+    <script>
+        <command location="inx" interpreter="python">fablabchemnitz_reorder_sequence.py</command>
+    </script>
+</inkscape-extension>
