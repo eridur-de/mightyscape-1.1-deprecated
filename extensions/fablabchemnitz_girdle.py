@@ -1,5 +1,4 @@
-#! /usr/bin/env python
-# coding=utf-8
+#! /usr/bin/env python3
 #
 # Este script dibuja el perfil exterior de corte la caja en un solo 
 # path cerrado y añade despues los otros flejes necesarios con colores
