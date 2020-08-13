@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <_name>Guillotine Plus</_name>
+    <name>Guillotine Plus</name>
     <id>fablabchemnitz.de.guillotine_plus</id>
     <param name="directory" type="string" gui-text="Directory to save images to:">~/</param>
     <param name="image" type="string" gui-text="Image name (without extension):">guillotined</param>
@@ -9,8 +9,8 @@
     <effect needs-live-preview="false">
         <object-type>all</object-type>
             <effects-menu>
-				<submenu _name="FabLab Chemnitz">
-					<submenu _name="Import/Export/Transfer"/>
+				<submenu name="FabLab Chemnitz">
+					<submenu name="Import/Export/Transfer"/>
 				</submenu>
            </effects-menu>
     </effect>  

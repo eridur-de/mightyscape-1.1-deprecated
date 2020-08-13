@@ -25,6 +25,6 @@
     </effects-menu>
   </effect>
   <script>
-    <command reldir="extensions" interpreter="python">fablabchemnitz_can_generator.py</command>
+    <command location="inx" interpreter="python">fablabchemnitz_can_generator.py</command>
   </script>
 </inkscape-extension>

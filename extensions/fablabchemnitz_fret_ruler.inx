@@ -163,6 +163,6 @@ Baritone guitar 28.5, 30.2 (724, 767mm)
         </effects-menu>
     </effect>
     <script>
-        <command reldir="extensions" interpreter="python">fablabchemnitz_fret_ruler.py</command>
+        <command location="inx" interpreter="python">fablabchemnitz_fret_ruler.py</command>
     </script>
 </inkscape-extension>

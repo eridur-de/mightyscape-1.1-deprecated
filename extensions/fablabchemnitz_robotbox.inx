@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <_name>Robot Boxes</_name>
+    <name>Robot Boxes</name>
     <id>fablabchemnitz.de.robotbox</id>
-    <param name="width" type="float" min="0.0" max="10000.0" _gui-text="Width">62.0</param>
-    <param name="height" type="float" min="0.0" max="10000.0" _gui-text="Height">38.0</param>
-    <param name="depth" type="float" min="0.0" max="10000.0" _gui-text="Depth">23.0</param>
-    <param name="thickness" type="float" min="0.0" max="100.0" _gui-text="Paper thickness">1.0</param>
-    <param name="crampheight" type="float" min="0.0" max="100.0" _gui-text="Cramp ear height (0 for no cramp)">1.0</param>
-    <param name="dashwidth" type="float" min="0.0" max="100.0" _gui-text="Bend line dash width">5.0</param>
-    <param name="dashstep" type="float" min="0.0" max="100.0" _gui-text="Bend line dash step">5.0</param>
-    <param name="bendsurface" type="optiongroup" appearance="minimal" _gui-text="Bend line surface">
+    <param name="width" type="float" min="0.0" max="10000.0" gui-text="Width">62.0</param>
+    <param name="height" type="float" min="0.0" max="10000.0" gui-text="Height">38.0</param>
+    <param name="depth" type="float" min="0.0" max="10000.0" gui-text="Depth">23.0</param>
+    <param name="thickness" type="float" min="0.0" max="100.0" gui-text="Paper thickness">1.0</param>
+    <param name="crampheight" type="float" min="0.0" max="100.0" gui-text="Cramp ear height (0 for no cramp)">1.0</param>
+    <param name="dashwidth" type="float" min="0.0" max="100.0" gui-text="Bend line dash width">5.0</param>
+    <param name="dashstep" type="float" min="0.0" max="100.0" gui-text="Bend line dash step">5.0</param>
+    <param name="bendsurface" type="optiongroup" appearance="combo" gui-text="Bend line surface">
         <option value="middle">middle</option>
         <option value="inner">inner</option>
         <option value="outer">outer</option>
     </param>
-    <param name="unit" type="optiongroup" appearance="minimal" _gui-text="Unit">
+    <param name="unit" type="optiongroup" appearance="combo" gui-text="Unit">
         <option value="cm">cm</option>
         <option value="ft">ft</option>
         <option value="in">in</option>
@@ -27,12 +27,12 @@
     <effect>
         <object-type>all</object-type>
         <effects-menu>
-            <submenu _name="FabLab Chemnitz">
-				<submenu _name="Paper/Cardboard Boxes"/>
+            <submenu name="FabLab Chemnitz">
+				<submenu name="Paper/Cardboard Boxes"/>
 			</submenu>
         </effects-menu>
     </effect>
     <script>
-        <command reldir="extensions" interpreter="python">fablabchemnitz_robotbox.py</command>
+        <command location="inx" interpreter="python">fablabchemnitz_robotbox.py</command>
     </script>
 </inkscape-extension>

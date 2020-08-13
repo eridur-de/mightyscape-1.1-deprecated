@@ -31,6 +31,6 @@ length by using the extension "Visualize Path> Measure Path"
       </effects-menu>
    </effect>
    <script>
-      <command reldir="extensions" interpreter="python">fablabchemnitz_archimedesspiral.py</command>
+      <command location="inx" interpreter="python">fablabchemnitz_archimedesspiral.py</command>
    </script>
 </inkscape-extension>

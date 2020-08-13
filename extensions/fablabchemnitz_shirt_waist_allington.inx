@@ -28,6 +28,6 @@
         </effects-menu>
     </effect>
     <script>
-        <command reldir="extensions" interpreter="python">fablabchemnitz_shirt_waist_allington.py</command>
+        <command location="inx" interpreter="python">fablabchemnitz_shirt_waist_allington.py</command>
     </script>
 </inkscape-extension>

@@ -33,6 +33,6 @@ this extensions' Python code.
       </effects-menu>
    </effect>
    <script>
-      <command reldir="extensions" interpreter="python">fablabchemnitz_eggbot_twist.py</command>
+      <command location="inx" interpreter="python">fablabchemnitz_eggbot_twist.py</command>
    </script>
 </inkscape-extension>

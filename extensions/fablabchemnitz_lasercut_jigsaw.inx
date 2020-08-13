@@ -74,6 +74,6 @@ Adjust Notch size and Randomization to avoid overlapping lines:
       </effects-menu>
    </effect>
    <script>
-      <command reldir="extensions" interpreter="python">fablabchemnitz_lasercut_jigsaw.py</command>
+      <command location="inx" interpreter="python">fablabchemnitz_lasercut_jigsaw.py</command>
    </script>
 </inkscape-extension>

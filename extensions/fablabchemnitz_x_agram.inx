@@ -30,6 +30,6 @@ The components that make up the x-agram are left as separate objects so that add
         </effects-menu>
     </effect>
     <script>
-        <command reldir="extensions" interpreter="python">fablabchemnitz_x_agram.py</command>
+        <command location="inx" interpreter="python">fablabchemnitz_x_agram.py</command>
     </script>
 </inkscape-extension>

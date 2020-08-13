@@ -29,6 +29,6 @@
         </effects-menu>
     </effect>
     <script>
-        <command reldir="extensions" interpreter="python">fablabchemnitz_strokecolor_as_fill.py</command>
+        <command location="inx" interpreter="python">fablabchemnitz_strokecolor_as_fill.py</command>
     </script>
 </inkscape-extension>

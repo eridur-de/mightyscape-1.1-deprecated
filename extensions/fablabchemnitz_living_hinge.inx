@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-   <_name>Living Hinge</_name>
+   <name>Living Hinge</name>
    <id>fablabchemnitz.de.living_hinge</id>
-   <param name="direction" _gui-text="Direction" type="enum">
+   <param name="direction" gui-text="Direction" type="optiongroup" appearance="combo">
       <_item value="y">vertical cuts</_item>
       <_item value="x">horizontal cuts</_item>
    </param>
-   <param name="unit" _gui-text="Unit" type="enum">
+   <param name="unit" gui-text="Unit" type="optiongroup" appearance="combo">
       <_item value="mm">mm</_item>
       <_item value="cm">cm</_item>
       <_item value="in">in</_item>
       <_item value="px">px</_item>
    </param>
-   <param name="cut_length" type="float" precision="2" _gui-text="cut length (y)" min="1" max="1000">19.0</param>
-   <param name="gap_length" type="float" precision="2" _gui-text="gap length (y)" min="1" max="1000">3.0</param>
-   <param name="sep_distance" type="float" precision="2" _gui-text="separation distance (x)" min="1" max="1000">1.5</param>
+   <param name="cut_length" type="float" precision="2" gui-text="cut length (y)" min="1" max="1000">19.0</param>
+   <param name="gap_length" type="float" precision="2" gui-text="gap length (y)" min="1" max="1000">3.0</param>
+   <param name="sep_distance" type="float" precision="2" gui-text="separation distance (x)" min="1" max="1000">1.5</param>
    <param name="help_text" type="description">This extension renders the lines to make the cuts for a living hinge. The cuts run in the choosen direction.
 
 - direction: choose the direction of the cuts.
@@ -26,12 +26,12 @@ The entered value for cut length will be adjusted so that an integer number of w
    <effect>
       <object-type>all</object-type>
       <effects-menu>
-            <submenu _name="FabLab Chemnitz">
-				<submenu _name="Shape/Pattern from existing Object(s)"/>
+            <submenu name="FabLab Chemnitz">
+				<submenu name="Shape/Pattern from existing Object(s)"/>
 			</submenu>
       </effects-menu>
    </effect>
    <script>
-      <command reldir="extensions" interpreter="python">fablabchemnitz_living_hinge.py</command>
+      <command location="inx" interpreter="python">fablabchemnitz_living_hinge.py</command>
    </script>
 </inkscape-extension>

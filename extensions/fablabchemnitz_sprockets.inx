@@ -27,6 +27,6 @@
       </effects-menu>
    </effect>
    <script>
-      <command reldir="extensions" interpreter="python">fablabchemnitz_sprockets.py</command>
+      <command location="inx" interpreter="python">fablabchemnitz_sprockets.py</command>
    </script>
 </inkscape-extension>

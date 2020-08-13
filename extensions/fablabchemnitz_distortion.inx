@@ -12,6 +12,6 @@
       </effects-menu>
    </effect>
    <script>
-      <command reldir="extensions" interpreter="python">fablabchemnitz_distortion.py</command>
+      <command location="inx" interpreter="python">fablabchemnitz_distortion.py</command>
    </script>
 </inkscape-extension>

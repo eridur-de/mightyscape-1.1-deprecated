@@ -68,6 +68,6 @@ Line Thickness: Thickness of the cutting line on the display.
       </effects-menu>
    </effect>
    <script>
-      <command reldir="extensions" interpreter="python">fablabchemnitz_cutcraftcylinder.py</command>
+      <command location="inx" interpreter="python">fablabchemnitz_cutcraftcylinder.py</command>
    </script>
 </inkscape-extension>

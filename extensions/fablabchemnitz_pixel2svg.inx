@@ -39,7 +39,7 @@ http://florian-berger.de/en/software/pixel2svg
       </effects-menu>
    </effect>
    <script>
-      <command reldir="extensions" interpreter="python">fablabchemnitz_pixel2svg.py</command>
+      <command location="inx" interpreter="python">fablabchemnitz_pixel2svg.py</command>
    </script>
    <options silent="false"/>
 </inkscape-extension>

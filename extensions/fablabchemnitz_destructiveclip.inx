@@ -12,6 +12,6 @@
       <menu-tip>"Destructively" clip selected paths using the topmost as clipping path</menu-tip>
    </effect>
    <script>
-      <command reldir="extensions" interpreter="python">fablabchemnitz_destructiveclip.py</command>
+      <command location="inx" interpreter="python">fablabchemnitz_destructiveclip.py</command>
    </script>
 </inkscape-extension>

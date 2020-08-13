@@ -39,6 +39,6 @@ image into a wavy shading.</param>
         </effects-menu>
     </effect>
     <script>
-        <command reldir="extensions" interpreter="python">fablabchemnitz_endurance_line_shading.py</command>
+        <command location="inx" interpreter="python">fablabchemnitz_endurance_line_shading.py</command>
     </script>
 </inkscape-extension>

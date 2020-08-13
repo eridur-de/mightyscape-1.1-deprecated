@@ -28,6 +28,6 @@ The components that make up the star are left as separate objects so that additi
       </effects-menu>
    </effect>
    <script>
-      <command reldir="extensions" interpreter="python">fablabchemnitz_sheriff_star.py</command>
+      <command location="inx" interpreter="python">fablabchemnitz_sheriff_star.py</command>
    </script>
 </inkscape-extension>

@@ -42,6 +42,6 @@
       </effects-menu>
    </effect>
    <script>
-      <command reldir="extensions" interpreter="python">fablabchemnitz_render_sudoku.py</command>
+      <command location="inx" interpreter="python">fablabchemnitz_render_sudoku.py</command>
    </script>
 </inkscape-extension>

@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-  <_name>Gears2</_name>
+  <name>Gears2</name>
   <id>fablabchemnitz.de.gears2</id>
   <param name="tab" type="notebook">
 
-    <page name="Options" _gui-text="Options">
-      <param name="teeth" type="int" min="6" max="500" _gui-text="Number of teeth">24</param>
-      <param name="pressure_angle" type="float" min="1" max="40" _gui-text="Pressure angle">20</param>
-      <param name="size_type" type="optiongroup" _gui-text="Size type">
-	<_option value="1">Module (mm)</_option>
-	<_option value="2">Pitch diameter (inches)</_option>
-	<_option value="3">Diametral pitch (inches)</_option>
+    <page name="Options" gui-text="Options">
+      <param name="teeth" type="int" min="6" max="500" gui-text="Number of teeth">24</param>
+      <param name="pressure_angle" type="float" min="1" max="40" gui-text="Pressure angle">20</param>
+      <param name="size_type" type="optiongroup" appearance="combo" gui-text="Size type">
+	<option value="1">Module (mm)</option>
+	<option value="2">Pitch diameter (inches)</option>
+	<option value="3">Diametral pitch (inches)</option>
       </param>
-      <param name="size" type="float" min="0.01" max="500" _gui-text="Size">5</param>
-      <param name="orientation" type="optiongroup" _gui-text="Gear orientation">
-	<_option value="1">External</_option>
-	<_option value="2">Internal</_option>
+      <param name="size" type="float" min="0.01" max="500" gui-text="Size">5</param>
+      <param name="orientation" type="optiongroup" appearance="combo" gui-text="Gear orientation">
+	<option value="1">External</option>
+	<option value="2">Internal</option>
       </param>
     </page>
 
-    <page name="Help" _gui-text="Help">
+    <page name="Help" gui-text="Help">
       <param name="help_text" type="description">
 Number of teeth: Exactly what it sounds like.
 
@@ -39,12 +39,12 @@ Latest version:  www.arc.id.au/gearDrawing.html
   <effect needs-live-preview="true">
     <object-type>all</object-type>
     <effects-menu>
-            <submenu _name="FabLab Chemnitz">
-				<submenu _name="Gears"/>
+            <submenu name="FabLab Chemnitz">
+				<submenu name="Gears"/>
 			</submenu>
     </effects-menu>						    		
   </effect>
   <script>
-    <command reldir="extensions" interpreter="python">fablabchemnitz_gears2.py</command>
+    <command location="inx" interpreter="python">fablabchemnitz_gears2.py</command>
   </script>
 </inkscape-extension>

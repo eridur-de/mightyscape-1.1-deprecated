@@ -43,6 +43,6 @@ Dan Newman (dan newman @ mtbaldy us)
       </effects-menu>
    </effect>
    <script>
-      <command reldir="extensions" interpreter="python">fablabchemnitz_eggbot_sineandlace.py</command>
+      <command location="inx" interpreter="python">fablabchemnitz_eggbot_sineandlace.py</command>
    </script>
 </inkscape-extension>

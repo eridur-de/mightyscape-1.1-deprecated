@@ -40,6 +40,6 @@
       </effects-menu>
     </effect>
     <script>
-       <command reldir="extensions" interpreter="python">fablabchemnitz_contour_scanner.py</command>
+       <command location="inx" interpreter="python">fablabchemnitz_contour_scanner.py</command>
     </script>
 </inkscape-extension>

@@ -40,6 +40,6 @@ See https://github.com/rkp8000/inkscape-travel for instructions and usage exampl
         </effects-menu>
     </effect>
     <script>
-        <command reldir="extensions" interpreter="python">fablabchemnitz_travel.py</command>
+        <command location="inx" interpreter="python">fablabchemnitz_travel.py</command>
     </script>
 </inkscape-extension>

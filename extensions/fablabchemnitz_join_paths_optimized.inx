@@ -20,6 +20,6 @@
         </effects-menu>
     </effect>
     <script>
-        <command reldir="extensions" interpreter="python">fablabchemnitz_join_paths_optimized.py</command>
+        <command location="inx" interpreter="python">fablabchemnitz_join_paths_optimized.py</command>
     </script>
 </inkscape-extension>

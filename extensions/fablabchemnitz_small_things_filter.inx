@@ -22,6 +22,6 @@
         </effects-menu>
     </effect>
     <script>
-        <command reldir="extensions" interpreter="python">fablabchemnitz_small_things_filter.py</command>
+        <command location="inx" interpreter="python">fablabchemnitz_small_things_filter.py</command>
     </script>
 </inkscape-extension>

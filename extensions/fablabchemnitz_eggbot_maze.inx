@@ -17,6 +17,6 @@
       </effects-menu>
    </effect>
    <script>
-      <command reldir="extensions" interpreter="python">fablabchemnitz_eggbot_maze.py</command>
+      <command location="inx" interpreter="python">fablabchemnitz_eggbot_maze.py</command>
    </script>
 </inkscape-extension>

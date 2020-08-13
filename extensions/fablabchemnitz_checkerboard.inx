@@ -42,6 +42,6 @@ https://github.com/jeffkayser/inkscape-checkerboard</param>
       </effects-menu>
   </effect>
   <script>
-    <command reldir="extensions" interpreter="python">fablabchemnitz_checkerboard.py</command>
+    <command location="inx" interpreter="python">fablabchemnitz_checkerboard.py</command>
   </script>
 </inkscape-extension>

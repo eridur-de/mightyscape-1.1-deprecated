@@ -41,6 +41,6 @@
         </effects-menu>
     </effect>
     <script>
-        <command reldir="extensions" interpreter="python">fablabchemnitz_streaks.py</command>
+        <command location="inx" interpreter="python">fablabchemnitz_streaks.py</command>
     </script>
 </inkscape-extension>

@@ -15,6 +15,6 @@
         </effects-menu>
     </effect>
     <script>
-        <command reldir="extensions" interpreter="python">fablabchemnitz_HexLayoutGuides.py</command>
+        <command location="inx" interpreter="python">fablabchemnitz_HexLayoutGuides.py</command>
     </script>
 </inkscape-extension>

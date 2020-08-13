@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <_name>JPEG Export</_name>
+    <name>JPEG Export</name>
     <id>fablabchemnitz.de.jpegexport</id>
-    <param name="path" type="path" _gui-text="Export path" _gui-description="Full path to your file, e.g. 'C:\Users\User_Name\Documents\myimage.jpg'" filetypes="jpg" mode="file_new">C:\Users\</param>
-    <param name="bgcol" type="string" _gui-text="Background color (leave blank for white)" _gui-description="Background color hex code, e.g. '#abc123'"></param>
-    <param name="quality" type="int" min="0" max="100" _gui-text="Quality %" _gui-description="JPG compression quality">100</param>
-    <param name="density" type="int" min="30" max="2400" _gui-text="Resolution (ppi)" _gui-description="Recommended: 90 (screens) or 300 (print)">90</param>
-    <param name="page" type="boolean" _gui-text="Export whole page" _gui-description="If checked, the whole page will be exported, else the selection.">true</param>
-    <param name="fast" type="boolean" _gui-text="Fast export (suggested)" _gui-description="Will use an approximate bounding box. If unchecked, export will take longer.">true</param>
-    <_param name="usage" type="description" appearance="header">Usage</_param>
+    <param name="path" type="path" gui-text="Export path" gui-description="Full path to your file, e.g. 'C:\Users\Username\Documents\myimage.jpg'" filetypes="jpg" mode="file_new">C:\Users\</param>
+    <param name="bgcol" type="string" gui-text="Background color (leave blank for white)" gui-description="Background color hex code, e.g. '#abc123'"></param>
+    <param name="quality" type="int" min="0" max="100" gui-text="Quality %" gui-description="JPG compression quality">100</param>
+    <param name="density" type="int" min="30" max="2400" gui-text="Resolution (ppi)" gui-description="Recommended: 90 (screens) or 300 (print)">90</param>
+    <param name="page" type="bool" gui-text="Export whole page" gui-description="If checked, the whole page will be exported, else the selection.">true</param>
+    <param name="fast" type="bool" gui-text="Fast export (suggested)" gui-description="Will use an approximate bounding box. If unchecked, export will take longer.">true</param>
+    <param name="usage" type="description" appearance="header">Usage</param>
     <param name="help" type="description" xml:space="preserve">Select the objects in the drawing that you wish to export, or make a check at "Export whole page".
       
 Enter a name for your JPG file (with full path) and choose a background color for the exported image (JPG format does not support transparency). 
@@ -19,12 +19,12 @@ This extension requires that imagemagick is installed, more info and download at
     <effect needs-live-preview="false">
         <object-type>all</object-type>
         <effects-menu>
-            <submenu _name="FabLab Chemnitz">
-				<submenu _name="Import/Export/Transfer"/>
+            <submenu name="FabLab Chemnitz">
+				<submenu name="Import/Export/Transfer"/>
 			</submenu>
         </effects-menu>
     </effect>
     <script>
-        <command reldir="extensions" interpreter="python">fablabchemnitz_jpegexport.py</command>
+        <command location="inx" interpreter="python">fablabchemnitz_jpegexport.py</command>
     </script>
 </inkscape-extension>

@@ -25,6 +25,6 @@
         </effects-menu>
     </effect>
     <script>
-        <command reldir="extensions" interpreter="python">svg2shenzhen/export.py</command>
+        <command location="inx" interpreter="python">svg2shenzhen/export.py</command>
     </script>
 </inkscape-extension>

@@ -3,7 +3,7 @@
    <name>Flevobézier</name>
    <id>fablabchemnitz.de.flevobezier</id>
    <script>
-      <command reldir="extensions" interpreter="python">fablabchemnitz_flevobezier.py</command>
+      <command location="inx" interpreter="python">fablabchemnitz_flevobezier.py</command>
    </script>
    <effect>
       <object-type>path</object-type>

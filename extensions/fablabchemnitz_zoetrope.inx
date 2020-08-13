@@ -57,6 +57,6 @@ paint program to prepare the images to fit on this Zoetrope.
         </effects-menu>
     </effect>
     <script>
-        <command reldir="extensions" interpreter="python">fablabchemnitz_zoetrope.py</command>
+        <command location="inx" interpreter="python">fablabchemnitz_zoetrope.py</command>
     </script>
 </inkscape-extension>

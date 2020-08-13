@@ -102,6 +102,6 @@ distribution.
         </effects-menu>
     </effect>
     <script>
-        <command reldir="extensions" interpreter="python">fablabchemnitz_hershey_text_alternative.py</command>
+        <command location="inx" interpreter="python">fablabchemnitz_hershey_text_alternative.py</command>
     </script>
 </inkscape-extension>

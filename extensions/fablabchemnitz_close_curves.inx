@@ -11,6 +11,6 @@
         <object-type>path</object-type>
     </effect>
     <script>
-        <command reldir="extensions" interpreter="python">fablabchemnitz_close_curves.py</command>
+        <command location="inx" interpreter="python">fablabchemnitz_close_curves.py</command>
     </script>
 </inkscape-extension>

@@ -42,6 +42,6 @@
         </effects-menu>
     </effect>
     <script>
-        <command reldir="extensions">fablabchemnitz_cutoptim.exe</command>
+        <command location="inx">fablabchemnitz_cutoptim.exe</command>
     </script>
 </inkscape-extension>

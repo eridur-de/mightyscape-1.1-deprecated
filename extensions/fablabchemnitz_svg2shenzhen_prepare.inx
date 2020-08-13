@@ -16,6 +16,6 @@
         </effects-menu>
     </effect>
     <script>
-        <command reldir="extensions" interpreter="python">svg2shenzhen/prepare.py</command>
+        <command location="inx" interpreter="python">svg2shenzhen/prepare.py</command>
     </script>
 </inkscape-extension>

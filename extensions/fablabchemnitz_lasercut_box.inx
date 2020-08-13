@@ -84,6 +84,6 @@ This can be helpful if printing tests fits for different materials.
       </effects-menu>
    </effect>
    <script>
-      <command reldir="extensions" interpreter="python">fablabchemnitz_lasercut_box.py</command>
+      <command location="inx" interpreter="python">fablabchemnitz_lasercut_box.py</command>
    </script>
 </inkscape-extension>

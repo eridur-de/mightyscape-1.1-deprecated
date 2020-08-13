@@ -27,6 +27,6 @@ If Cut diameter=0 then cone will not be truncated.</param>
         </effects-menu>
     </effect>
     <script>
-        <command reldir="extensions" interpreter="python">fablabchemnitz_sheet_conus.py</command>
+        <command location="inx" interpreter="python">fablabchemnitz_sheet_conus.py</command>
     </script>
 </inkscape-extension>

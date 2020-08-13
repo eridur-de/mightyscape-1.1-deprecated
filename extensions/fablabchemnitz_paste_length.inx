@@ -28,6 +28,6 @@
         </effects-menu>
     </effect>
     <script>
-        <command reldir="extensions" interpreter="python">fablabchemnitz_paste_length.py</command>
+        <command location="inx" interpreter="python">fablabchemnitz_paste_length.py</command>
     </script>
 </inkscape-extension>

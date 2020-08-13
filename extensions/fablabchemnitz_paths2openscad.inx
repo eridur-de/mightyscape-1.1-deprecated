@@ -144,6 +144,6 @@ Find updates at https://github.com/fablabnbg/inkscape-paths2openscad/releases
       </effects-menu>
    </effect>
    <script>
-      <command reldir="extensions" interpreter="python">fablabchemnitz_paths2openscad.py</command>
+      <command location="inx" interpreter="python">fablabchemnitz_paths2openscad.py</command>
    </script>
 </inkscape-extension>

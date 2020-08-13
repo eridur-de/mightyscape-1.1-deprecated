@@ -31,6 +31,6 @@
         </effects-menu>
     </effect>
     <script>
-        <command reldir="extensions" interpreter="python">fablabchemnitz_split_bezier.py</command>
+        <command location="inx" interpreter="python">fablabchemnitz_split_bezier.py</command>
     </script>
 </inkscape-extension>

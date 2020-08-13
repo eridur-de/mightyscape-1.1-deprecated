@@ -58,6 +58,6 @@ This extension is a Python rewrite of the Generator bash script extension by Aur
       </effects-menu>
    </effect>
    <script>
-      <command reldir="extensions" interpreter="python">fablabchemnitz_next_gen.py</command>
+      <command location="inx" interpreter="python">fablabchemnitz_next_gen.py</command>
    </script>
 </inkscape-extension>

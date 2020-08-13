@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <_name>Papercraft Unfold Binary</_name>
+    <name>Papercraft Unfold Binary</name>
     <id>fablabchemnitz.de.papercraft_unfold_binary</id>
     <input>
         <extension>.stl</extension>
@@ -9,6 +9,6 @@
         <_filetypetooltip>Unfold STL Files</_filetypetooltip>
     </input>
     <script>
-        <command reldir="extensions" interpreter="python">fablabchemnitz_papercraft_unfold_binary.py</command>
+        <command location="inx" interpreter="python">fablabchemnitz_papercraft_unfold_binary.py</command>
     </script>
 </inkscape-extension>

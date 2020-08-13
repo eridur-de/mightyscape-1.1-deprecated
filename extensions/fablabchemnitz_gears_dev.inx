@@ -90,6 +90,6 @@ Caution: Undercut is currently not generated. E.g. a gear at pressure angle 20 d
       </effects-menu>
    </effect>
    <script>
-      <command reldir="extensions" interpreter="python">fablabchemnitz_gears_dev.py</command>
+      <command location="inx" interpreter="python">fablabchemnitz_gears_dev.py</command>
    </script>
 </inkscape-extension>

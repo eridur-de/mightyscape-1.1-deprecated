@@ -22,6 +22,6 @@
       </effects-menu>
    </effect>
    <script>
-      <command reldir="extensions" interpreter="python">fablabchemnitz_polyhedra.py</command>
+      <command location="inx" interpreter="python">fablabchemnitz_polyhedra.py</command>
    </script>
 </inkscape-extension>

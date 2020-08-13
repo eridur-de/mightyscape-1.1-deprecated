@@ -32,6 +32,6 @@
         </effects-menu>
     </effect>
     <script>
-        <command reldir="extensions" interpreter="python">fablabchemnitz_elliptical_cone_box.py</command>
+        <command location="inx" interpreter="python">fablabchemnitz_elliptical_cone_box.py</command>
     </script>
 </inkscape-extension>

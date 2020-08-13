@@ -24,6 +24,6 @@ You can paste Bouwkamp codes with or without various formatting characters (like
         </effects-menu>
     </effect>
     <script>
-        <command reldir="extensions" interpreter="python">fablabchemnitz_bouwkamp_code.py</command>
+        <command location="inx" interpreter="python">fablabchemnitz_bouwkamp_code.py</command>
     </script>
 </inkscape-extension>
