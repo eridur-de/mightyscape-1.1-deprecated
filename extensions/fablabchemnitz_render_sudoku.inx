@@ -5,11 +5,11 @@
    <param name="tab" type="notebook">
       <page name="tab_puzzle" gui-text="Puzzle">
          <param name="difficulty" type="optiongroup" appearance="combo" gui-text="Difficulty">
-            <_item value="mixed">Mixed</_item>
-            <_item value="simple">Simple</_item>
-            <_item value="easy">Easy</_item>
-            <_item value="intermediate">Intermediate</_item>
-            <_item value="expert">Expert</_item>
+            <option value="mixed">Mixed</option>
+            <option value="simple">Simple</option>
+            <option value="easy">Easy</option>
+            <option value="intermediate">Intermediate</option>
+            <option value="expert">Expert</option>
          </param>
          <param name="desc_unit" type="description">Layout parameters:</param>
          <param name="rows" type="int" min="1" max="6" gui-text="Rows">1</param>

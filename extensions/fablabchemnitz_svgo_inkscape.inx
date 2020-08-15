@@ -95,6 +95,6 @@
         <filetypetooltip translatable="no">Scalable Vector Graphics</filetypetooltip>
     </output>
     <script>
-        <command location="inx" location="inx" interpreter="python">./svgo-inkscape/svgo.inkscape.py</command>
+        <command location="inx" interpreter="python">./svgo-inkscape/svgo.inkscape.py</command>
     </script>
 </inkscape-extension>

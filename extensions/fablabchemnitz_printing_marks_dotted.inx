@@ -14,8 +14,8 @@
         </page>
         <page name="pos" gui-text="Positioning">
             <param name="where" type="optiongroup" appearance="combo" gui-text="Set crop marks to:">
-                <_item value="canvas">Canvas</_item>
-                <_item value="selection">Selection</_item>
+                <option value="canvas">Canvas</option>
+                <option value="selection">Selection</option>
             </param>
             <param name="unit" gui-text="Unit:" type="optiongroup" appearance="combo">
                 <option value="px">px</option>

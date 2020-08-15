@@ -14,27 +14,27 @@ Version 3.0, 2019-06-16
 
 </param>
             <param indent="1" name="fontface" type="optiongroup" appearance="combo" gui-text="Font face: ">
-                <_item value="HersheySans1">Hershey Sans 1-stroke</_item>
-                <_item value="HersheySansMed">Hershey Sans medium</_item>
-                <_item value="HersheySerifMed">Hershey Serif medium</_item>
-                <_item value="HersheySerifMedItalic">Hershey Serif medium italic</_item>
-                <_item value="HersheySerifBold">Hershey Serif bold</_item>
-                <_item value="HersheySerifBoldItalic">Hershey Serif bold italic</_item>
-                <_item value="HersheyScript1">Hershey Script 1-stroke</_item>
-                <_item value="HersheyScriptMed">Hershey Script medium</_item>
-                <_item value="HersheyGothEnglish">Hershey Gothic English</_item>
+                <option value="HersheySans1">Hershey Sans 1-stroke</option>
+                <option value="HersheySansMed">Hershey Sans medium</option>
+                <option value="HersheySerifMed">Hershey Serif medium</option>
+                <option value="HersheySerifMedItalic">Hershey Serif medium italic</option>
+                <option value="HersheySerifBold">Hershey Serif bold</option>
+                <option value="HersheySerifBoldItalic">Hershey Serif bold italic</option>
+                <option value="HersheyScript1">Hershey Script 1-stroke</option>
+                <option value="HersheyScriptMed">Hershey Script medium</option>
+                <option value="HersheyGothEnglish">Hershey Gothic English</option>
                 <!-- Block below this are derived from fonts licensed under SIL Open Font License -->
-                <_item value="EMSAllure">EMS Allure</_item>
-                <_item value="EMSElfin">EMS Elfin</_item>
-                <_item value="EMSFelix">EMS Felix</_item>
-                <_item value="EMSNixish">EMS Nixish</_item>
-                <_item value="EMSNixishItalic">EMS Nixish Italic</_item>
-                <_item value="EMSOsmotron">EMS Osmotron</_item>
-                <_item value="EMSReadability">EMS Readability</_item>
-                <_item value="EMSReadabilityItalic">EMS Readability Italic</_item>
-                <_item value="EMSTech">EMS Tech</_item>
+                <option value="EMSAllure">EMS Allure</option>
+                <option value="EMSElfin">EMS Elfin</option>
+                <option value="EMSFelix">EMS Felix</option>
+                <option value="EMSNixish">EMS Nixish</option>
+                <option value="EMSNixishItalic">EMS Nixish Italic</option>
+                <option value="EMSOsmotron">EMS Osmotron</option>
+                <option value="EMSReadability">EMS Readability</option>
+                <option value="EMSReadabilityItalic">EMS Readability Italic</option>
+                <option value="EMSTech">EMS Tech</option>
                 <!-- Block above this are derived from fonts licensed under SIL Open Font License -->
-                <_item value="other">Other (given below)</_item>
+                <option value="other">Other (given below)</option>
             </param>
             <param name="otherFontDesc" type="description" xml:space="preserve">
 Other SVG font name or path (if "Other" selected above):
@@ -47,8 +47,8 @@ Other SVG font name or path (if "Other" selected above):
 Hershey Text Utility Functions
   </param>
             <param indent="2" name="action" type="optiongroup" appearance="combo" gui-text="Action: ">
-                <_item value="sample">Generate font table</_item>
-                <_item value="table">Generate glyph table in selected font</_item>
+                <option value="sample">Generate font table</option>
+                <option value="table">Generate glyph table in selected font</option>
             </param>
             <param name="utilspage" type="description" xml:space="preserve">
 

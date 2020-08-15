@@ -19,10 +19,10 @@
    </param>
    <param name="size" type="float" min="1.0" max="1000.0" gui-text="length of first edge, px">100.0</param>
    <param name="tabs" type="optiongroup" appearance="combo" gui-text="Tab style">
-      <_item value="0">Tab and Slot</_item>
-      <_item value="1">Double Tabs</_item>
-      <_item value="2">Single Tabs</_item>
-      <_item value="3">None</_item>
+      <option value="0">Tab and Slot</option>
+      <option value="1">Double Tabs</option>
+      <option value="2">Single Tabs</option>
+      <option value="3">None</option>
    </param>
    <effect>
       <object-type>all</object-type>

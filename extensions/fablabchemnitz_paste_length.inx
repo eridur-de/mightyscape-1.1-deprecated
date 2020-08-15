@@ -5,11 +5,11 @@
     <param name="tab" type="notebook">
         <page name="pasteLength" gui-text="Paste Length">
             <param name="scaleFrom" type="optiongroup" appearance="combo" gui-text="Scale From:">
-                <_item value="center">Center</_item>
-                <_item value="topLeft">Top Left</_item>
-                <_item value="topRight">Top Right</_item>
-                <_item value="bottomLeft">Bottom Left</_item>
-                <_item value="bottomRight">Bottom Right</_item>
+                <option value="center">Center</option>
+                <option value="topLeft">Top Left</option>
+                <option value="topRight">Top Right</option>
+                <option value="bottomLeft">Bottom Left</option>
+                <option value="bottomRight">Bottom Right</option>
             </param>
             <param name="scale" type="float" gui-text="Scale Factor:">1</param>
             <param name="precision" type="int" default="5" min="0" max="10" gui-text="Precision:">5</param>

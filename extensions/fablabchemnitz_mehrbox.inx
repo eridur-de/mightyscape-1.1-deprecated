@@ -5,22 +5,22 @@
     <param name="page" type="notebook">
         <page name="page_1" gui-text="Sizes">
             <param name="unit" gui-text="Unit" type="optiongroup" appearance="combo">
-                <_item value="mm">mm</_item>
-                <_item value="cm">cm</_item>
-                <_item value="in">in</_item>
+                <option value="mm">mm</option>
+                <option value="cm">cm</option>
+                <option value="in">in</option>
             </param>
             <param name="name" type="description" appearance="header">Size Options</param>
             <param name="inside" type="optiongroup" appearance="combo" gui-text="Box Dimensions">
-                <_item value="1">Inside</_item>
-                <_item value="0">Outside</_item>
+                <option value="1">Inside</option>
+                <option value="0">Outside</option>
             </param>
             <param name="X_size" type="float" precision="2" min="0.0" max="1000000.0" gui-text="X axis lenght">100.0</param>
             <param name="Y_size" type="float" precision="2" min="0.0" max="1000000.0" gui-text="Y axis lenght">100.0</param>
             <param name="Z_size" type="float" precision="2" min="0.0" max="1000000.0" gui-text="Z axis lenght">100.0</param>
             <param name="name" type="description" appearance="header">Tab Options</param>
             <param name="tab_mode" gui-text="Tab Mode" type="optiongroup" appearance="combo">
-                <_item value="number">amount</_item>
-                <_item value="size">size</_item>
+                <option value="number">amount</option>
+                <option value="size">size</option>
             </param>
             <param name="tab_size" type="float" precision="2" min="0.0" max="10000.0" gui-text="target tab size">4.0</param>
             <param name="X_tabs" type="int" min="0" max="100000" gui-text="Tabs in X axis">3</param>
@@ -43,18 +43,18 @@
             <param name="name" type="description" appearance="header">Compartments on the X Axis</param>
             <param name="X_compartments" type="int" min="1" max="100000" gui-text="X Compartments">1</param>
             <param name="X_mode" type="optiongroup" appearance="combo" gui-text="Mode">
-                <_item value="even">even</_item>
-                <_item value="relative">relative</_item>
-                <_item value="absolut">absolut</_item>
+                <option value="even">even</option>
+                <option value="relative">relative</option>
+                <option value="absolut">absolut</option>
             </param>
             <param name="X_divisions" type="string" gui-text="Distances">20.0;40.0</param>
             <param name="X_fit" type="bool" gui-text="fit axis lenght to compartments">false</param>
             <param name="name" type="description" appearance="header">Compartments on the Y Axis</param>
             <param name="Y_compartments" type="int" min="1" max="100000" gui-text="Y Compartments">1</param>
             <param name="Y_mode" type="optiongroup" appearance="combo" gui-text="Mode">
-                <_item value="even">even</_item>
-                <_item value="relative">relative</_item>
-                <_item value="absolut">absolut</_item>
+                <option value="even">even</option>
+                <option value="relative">relative</option>
+                <option value="absolut">absolut</option>
             </param>
             <param name="Y_divisions" type="string" gui-text="Distances">20.0;40.0</param>
             <param name="Y_fit" type="bool" gui-text="fit axis lenght to compartments">false</param>

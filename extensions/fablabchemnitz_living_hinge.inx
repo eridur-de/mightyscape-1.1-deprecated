@@ -3,14 +3,14 @@
    <name>Living Hinge</name>
    <id>fablabchemnitz.de.living_hinge</id>
    <param name="direction" gui-text="Direction" type="optiongroup" appearance="combo">
-      <_item value="y">vertical cuts</_item>
-      <_item value="x">horizontal cuts</_item>
+      <option value="y">vertical cuts</option>
+      <option value="x">horizontal cuts</option>
    </param>
    <param name="unit" gui-text="Unit" type="optiongroup" appearance="combo">
-      <_item value="mm">mm</_item>
-      <_item value="cm">cm</_item>
-      <_item value="in">in</_item>
-      <_item value="px">px</_item>
+      <option value="mm">mm</option>
+      <option value="cm">cm</option>
+      <option value="in">in</option>
+      <option value="px">px</option>
    </param>
    <param name="cut_length" type="float" precision="2" gui-text="cut length (y)" min="1" max="1000">19.0</param>
    <param name="gap_length" type="float" precision="2" gui-text="gap length (y)" min="1" max="1000">3.0</param>

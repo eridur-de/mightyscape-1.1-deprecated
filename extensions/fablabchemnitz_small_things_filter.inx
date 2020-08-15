@@ -4,9 +4,9 @@
     <id>fablabchemnitz.de.small_things_filter</id>
     <param name="use" type="description" xml:space="preserve">Paths with value smaller than the given threshold will be deleted</param>
     <param name="unit" gui-text="Unit" type="optiongroup" appearance="combo">
-        <_item value="mm">mm</_item>
-        <_item value="cm">cm</_item>
-        <_item value="m">m</_item>
+        <option value="mm">mm</option>
+        <option value="cm">cm</option>
+        <option value="m">m</option>
     </param>
     <param name="threshold" type="float" min="0.0" max="10000000.0" gui-text="Threshold">1.0</param>
     <param name="measure" type="optiongroup" appearance="combo" gui-text="Measure by">

@@ -12,15 +12,15 @@
    </hbox>
    <hbox indent="1">
       <param name="variant" type="optiongroup" appearance="combo" gui-text="Pattern:">
-         <_item value="">diamond</_item>
-         <_item value="rectangle">rectangle</_item>
-         <_item value="hexagon1">hexagon (30°)</_item>
-         <_item value="hexagon2">hexagon (60°, /3)</_item>
-         <_item value="hexagon3">hexagon + triangle (30-45-60°, /2)</_item>
-         <_item value="hexagon4">hexagon + diamond (30°)</_item>
-         <_item value="hexagon5">hexagon + diamond (60°, /2)</_item>
-         <_item value="snow2">snow, hexagon (60°, /6)</_item>
-         <_item value="snow1">snow, hexagon + diamond (60°, /8)</_item>
+         <option value="">diamond</option>
+         <option value="rectangle">rectangle</option>
+         <option value="hexagon1">hexagon (30°)</option>
+         <option value="hexagon2">hexagon (60°, /3)</option>
+         <option value="hexagon3">hexagon + triangle (30-45-60°, /2)</option>
+         <option value="hexagon4">hexagon + diamond (30°)</option>
+         <option value="hexagon5">hexagon + diamond (60°, /2)</option>
+         <option value="snow2">snow, hexagon (60°, /6)</option>
+         <option value="snow1">snow, hexagon + diamond (60°, /8)</option>
       </param>
    </hbox>
    <param name="filllabel" type="description" appearance="header">Grid size</param>

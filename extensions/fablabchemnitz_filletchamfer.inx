@@ -3,15 +3,15 @@
     <name>Fillet And Chamfer</name>
     <id>fablabchemnitz.de.filletchamfer</id>
     <param name="fillet_type" type="optiongroup" appearance="combo" gui-text="Fillet or Chamfer:">
-        <_item value="fillet">Fillet</_item>
-        <_item value="chamfer">Chamfer</_item>
+        <option value="fillet">Fillet</option>
+        <option value="chamfer">Chamfer</option>
     </param>
     <param name="radius" type="float" min="0.0" max="1000.0" gui-text="Radius:">5.0</param>
     <param name="unit" gui-text="Unit" type="optiongroup" appearance="combo">
-        <_item value="mm">mm</_item>
-        <_item value="cm">cm</_item>
-        <_item value="in">in</_item>
-        <_item value="px">px</_item>
+        <option value="mm">mm</option>
+        <option value="cm">cm</option>
+        <option value="in">in</option>
+        <option value="px">px</option>
     </param>
 	<param name="remove" type="bool" gui-text="Remove control object">false</param>
     <effect>
