@@ -50,7 +50,7 @@
       <object-type>all</object-type>
       <effects-menu>
          <submenu name="FabLab Chemnitz">
-            <submenu name="Bobbin Lace"/>
+            <submenu name="Grids/Guides"/>
          </submenu>
       </effects-menu>
    </effect>

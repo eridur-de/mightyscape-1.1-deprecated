@@ -37,7 +37,7 @@ https://github.com/jeffkayser/inkscape-checkerboard</param>
     <object-type>all</object-type>
       <effects-menu>
             <submenu name="FabLab Chemnitz">
-                <submenu name="Shape/Pattern from Generator"/>
+                <submenu name="Grids/Guides"/>
             </submenu>
       </effects-menu>
   </effect>
