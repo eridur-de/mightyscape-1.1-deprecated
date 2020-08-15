@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <name>Parametric Shelves</name>
+    <id>fablabchemnitz.de.shelves</id>
+    <param name="unit" type="optiongroup" appearance="combo" gui-text="Unit">
+        <option value="mm">mm</option>
+        <option value="cm">cm</option>
+        <option value="m">m</option>
+        <option value="km">km</option>
+        <option value="in">in</option>
+        <option value="ft">ft</option>
+        <option value="yd">yd</option>
+        <option value="pt">pt</option>
+        <option value="px">px</option>
+        <option value="pc">pc</option>
+    </param>
+    <param name="thickness" type="float" min="1.0" max="100.0" gui-text="Material thickness">1.2</param>
+    <param name="tool_diameter" type="float" min="0.0" gui-text="Tool diameter (mind the units!)">0.3</param>
+    <param name="tolerance" type="float" min="-10000.0" max="10000.0" gui-text="Tolerance">0.05</param>
+    <param name="height" type="float" min="0.0" max="10000.0" gui-text="Height">100</param>
+    <param name="width" type="float" min="0.0" max="10000.0" gui-text="Width">100</param>
+    <param name="depth" type="float" min="0.0" max="10000.0" gui-text="Depth">40</param>
+    <param name="shelve_list" type="string" min="0.0" max="10000.0" gui-text="Shelve heigths (semicolon separated list)">10; 20; 35</param>
+    <param name="groove_depth" type="float" min="0.0" max="10000.0" gui-text="Groove depth">0.6</param>
+    <param name="tab_size" type="float" min="0.0" max="10000.0" gui-text="Tab size (approximate; will be resized to evenly fit the side)">10</param>
+    <effect>
+        <object-type>all</object-type>
+        <effects-menu>
+            <submenu name="FabLab Chemnitz">
+                <submenu name="Finger-jointed/Tabbed Boxes"/>
+            </submenu>
+        </effects-menu>
+    </effect>
+    <script>
+        <command location="inx" interpreter="python">fablabchemnitz_shelves.py</command>
+    </script>
+</inkscape-extension>
