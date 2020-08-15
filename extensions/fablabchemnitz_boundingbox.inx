@@ -6,6 +6,7 @@
     <param min="-10000.0" max="10000.0" name="offset" type="float" gui-text="Offset from object (all directions)">0.0</param>
     <param name="box" type="bool" gui-text="Draw boxes">true</param>
     <param name="circle" type="bool" gui-text="Draw circles">false</param>
+    <param name="split" type="bool" gui-text="Handle selection as group">True</param>
     <effect>
         <object-type>all</object-type>
         <effects-menu>
