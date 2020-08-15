@@ -177,19 +177,19 @@ class Pixel2SVG(inkex.Effect):
             pixel2svg_max = self.options.maxsize
 
             if self.options.verbose:
-                inkex.debug("ID: %s" % node.get('id'))
-                inkex.debug("Image size:\t%dx%d" % image.size)
-                inkex.debug("Image format:\t%s" % image.format)
-                inkex.debug("Image mode:\t%s" % image.mode)
-                inkex.debug("Image info:\t%s" % image.info)
+                inkex.utils.debug("ID: %s" % node.get('id'))
+                inkex.utils.debug("Image size:\t%dx%d" % image.size)
+                inkex.utils.debug("Image format:\t%s" % image.format)
+                inkex.utils.debug("Image mode:\t%s" % image.mode)
+                inkex.utils.debug("Image info:\t%s" % image.info)
 
                 if (image.mode == 'P' and 'transparency' in image.info):
-                    inkex.debug(
+                    inkex.utils.debug(
                         "Note: paletted image with an alpha channel is handled badly with " +
                         "current PIL:\n" +
                         "<http://stackoverflow.com/questions/12462548/pil-image-mode-p-rgba>")
                 elif not image.mode in ('RGBA', 'LA'):
-                    inkex.debug("No alpha channel or transparency found")
+                    inkex.utils.debug("No alpha channel or transparency found")
 
             image = image.convert("RGBA")
             (width, height) = image.size
@@ -274,7 +274,7 @@ class Pixel2SVG(inkex.Effect):
 
                 # all done
                 if DEBUG:
-                    inkex.debug("All rects drawn.")
+                    inkex.utils.debug("All rects drawn.")
 
                 if self.options.delete_image:
                     nodeParent.remove(node)
@@ -289,7 +289,7 @@ class Pixel2SVG(inkex.Effect):
 
             # clean-up?
             if DEBUG:
-                inkex.debug("Done.")
+                inkex.utils.debug("Done.")
 
         else:
             inkex.errormsg(_("Bailing out: No supported image file or data found"))
