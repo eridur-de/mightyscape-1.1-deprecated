@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <name>Label Feature With Fill Color</_ame>
+    <name>Label Feature With Fill Color</name>
     <id>fablabchemnitz.de.label_color</id>
     <effect>
         <object-type>all</object-type>
