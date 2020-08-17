@@ -26,7 +26,9 @@ source object changes the linked objects.
     <effect>
         <object-type>all</object-type>
         <effects-menu>
-            <submenu _name="Render" />
+         <submenu name="FabLab Chemnitz">
+            <submenu name="Shape/Pattern from existing Path(s)" />
+         </submenu>
         </effects-menu>
     </effect>
     <script>
