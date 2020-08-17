@@ -78,16 +78,13 @@ class HingeCuts(inkex.Effect):
       #        inkex.utils.debug("id:" + id)
       #         for key in node.attrib.keys():
       #           inkex.utils.debug(key + ": " + node.get(key))
-        x = float(node.get("x"))
-        dx = float(node.get("width"))
-        y = float(node.get("y"))
-        dy = float(node.get("height"))
-        
+        bbox = node.bounding_box()
+       
         # calculate the cut lines for the hinge
         if (dir=="y"):
-          lines, l_actual, d_actual, dd_actual = self.calcYCutLines(x, y, dx, dy, l, d, dd)
+          lines, l_actual, d_actual, dd_actual = self.calcYCutLines(bbox.left, bbox.top, bbox.width, bbox.height, l, d, dd)
         else:
-          lines, l_actual, d_actual, dd_actual = self.calcXCutLines(x, y, dx, dy, l, d, dd)
+          lines, l_actual, d_actual, dd_actual = self.calcXCutLines(bbox.left, bbox.top, bbox.width, bbox.height, l, d, dd)
 
         s = ''
         for line in lines:
