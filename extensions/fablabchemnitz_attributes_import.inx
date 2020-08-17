@@ -5,7 +5,7 @@
 	<param name="introduction" type="description">Uses lines in text file to edit attributes of elements.</param>
 	<param name="usage" type="description">Line: 'elementID,attributeName,attributeValue'.</param>
 	<param name="namespaceTip" type="description">For namespaces use {namespaceUrl}attributeName</param>	
-	<param name="data" type="path" _gui-text="Data file:" mode="file" filetypes="txt,csv"/>	
+	<param name="data" type="path" gui-text="Data file:" mode="file" filetypes="txt,csv"/>
 	<effect>
 		<object-type>all</object-type>
 		<effects-menu>
