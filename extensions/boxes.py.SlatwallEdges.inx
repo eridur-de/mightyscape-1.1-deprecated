@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-  <_name>SlatwallEdges</_name>
+  <name>SlatwallEdges</name>
   <dependency type="executable" location="extensions">boxes.exe</dependency>
   <id>info.festi.boxes.py.SlatwallEdges</id>
 
@@ -48,8 +48,8 @@
   <effect>
     <object-type>all</object-type>
       <effects-menu>
-        <submenu _name="Boxes.py">
-         <submenu _name="SlatWall"/>
+        <submenu name="Boxes.py">
+         <submenu name="SlatWall"/>
         </submenu>
       </effects-menu>
   </effect>

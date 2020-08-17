@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-  <_name>LaserHoldfast</_name>
+  <name>LaserHoldfast</name>
   <dependency type="executable" location="extensions">boxes.exe</dependency>
   <id>info.festi.boxes.py.LaserHoldfast</id>
 
@@ -26,8 +26,8 @@
   <effect>
     <object-type>all</object-type>
       <effects-menu>
-        <submenu _name="Boxes.py">
-         <submenu _name="Parts and Samples"/>
+        <submenu name="Boxes.py">
+         <submenu name="Parts and Samples"/>
         </submenu>
       </effects-menu>
   </effect>

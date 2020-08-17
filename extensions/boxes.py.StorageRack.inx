@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-  <_name>StorageRack</_name>
+  <name>StorageRack</name>
   <dependency type="executable" location="extensions">boxes.exe</dependency>
   <id>info.festi.boxes.py.StorageRack</id>
 
@@ -59,8 +59,8 @@
   <effect>
     <object-type>all</object-type>
       <effects-menu>
-        <submenu _name="Boxes.py">
-         <submenu _name="Shelves"/>
+        <submenu name="Boxes.py">
+         <submenu name="Shelves"/>
         </submenu>
       </effects-menu>
   </effect>

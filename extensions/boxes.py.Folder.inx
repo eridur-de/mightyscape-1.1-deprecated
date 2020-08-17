@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-  <_name>Folder</_name>
+  <name>Folder</name>
   <dependency type="executable" location="extensions">boxes.exe</dependency>
   <id>info.festi.boxes.py.Folder</id>
 
@@ -40,8 +40,8 @@
   <effect>
     <object-type>all</object-type>
       <effects-menu>
-        <submenu _name="Boxes.py">
-         <submenu _name="Misc"/>
+        <submenu name="Boxes.py">
+         <submenu name="Misc"/>
         </submenu>
       </effects-menu>
   </effect>

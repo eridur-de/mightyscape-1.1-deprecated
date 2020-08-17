@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-  <_name>Rack10Box</_name>
+  <name>Rack10Box</name>
   <dependency type="executable" location="extensions">boxes.exe</dependency>
   <id>info.festi.boxes.py.Rack10Box</id>
 
@@ -58,8 +58,8 @@
   <effect>
     <object-type>all</object-type>
       <effects-menu>
-        <submenu _name="Boxes.py">
-         <submenu _name="Boxes"/>
+        <submenu name="Boxes.py">
+         <submenu name="Boxes"/>
         </submenu>
       </effects-menu>
   </effect>
