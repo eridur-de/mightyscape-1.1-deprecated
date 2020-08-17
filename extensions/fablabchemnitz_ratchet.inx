@@ -35,7 +35,7 @@
         <option value="curve">curve</option>
     </param>
     <param name="header_description" type="description" appearance="header">Author / License</param>
-    <param name="some_description" type="description" xml:space="preserve">  written by Kie (inkscape@kitamura-studios.com)
+    <param name="some_description" type="description" xml:space="preserve">written by Kie (inkscape@kitamura-studios.com)
   Draw Ratchet Copyright (C) 2016 Kie Brooks
   Distributed under GPLv3 or later
 

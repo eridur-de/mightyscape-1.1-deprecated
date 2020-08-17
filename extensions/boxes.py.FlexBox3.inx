@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
   <name>FlexBox3</name>
-  <dependency type="executable" location="extensions">boxes.exe</dependency>
   <id>info.festi.boxes.py.FlexBox3</id>
 
   <param name="generator" type="string" gui-hidden="true">flexbox3</param>
