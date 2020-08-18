@@ -22,31 +22,21 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ------------------------------------------------------------------------
 
 '''
-
+import base64
+from io import BytesIO
 import inkex
-import urllib.parse
-import urllib.request
 import os
-import random
 from PIL import Image
 from lxml import etree
-from inkex import Transform
 import numpy as np
 from scipy.spatial import Delaunay
 from scipy.cluster.vq import kmeans2
 import cv2
+import urllib.request as urllib
 
 class Triangulation(inkex.Effect):
     def __init__(self):
-        # Call base class construtor.
         inkex.Effect.__init__(self)
-        # Option parser:
-        # -n, --num_points
-        # -m, --edge_thresh_min
-        # -M, --edge_thresh_max
-        # -c, --add_corners
-        # -g, --gradient_fill
-        # -b, --tab
         self.arg_parser.add_argument("-n", "--num_points", type=int, default=100, help="Number of points to be sampled")
         self.arg_parser.add_argument("-m", "--edge_thresh_min", type=int, default=200, help="Minimum threshold for edge detection")
         self.arg_parser.add_argument("-M", "--edge_thresh_max", type=int, default=255, help="Maximum threshold for edge detection")
@@ -62,7 +52,31 @@ class Triangulation(inkex.Effect):
             pathdesc = pathdesc + "Z"    
         path = etree.SubElement(parent, inkex.addNS('path','svg'), {'style' : str(inkex.Style(style)), 'd' : pathdesc})
         return path
-		
+
+    def checkImagePath(self, node):
+        """Embed the data of the selected Image Tag element"""
+        xlink = node.get('xlink:href')
+        if xlink and xlink[:5] == 'data:':
+            # No need, data alread embedded
+            return
+
+        url = urllib.urlparse(xlink)
+        href = urllib.url2pathname(url.path)
+
+        # Primary location always the filename itself.
+        path = self.absolute_href(href or '')
+
+        # Backup directory where we can find the image
+        if not os.path.isfile(path):
+            path = node.get('sodipodi:absref', path)
+
+        if not os.path.isfile(path):
+            inkex.errormsg(_('File not found "{}". Unable to embed image.').format(path))
+            return
+
+        if (os.path.isfile(path)):
+            return path
+
     def effect(self):
 			
         # Check we have something selected
@@ -76,13 +90,7 @@ class Triangulation(inkex.Effect):
                     inkex.errormsg("The selected object (" + id + ") is not an image, skipping.")
                     continue
                 else:
-                    (self.path, errcode) = self.checkImagePath(obj) # This also ensures the file exists
-                    if errcode==1:
-                        inkex.errormsg("Embedded images are not (yet?) supported, please use a linked image. Skipping.")
-                        continue
-                    elif errcode==2:
-                        inkex.errormsg("The image points to a file, which seems to be missing: "+self.path+". Skipping.")
-                        continue
+                    self.path = self.checkImagePath(obj) # This also ensures the file exists
 
                     grpname = 'img_triangles'
                     # Make sure that the id/name is unique
@@ -95,7 +103,6 @@ class Triangulation(inkex.Effect):
                     grp_attribs = {inkex.addNS('label','inkscape'):grp_name}
                     # The group to put everything in
                     grp = etree.SubElement(self.svg.get_current_layer(), 'g', grp_attribs)
-
                     # Find image size and position in Inkscape
                     try:
                         self.img_x_pos = float(obj.get("x"))
@@ -105,8 +112,20 @@ class Triangulation(inkex.Effect):
                         self.img_y_pos = 0
                     self.img_width = float(obj.get("width"))
                     self.img_height = float(obj.get("height"))
-                    im = Image.open(self.path)
-                    # IMPORTANT! 
+
+                    if self.path is None: #check if image is embedded or linked
+                        image_string = obj.get('{http://www.w3.org/1999/xlink}href')
+                        # find comma position
+                        i = 0
+                        while i < 40:
+                            if image_string[i] == ',':
+                                break
+                            i = i + 1
+                        im = Image.open(BytesIO(base64.b64decode(image_string[i + 1:len(image_string)])))
+                    else:
+                        im = Image.open(self.path)
+
+                    # IMPORTANT!
                     # The numpy array is accessed as im.data[row,column], that is data[y_coord, x_coord]
                     # Be careful not to pass coordinates as (x,y): rather use (y,x)!
                     im.data = np.asarray(im)
@@ -115,35 +134,8 @@ class Triangulation(inkex.Effect):
 
                     # Find real image size
                     (self.img_real_width, self.img_real_height) = im.size
-        
-                    self.doTriangulation(grp)
 
-    # Check file exists and returns its path
-    def checkImagePath(self, obj):
-        xlink = obj.get(inkex.addNS('href','xlink'))
-        if xlink[:5] == 'data:': # Embedded image
-            return (None, 1)
-        
-        # Code shamelessly copied from the Embed image extension :)
-        if xlink is None or xlink[:5] != 'data:':
-            absref = obj.get(inkex.addNS('absref','sodipodi'))
-            url = urllib.parse.urlparse(xlink)
-            href = urllib.request.url2pathname(url.path)
-
-        path=''
-        #path selection strategy:
-        # 1. href if absolute
-        # 2. realpath-ified href
-        # 3. absref, only if the above does not point to a file
-        if (href != None):
-            path = os.path.realpath(href)
-        if (not os.path.isfile(path)):
-            if (absref != None):
-                path=absref
-        if (not os.path.isfile(path)):
-            return (path, 2)
-        
-        return (path, 0)
+                    self.doTriangulation(im, grp)
     
     # Converts image coordinates to screen coordinates
     def imgToScreen(self, x, y):
@@ -177,10 +169,10 @@ class Triangulation(inkex.Effect):
         stop2 = etree.SubElement(gradient, inkex.addNS('stop','svg'), attribs)
         return gradient
     
-    def doTriangulation (self, grp):
-        #inkex.utils.debug(self.path)
+    def doTriangulation (self, im, grp):
         # Read image with OpenCV
-        imcv = cv2.imread(self.path)
+        imcv = np.array(im)
+        #imcv = cv2.imread(self.path)
         # Convert to grayscale
         gray = cv2.cvtColor(imcv,cv2.COLOR_RGB2GRAY)
         gray = np.float32(gray)
@@ -188,9 +180,11 @@ class Triangulation(inkex.Effect):
         edges = cv2.Canny(imcv, self.options.edge_thresh_min, self.options.edge_thresh_max, 100)
         # Find coordinates of the edges
         coords = [(float(x),float(y)) for y, row in enumerate(edges) for x, col in enumerate(row) if col>0]
-        #pt = random.sample(coords, self.options.num_points)
-        pt, idx = kmeans2(np.array(coords), self.options.num_points, minit="points")
-
+        try:
+            pt, idx = kmeans2(np.array(coords), self.options.num_points, minit="points")
+        except ValueError:
+            inkex.utils.debug("Too much points. Reduce sampled points and try again!")
+            exit(1)
         if self.options.add_corners:
             # Add the four corners
             corners = [(0, 0), 
