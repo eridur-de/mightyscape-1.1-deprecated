@@ -58,5 +58,4 @@ class Cleanup(inkex.Effect):
                             declarations[i] = prop + ':' + new_val
                 node.set('style', ';'.join(declarations))
 
-if __name__ == '__main__':
-    Cleanup().run()
+Cleanup().run()

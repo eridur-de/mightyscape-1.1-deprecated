@@ -209,6 +209,4 @@ class Sprockets(inkex.Effect):
                      'd' : svg  }
         g = etree.SubElement(self.svg.get_current_layer(), inkex.addNS('path','svg'), g_attribs)
 
-if __name__ == '__main__':
-    e = Sprockets()
-    e.run()
+Sprockets().run()
