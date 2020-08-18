@@ -31,16 +31,12 @@ import os
 import sys
 import base64
 from io import StringIO, BytesIO
-import urllib.parse
-import urllib.request
+import urllib.request as urllib
 import inkex
 from PIL import Image
 from lxml import etree
 
-inkex.localization.localize
-
 DEBUG = False
-
 
 #   int r = ( hexcolor >> 16 ) & 0xFF;
 #   int g = ( hexcolor >> 8 ) & 0xFF;
@@ -52,7 +48,6 @@ def hex_to_int_color(v):
         v = v[1:]
     assert(len(v) == 6)
     return int(v[:2], 16), int(v[2:4], 16), int(v[4:6], 16)
-
 
 class Pixel2SVG(inkex.Effect):
     def __init__(self):
@@ -69,54 +64,29 @@ class Pixel2SVG(inkex.Effect):
         self.arg_parser.add_argument("--color", default="FFFFFF", help="Special color")
         self.arg_parser.add_argument("--tab")
 
-    def getImagePath(self, node, xlink):
-        """
-        Find image file, return path
-        """
-        absref = node.get(inkex.addNS('absref', 'sodipodi'))
-        url = urlparse(xlink)
-        href = urllib.request.url2pathname
+    def checkImagePath(self, node):
+        """Embed the data of the selected Image Tag element"""
+        xlink = node.get('xlink:href')
+        if xlink and xlink[:5] == 'data:':
+            # No need, data alread embedded
+            return
 
-        path = ''
-        #path selection strategy:
-        # 1. href if absolute
-        # 2. realpath-ified href
-        # 3. absref, only if the above does not point to a file
-        if href is not None:
-            path = os.path.realpath(href)
-        if (not os.path.isfile(path)):
-            if absref is not None:
-                path = absref
+        url = urllib.urlparse(xlink)
+        href = urllib.url2pathname(url.path)
 
-        try:
-            path = unicode(path, "utf-8")
-        except TypeError:
-            path = path
+        # Primary location always the filename itself.
+        path = self.absolute_href(href or '')
 
-        if (not os.path.isfile(path)):
-            inkex.errormsg(_(
-                "No xlink:href or sodipodi:absref attributes found, " +
-                "or they do not point to an existing file! Unable to find image file."))
-            if path:
-                inkex.errormsg(_("Sorry we could not locate %s") % str(path))
-            return False
+        # Backup directory where we can find the image
+        if not os.path.isfile(path):
+            path = node.get('sodipodi:absref', path)
+
+        if not os.path.isfile(path):
+            inkex.errormsg('File not found "{}". Unable to embed image.').format(path)
+            return
 
         if (os.path.isfile(path)):
             return path
-
-    def getImageData(self, xlink):
-        """
-        Read, decode and return data of embedded image
-        """
-        comma = xlink.find(',')
-        data = ''
-
-        if comma > 0:
-            data = base64.decodebytes(xlink[comma:].encode('UTF-8'))
-        else:
-            inkex.errormsg(_("Failed to read embedded image data."))
-
-        return data
 
     def getImage(self, node):
         image_element=self.svg.find('.//{http://www.w3.org/2000/svg}image')
@@ -170,7 +140,18 @@ class Pixel2SVG(inkex.Effect):
         Parse RGBA values of linked bitmap image, create a group and
         draw the rectangles (SVG pixels) inside the new group
         """
-        image = self.getImage(node)
+        self.path = self.checkImagePath(node)  # This also ensures the file exists
+        if self.path is None:  # check if image is embedded or linked
+            image_string = node.get('{http://www.w3.org/1999/xlink}href')
+            # find comma position
+            i = 0
+            while i < 40:
+                if image_string[i] == ',':
+                    break
+                i = i + 1
+            image = Image.open(BytesIO(base64.b64decode(image_string[i + 1:len(image_string)])))
+        else:
+            image = Image.open(self.path)
 
         if image:
             # init, set limit (default: 256)
@@ -281,10 +262,10 @@ class Pixel2SVG(inkex.Effect):
 
             else:
                 # bail out with larger images
-                inkex.errormsg(_(
+                inkex.errormsg(
                     "Bailing out: this extension is not intended for large images.\n" +
                     "The current limit is %spx for either dimension of the bitmap image."
-                    % pixel2svg_max))
+                    % pixel2svg_max)
                 sys.exit(0)
 
             # clean-up?
@@ -292,7 +273,7 @@ class Pixel2SVG(inkex.Effect):
                 inkex.utils.debug("Done.")
 
         else:
-            inkex.errormsg(_("Bailing out: No supported image file or data found"))
+            inkex.errormsg("Bailing out: No supported image file or data found")
             sys.exit(1)
 
     def effect(self):
@@ -307,8 +288,7 @@ class Pixel2SVG(inkex.Effect):
                     self.vectorizeImage(node)
 
         if not found_image:
-            inkex.errormsg(_("Please select one or more bitmap image(s) for Pixel2SVG"))
+            inkex.errormsg("Please select one or more bitmap image(s) for Pixel2SVG")
             sys.exit(0)
 
-if __name__ == '__main__':
-    Pixel2SVG().run()
+Pixel2SVG().run()
