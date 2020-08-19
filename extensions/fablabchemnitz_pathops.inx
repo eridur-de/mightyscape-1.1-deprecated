@@ -12,9 +12,9 @@
         <option value="SelectionCombine">Combine</option>
     </param>
     <param name="max_ops" type="int" min="2" max="9999" gui-text="Max operations per run">500</param>
-    <param name="recursive_sel" type="boolean" gui-text="Recurse into groups" gui-description="If unchecked, only direct children of top-level groups in the selection will be processed for inclusion.">true</param>
-    <param name="keep_top" type="boolean" gui-text="Keep top element when done">true</param>
-    <param name="dry_run" type="boolean" gui-text="Dry run">false</param>
+    <param name="recursive_sel" type="bool" gui-text="Recurse into groups" gui-description="If unchecked, only direct children of top-level groups in the selection will be processed for inclusion.">true</param>
+    <param name="keep_top" type="bool" gui-text="Keep top element when done">true</param>
+    <param name="dry_run" type="bool" gui-text="Dry run">false</param>
     <effect needs-document="true" needs-live-preview="false">
         <effects-menu hidden="false">
             <submenu name="FabLab Chemnitz">

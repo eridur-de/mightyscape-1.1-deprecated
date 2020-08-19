@@ -34,7 +34,7 @@
          <param name="width" type="float" min="0.5" max="1000.0" precision="2" gui-text="Width (Nut) in units">1.35</param>
          <param name="frets" type="int" min="2" max="500" gui-text="Number of frets to draw">18</param>
          <label>Fanned:</label>
-         <param name="fanned" type="boolean" gui-text="Fanned fret style (Treble and Bass scale lengths)">false</param>
+         <param name="fanned" type="bool" gui-text="Fanned fret style (Treble and Bass scale lengths)">false</param>
          <hbox>
             <param name="basslength" type="float" min="1" max="1000.0" precision="2" gui-text="Bass Scale Length">25.5</param>
             <param name="perpendicular" type="int" min="0" max="500" gui-text="Perpendicular Fret">7</param>
@@ -43,17 +43,17 @@
          <param name="linewidth" type="float" min="0.01" max="2.0" precision="2" gui-text="Width of lines (mm)">0.1</param>
          <param name="notch_width" type="float" min="0.0001" max="4.0" precision="4" gui-text="(Router template) Width of Fret notches">0.125</param>
          <hbox>
-            <param name="annotate" type="boolean" gui-text="Fret numbering">true</param>
-            <param name="centerline" type="boolean" gui-text="Centerline">true</param>
+            <param name="annotate" type="bool" gui-text="Fret numbering">true</param>
+            <param name="centerline" type="bool" gui-text="Centerline">true</param>
          </hbox>
       </page>
       <page name="neck" gui-text="Neck ">
          <param name="descr" type="description">Extra parameters to draw the Neck.</param>
-         <param name="constant_width" type="boolean" gui-text="Constant width (=Nut)">false</param>
+         <param name="constant_width" type="bool" gui-text="Constant width (=Nut)">false</param>
          <param name="width_bridge" type="float" min="0.5" max="1000.0" precision="2" gui-text="OR: Width (at Bridge) in units">2.0</param>
-         <param name="show_markers" type="boolean" gui-text="Show Markers">false</param>
+         <param name="show_markers" type="bool" gui-text="Show Markers">false</param>
          <param name="markers" type="string" gui-text="Marked frets:">3,5,7,10,12,12,15</param>
-         <param name="nutcomp" type="boolean" gui-text="Include Nut Compensation">false</param>
+         <param name="nutcomp" type="bool" gui-text="Include Nut Compensation">false</param>
          <param name="nutcomp_value" gui-text="Preset values" type="optiongroup" appearance="combo">
             <option value="0.012">0.012in (0.30mm)</option>
             <option value="0.014">0.014in (0.36mm)</option>
@@ -63,10 +63,10 @@
       </page>
       <page name="curvature" gui-text="Curvature ">
          <param name="descr" type="description">Additional Neck Curvature Ruler</param>
-         <param name="show_curves" type="boolean" gui-text="Show neck curvature ruler">true</param>
+         <param name="show_curves" type="bool" gui-text="Show neck curvature ruler">true</param>
          <param name="neck_radius" type="float" min="4" max="100.0" precision="2" gui-text="Radius of Neck curvature in units">9.75</param>
          <param name="arc_length" type="float" min="1" max="100.0" precision="2" gui-text="Arc Length (units)">5</param>
-         <param name="block_mode" type="boolean" gui-text="Draw as a block (vs finger)">true</param>
+         <param name="block_mode" type="bool" gui-text="Draw as a block (vs finger)">true</param>
          <param name="arc_height" type="float" min="0.1" max="50.0" precision="2" gui-text="Height of the Arc(units)">0.5</param>
          <param name="string_spacing" type="float" min="0.1" max="20.0" precision="2" gui-text="String separation(for finger style) (units)">0.3</param>
          <param name="descr" type="description" xml:space="preserve">Print or Metal Lasercut as a thin radius guide,
@@ -80,9 +80,9 @@ See Help Curve Tab
          <param name="descr" type="description">It shows you all the scala files matching the search filters below. Enter the filename on the first tab.</param>
          <param name="descr" type="description">This search only works if you can see this tab.</param>
          <param name="descr" type="description">There may be &gt;4000 scala files. So choose wisely.</param>
-         <param name="filter_tones" type="boolean" gui-text="Filter by number of tones in a scale.">true</param>
+         <param name="filter_tones" type="bool" gui-text="Filter by number of tones in a scale.">true</param>
          <param name="scale" type="int" min="2" max="1000" gui-text="Notes in a scale:">12</param>
-         <param name="filter_label" type="boolean" gui-text="Filter by word in title / internal description.">true</param>
+         <param name="filter_label" type="bool" gui-text="Filter by word in title / internal description.">true</param>
          <param name="keywords" type="string" gui-text="Key word:">diatonic</param>
       </page>
       <page name="help" gui-text="Help ">

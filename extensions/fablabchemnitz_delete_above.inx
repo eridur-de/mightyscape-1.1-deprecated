@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-  <_name>Delete Above</_name>
+  <name>Delete Above</name>
   <id>fablabchemnitz.de.deleteabove</id>
   <effect>
     <object-type>all</object-type>
