@@ -17,6 +17,8 @@
 
 # please, stick to pep8 formatting for this file
 
+# seems to be lost in year 2016 https://wiki.inkscape.org/wiki/index.php?title=Inkscape_Extensions&oldid=99881
+
 """
 Migrator: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
@@ -307,13 +309,6 @@ class ErrorVisualization(object):
             attrs = {"id": group_id, "style": "opacity:.5", inkex.addNS("label", "inkscape"): "Precut Errors"}
             self.g = etree.SubElement(parent, inkex.addNS("g", "svg"), attrs)
 
-    def getColorString(self, pickerColor):
-        longcolor = int(pickerColor)
-        if longcolor < 0:
-            longcolor = longcolor & 0xFFFFFFFF
-        return '#' + format(longcolor >> 8, '06X')
-             
-            
     def fmt_point(self, point):
         return "%s %s" % point
 
@@ -330,7 +325,7 @@ class ErrorVisualization(object):
             path.append("M%s" % self.fmt_point(head))
             for point in tail:
                 path.append("L%s" % self.fmt_point(point))
-            attrs = {"d": " ".join(path), "style": "stroke:%s;stroke-width:5px;" % self.getColorString(self.color)}
+            attrs = {"d": " ".join(path), "style": "stroke:%s;stroke-width:5px;" % self.color}
             etree.SubElement(self.g, inkex.addNS("path", "svg"), attrs)
 
         def vis_point(geom):

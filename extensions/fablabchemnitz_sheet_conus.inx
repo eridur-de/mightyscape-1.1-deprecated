@@ -17,7 +17,7 @@
     <param name="name" type="description" xml:space="preserve">Constructs a flat pattern projection (sheet cutting layout)
 that can be rolled or bent into a cone or frustum (truncated cone).
 If Cut diameter=0 then cone will not be truncated.</param>
-    <param name="strokeColour" type="color" appearance="colorbutton" gui-text="Line colour: ">0</param>
+    <param name="strokeColour" type="color" appearance="colorbutton" gui-text="Line color: ">255</param>
     <effect>
         <object-type>all</object-type>
         <effects-menu>

@@ -26,11 +26,11 @@
             <param name="puzzle_gap" type="int" min="1" max="100" gui-text="Puzzle Gap">1</param>
         </page>
         <page name="colors" gui-text="Colors">
-            <param name="color_text" type="color" appearance="colorbutton" gui-text="Text color ">0</param>
-            <param name="color_bkgnd" type="color" appearance="colorbutton" gui-text="Background color">-1</param>
-            <param name="color_puzzle" type="color" appearance="colorbutton" gui-text="Puzzle Border color">0</param>
-            <param name="color_boxes" type="color" appearance="colorbutton" gui-text="Box Border color ">0</param>
-            <param name="color_cells" type="color" appearance="colorbutton" gui-text="Cell Border color">-791621617</param>
+            <param name="color_text" type="color" appearance="colorbutton" gui-text="Text color ">255</param>
+            <param name="color_bkgnd" type="color" appearance="colorbutton" gui-text="Background color">4243148799</param>
+            <param name="color_puzzle" type="color" appearance="colorbutton" gui-text="Puzzle Border color">2290779647</param>
+            <param name="color_boxes" type="color" appearance="colorbutton" gui-text="Box Border color ">3298820351</param>
+            <param name="color_cells" type="color" appearance="colorbutton" gui-text="Cell Border color">1923076095</param>
         </page>
     </param>
     <effect>

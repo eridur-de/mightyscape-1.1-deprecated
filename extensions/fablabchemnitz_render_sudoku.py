@@ -27,6 +27,7 @@ __version__ = "0.1"
 import inkex
 import subprocess
 from lxml import etree
+from inkex import Color
 
 class SVGSudoku (inkex.Effect):
 
@@ -38,18 +39,12 @@ class SVGSudoku (inkex.Effect):
         self.arg_parser.add_argument("--cols", type=int, default=1, help='Number of puzzle columns.') 
         self.arg_parser.add_argument("--puzzle_size", type=int, default=6, help='The width & height of each puzzle.')
         self.arg_parser.add_argument("--puzzle_gap", type=int, default=1, help='The space between puzzles.')
-        self.arg_parser.add_argument("--color_text", type=int, default=0, help='Color for given numbers.') 
-        self.arg_parser.add_argument("--color_bkgnd", type=int, default=-1, help='Color for the puzzle background.')
-        self.arg_parser.add_argument("--color_puzzle",default=0, help='Border color for the puzzles.')
-        self.arg_parser.add_argument("--color_boxes", default=0, help='Border color for puzzle boxes.')
-        self.arg_parser.add_argument("--color_cells", default=-1061109505, help='Border color for the puzzle cells.')
+        self.arg_parser.add_argument("--color_text", type=Color, default=255, help='Color for given numbers.') 
+        self.arg_parser.add_argument("--color_bkgnd", type=Color, default=4243148799, help='Color for the puzzle background.')
+        self.arg_parser.add_argument("--color_puzzle",type=Color, default=2290779647, help='Border color for the puzzles.')
+        self.arg_parser.add_argument("--color_boxes", type=Color, default=3298820351, help='Border color for puzzle boxes.')
+        self.arg_parser.add_argument("--color_cells", type=Color, default=1923076095, help='Border color for the puzzle cells.')
         self.arg_parser.add_argument("--units", help="The unit of the dimensions")
-
-    def getColorString(self, pickerColor):
-        longcolor = int(pickerColor)
-        if longcolor < 0:
-            longcolor = longcolor & 0xFFFFFFFF
-        return '#' + format(longcolor >> 8, '06X')
 
     def draw_grid(self, g_puz, x, y):
         bkgnd_style = {'stroke':'none', 'stroke-width':'2', 'fill':self.options.color_bkgnd }      
@@ -97,15 +92,7 @@ class SVGSudoku (inkex.Effect):
             args.extend(["--difficulty", self.options.difficulty])
         data = subprocess.Popen(args, stdout=subprocess.PIPE).communicate()[0].splitlines()
         #inkex.utils.debug(data)
-        #
-        # convert colors
-        #inkex.utils.debug("%s"%(self.options.color_cells))
-        self.options.color_text = self.getColorString(self.options.color_text)
-        self.options.color_bkgnd = self.getColorString(self.options.color_bkgnd)
-        self.options.color_puzzle = self.getColorString(self.options.color_puzzle)
-        self.options.color_boxes = self.getColorString(self.options.color_boxes)
-        self.options.color_cells = self.getColorString(self.options.color_cells)
-        #
+
         parent = self.document.getroot()
         self.doc_w = self.svg.unittouu(parent.get('width'))
         self.doc_h = self.svg.unittouu(parent.get('height'))

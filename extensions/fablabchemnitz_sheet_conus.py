@@ -7,6 +7,7 @@ import inkex
 from copy import deepcopy
 from lxml import etree
 from inkex.transforms import Transform
+from inkex import Color
 
 # Helper functions
 def calc_angle_between_points(p1, p2):
@@ -56,24 +57,15 @@ class SheetMetalConus(inkex.Effect):
                      'marker-end'    : 'url(#ArrowDIN-end)'    }
 
     def __init__(self):
-        """ Parses the command line options ( Base diameter, cut diameter and height of cone).
-        """
         inkex.Effect.__init__(self) # Call the base class constructor.
-        # Describe parameters
         self.arg_parser.add_argument('-b', '--diaBase', type = float, dest = 'diaBase', default = 300.0, help = 'The diameter of the cones base.')
         self.arg_parser.add_argument('-c', '--diaCut',  type = float, default = 100.0, help = 'The diameter of cones cut (0.0 if cone is not cut.')
         self.arg_parser.add_argument('-l', '--heightCone',  type = float, default = 200.0, help = 'The height of the (cut) cone.')
         self.arg_parser.add_argument('-u', '--units', default = 'mm', help = 'The units in which the cone values are given. mm or in for real objects')
         self.arg_parser.add_argument('-w', '--strokeWidth', type = float, default = 0.3, help = 'The line thickness in given unit. For laser cutting it should be rather small.')
-        self.arg_parser.add_argument('-f', '--strokeColour',  default = 896839168, help = 'The line colour.')
+        self.arg_parser.add_argument('-f', '--strokeColour', type=Color, default = 255, help = 'The line colour.')
         self.arg_parser.add_argument('-d', '--verbose', type = inkex.Boolean, default = False, help = 'Enable verbose output of calculated parameters. Used for debugging or is someone needs the calculated values.')
 
-    def getColorString(self, pickerColor):
-        longcolor = int(pickerColor)
-        if longcolor < 0:
-            longcolor = longcolor & 0xFFFFFFFF
-        return '#' + format(longcolor >> 8, '06X')	
-		
     # Marker arrows
     def makeMarkerstyle(self, name, rotate):
         " Markers added to defs for reuse "
@@ -229,9 +221,7 @@ class SheetMetalConus(inkex.Effect):
             - Overrides base class' method and draws rolled out sheet metal cone into SVG document.
         """
         # calc scene scale
-        convFactor = self.svg.unittouu("1" + self.options.units)
-        # convert color
-        self.options.strokeColour = self.getColorString(self.options.strokeColour)      
+        convFactor = self.svg.unittouu("1" + self.options.units)   
         # Store all the relevants values in a dictionary for easy access
         dictCone={'diaBase':    self.options.diaBase,
                   'diaCut':     self.options.diaCut,
@@ -437,6 +427,4 @@ class SheetMetalConus(inkex.Effect):
         text.text = "%4.3f" %(base_dia)
         text.transform = Transform(frustrum_repos) * text.transform
         
-# Create effect instance and apply it.
-effect = SheetMetalConus()
-effect.run()
+SheetMetalConus().run()
