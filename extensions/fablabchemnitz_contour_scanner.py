@@ -43,14 +43,6 @@ def adjustStyle(self, node):
 
 class ContourScanner(inkex.Effect):
 
-    def getColorString(self, pickerColor):
-        longcolor = int(pickerColor)
-        if longcolor < 0:
-            longcolor = longcolor & 0xFFFFFFFF
-        return '#' + format(longcolor >> 8, '06X')
-
-  
-        
     def __init__(self):
         inkex.Effect.__init__(self)
         self.arg_parser.add_argument("--breakapart", type=inkex.Boolean, default=False, help="Break apart contours")
@@ -170,14 +162,14 @@ class ContourScanner(inkex.Effect):
                                 if self.options.highlight_intersectionpoints:
                                     for xy in isect:
                                         #Add a dot label for this path element
-                                        style = inkex.Style({'stroke': 'none', 'fill': self.getColorString(self.options.color_intersectionpoints)})
+                                        style = inkex.Style({'stroke': 'none', 'fill': self.options.color_intersectionpoints})
                                         circle = dot_group.add(Circle(cx=str(xy[0]), cy=str(xy[1]), r=str(self.svg.unittouu(str(self.options.dotsize/2) + "px"))))
                                         circle.style = style
                                 
                                 if self.options.highlight_selfintersecting:
                                     style = {'stroke-linejoin': 'miter', 'stroke-width': str(self.svg.unittouu(str(self.options.strokewidth) +"px")), 
                                         'stroke-opacity': '1.0', 'fill-opacity': '1.0', 
-                                        'stroke': self.getColorString(self.options.color_selfintersecting), 'stroke-linecap': 'butt', 'fill': 'none'}
+                                        'stroke': self.options.color_selfintersecting, 'stroke-linecap': 'butt', 'fill': 'none'}
                                     node.attrib['style'] = Style(style).to_str()
                                 if self.options.remove_selfintersecting:
                                     if node.getparent() is not None: #might be already been deleted by previously checked settings so check again
