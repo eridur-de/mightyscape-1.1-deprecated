@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <name>Export Layers</name>
+    <id>net.buschbeck.inkscape.exportlayers</id>
+    <param name="tab" type="notebook">
+        <page name="export" gui-text="Export">
+            <param name="include-locked-layers" type="bool" gui-text="Include locked layers">false</param>
+            <param name="include-hidden-layers" type="bool" gui-text="Include hidden layers">false</param>
+            <param name="viewbox" type="optiongroup" appearance="combo" gui-text="Exported viewbox">
+                <option value="drawing">Entire drawing</option>
+                <option value="content">Visible content</option>
+            </param>
+            <param name="dir" type="path" mode="folder" gui-text="Directory" />
+            <param name="file-prefix" type="string" gui-text="File prefix" />
+            <param name="subdirs" type="bool" gui-text="Create subdirectories for nested layers">true</param>
+            <param name="overwrite" type="bool" gui-text="Overwrite existing exports">true</param>
+        </page>
+        <page name="compat" gui-text="Compatibility">
+            <param name="compat-resolution" type="bool" gui-text="Improve accuracy of shape positioning and formatting">false</param>
+            <param name="compat-baseline-shift" type="bool" gui-text="Force Inkscape subscript and superscript positioning">false</param>
+            <param name="compat-paint-order" type="bool" gui-text="Work around missing support for paint-order">false</param>
+            <param name="compat-stroke-dashoffset" type="bool" gui-text="Work around missing support for stroke-dashoffset">false</param>
+            <param name="compat-stroke-width" type="bool" gui-text="Ensure minimum stroke-width">false</param>
+            <label indent="2">Resize exported drawings to ensure lines have a thickness of no less than one unit at 96 DPI. Some apps impose this lower limit on line thickness; resizing everything keeps proportions intact.</label>
+            <label indent="2">You can resize the drawing back down to its intended original size without loss after importing it into the target app.</label>
+        </page>
+        <page name="about" gui-text="About">
+            <label appearance="header">Export</label>
+            <label>Exports each layer into a separate self-contained SVG file.</label>
+            <label>The files are named after the layer's label with an optional prefix. For nested layers, parent layer labels are included before the prefix, or they can be made into subdirectories.</label>
+            <label appearance="header">Compatibility</label>
+            <label>Workarounds for SVG rendering limitations in third-party software like Microsoft Office.</label>
+            <label appearance="header">Author</label>
+            <hbox>
+                <label>Michael Buschbeck</label>
+                <label appearance="url">michael@buschbeck.net</label>
+            </hbox>
+        </page>
+    </param>
+    <effect needs-live-preview="false">
+        <object-type>all</object-type>
+        <effects-menu>
+            <submenu name="FabLab Chemnitz">
+				<submenu name="Import/Export/Transfer"/>
+			</submenu>
+        </effects-menu>
+    </effect>
+    <script>
+        <command location="inx" interpreter="python">fablabchemnitz_export_layers.py</command>
+    </script>
+</inkscape-extension>
