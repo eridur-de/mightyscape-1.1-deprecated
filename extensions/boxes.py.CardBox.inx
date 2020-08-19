@@ -22,7 +22,7 @@
     </page>
 
     <page name="2" gui-text="Finger Joints">
-      <param name="FingerJoint_angle" type="float" precision="2" max="9999" gui-text="angle" gui-description="">90.0</param>
+      <param name="FingerJoint_angle" type="float" precision="2" max="9999" gui-text="angle">90.0</param>
       <param name="FingerJoint_style" type="optiongroup" appearance="combo" gui-text="style" gui-description="style of the fingers">
         <option value="rectangular" selected="selected">rectangular</option>
         <option value="springs">springs</option>

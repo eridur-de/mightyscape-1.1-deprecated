@@ -25,7 +25,7 @@
     </page>
 
     <page name="2" gui-text="Finger Joints">
-      <param name="FingerJoint_angle" type="float" precision="2" max="9999" gui-text="angle" gui-description="">90.0</param>
+      <param name="FingerJoint_angle" type="float" precision="2" max="9999" gui-text="angle">90.0</param>
       <param name="FingerJoint_style" type="optiongroup" appearance="combo" gui-text="style" gui-description="style of the fingers">
         <option value="rectangular" selected="selected">rectangular</option>
         <option value="springs">springs</option>
@@ -42,7 +42,7 @@
       <param name="Flex_stretch" type="float" precision="2" max="9999" gui-text="stretch" gui-description="Hint of how much the flex part should be shortend">1.05</param>
       <param name="Flex_connection" type="float" precision="2" max="9999" gui-text="connection" gui-description="width of the gaps in the cuts">1.0</param>
       <param name="Flex_distance" type="float" precision="2" max="9999" gui-text="distance" gui-description="width of the pattern perpendicular to the cuts">0.5</param>
-      <param name="Flex_width" type="float" precision="2" max="9999" gui-text="width" gui-description="">5.0</param>
+      <param name="Flex_width" type="float" precision="2" max="9999" gui-text="width">5.0</param>
     </page>
 
   </param>

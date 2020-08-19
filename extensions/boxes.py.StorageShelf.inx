@@ -43,7 +43,7 @@
     </page>
 
     <page name="2" gui-text="Finger Joints">
-      <param name="FingerJoint_angle" type="float" precision="2" max="9999" gui-text="angle" gui-description="">90.0</param>
+      <param name="FingerJoint_angle" type="float" precision="2" max="9999" gui-text="angle">90.0</param>
       <param name="FingerJoint_style" type="optiongroup" appearance="combo" gui-text="style" gui-description="style of the fingers">
         <option value="rectangular" selected="selected">rectangular</option>
         <option value="springs">springs</option>
@@ -64,7 +64,7 @@
     </page>
 
     <page name="4" gui-text="Hinges and HingePins">
-      <param name="Hinge_grip_percentage" type="int" max="9999" gui-text="grip_percentage" gui-description="">0</param>
+      <param name="Hinge_grip_percentage" type="int" max="9999" gui-text="grip_percentage">0</param>
       <param name="Hinge_outset" type="bool" max="9999" gui-text="outset" gui-description="have lid overlap at the sides (similar to OutSetEdge)">false</param>
       <param name="Hinge_pinwidth" type="float" precision="2" max="9999" gui-text="pinwidth" gui-description="set to lower value to get disks surrounding the pins">0.5</param>
       <param name="Hinge_style" type="optiongroup" appearance="combo" gui-text="style" gui-description='"outset" or "flush"'>
@@ -90,9 +90,9 @@
     </page>
 
     <page name="6" gui-text="Slide-on Lids">
-      <param name="Lid_angle" type="float" precision="2" max="9999" gui-text="angle" gui-description="">90.0</param>
-      <param name="Lid_second_pin" type="bool" max="9999" gui-text="second_pin" gui-description="">true</param>
-      <param name="Lid_spring" type="optiongroup" appearance="combo" gui-text="spring" gui-description="">
+      <param name="Lid_angle" type="float" precision="2" max="9999" gui-text="angle">90.0</param>
+      <param name="Lid_second_pin" type="bool" max="9999" gui-text="second_pin">true</param>
+      <param name="Lid_spring" type="optiongroup" appearance="combo" gui-text="spring">
         <option value="both" selected="selected">both</option>
         <option value="none">none</option>
         <option value="left">left</option>
@@ -111,9 +111,9 @@
     </page>
 
     <page name="7" gui-text="Click-on Lids">
-      <param name="Click_angle" type="int" max="9999" gui-text="angle" gui-description="">5</param>
-      <param name="Click_bottom_radius" type="float" precision="2" max="9999" gui-text="bottom_radius" gui-description="">0.1</param>
-      <param name="Click_depth" type="float" precision="2" max="9999" gui-text="depth" gui-description="">3.0</param>
+      <param name="Click_angle" type="int" max="9999" gui-text="angle">5</param>
+      <param name="Click_bottom_radius" type="float" precision="2" max="9999" gui-text="bottom_radius">0.1</param>
+      <param name="Click_depth" type="float" precision="2" max="9999" gui-text="depth">3.0</param>
     </page>
 
     <page name="8" gui-text="RoundedTriangleEdge">
