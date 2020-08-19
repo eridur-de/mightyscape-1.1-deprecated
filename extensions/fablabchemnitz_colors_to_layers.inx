@@ -7,7 +7,7 @@
        <option value="fill">Fill color</option>
     </param>
     <label>This extension will re-layer your selected items or the whole document according to their color (stroke or fill)</label>
-    <label>Tinkererd by Mario Voigt / Stadtfabrikanten e.V. (2020)</label>
+    <label>Tinkered by Mario Voigt / Stadtfabrikanten e.V. (2020)</label>
     <label appearance="url">https://fablabchemnitz.de</label>
     <effect>
         <object-type>all</object-type>
