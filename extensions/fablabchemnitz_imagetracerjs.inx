@@ -55,9 +55,11 @@
     <label>License: GNU GPL v3</label>
     <effect needs-live-preview="true">
         <object-type>image</object-type>
-        <effects-menu>
-            <submenu name="FabLab Chemnitz Dev"/>
-        </effects-menu>
+		<effects-menu>
+         <submenu name="FabLab Chemnitz">
+            <submenu name="Tracing/Edge Detection"/>
+         </submenu>
+		</effects-menu>
     </effect>
     <script>
         <command location="inx" interpreter="python">./fablabchemnitz_imagetracerjs/fablabchemnitz_imagetracerjs.py</command>
