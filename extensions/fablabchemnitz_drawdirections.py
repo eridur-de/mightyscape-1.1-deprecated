@@ -4,29 +4,32 @@ import inkex
 from inkex.paths import Path
 from inkex import Circle
 
-# Draws red points at the path's beginning and blue point at the path's end
-
 class StartEndPoints(inkex.Effect):
+
+    def drawCircle(self, group, color, point):
+        style = inkex.Style({'stroke': 'none', 'fill': color})
+        startCircle = group.add(Circle(cx=str(point[0]), cy=str(point[1]), r=str(self.svg.unittouu(str(self.options.dotsize/2) + "px"))))
+        startCircle.style = style
 
     def __init__(self):
         inkex.Effect.__init__(self)
         self.arg_parser.add_argument("--dotsize", type=int, default=10, help="Dot size (px) for self-intersecting points")
    
     def effect(self):
-        dot_group = node.getparent().add(inkex.Group())
+        dot_group = self.svg.add(inkex.Group())
     
-        for node in self.svg.selection.values():
-        
+        for node in self.svg.selection.filter(inkex.PathElement):
             points = list(node.path.end_points)
             start = points[0]
             end = points[len(points) - 1]
-                       
-            style = inkex.Style({'stroke': 'none', 'fill': '#FF0000'})
-            startCircle = dot_group.add(Circle(cx=str(start[0]), cy=str(start[1]), r=str(self.svg.unittouu(str(self.options.dotsize/2) + "px"))))
-            startCircle.style = style
+                    
+            if start[0] == end[0] and start[1] == end[1]:
+                self.drawCircle(dot_group, '#00FF00', start) 
+                self.drawCircle(dot_group, '#FFFF00', points[1]) #draw one point which gives direction of the path
+            else: #open contour with start and end point
+                self.drawCircle(dot_group, '#FF0000', start)
+                self.drawCircle(dot_group, '#0000FF', end)
             
-            style = inkex.Style({'stroke': 'none', 'fill': '#0000FF'})
-            endCircle = dot_group.add(Circle(cx=str(end[0]), cy=str(end[1]), r=str(self.svg.unittouu(str(self.options.dotsize/2) + "px"))))
-            endCircle.style = style
+
             
 StartEndPoints().run()

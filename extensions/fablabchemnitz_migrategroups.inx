@@ -4,6 +4,7 @@
     <id>fablabchemnitz.de.migrategroups</id>
     <label>What elements to migrate?</label>
     <label>Unchecked item types will be deleted!</label>
+    <param name="svg" type="bool" gui-text="svg">true</param>
     <param name="rect" type="bool" gui-text="rect">true</param>
     <param name="circle" type="bool" gui-text="circle">true</param>
     <param name="ellipse" type="bool" gui-text="ellipse">true</param>

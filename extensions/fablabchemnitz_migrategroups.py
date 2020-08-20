@@ -21,6 +21,7 @@ class MigrateGroups(inkex.Effect):
     
     def __init__(self):
         inkex.Effect.__init__(self)
+        self.arg_parser.add_argument("--svg", type=inkex.Boolean, default=True, help="svg")
         self.arg_parser.add_argument("--rect", type=inkex.Boolean, default=True, help="rect")
         self.arg_parser.add_argument("--circle", type=inkex.Boolean, default=True, help="circle")
         self.arg_parser.add_argument("--ellipse", type=inkex.Boolean, default=True, help="ellipse")
@@ -35,6 +36,7 @@ class MigrateGroups(inkex.Effect):
     def effect(self):
     
         namespace = []
+        namespace.append("{http://www.w3.org/2000/svg}svg")     if self.options.svg else ""
         namespace.append("{http://www.w3.org/2000/svg}rect")     if self.options.rect else ""
         namespace.append("{http://www.w3.org/2000/svg}circle")   if self.options.circle else ""
         namespace.append("{http://www.w3.org/2000/svg}ellipse")  if self.options.ellipse else ""
