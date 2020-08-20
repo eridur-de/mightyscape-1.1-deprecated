@@ -29,24 +29,19 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
-# standard library
+
 import math
 import tempfile, os, sys, shutil
 from subprocess import Popen, PIPE
 import zipfile
 import re
-# local library
+
 import fablabchemnitz_lyz_inkex           as inkex
 import fablabchemnitz_lyz_simplestyle     as simplestyle
 import fablabchemnitz_lyz_simpletransform as simpletransform
 import fablabchemnitz_lyz_cubicsuperpath  as cubicsuperpath
 import fablabchemnitz_lyz_cspsubdiv       as cspsubdiv
 from fablabchemnitz_lyz_library       import LYZ_CLASS
-
-try:
-    inkex.localize()
-except:
-    pass
 
 ## Subprocess timout stuff ######
 from threading import Timer
@@ -61,7 +56,7 @@ def run_external(cmd, timeout_sec):
     timer.cancel()
 ##################################
     
-class MyEffect(inkex.Effect):
+class LYZExport(inkex.Effect):
     def __init__(self):
         inkex.Effect.__init__(self)
         self.flatness = 0.01
@@ -273,7 +268,7 @@ class MyEffect(inkex.Effect):
                     rx = max(rx,ry)
                     ry = rx
                 #msg = "rx = %f ry = %f " %(rx,ry)
-                #inkex.errormsg(_(msg))
+                #inkex.errormsg(msg)
                 L1 = "M %f,%f %f,%f "      %(x+rx       , y          , x+width-rx , y          )
                 C1 = "A %f,%f 0 0 1 %f,%f" %(rx         , ry         , x+width    , y+ry       )
                 L2 = "M %f,%f %f,%f "      %(x+width    , y+ry       , x+width    , y+height-ry)
@@ -419,7 +414,7 @@ class MyEffect(inkex.Effect):
             with open(png_temp_file, 'rb') as f:
                 self.PNG_DATA = f.read()
         except:
-            inkex.errormsg(_("PNG generation timed out.\nTry saving again.\n\n"))
+            inkex.errormsg("PNG generation timed out.\nTry saving again.\n\n")
             
         #Delete the temp folder and any files
         shutil.rmtree(tmp_dir)   
@@ -446,12 +441,12 @@ class MyEffect(inkex.Effect):
         if p:
             retval = float(p.string[p.start():p.end()])
         else:
-            inkex.errormsg(_("Size was not determined returning zero value"))
+            inkex.errormsg("Size was not determined returning zero value")
             retval = 0.0
         if u:
             retunit = u.string[u.start():u.end()]
         else:
-            inkex.errormsg(_("units not understood assuming px  at %d dpi" %(self.inkscape_dpi)))
+            inkex.errormsg("units not understood assuming px  at %d dpi" %(self.inkscape_dpi))
             retunit = 'px'
             
         try:
@@ -504,7 +499,7 @@ class MyEffect(inkex.Effect):
             Dx = float(view_box_list[0]) / ( float(view_box_list[2])/w_mm )
             Dy = float(view_box_list[1]) / ( float(view_box_list[3])/h_mm )
         except:
-            #inkex.errormsg(_("Using Default Inkscape Scale"))
+            #inkex.errormsg("Using Default Inkscape Scale")
             scale = 25.4/self.inkscape_dpi
             Dx = 0
             Dy = 0
@@ -533,7 +528,7 @@ class MyEffect(inkex.Effect):
         # msg = msg + "h_uu   = %f\n" %(h_uu)
         # msg = msg + "w_uu   = %f\n" %(w_uu)
 
-        #inkex.errormsg(_(msg))
+        #inkex.errormsg(msg)
         
         if (area_select=="object_area"):
             self.png_area = "--export-area-drawing" 
@@ -573,5 +568,4 @@ class MyEffect(inkex.Effect):
            (self.cut_select=="zip"   ):
             self.Make_PNG()
         
-if __name__ == '__main__':
-    MyEffect().affect()
+LYZExport().affect()

@@ -107,8 +107,8 @@ class PasteLengthEffect(inkex.Effect):
                 scaleFrom = scaleFrom)
                 selections[key].set('d', CubicSuperPath(cspath))
         else:
-            inkex.errormsg(_("Please select at least two paths, with the path whose \
+            inkex.errormsg("Please select at least two paths, with the path whose \
             length is to be copied at the top. You may have to convert the shape \
-            to path with path->Object to Path."))
+            to path with path->Object to Path.")
 
 PasteLengthEffect().run()

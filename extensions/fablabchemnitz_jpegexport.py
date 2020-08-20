@@ -186,5 +186,4 @@ class JPEGExport(inkex.Effect):
         else:
             return '/tmp/'
 
-if __name__=="__main__":
-    JPEGExport().run()
+JPEGExport().run()

@@ -33,7 +33,7 @@ class Pathpoints2Dots(inkex.Effect):
     
     def effect(self):
         if len(self.svg.selected) != 2:
-            errormsg(_("Please select exact two objects:\n1. object representing path,\n2. object representing dots."))
+            errormsg("Please select exact two objects:\n1. object representing path,\n2. object representing dots.")
             return
     
         dot = self.svg.selected[0]
@@ -72,5 +72,4 @@ class Pathpoints2Dots(inkex.Effect):
             clone.set('y',point.y-bb.center.y)
             group.add(clone)
         
-if __name__ == '__main__':
-    Pathpoints2Dots().run()
+Pathpoints2Dots().run()

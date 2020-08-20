@@ -74,7 +74,7 @@
          <param name="spacing" type="float" precision="2" min="0.0" max="10000.0" gui-text="    Space Between Parts">1.0</param>
       </vbox>
    </hbox>
-   <effect needs-live-preview="false">
+   <effect needs-live-preview="true">
       <object-type>path</object-type>
       <effects-menu>
          <submenu name="FabLab Chemnitz">

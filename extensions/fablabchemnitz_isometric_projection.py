@@ -3,7 +3,6 @@
 import math
 import inkex
 from inkex import Transform
-inkex.localization.localize()
 
 class IsometricProjectionTools(inkex.Effect):
     """
@@ -125,8 +124,8 @@ class IsometricProjectionTools(inkex.Effect):
             conversion = "to_" + self.options.conversion
 
         if len(self.svg.selected) == 0:
-            inkex.errormsg(_("Please select an object to perform the " +
-                             "isometric projection transformation on."))
+            inkex.errormsg("Please select an object to perform the " +
+                             "isometric projection transformation on.")
             return
 
         # Default to the flat 2D to isometric top down view conversion if an

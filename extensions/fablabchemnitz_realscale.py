@@ -22,8 +22,6 @@ from inkex import Transform
 from inkex.paths import CubicSuperPath
 from lxml import etree
 
-inkex.localization.localize
-
 ### Scale Ruler
 # inches = [1, 2, 4, 8, 16, 24, 32, 48, 64, 96, 128]
 # metric = [1,2,5,10,20,50,100,200,250,500,1000,1250,2500]
@@ -169,7 +167,7 @@ class Realscale(inkex.Effect):
 
     def effect(self):
         if len(self.options.ids) != 2:
-            inkex.errormsg(_("This extension requires two selected objects. The first selected object must be the straight line with two nodes."))
+            inkex.errormsg("This extension requires two selected objects. The first selected object must be the straight line with two nodes.")
             exit()
 
         # drawing that will be scaled is selected second, must be a single object
@@ -177,7 +175,7 @@ class Realscale(inkex.Effect):
         drawing = self.svg.selected[self.options.ids[1]]
 
         if scalepath.tag != inkex.addNS('path','svg'):
-            inkex.errormsg(_("The first selected object is not a path.\nPlease select a straight line with two nodes instead."))
+            inkex.errormsg("The first selected object is not a path.\nPlease select a straight line with two nodes instead.")
             exit()
 
         # apply its transforms to the scaling path, so we get the correct coordinates to calculate path length
@@ -185,7 +183,7 @@ class Realscale(inkex.Effect):
         
         path = CubicSuperPath(scalepath.get('d'))
         if len(path) < 1 or len(path[0]) < 2:
-            inkex.errormsg(_("This extension requires that the first selected path be two nodes long."))
+            inkex.errormsg("This extension requires that the first selected path be two nodes long.")
             exit()
 
         # calculate path length

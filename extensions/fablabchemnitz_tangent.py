@@ -35,8 +35,6 @@ from inkex.paths import Path
 from inkex import Transform
 from math import *
 from lxml import etree
-import gettext
-_ = gettext.gettext
 
 def poltocar(r, rad, negx=False, negy=False):
     # converts polar coords to cartesian
@@ -108,7 +106,7 @@ def getPathData(obj):
 
 
 def stockErrorMsg(bygtrac):
-    inkex.errormsg(_("Please select exactly two circles and try again! %s" % bygtrac))
+    inkex.errormsg("Please select exactly two circles and try again! %s" % bygtrac)
     exit()
 
 class Tangent(inkex.Effect):
@@ -218,5 +216,4 @@ class Tangent(inkex.Effect):
                             'd':'m '+str(llx1+conversionBottom[0])+','+str(lly1+conversionBottom[1])+' l '+str(ll2x2)+','+str(ll2y2)}
             etree.SubElement(parent, inkex.addNS('path','svg'), attribsLine1 )
 
-if __name__ == '__main__':
-    Tangent().run()
+Tangent().run()

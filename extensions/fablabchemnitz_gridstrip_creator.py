@@ -22,28 +22,15 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-# Making an .INX file : http://wiki.inkscape.org/wiki/index.php/MakingAnINX
-# see also http://codespeak.net/lxml/dev/tutorial.html#namespaces for XML namespaces manipulation
- 
-
-# These two lines are only needed if you don't put the script directly into the installation directory
 import inkex
 from xml.etree import ElementTree as ET
 from lxml import etree
-import gettext
-_ = gettext.gettext
 
 def printDebug(string):
-	inkex.errormsg(_(string))
+	inkex.errormsg(string)
 	
 class GridStrip_Creator(inkex.Effect):
 	def __init__(self):
-		inkex.Effect.__init__(self)
-		"""
-		Constructor.
-		Defines options of the script.
-		"""
-		# Call the base class constructor.
 		inkex.Effect.__init__(self)
 
 		self.arg_parser.add_argument('--length', type = float, default = 230.0, help = 'Length of strip')
@@ -105,7 +92,6 @@ class GridStrip_Creator(inkex.Effect):
 			notchxcorner=False
 			notchycorner=False
 		
-		
 		linewidth=self.svg.unittouu(str(0.2)+uunits)
 
 		distx=(striplength-cellnumx*cellwidth)/2	
@@ -118,35 +104,6 @@ class GridStrip_Creator(inkex.Effect):
 		width  = float(self.svg.unittouu(svg.attrib['width']))
 		height = float(self.svg.unittouu(svg.attrib['height']))
 
-		# maxlength=max(width,height)
-		# if striplength > maxlength:
-			# factor=striplength/maxlength+1
-
-		# inkex.utils.debug("document width="+str(self.uutounit(width,uunits)))
-		# inkex.utils.debug("document height="+str(self.uutounit(height,uunits)))
-		
-		# inkex.utils.debug("strip length="+str(self.uutounit(striplength,uunits)))
-		# inkex.utils.debug("strip width="+str(self.uutounit(stripwidth,uunits)))
-
-		# inkex.utils.debug("cell width="+str(self.uutounit(cellwidth,uunits)))
-		# inkex.utils.debug("cell height="+str(self.uutounit(cellheight,uunits)))
-
-		# inkex.utils.debug("Number of cells horizontal="+str(cellnumx))
-		# inkex.utils.debug("Number of cells vertical  ="+str(cellnumy))
-				
-		# inkex.utils.debug("Depth of extra notch="+str(self.uutounit(notchdepth,uunits)))
-		# inkex.utils.debug("Width of extra notch="+str(self.uutounit(notchwidth,uunits)))
-
-		# inkex.utils.debug("Depth of notch for grid="+str(self.uutounit(notchdepth,uunits)))
-		# inkex.utils.debug("Width of notch for grid="+str(self.uutounit(notchwidth,uunits)))
-
-		# inkex.utils.debug("distx="+str(self.uutounit(distx,uunits)))
-		# inkex.utils.debug("disty="+str(self.uutounit(disty,uunits)))
-
-		# inkex.utils.debug("celldistx="+str(self.uutounit(celldistx,uunits)))
-		# inkex.utils.debug("celldisty="+str(self.uutounit(celldisty,uunits)))
-		
-		
 		parent = self.svg.get_current_layer()
 		layername=''
 		if notchhorizontal:
@@ -385,5 +342,4 @@ class GridStrip_Creator(inkex.Effect):
 								'd':pathstring}
 			etree.SubElement(grp, inkex.addNS('path','svg'), strip_attribs )
 				
-if __name__ == '__main__':
-    GridStrip_Creator().run()
+GridStrip_Creator().run()

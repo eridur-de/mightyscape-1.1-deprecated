@@ -5,8 +5,6 @@
 import inkex
 from lxml import etree
 import math
-inkex.localization.localize
-
 
 class Point(object):
     def __init__(self, x, y):
@@ -30,9 +28,9 @@ class Point(object):
 
 class Vpoint(Point):
     '''
-    (x, y)座標と方向(rad)を持つ点
+    A point with (x, y) coordinates and direction (rad)
 
-    rad: 方向(真上: 0, 右: math.pi / 2, ..)
+    rad: Direction (true up: 0, right: math.pi / 2, ...)
     '''
     def __init__(self, x, y, rad=0):
         super(Vpoint, self).__init__(x, y)
@@ -221,11 +219,11 @@ class Part1(object):
         self.needle_tf = needle_tf
         self.needle_corner_rotation = needle_corner_rotation
 
-        # グループ作成
+        # Group Creation
         attr = {inkex.addNS('label', 'inkscape'): 'Part1'}
         self.g = etree.SubElement(self.parent, 'g', attr)
 
-        # 図形作成
+        # drawing
         self.points_outline = self.create_points_outline()
         self.svg_outline = SvgPart1Outline(self.g, self.points_outline,
                                            (self.bw * self.bf))
@@ -241,9 +239,8 @@ class Part1(object):
             self.svgs_needle_hole.append((svg_nh, v))
 
     def create_points_outline(self):
-        '''
-        外枠の座標を生成
-        '''
+        #Generate the coordinates of the outer frame
+
         points = []
         (x0, y0) = (-(self.w2 / 2), 0)
 
@@ -294,7 +291,7 @@ class Part1(object):
         a2 = self.d1 / math.tan(rad2a)
 
         #
-        # 頂点
+        # summit
         #
         vpoints1 = []
         for i, p in enumerate(self.points_outline):
@@ -326,7 +323,7 @@ class Part1(object):
             if i > 5:
                 break
 
-        # 頂点を補完する点を生成
+        # Generate a point that completes a vertex
         vpoints2 = []
         for i in range(len(vpoints1)-1):
             d = vpoints1[i].distance(vpoints1[i+1])
@@ -338,9 +335,8 @@ class Part1(object):
         return vpoints2
 
     def split_vpoints(self, v1, v2, n):
-        '''
-        v1, v2間をn個に分割して、リストを生成
-        '''
+        #v1, v2 Generate a list by dividing the space between the two into n pieces
+
         if n == 0:
             return [v1]
         (dx, dy) = ((v2.x - v1.x) / n, (v2.y - v1.y) / n)
@@ -378,28 +374,25 @@ class Part2(object):
         self.part1 = part1
         self.dia2 = dia2
 
-        # グループ作成
+        # Group Creation
         attr = {inkex.addNS('label', 'inkscape'): 'Part2'}
         self.g = etree.SubElement(self.parent, 'g', attr)
 
-        # 外枠
-        #   ``Part1``の``points_outline``をミラーして、
-        #   最初の6つのポイントを利用
+        # outer frame > Mirroring the points_outline in Part1, and use the first six points.
         self.points_outline = []
         for i in range(6):
             self.points_outline.append(self.part1.points_outline[i].mirror())
 
         self.svg_outline = SvgPolygon(self.g, self.points_outline)
 
-        # 留め具
+        # clasp
         self.svg_hole = SvgCircle(self.g, self.dia2 / 2)
 
-        # 針穴
-        #   ``Part1``の``vpoints_needle``をミラーして利用
+        # pinhole -> Mirroring the vpoints_needle in Part1
         self.svgs_needle_hole = []
         for v in self.part1.vpoints_needle:
             v.mirror()
-            # ``SvgNeedleHole``もミラーする
+            # Mirror also SvgNeedleHole
             svg_nh = SvgNeedleHole(self.g,
                                    self.part1.needle_w,
                                    self.part1.needle_h,
@@ -473,7 +466,7 @@ class PliersCover(inkex.Effect):
         #
         origin_vpoint = Vpoint(self.DEF_OFFSET_X, self.DEF_OFFSET_Y)
 
-        # グループ作成
+        # Group Creation
         attr = {inkex.addNS('label', 'inkscape'): 'PliersCover'}
         self.g = etree.SubElement(self.svg.get_current_layer(), 'g', attr)
 
@@ -490,6 +483,4 @@ class PliersCover(inkex.Effect):
         part2 = Part2(self.g, part1, opt.dia2)
         part2.draw(origin_vpoint)
 
-
-if __name__ == '__main__':
-    PliersCover().run()
+PliersCover().run()

@@ -20,8 +20,6 @@ import math
 import inkex
 from lxml import etree
 
-inkex.localization.localize
-
 # This is basically the draw method from the help guides for inkscape
 def draw_SVG_ellipse(rx, ry, cx, cy, parent, start_end=(0,2*math.pi),transform='' ):
 
@@ -84,6 +82,4 @@ class FibonacciSpiral(inkex.Effect):
 				self.options.SpreadFactor,
 				self.svg.get_current_layer())
 			
-if __name__ == '__main__':
-    e = FibonacciSpiral()
-    e.run()
+FibonacciSpiral().run()

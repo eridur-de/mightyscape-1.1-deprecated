@@ -96,7 +96,7 @@ def errormsg(msg):
 
          import inkex
          ...
-         inkex.errormsg(_("This extension requires two selected paths."))
+         inkex.errormsg("This extension requires two selected paths.")
     """
     #if isinstance(msg, unicode):
     #    sys.stderr.write(msg.encode("utf-8") + "\n")
@@ -164,7 +164,7 @@ class Effect:
             try:
                 stream = open(filename, 'r')
             except IOError:
-                errormsg(_("Unable to open specified file: %s") % filename)
+                errormsg("Unable to open specified file: %s" % filename)
                 sys.exit()
 
         # If it wasn't specified, try to open the file specified as
@@ -173,7 +173,7 @@ class Effect:
             try:
                 stream = open(self.svg_file, 'r')
             except IOError:
-                errormsg(_("Unable to open object member file: %s") % self.svg_file)
+                errormsg("Unable to open object member file: %s" % self.svg_file)
                 sys.exit()
 
         # Finally, if the filename was not specified anywhere, use
@@ -283,7 +283,7 @@ class Effect:
         try:
             retval = self.document.xpath(path, namespaces=NSS)[0]
         except:
-            errormsg(_("No matching node for expression: %s") % path)
+            errormsg("No matching node for expression: %s" % path)
             retval = None
         return retval
 
@@ -342,7 +342,7 @@ class Effect:
             if p:
                 width = float(p.string[p.start():p.end()])
             else:
-                errormsg(_("SVG Width not set correctly! Assuming width = 100"))
+                errormsg("SVG Width not set correctly! Assuming width = 100")
             if u:
                 svgwidthunit = u.string[u.start():u.end()]
 

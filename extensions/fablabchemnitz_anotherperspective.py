@@ -257,14 +257,14 @@ class AnotherPerspective(inkex.Effect):
 
     def effect(self):
         if len(self.options.ids) < 2:
-            inkex.errormsg(_("This extension requires two selected paths."))
+            inkex.errormsg("This extension requires two selected paths.")
             exit()
 
         obj = self.svg.selected[self.options.ids[0]]
         envelope = self.svg.selected[self.options.ids[1]]
 
         if obj.get(inkex.addNS('type','sodipodi')):
-            inkex.errormsg(_("The first selected object is of type '%s'.\nTry using the procedure Path->Object to Path." % obj.get(inkex.addNS('type','sodipodi'))))
+            inkex.errormsg("The first selected object is of type '%s'.\nTry using the procedure Path->Object to Path." % obj.get(inkex.addNS('type','sodipodi')))
             exit()
 
         if obj.tag == inkex.addNS('path','svg') or obj.tag == inkex.addNS('g','svg'):

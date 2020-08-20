@@ -73,7 +73,7 @@ class BouwkampCodeExtension(inkex.Effect):
         try:
             self.exception_on_invalid_bouwkamp_code(bouwkamp_code)
         except ValueError as exception:
-            inkex.errormsg(_(str(exception)))
+            inkex.errormsg(str(exception))
             return
 
         # draw the bouwkamp code
@@ -137,10 +137,6 @@ class BouwkampCodeExtension(inkex.Effect):
                 helper[i+j] += code[rectangle]
 
     def draw_rectangle(self, position, dimension, parent, center):
-        """
-        Draws a rectangle with the specified parameters.
-        """
-
         rectangle_style = {
             'opacity': '1',
             'stroke': '#000000',
@@ -164,5 +160,4 @@ class BouwkampCodeExtension(inkex.Effect):
 
         etree.SubElement(parent, inkex.addNS('rect', 'svg'), rectangle_attributes)
 
-if __name__ == '__main__':
-    BouwkampCodeExtension().run()
+BouwkampCodeExtension().run()

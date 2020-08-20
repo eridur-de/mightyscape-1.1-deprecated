@@ -313,7 +313,6 @@ class LineShading(inkex.Effect):
             node.getparent().remove(node)
           return
       if not image_selected_flag:
-        inkex.errormsg(_("Please select an image"))
+        inkex.errormsg("Please select an image")
 
-# Create effect instance and apply it.
 LineShading().run()

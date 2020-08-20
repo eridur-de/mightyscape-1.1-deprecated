@@ -82,7 +82,7 @@ class SubdividePathEffect(inkex.Effect):
         if(self.options.unit != 'perc' and self.options.unit != 'count'):
             maxL = self.options.maxLength * self.svg.unittouu('1'+self.options.unit)
             
-        # ~ inkex.errormsg(_(str(maxL)))
+        # ~ inkex.errormsg(str(maxL))
         tolerance = 10 ** (-1 * self.options.precision)
         
         selections = self.svg.selected        

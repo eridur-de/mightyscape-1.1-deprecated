@@ -49,7 +49,7 @@ def convert_objects_to_paths(file, document):
     (out, err) = p.communicate()
 
     if p.returncode != 0:
-        inkex.errormsg(_("Failed to convert objects to paths. Continued without converting."))
+        inkex.errormsg("Failed to convert objects to paths. Continued without converting.")
         inkex.errormsg(out)
         inkex.errormsg(err)
         return document.getroot()

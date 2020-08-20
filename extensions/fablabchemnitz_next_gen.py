@@ -81,7 +81,7 @@ class NextGenerator(inkex.base.TempDirMixin, inkex.base.InkscapeExtension):
                         # replace any attributes and other SVG content by the values from the CSV file
                         self.new_doc = self.new_doc.replace(svg_cont, row[key])
                     else:
-                        inkex.errormsg(_("The replacements in the generated images may be incomplete. Please check your entry '{key}' in the field for the non-text values.").format(key=key))
+                        inkex.errormsg("The replacements in the generated images may be incomplete. Please check your entry '{key}' in the field for the non-text values.").format(key=key)
                 if self.export(export_base_name) != True:
                     return
 
@@ -92,7 +92,7 @@ class NextGenerator(inkex.base.TempDirMixin, inkex.base.InkscapeExtension):
         if os.path.exists(self.options.output_folder):
             export_file_path = os.path.join(self.options.output_folder, export_file_name)
         else:
-            inkex.errormsg(_("The selected output folder does not exist."))
+            inkex.errormsg("The selected output folder does not exist.")
             return False
 
 

@@ -4,7 +4,6 @@ import inkex
 from lxml import etree
 from math import cos, sin, pi, exp
 __version__ = '0.1'
-inkex.localization.localize
 
 def line(npts=40, x0=0, y0=0, delta=.5, sgn=1):
     #returns a list of points on a line (y = +/- x + c) starting at x0,y0
@@ -96,5 +95,4 @@ class AffineTorus(inkex.Effect): # choose a better name
         curve_attribs = { 'style': styles[0], 'd': payload}
         etree.SubElement(topgroup, inkex.addNS('path','svg'), curve_attribs)
 
-if __name__ == '__main__':
-    AffineTorus().run()
+AffineTorus().run()

@@ -17,8 +17,6 @@ from math import *
 
 __version__ = '0.2'
 
-inkex.localization.localize
-
 def points_to_svgd(p, close = True):
     """ convert list of points (x,y) pairs
         into a closed SVG path list
@@ -263,9 +261,7 @@ class Dose(inkex.Effect):
             
             self.einschnitte_schreiben()
             del self.einschnitt_punkte[:]
-        
-        
-        
+             
     def einschnitte_schreiben(self):
         ###Schreibt die Einschnitte in die Seite
          
@@ -371,6 +367,4 @@ class Dose(inkex.Effect):
         branding_line = etree.SubElement(textgroup, inkex.addNS('text','svg'), einschnitt_line_attribs)
         branding_line.text = 'Die Einschnitte nur zu 70 Prozent in das Material lasern'
         
-        
-if __name__ == '__main__':
-    Dose().run()
+Dose().run()

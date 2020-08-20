@@ -32,7 +32,6 @@ class AttribEditor(inkex.Effect):
 				if self.options.attributeName in el.attrib:
 					del el.attrib[self.options.attributeName]
 			else:
-				inkex.errormsg(_("Invalid mode: " + self.options.mode))
+				inkex.errormsg("Invalid mode: " + self.options.mode)
 
-if __name__ == "__main__":
-	AttribEditor().run()
+AttribEditor().run()

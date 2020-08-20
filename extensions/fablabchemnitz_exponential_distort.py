@@ -5,7 +5,6 @@ import sys
 import math
 import inkex
 from inkex.paths import CubicSuperPath
-inkex.localization.localize
 
 class TransformExponential(inkex.Effect):
     def __init__(self):
@@ -85,8 +84,8 @@ class TransformExponential(inkex.Effect):
     def effect(self):
 
         if len(self.svg.selected) == 0:
-            inkex.errormsg(_("Please select an object to perform the " +
-                             "exponential-distort transformation on."))
+            inkex.errormsg("Please select an object to perform the " +
+                             "exponential-distort transformation on.")
             return
 
         for id, node in self.svg.selected.items():
@@ -105,5 +104,4 @@ class TransformExponential(inkex.Effect):
 
                 node.set('d', str(pts))
 
-if __name__ == '__main__':
-        TransformExponential().run()
+TransformExponential().run()

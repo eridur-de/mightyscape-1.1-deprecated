@@ -38,10 +38,7 @@ log10 = np.log10
 
 pi = np.pi
 
-
 __version__ = '0.1'
-
-inkex.localization.localize
 
 def split(l, sizes):
     """Split a list into sublists of specific sizes."""
@@ -273,5 +270,4 @@ class Travel(inkex.Effect):
                 attribs['d'] = str(Path(path))
                 obj_copy = etree.SubElement(group, obj.tag, attribs)
 
-if __name__ == '__main__':
-    Travel().run()
+Travel().run()

@@ -6,8 +6,6 @@ from lxml import etree
 
 __version__ = '0.0'
 
-inkex.localization.localize()
-
 def cplxs2pts(zs):
     tt = []
     for z in zs:
@@ -94,5 +92,4 @@ class Gasket(inkex.Effect): # choose a better name
             cx, cy, r  = scale_factor*cx , scale_factor*cy, scale_factor*r
             draw_SVG_circle(topgroup,r,cx,cy,'apo')          
                          
-if __name__ == '__main__':
-    Gasket().run()
+Gasket().run()

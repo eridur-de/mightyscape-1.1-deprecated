@@ -24,7 +24,6 @@ import os
 import sys
 
 import inkex
-inkex.localization.localize()
 from lxml import etree
 import subprocess
 from fablabchemnitz_inkcut import contains_text, convert_objects_to_paths
@@ -76,5 +75,4 @@ class InkscapeInkcutPlugin(inkex.Effect):
         # https://bugs.python.org/issue26741.
         p.returncode = 0
 
-if __name__ == '__main__':
-    InkscapeInkcutPlugin().run()
+InkscapeInkcutPlugin().run()

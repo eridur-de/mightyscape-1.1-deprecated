@@ -117,7 +117,6 @@ import os
 import sys
 import os.path
 import inkex
-import inkex.localization
 import inkex.paths
 import inkex.bezier
 from inkex.transforms import Transform
@@ -1483,6 +1482,4 @@ module chamfer_sphere(rad=chamfer, res=chamfer_fn)
                     inkex.errmsg("STDERR: {}".format(stderr))
                     inkex.errormsg("= " * 24)
 
-
-if __name__ == "__main__":
-    OpenSCAD().run()
+OpenSCAD().run()

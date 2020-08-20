@@ -11,16 +11,12 @@ Neon22 - github 2016
 MIT license
 '''
 
-import inkex       # Required
+import inkex
 from lxml import etree
-
 from math import cos, sin, radians, pi
 
 __version__ = '0.2'
 
-inkex.localization.localize
-
-### Helper functions
 def point_on_circle(radius, angle):
     " return xy coord of the point at distance radius from origin at angle "
     x = radius * cos(angle)
@@ -233,6 +229,4 @@ class Zoetrope(inkex.Effect):
             text = etree.SubElement(templategroup, 'text', text_atts)
             text.text = "At %d dpi. Image = %d x %d pixels" % (self.options.dpi, w, h)
 
-if __name__ == '__main__':
-    e = Zoetrope()
-    e.run()
+Zoetrope().run()

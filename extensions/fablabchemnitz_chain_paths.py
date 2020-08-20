@@ -33,14 +33,12 @@ import math
 import re
 import inkex
 from inkex.paths import CubicSuperPath, Path
-inkex.localization.localize()
 from optparse import SUPPRESS_HELP
 debug = False
 
 class ChainPaths(inkex.Effect):
 
   def __init__(self):
-    # Call the base class constructor.
     inkex.Effect.__init__(self)
 
     # For handling an SVG viewbox attribute, we will need to know the
@@ -140,14 +138,14 @@ class ChainPaths(inkex.Effect):
     self.eps_sq = self.chain_epsilon * self.unit_factor * self.chain_epsilon * self.unit_factor
 
     if not len(self.svg.selected.items()):
-      inkex.errormsg(_("Please select one or more objects."))
+      inkex.errormsg("Please select one or more objects.")
       return
 
     segments = []
     for id in self.svg.selected:
       node = self.svg.selected[id]
       if node.tag != inkex.addNS('path', 'svg'):
-        inkex.errormsg(_("Object " + id + " is not a path. Try\n  - Path->Object to Path\n  - Object->Ungroup"))
+        inkex.errormsg("Object " + id + " is not a path. Try\n  - Path->Object to Path\n  - Object->Ungroup")
         return
       if debug: inkex.utils.debug("id=" + str(id) + ", tag=" + str(node.tag))
       path_d = CubicSuperPath(Path(node.get('d')))
@@ -281,5 +279,4 @@ class ChainPaths(inkex.Effect):
       if debug: inkex.utils.debug("min_missed_distance: "+str(math.sqrt(float(self.min_missed_distance_sq))/self.unit_factor)+'>'+str(self.chain_epsilon)+str(self.options.units))
     if debug: inkex.utils.debug("Successful link operations: "+str(self.chained_count))
 
-if __name__ == '__main__':
-    ChainPaths().run()
+ChainPaths().run()
