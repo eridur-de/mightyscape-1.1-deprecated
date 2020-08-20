@@ -29,7 +29,5 @@ class StartEndPoints(inkex.Effect):
             else: #open contour with start and end point
                 self.drawCircle(dot_group, '#FF0000', start)
                 self.drawCircle(dot_group, '#0000FF', end)
-            
-
-            
+                  
 StartEndPoints().run()

@@ -27,14 +27,16 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-import inkex,sys,re
+import inkex
+import sys
+import re
 from lxml import etree
 
 class ReplaceColorAlpha(inkex.Effect):
   def __init__(self):
     inkex.Effect.__init__(self)
-    self.arg_parser.add_argument("-f", "--from_color", default="000000", help="Replace color")
-    self.arg_parser.add_argument("-t", "--to_color", default="000000", help="By color + Alpha")
+    self.arg_parser.add_argument("--from_color", default="000000", help="Replace color")
+    self.arg_parser.add_argument("--to_color", default="000000", help="By color + Alpha")
     
   def effect(self):
     saveout = sys.stdout
@@ -53,8 +55,7 @@ class ReplaceColorAlpha(inkex.Effect):
     for element in svg.iter("*"):
         style = element.get('style')
         if style:
-            #print style.lower().find('fill-opacity:'+alphaFr[:5]) != -1
-            if (style.lower().find('fill:#'+fr[:6]) != -1 and len(fr) == 6) or (style.lower().find('fill-opacity:'+alphaFr[:5]) != -1 and len(fr)==8 and style.lower().find('fill:#'+fr[:6]) != -1):
+            if (style.lower().find('fill:#'+fr[:6]) != -1 and len(fr) == 6) or (style.lower().find('fill-opacity:'+alphaFr[:4]) != -1 and len(fr)==8 and style.lower().find('fill:#'+fr[:6]) != -1):
                 style = re.sub('fill-opacity:.*?(;|$)',
                 '\\1',
                 style)
@@ -65,7 +66,7 @@ class ReplaceColorAlpha(inkex.Effect):
                 style = style + ";fill-opacity:" + alphaTo
                 element.set('style',style)
 
-            if (style.lower().find('stroke:#'+fr[:6]) != -1 and len(fr) == 6) or (style.lower().find('stroke:#'+fr[:6]) != -1 and style.lower().find('stroke-opacity:'+alphaFr[:5]) != -1 and len(fr)==8):
+            if (style.lower().find('stroke:#'+fr[:6]) != -1 and len(fr) == 6) or (style.lower().find('stroke:#'+fr[:6]) != -1 and style.lower().find('stroke-opacity:'+alphaFr[:4]) != -1 and len(fr)==8):
                 style = re.sub('stroke-opacity:.*?(;|$)',
                 '\\1',
                 style) 
