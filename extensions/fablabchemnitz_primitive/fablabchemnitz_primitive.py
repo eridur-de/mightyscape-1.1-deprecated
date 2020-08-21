@@ -107,7 +107,7 @@ class Primitive (inkex.Effect):
                     command += " -o "   + exportfile + ".svg"
                     command += " -n "   + str(self.options.n)
    
-                    inkex.utils.debug(command)
+                    #inkex.utils.debug(command)
                     
                     # Create the vector new SVG file
                     with os.popen(command, "r") as proc:
