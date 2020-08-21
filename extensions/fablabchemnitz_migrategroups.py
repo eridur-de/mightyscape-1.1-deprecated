@@ -21,32 +21,36 @@ class MigrateGroups(inkex.Effect):
     
     def __init__(self):
         inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("--svg", type=inkex.Boolean, default=True, help="svg")
-        self.arg_parser.add_argument("--rect", type=inkex.Boolean, default=True, help="rect")
         self.arg_parser.add_argument("--circle", type=inkex.Boolean, default=True, help="circle")
+        self.arg_parser.add_argument("--clipPath", type=inkex.Boolean, default=True, help="clipPath")
+        self.arg_parser.add_argument("--defs", type=inkex.Boolean, default=True, help="defs")
         self.arg_parser.add_argument("--ellipse", type=inkex.Boolean, default=True, help="ellipse")
+        self.arg_parser.add_argument("--image", type=inkex.Boolean, default=True, help="image")
         self.arg_parser.add_argument("--line", type=inkex.Boolean, default=True, help="line")
+        self.arg_parser.add_argument("--path", type=inkex.Boolean, default=True, help="path")
         self.arg_parser.add_argument("--polyline", type=inkex.Boolean, default=True, help="polyline")
         self.arg_parser.add_argument("--polygon", type=inkex.Boolean, default=True, help="polygon")
-        self.arg_parser.add_argument("--path", type=inkex.Boolean, default=True, help="path")
-        self.arg_parser.add_argument("--image", type=inkex.Boolean, default=True, help="image")
+        self.arg_parser.add_argument("--rect", type=inkex.Boolean, default=True, help="rect")
+        self.arg_parser.add_argument("--svg", type=inkex.Boolean, default=True, help="svg")
         self.arg_parser.add_argument("--text", type=inkex.Boolean, default=True, help="text")
         self.arg_parser.add_argument("--tspan", type=inkex.Boolean, default=True, help="tspan")
     
     def effect(self):
     
         namespace = []
-        namespace.append("{http://www.w3.org/2000/svg}svg")     if self.options.svg else ""
-        namespace.append("{http://www.w3.org/2000/svg}rect")     if self.options.rect else ""
-        namespace.append("{http://www.w3.org/2000/svg}circle")   if self.options.circle else ""
-        namespace.append("{http://www.w3.org/2000/svg}ellipse")  if self.options.ellipse else ""
-        namespace.append("{http://www.w3.org/2000/svg}line")     if self.options.line else ""
+        namespace.append("{http://www.w3.org/2000/svg}circle")   if self.options.circle   else ""
+        namespace.append("{http://www.w3.org/2000/svg}clipPath") if self.options.clipPath else ""
+        namespace.append("{http://www.w3.org/2000/svg}defs")     if self.options.defs     else ""     
+        namespace.append("{http://www.w3.org/2000/svg}ellipse")  if self.options.ellipse  else ""
+        namespace.append("{http://www.w3.org/2000/svg}image")    if self.options.image    else ""
+        namespace.append("{http://www.w3.org/2000/svg}line")     if self.options.line     else ""
+        namespace.append("{http://www.w3.org/2000/svg}polygon")  if self.options.polygon  else ""
+        namespace.append("{http://www.w3.org/2000/svg}path")     if self.options.path     else ""
         namespace.append("{http://www.w3.org/2000/svg}polyline") if self.options.polyline else ""
-        namespace.append("{http://www.w3.org/2000/svg}polygon")  if self.options.polygon else ""
-        namespace.append("{http://www.w3.org/2000/svg}path")     if self.options.path else ""
-        namespace.append("{http://www.w3.org/2000/svg}image")    if self.options.image else ""
-        namespace.append("{http://www.w3.org/2000/svg}text")     if self.options.text else ""
-        namespace.append("{http://www.w3.org/2000/svg}tspan")    if self.options.tspan else ""
+        namespace.append("{http://www.w3.org/2000/svg}rect")     if self.options.rect     else ""
+        namespace.append("{http://www.w3.org/2000/svg}svg")      if self.options.svg      else ""
+        namespace.append("{http://www.w3.org/2000/svg}text")     if self.options.text     else ""
+        namespace.append("{http://www.w3.org/2000/svg}tspan")    if self.options.tspan    else ""
     
         #get all paths and groups from selection. Remove all groups from the selection and form a new single group of it
         def parseNodes(self, node):

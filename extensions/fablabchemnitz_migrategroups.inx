@@ -4,15 +4,19 @@
     <id>fablabchemnitz.de.migrategroups</id>
     <label>What elements to migrate?</label>
     <label>Unchecked item types will be deleted!</label>
-    <param name="svg" type="bool" gui-text="svg">true</param>
-    <param name="rect" type="bool" gui-text="rect">true</param>
+
+    <!-- other stuff: sodipodi, lineargradient, radialgradient, meshgradient, meshrow, meshpath, stop -->
     <param name="circle" type="bool" gui-text="circle">true</param>
+    <param name="clipPath" type="bool" gui-text="clipPath">true</param>
+    <param name="defs" type="bool" gui-text="defs">true</param>
     <param name="ellipse" type="bool" gui-text="ellipse">true</param>
+    <param name="image" type="bool" gui-text="image">true</param>
     <param name="line" type="bool" gui-text="line">true</param>
+    <param name="path" type="bool" gui-text="path">true</param>
     <param name="polyline" type="bool" gui-text="polyline">true</param>
     <param name="polygon" type="bool" gui-text="polygon">true</param>
-    <param name="path" type="bool" gui-text="path">true</param>
-    <param name="image" type="bool" gui-text="image">true</param>
+    <param name="rect" type="bool" gui-text="rect">true</param>
+    <param name="svg" type="bool" gui-text="svg">true</param>
     <param name="text" type="bool" gui-text="text">true</param>
     <param name="tspan" type="bool" gui-text="tspan">true</param>
     <effect needs-live-preview="true">
