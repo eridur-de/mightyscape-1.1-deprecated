@@ -40,8 +40,8 @@ Distribute under GPLv2 or ask.
     <input>
         <extension>.stl</extension>
         <mimetype>application/sla</mimetype>
-        <_filetypename>Stereolitography File (*.stl)</_filetypename>
-        <_filetypetooltip>Import STL Files</_filetypetooltip>
+        <filetypename>Stereolitography File (*.stl)</filetypename>
+        <filetypetooltip>Import STL Files</filetypetooltip>
     </input>
     <script>
         <command location="inx" interpreter="python">fablabchemnitz_input_stl.py</command>

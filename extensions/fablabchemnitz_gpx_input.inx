@@ -19,8 +19,8 @@
 	<input>
 		<extension>.gpx</extension>
 		<mimetype>application/gpx+xml</mimetype>
-		<_filetypename>GPS eXchange Format (*.gpx)</_filetypename>
-		<_filetypetooltip>Import GPX Format</_filetypetooltip>
+		<filetypename>GPS eXchange Format (*.gpx)</filetypename>
+		<filetypetooltip>Import GPX Format</filetypetooltip>
 	</input>
 	<script>
 		<command location="inx" interpreter="python">fablabchemnitz_gpx2svg.py</command>

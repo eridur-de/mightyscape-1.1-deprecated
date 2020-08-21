@@ -30,8 +30,8 @@
    <output>
       <extension>.lyz</extension>
       <mimetype>image/lyz</mimetype>
-      <_filetypename>Laser Draw LYZ (*.lyz)</_filetypename>
-      <_filetypetooltip>LaserDraw LYZ Output</_filetypetooltip>
+      <filetypename>Laser Draw LYZ (*.lyz)</filetypename>
+      <filetypetooltip>LaserDraw LYZ Output</filetypetooltip>
       <dataloss>TRUE</dataloss>
    </output>
    <script>

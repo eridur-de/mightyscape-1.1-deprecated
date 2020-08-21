@@ -37,8 +37,8 @@
    <output>
       <extension>.zip</extension>
       <mimetype>application/x-zip</mimetype>
-      <_filetypename>Laser Draw LYZ (ZIP)(*.zip)</_filetypename>
-      <_filetypetooltip>LaserDraw LYZ Output Zipped</_filetypetooltip>
+      <filetypename>Laser Draw LYZ (ZIP)(*.zip)</filetypename>
+      <filetypetooltip>LaserDraw LYZ Output Zipped</filetypetooltip>
       <dataloss>TRUE</dataloss>
    </output>
    <script>

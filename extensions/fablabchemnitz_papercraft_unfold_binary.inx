@@ -5,8 +5,8 @@
     <input>
         <extension>.stl</extension>
         <mimetype>application/sla</mimetype>
-        <_filetypename>Unfoldable Stereolitography File Binary (*.stl)</_filetypename>
-        <_filetypetooltip>Unfold STL Files</_filetypetooltip>
+        <filetypename>Unfoldable Stereolitography File Binary (*.stl)</filetypename>
+        <filetypetooltip>Unfold STL Files</filetypetooltip>
     </input>
     <script>
         <command location="inx" interpreter="python">fablabchemnitz_papercraft_unfold_binary.py</command>

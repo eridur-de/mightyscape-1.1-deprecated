@@ -45,8 +45,8 @@
     <input>
         <extension>.gcode</extension>
         <mimetype>application/x-gcode</mimetype>
-        <_filetypename>GCode File (*.gcode)</_filetypename>
-        <_filetypetooltip>Import GCode File</_filetypetooltip>
+        <filetypename>GCode File (*.gcode)</filetypename>
+        <filetypetooltip>Import GCode File</filetypetooltip>
     </input>
     <script>
         <command location="inx" interpreter="python">fablabchemnitz_gcode_input.py</command>

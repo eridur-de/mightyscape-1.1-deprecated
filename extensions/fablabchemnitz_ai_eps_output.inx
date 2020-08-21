@@ -5,8 +5,8 @@
    <output>
       <extension>.eps</extension>
       <mimetype>application/eps</mimetype>
-      <_filetypename>Encapsulated PostScript - AI compatible (*.eps)</_filetypename>
-      <_filetypetooltip>Adobe Illustrator 7 compatible EPS</_filetypetooltip>
+      <filetypename>Encapsulated PostScript - AI compatible (*.eps)</filetypename>
+      <filetypetooltip>Adobe Illustrator 7 compatible EPS</filetypetooltip>
    </output>
    <script>
       <command location="inx" interpreter="python">fablabchemnitz_ai_eps_output.py</command>
