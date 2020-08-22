@@ -18,7 +18,7 @@ Features
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 21.08.2020
-Last patch: 21.08.2020
+Last patch: 23.08.2020
 License: GNU GPL v3
 
 Used version of Primitive: https://github.com/fogleman/primitive/commit/0373c216458be1c4b40655b796a3aefedf8b7d23
