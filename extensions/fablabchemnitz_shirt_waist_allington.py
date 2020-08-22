@@ -61,7 +61,7 @@ class ShirtWaistAllington(inkex.Effect):
         def printPoint(pnt):
             debug('  %s  =  %f,  %f')%pnt.id, pnt.x, pnt.y
 
-        INCH_to_PX = 90.0 #inkscape uses 90 pixels per 1 inch
+        INCH_to_PX = 96.0 #inkscape 1.0 uses 96 pixels per 1 inch
         CM_to_INCH = 1/2.54
         CM_to_PX = CM_to_INCH*INCH_to_PX
         CM = CM_to_PX # CM - shorthand when using centimeters
@@ -442,10 +442,12 @@ class ShirtWaistAllington(inkex.Effect):
         #resize document to fit pattern piece layout
         width = ddx+d2.x # use pattern piece that appears farthest to the right in Inkscape canvas
         doc_width = width+2*SEAM_ALLOWANCE+2*BORDER
-        doc.set('width', str(doc_width))
         doc_height = row_offset+SEAM_ALLOWANCE+BORDER
-        doc.set('height', str(doc_height))
-
+        root = self.svg.getElement('//svg:svg');
+        root.set('viewBox', '%f %f %f %f' % (0,0,doc_width,doc_height))
+        root.set('width', str(doc_width))
+        root.set('height', str(doc_height))
+        
         #Place notes on document after pattern pieces are transformed so that notes are centered on correct width
         x = doc_width/2.0
         y = BORDER
@@ -454,5 +456,4 @@ class ShirtWaistAllington(inkex.Effect):
             addText(bodice, 'note'+str(i), x, y, item, fontsize = '28', textalign = 'center', textanchor = 'middle', reference = 'false')
             y = y+0.33*IN
 
-effect = ShirtWaistAllington()
-effect.run()
+ShirtWaistAllington().run()
