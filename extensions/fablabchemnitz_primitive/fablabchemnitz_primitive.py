@@ -58,6 +58,7 @@ class Primitive (inkex.Effect):
     def __init__(self):
         inkex.Effect.__init__(self)
         self.arg_parser.add_argument("--keeporiginal", type=inkex.Boolean, default=False, help="Keep original image on canvas")
+        self.arg_parser.add_argument("--cliprect", type=inkex.Boolean, default=True, help="Draw clipping rectangle")
         self.arg_parser.add_argument("--n", type=int, default=100, help="Number of shapes")
         self.arg_parser.add_argument("--m", default=1, help="Mode")
         self.arg_parser.add_argument("--rep", type=int, default=0,help="Extra shapes/iteration")
@@ -137,7 +138,27 @@ class Primitive (inkex.Effect):
                     
                     #remove the old image or not                    
                     if self.options.keeporiginal is not True:
-                        node.getparent().remove(node)                    
+                        node.getparent().remove(node)  
+
+                    # create clip path to remove the stuffy surroundings
+                    if self.options.cliprect:
+                        path = '//svg:defs'
+                        defslist = self.document.getroot().xpath(path, namespaces=inkex.NSS)
+                        if len(defslist) > 0:
+                            defs = defslist[0]
+                        clipPathData = {inkex.addNS('label', 'inkscape'):'imagetracerClipPath', 'clipPathUnits':'userSpaceOnUse', 'id':'imagetracerClipPath'}
+                        clipPath = etree.SubElement(defs, 'clipPath', clipPathData)
+                        #inkex.utils.debug(image.width)
+                        clipBox = {
+                                'x':str(0), 
+                                'y':str(0),
+                                'width':str(doc.get('width')), 
+                                'height':str(doc.get('height')),
+                                'style':'fill:#000000; stroke:none; fill-opacity:1;'
+                                }
+                        etree.SubElement(clipPath, 'rect', clipBox)
+                        #etree.SubElement(newGroup, 'g', {inkex.addNS('label','inkscape'):'imagetracerjs', 'clip-path':"url(#imagetracerClipPath)"})
+                        newGroup.getchildren()[0].set('clip-path','url(#imagetracerClipPath)')
         else:
             inkex.utils.debug("No image found for tracing. Please select an image first.")        
 

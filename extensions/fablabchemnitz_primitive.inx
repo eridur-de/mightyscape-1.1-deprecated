@@ -5,6 +5,7 @@
     <label appearance="header">Settings</label>
     <separator/>
     <param name="keeporiginal" type="bool" gui-text="Keep original image on canvas">false</param>
+    <param name="cliprect" type="bool" gui-text="Draw clipping rectangle">true</param>
     <param name="n" type="int" min="0" max="99999" gui-text="Number of shapes">100</param>
     <param name="m" appearance="combo" type="optiongroup" default="1" gui-text="Mode"> 
         <option value="0">Combo</option>

@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # Copyright (c) 2012 Stuart Pernsteiner
 # All rights reserved.
 #
@@ -24,8 +26,6 @@
 import sys
 import inkex
 from inkex import Transform
-import gettext
-_ = gettext.gettext
 
 class SetViewBoxEffect(inkex.Effect):
     def __init__(self):
@@ -33,8 +33,10 @@ class SetViewBoxEffect(inkex.Effect):
 
     def effect(self):
         if len(self.svg.selected) != 1:
-            sys.exit(_("Error: You must select exactly one rectangle"))
-
+            sys.exit("Error: You must select exactly one rectangle")
+        elif self.svg.selected[0].tag != inkex.addNS('rect','svg'):
+            sys.exit("Error: You must select exactly one rectangle")
+            
         sel = None
         for pathId in self.svg.selected:
             sel = self.svg.selected[pathId]
