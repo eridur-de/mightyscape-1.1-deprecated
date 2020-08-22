@@ -8,6 +8,7 @@ This extension parses the selection and will put all paths into one single group
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 13.08.2020
+Last Patch: 23.08.2020
 License: GNU GPL v3
 """
 
@@ -48,11 +49,11 @@ class MigrateGroups(inkex.Effect):
         namespace.append("{http://www.w3.org/2000/svg}path")     if self.options.path     else ""
         namespace.append("{http://www.w3.org/2000/svg}polyline") if self.options.polyline else ""
         namespace.append("{http://www.w3.org/2000/svg}rect")     if self.options.rect     else ""
-        namespace.append("{http://www.w3.org/2000/svg}svg")      if self.options.svg      else ""
+        #namespace.append("{http://www.w3.org/2000/svg}svg")      if self.options.svg      else ""
         namespace.append("{http://www.w3.org/2000/svg}text")     if self.options.text     else ""
         namespace.append("{http://www.w3.org/2000/svg}tspan")    if self.options.tspan    else ""
     
-        #get all paths and groups from selection. Remove all groups from the selection and form a new single group of it
+        #get all items from selection. Remove all groups from the selection and form a new single group of it. We also handle svg:svg because it behaves like a group container too
         def parseNodes(self, node):
             if node.tag in namespace:
                 if node not in self.allPaths:
@@ -60,7 +61,7 @@ class MigrateGroups(inkex.Effect):
             else:
                 if node.tag != inkex.addNS('g','svg'):
                     self.allNonMigrates.append(node)
-            if node.tag == inkex.addNS('g','svg'):
+            if node.tag == inkex.addNS('g','svg') or node.tag == inkex.addNS('svg','svg'):
                 if node not in self.allGroups:
                     self.allGroups.append(node)
                 groups = node.getchildren()
@@ -92,7 +93,7 @@ class MigrateGroups(inkex.Effect):
           
         #remove the selected, now empty group (if it's the case)
         if len(self.svg.selected) > 0 and len(self.allPaths) > 0: 
-            if self.svg.selected[0].tag == inkex.addNS('g','svg'):
+            if self.svg.selected[0].tag == inkex.addNS('g','svg') or self.svg.selected[0].tag == inkex.addNS('svg','svg'):
                 if self.svg.selected[0].getparent() is not None:
                     self.svg.selected[0].getparent().remove(self.svg.selected[0])
 
