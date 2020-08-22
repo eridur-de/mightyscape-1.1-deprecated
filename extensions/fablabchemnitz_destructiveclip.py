@@ -25,6 +25,7 @@
 
 import inkex
 import sys
+from inkex.paths import Path
 
 
 class DestructiveClip(inkex.Effect):
@@ -152,6 +153,37 @@ class DestructiveClip(inkex.Effect):
             clippedLines.extend(self.cullSegmentedLine(self.clipLine(lineToClip, clippingLineSegments), clippingLineSegments, self.maxX(clippingLineSegments)))
         return clippedLines
 
+    def fixVHbehaviour(self, elem):
+        raw = Path(elem.get("d")).to_arrays()
+        subpaths, prev = [], 0
+        for i in range(len(raw)): # Breaks compound paths into simple paths
+            if raw[i][0] == 'M' and i != 0:
+                subpaths.append(raw[prev:i])
+                prev = i
+        subpaths.append(raw[prev:])
+        seg = []
+        for simpath in subpaths:
+            closed = False
+            if simpath[-1][0] == 'Z':
+                closed = True
+                if simpath[-2][0] == 'L': simpath[-1][1] = simpath[0][1]
+                else: simpath.pop()
+            for i in range(len(simpath)):
+                if simpath[i][0] == 'V': # vertical and horizontal lines only have one point in args, but 2 are required
+                    #inkex.utils.debug(simpath[i][0])
+                    simpath[i][0]='L' #overwrite V with regular L command
+                    add=simpath[i-1][1][0] #read the X value from previous segment
+                    simpath[i][1].append(simpath[i][1][0]) #add the second (missing) argument by taking argument from previous segment
+                    simpath[i][1][0]=add #replace with recent X after Y was appended
+                if simpath[i][0] == 'H': # vertical and horizontal lines only have one point in args, but 2 are required
+                    #inkex.utils.debug(simpath[i][0])
+                    simpath[i][0]='L' #overwrite H with regular L command
+                    simpath[i][1].append(simpath[i-1][1][1]) #add the second (missing) argument by taking argument from previous segment				
+                #inkex.utils.debug(simpath[i])
+                seg.append(simpath[i])
+        elem.set("d", Path(seg))
+        return seg
+        
     def effect(self):
         clippingLineSegments = None
         pathTag = inkex.addNS('path', 'svg')
@@ -160,12 +192,13 @@ class DestructiveClip(inkex.Effect):
         for id in self.options.ids:  # the selection, top-down
             node = self.svg.selected[id]
             if node.tag == pathTag:
+                path = self.fixVHbehaviour(node)
                 if clippingLineSegments is None: # first path is the clipper
-                    (clippingLineSegments, errors) = self.simplepathToLineSegments(node.path.to_arrays())
+                    (clippingLineSegments, errors) = self.simplepathToLineSegments(path)
                     self.error_messages.extend(['{}: {}'.format(id, err) for err in errors])
                 else:
                     # do all the work!
-                    segmentsToClip, errors = self.simplepathToLineSegments(node.path.to_arrays())
+                    segmentsToClip, errors = self.simplepathToLineSegments(path)
                     self.error_messages.extend(['{}: {}'.format(id, err) for err in errors])
                     clippedSegments = self.clipLineSegments(segmentsToClip, clippingLineSegments)
                     if len(clippedSegments) != 0:
@@ -182,5 +215,4 @@ class DestructiveClip(inkex.Effect):
         for error in self.error_messages:
             inkex.errormsg(error)
 
-if __name__ == '__main__':
-    DestructiveClip().run()
+DestructiveClip().run()
