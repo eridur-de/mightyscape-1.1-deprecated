@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <name>Styles To Layers</name>
+    <id>fablabchemnitz.de.styles_to_layers</id>
+    <param name="separateby" gui-text="Separate by" type="optiongroup" appearance="combo">
+       <option value="stroke">Stroke color</option>
+       <option value="stroke_width">Stroke width</option>
+       <option value="stroke_opacity">Stroke opacity</option>
+       <option value="fill">Fill color</option>
+       <option value="fill_opacity">Fill opacity</option>
+    </param>
+    <param name="parsecolor" gui-text="Sort colors by" type="optiongroup" appearance="combo">
+       <option value="hexval">Hex value</option>
+       <option value="hue">Hue</option>
+       <option value="saturation">Saturation</option>
+       <option value="luminance">Luminance</option>
+    </param>
+    <param name="subdividethreshold" gui-text="Number of sub layers" gui-description="A min/max range of the selected style type value will be calculated and you retrieve a set of layer (coarse grouping) with sub-layers (fine grouping). If you have less calculated sub layers than this threshold it will be limited automatically." type="int" min="1" max="9999">1</param>
+    <param name="decimals" gui-text="Decimal tolerance" gui-description="The more decimals the more distinct layers you will get. This only applies for the sub layers (threshold > 1)" type="int" min="0" max="10">1</param>
+
+    <label>This extension will re-layer your selected items or the whole document according to their style (stroke or fill)</label>
+    <label>Tinkered by Mario Voigt / Stadtfabrikanten e.V. (2020)</label>
+    <label appearance="url">https://fablabchemnitz.de</label>
+    <effect>
+        <object-type>all</object-type>
+        <effects-menu>
+            <submenu name="FabLab Chemnitz">
+                <submenu name="Groups and Layers"/>
+            </submenu>
+        </effects-menu>
+    </effect>
+    <script>
+        <command location="inx" interpreter="python">fablabchemnitz_styles_to_layers.py</command>
+    </script>
+</inkscape-extension>
