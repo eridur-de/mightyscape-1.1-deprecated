@@ -45,6 +45,7 @@ class MigrateGroups(inkex.Effect):
         self.arg_parser.add_argument("--meshgradient", type=inkex.Boolean, default=True)
         self.arg_parser.add_argument("--meshrow", type=inkex.Boolean, default=True)
         self.arg_parser.add_argument("--meshpatch", type=inkex.Boolean, default=True)
+        self.arg_parser.add_argument("--metadata", type=inkex.Boolean, default=True)
         self.arg_parser.add_argument("--script", type=inkex.Boolean, default=True)
         self.arg_parser.add_argument("--stop", type=inkex.Boolean, default=True)
         self.arg_parser.add_argument("--use", type=inkex.Boolean, default=True)
@@ -74,6 +75,7 @@ class MigrateGroups(inkex.Effect):
         namespace.append("{http://www.w3.org/2000/svg}meshrow")        if self.options.meshrow        else ""
         namespace.append("{http://www.w3.org/2000/svg}meshpatch")      if self.options.meshpatch      else ""
         namespace.append("{http://www.w3.org/2000/svg}script")         if self.options.script         else ""
+        namespace.append("{http://www.w3.org/2000/svg}metadata")       if self.options.metadata       else ""
         namespace.append("{http://www.w3.org/2000/svg}stop")           if self.options.stop           else ""
         namespace.append("{http://www.w3.org/2000/svg}use")            if self.options.use            else ""
         namespace.append("{http://www.w3.org/2000/svg}flowRoot")       if self.options.flowRoot       else ""
@@ -120,31 +122,31 @@ class MigrateGroups(inkex.Effect):
                 
         if len(self.allElements) > 0:
             #copy all element into the new group
+            newGroup = self.document.getroot().add(inkex.Group()) #make a new group at root level
+
             for oldElement in self.allElements:
                 #oldElementId = oldElement.get('id')
+                newElement = oldElement.copy()
+                #newElement.set('id', oldElementId)
+                newGroup.add(newElement)
+            if self.options.droponly:
                 if oldElement.getparent() is not None:
                     oldElement.getparent().remove(oldElement)
-                #newElement.set('id', oldElementId)
-                if self.options.droponly == False:
-                    #make a new group at root level
-                    newGroup = self.document.getroot().add(inkex.Group())
-                    newElement = oldElement.copy()
-                    newGroup.add(newElement)
    
         if self.options.droponly == False:
             #now remove all the obsolete groups
             if len(self.allGroups) > 0:        
                 for group in self.allGroups:
-                    if group.getparent() is not None:
-                        group.getparent().remove(group)
+                    #if group.getparent() is not None:
+                    group.getparent().remove(group)
               
-            #remove the selected, now empty group (if it's the case) - this applies not if there is no user selection at all so some dangling group(s) might be left over
-            if len(self.svg.selected) > 0 and len(self.allElements) > 0: 
-                if self.svg.selected[0].tag == inkex.addNS('g','svg') or self.svg.selected[0].tag == inkex.addNS('svg','svg'):
-                    if self.svg.selected[0].getparent() is not None:
-                        self.svg.selected[0].getparent().remove(self.svg.selected[0])
+        #remove the selected, now empty group (if it's the case) - this applies not if there is no user selection at all so some dangling group(s) might be left over
+        if len(self.svg.selected) > 0 and len(self.allElements) > 0: 
+            if self.svg.selected[0].tag == inkex.addNS('g','svg') or self.svg.selected[0].tag == inkex.addNS('svg','svg'):
+                if self.svg.selected[0].getparent() is not None:
+                    self.svg.selected[0].getparent().remove(self.svg.selected[0])
                
-        if self.options.showdroplist and len(self.allNonMigrates) > 0:
+        if self.options.showdroplist:
             self.msg(str(len(self.allNonMigrates)) + " elements were removed during nodes while migration:")
             for i in self.allNonMigrates:
                 self.msg(i.tag.replace("{http://www.w3.org/2000/svg}","svg:") + " id:" + i.get('id'))            
