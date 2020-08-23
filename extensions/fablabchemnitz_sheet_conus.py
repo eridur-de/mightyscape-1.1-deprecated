@@ -412,14 +412,14 @@ class SheetMetalConus(inkex.Effect):
                      'y': str(cone_height*unitFactor/2) }
         text = etree.SubElement(parent, 'text', text_atts)
         text.text = "%4.3f" %(cone_height)
-        line.transform = Transform(frustrum_repos) * line.transform
+        text.transform = Transform(frustrum_repos) * text.transform
         if cut_dia >= 0.001:
             text_atts = {'style':str(inkex.Style(text_style)),
                          'x': '0',
                          'y': str(font_height) }
             text = etree.SubElement(parent, 'text', text_atts)
             text.text = "%4.3f" %(cut_dia)
-            line.transform = Transform(frustrum_repos) * line.transform
+            text.transform = Transform(frustrum_repos) * text.transform
         text_atts = {'style':str(inkex.Style(text_style)),
                      'x': '0',
                      'y': str(cone_height*unitFactor+font_height) }
