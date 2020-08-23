@@ -3,7 +3,7 @@
 """
 Extension for InkScape 1.0
 
-This extension parses the selection and will put all paths into one single group. If you have a cluster with lots of groups and paths you will clean up this way (one top level group, all paths below it). If you select a single path or a set of paths you just wrap it like using CTRL + G (like making a usual group)
+This extension parses the selection and will put all elements into one single group. If you have a cluster with lots of groups and elements you will clean up this way (one top level group, all elements below it). If you select a single element or a set of elements you just wrap it like using CTRL + G (like making a usual group). You can also use this extension to filter out unwanted SVG elements at all.
  
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
@@ -13,94 +13,135 @@ License: GNU GPL v3
 """
 
 import inkex
+from lxml import etree
 
 class MigrateGroups(inkex.Effect):
 
-    allPaths = []
+    allElements = []
     allGroups = []
     allNonMigrates = []
     
     def __init__(self):
         inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("--circle", type=inkex.Boolean, default=True, help="circle")
-        self.arg_parser.add_argument("--clipPath", type=inkex.Boolean, default=True, help="clipPath")
-        self.arg_parser.add_argument("--defs", type=inkex.Boolean, default=True, help="defs")
-        self.arg_parser.add_argument("--ellipse", type=inkex.Boolean, default=True, help="ellipse")
-        self.arg_parser.add_argument("--image", type=inkex.Boolean, default=True, help="image")
-        self.arg_parser.add_argument("--line", type=inkex.Boolean, default=True, help="line")
-        self.arg_parser.add_argument("--path", type=inkex.Boolean, default=True, help="path")
-        self.arg_parser.add_argument("--polyline", type=inkex.Boolean, default=True, help="polyline")
-        self.arg_parser.add_argument("--polygon", type=inkex.Boolean, default=True, help="polygon")
-        self.arg_parser.add_argument("--rect", type=inkex.Boolean, default=True, help="rect")
-        self.arg_parser.add_argument("--svg", type=inkex.Boolean, default=True, help="svg")
-        self.arg_parser.add_argument("--text", type=inkex.Boolean, default=True, help="text")
-        self.arg_parser.add_argument("--tspan", type=inkex.Boolean, default=True, help="tspan")
-    
+        self.arg_parser.add_argument("--allitems", type=inkex.Boolean, default=True)
+        self.arg_parser.add_argument("--droponly", type=inkex.Boolean, default=False)
+        self.arg_parser.add_argument("--showdroplist", type=inkex.Boolean, default=False)
+
+        self.arg_parser.add_argument("--circle", type=inkex.Boolean, default=True)
+        self.arg_parser.add_argument("--clipPath", type=inkex.Boolean, default=True)
+        self.arg_parser.add_argument("--defs", type=inkex.Boolean, default=True)
+        self.arg_parser.add_argument("--ellipse", type=inkex.Boolean, default=True)
+        self.arg_parser.add_argument("--image", type=inkex.Boolean, default=True)
+        self.arg_parser.add_argument("--line", type=inkex.Boolean, default=True)
+        self.arg_parser.add_argument("--path", type=inkex.Boolean, default=True)
+        self.arg_parser.add_argument("--polyline", type=inkex.Boolean, default=True)
+        self.arg_parser.add_argument("--polygon", type=inkex.Boolean, default=True)
+        self.arg_parser.add_argument("--rect", type=inkex.Boolean, default=True)
+        #self.arg_parser.add_argument("--sodipodi", type=inkex.Boolean, default=True)
+        self.arg_parser.add_argument("--svg", type=inkex.Boolean, default=True)
+        self.arg_parser.add_argument("--text", type=inkex.Boolean, default=True)
+        self.arg_parser.add_argument("--tspan", type=inkex.Boolean, default=True)
+        self.arg_parser.add_argument("--lineargradient", type=inkex.Boolean, default=True)
+        self.arg_parser.add_argument("--radialgradient", type=inkex.Boolean, default=True)
+        self.arg_parser.add_argument("--meshgradient", type=inkex.Boolean, default=True)
+        self.arg_parser.add_argument("--meshrow", type=inkex.Boolean, default=True)
+        self.arg_parser.add_argument("--meshpatch", type=inkex.Boolean, default=True)
+        self.arg_parser.add_argument("--script", type=inkex.Boolean, default=True)
+        self.arg_parser.add_argument("--stop", type=inkex.Boolean, default=True)
+        self.arg_parser.add_argument("--use", type=inkex.Boolean, default=True)
+        
     def effect(self):
-    
         namespace = []
-        namespace.append("{http://www.w3.org/2000/svg}circle")   if self.options.circle   else ""
-        namespace.append("{http://www.w3.org/2000/svg}clipPath") if self.options.clipPath else ""
-        namespace.append("{http://www.w3.org/2000/svg}defs")     if self.options.defs     else ""     
-        namespace.append("{http://www.w3.org/2000/svg}ellipse")  if self.options.ellipse  else ""
-        namespace.append("{http://www.w3.org/2000/svg}image")    if self.options.image    else ""
-        namespace.append("{http://www.w3.org/2000/svg}line")     if self.options.line     else ""
-        namespace.append("{http://www.w3.org/2000/svg}polygon")  if self.options.polygon  else ""
-        namespace.append("{http://www.w3.org/2000/svg}path")     if self.options.path     else ""
-        namespace.append("{http://www.w3.org/2000/svg}polyline") if self.options.polyline else ""
-        namespace.append("{http://www.w3.org/2000/svg}rect")     if self.options.rect     else ""
-        #namespace.append("{http://www.w3.org/2000/svg}svg")      if self.options.svg      else ""
-        namespace.append("{http://www.w3.org/2000/svg}text")     if self.options.text     else ""
-        namespace.append("{http://www.w3.org/2000/svg}tspan")    if self.options.tspan    else ""
-    
-        #get all items from selection. Remove all groups from the selection and form a new single group of it. We also handle svg:svg because it behaves like a group container too
-        def parseNodes(self, node):
-            if node.tag in namespace:
-                if node not in self.allPaths:
-                    self.allPaths.append(node)
-            else:
-                if node.tag != inkex.addNS('g','svg'):
-                    self.allNonMigrates.append(node)
-            if node.tag == inkex.addNS('g','svg') or node.tag == inkex.addNS('svg','svg'):
-                if node not in self.allGroups:
-                    self.allGroups.append(node)
-                groups = node.getchildren()
+        namespace.append("{http://www.w3.org/2000/svg}circle")         if self.options.circle         else ""
+        namespace.append("{http://www.w3.org/2000/svg}clipPath")       if self.options.clipPath       else ""
+        namespace.append("{http://www.w3.org/2000/svg}defs")           if self.options.defs           else ""     
+        namespace.append("{http://www.w3.org/2000/svg}ellipse")        if self.options.ellipse        else ""
+        namespace.append("{http://www.w3.org/2000/svg}image")          if self.options.image          else ""
+        namespace.append("{http://www.w3.org/2000/svg}line")           if self.options.line           else ""
+        namespace.append("{http://www.w3.org/2000/svg}polygon")        if self.options.polygon        else ""
+        namespace.append("{http://www.w3.org/2000/svg}path")           if self.options.path           else ""
+        namespace.append("{http://www.w3.org/2000/svg}polyline")       if self.options.polyline       else ""
+        namespace.append("{http://www.w3.org/2000/svg}rect")           if self.options.rect           else ""
+        #namespace.append("{http://www.w3.org/2000/svg}sodipodi")       if self.options.sodipodi       else "" #do not do this. it will crash InkScape
+        #namespace.append("{http://www.w3.org/2000/svg}svg")            if self.options.svg            else ""
+        namespace.append("{http://www.w3.org/2000/svg}text")           if self.options.text           else ""
+        namespace.append("{http://www.w3.org/2000/svg}tspan")          if self.options.tspan          else ""
+        namespace.append("{http://www.w3.org/2000/svg}lineargradient") if self.options.lineargradient else ""
+        namespace.append("{http://www.w3.org/2000/svg}radialgradient") if self.options.radialgradient else ""
+        namespace.append("{http://www.w3.org/2000/svg}meshgradient")   if self.options.meshgradient   else ""
+        namespace.append("{http://www.w3.org/2000/svg}meshrow")        if self.options.meshrow        else ""
+        namespace.append("{http://www.w3.org/2000/svg}meshpatch")      if self.options.meshpatch      else ""
+        namespace.append("{http://www.w3.org/2000/svg}script")         if self.options.script         else ""
+        namespace.append("{http://www.w3.org/2000/svg}stop")           if self.options.stop           else ""
+        namespace.append("{http://www.w3.org/2000/svg}use")            if self.options.use            else ""
+        
+        #check if we have selected elements or if we should parse the whole document instead
+        selected = [] #list of elements to parse
+        if len(self.svg.selected) == 0:
+            for element in self.document.getroot().iter(tag=etree.Element):
+                if element != self.document.getroot():
+                    selected.append(element)
+        else:
+            selected = self.svg.selected
+      
+        def parseNodes(self, element):
+        
+            if self.options.allitems:
+                if element not in self.allElements:
+                    if element.tag != inkex.addNS('g','svg') and element.tag != inkex.addNS('svg','svg') and element.tag != inkex.addNS('namedview','sodipodi'):
+                        self.allElements.append(element)
+            else: 
+                if element.tag in namespace:
+                    if element not in self.allElements:
+                        self.allElements.append(element)
+                else:
+                    if element.tag != inkex.addNS('g','svg') and element.tag != inkex.addNS('svg','svg') and element.tag != inkex.addNS('namedview','sodipodi'):
+                        if element not in self.allNonMigrates:
+                            self.allNonMigrates.append(element)
+  
+            if element.tag == inkex.addNS('g','svg') or element.tag == inkex.addNS('svg','svg'):
+                if element not in self.allGroups:
+                    self.allGroups.append(element)
+                groups = element.getchildren()
                 if groups is not None:
                     for group in groups:
                         parseNodes(self, group)
                         if group not in self.allGroups:
                             self.allGroups.append(group)
     
-        for id, item in self.svg.selected.items():
-            parseNodes(self, item)
-         
-        if len(self.allPaths) > 0:
-            #make a new group at root level - TODO: respect the position where the first selected object is in XML tree and put it there instead (or make this optional)
-            newGroup = self.document.getroot().add(inkex.Group())
-
-            #copy all paths into the new group
-            for path in self.allPaths:
-                newGroup.add(path.copy())
-            
-                #then remove all the old stuff
-                path.getparent().remove(path)
+        #get all elements from the selection. Remove all groups from the selection and form a new single group of it. We also handle svg:svg because it behaves like a group container too
+        for element in selected:
+            parseNodes(self, element)
+                
+        if len(self.allElements) > 0:
+            #copy all element into the new group
+            for oldElement in self.allElements:
+                #oldElementId = oldElement.get('id')
+                if oldElement.getparent() is not None:
+                    oldElement.getparent().remove(oldElement)
+                #newElement.set('id', oldElementId)
+                if self.options.droponly == False:
+                    #make a new group at root level
+                    newGroup = self.document.getroot().add(inkex.Group())
+                    newElement = oldElement.copy()
+                    newGroup.add(newElement)
    
-        #now remove all the obsolete groups
-        if len(self.allGroups) > 0:        
-            for group in self.allGroups:
-                if group.getparent() is not None:
-                    group.getparent().remove(group)
-          
-        #remove the selected, now empty group (if it's the case)
-        if len(self.svg.selected) > 0 and len(self.allPaths) > 0: 
-            if self.svg.selected[0].tag == inkex.addNS('g','svg') or self.svg.selected[0].tag == inkex.addNS('svg','svg'):
-                if self.svg.selected[0].getparent() is not None:
-                    self.svg.selected[0].getparent().remove(self.svg.selected[0])
-
-        if len(self.allNonMigrates) > 0:
-            self.msg("You are going to remove " + str(len(self.allNonMigrates)) + " nodes while migrating:")
+        if self.options.droponly == False:
+            #now remove all the obsolete groups
+            if len(self.allGroups) > 0:        
+                for group in self.allGroups:
+                    if group.getparent() is not None:
+                        group.getparent().remove(group)
+              
+            #remove the selected, now empty group (if it's the case) - this applies not if there is no user selection at all so some dangling group(s) might be left over
+            if len(self.svg.selected) > 0 and len(self.allElements) > 0: 
+                if self.svg.selected[0].tag == inkex.addNS('g','svg') or self.svg.selected[0].tag == inkex.addNS('svg','svg'):
+                    if self.svg.selected[0].getparent() is not None:
+                        self.svg.selected[0].getparent().remove(self.svg.selected[0])
+               
+        if self.options.showdroplist and len(self.allNonMigrates) > 0:
+            self.msg(str(len(self.allNonMigrates)) + " elements were removed during nodes while migration:")
             for i in self.allNonMigrates:
-                self.msg(i.get('id'))            
+                self.msg(i.tag.replace("{http://www.w3.org/2000/svg}","svg:") + " id:" + i.get('id'))            
                     
-        #TODO: make newGroup selected now. How ?
 MigrateGroups().run()

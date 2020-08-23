@@ -1,24 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <name>Migrate Groups</name>
+    <name>Ungrouper And Element Migrator/Filter</name>
     <id>fablabchemnitz.de.migrategroups</id>
-    <label>What elements to migrate?</label>
-    <label>Unchecked item types will be deleted!</label>
 
-    <!-- other stuff: sodipodi, lineargradient, radialgradient, meshgradient, meshrow, meshpath, stop -->
-    <param name="circle" type="bool" gui-text="circle">true</param>
-    <param name="clipPath" type="bool" gui-text="clipPath">true</param>
-    <param name="defs" type="bool" gui-text="defs">true</param>
-    <param name="ellipse" type="bool" gui-text="ellipse">true</param>
-    <param name="image" type="bool" gui-text="image">true</param>
-    <param name="line" type="bool" gui-text="line">true</param>
-    <param name="path" type="bool" gui-text="path">true</param>
-    <param name="polyline" type="bool" gui-text="polyline">true</param>
-    <param name="polygon" type="bool" gui-text="polygon">true</param>
-    <param name="rect" type="bool" gui-text="rect">true</param>
-    <param name="svg" type="bool" gui-text="svg">true</param>
-    <param name="text" type="bool" gui-text="text">true</param>
-    <param name="tspan" type="bool" gui-text="tspan">true</param>
+    <label appearance="header">Ungrouper / Element Migrator</label>
+    <label>Running this extension works for current selection or if nothing is selected for whole document. It allows to flatten elements into one group and to drop elements while processing. Some element IDs might change while doing.</label>
+    <label>Enable the checkbox "Ignore custom element types" to ignore custom selections, or disable it and select items you want to drop while ungrouping. Unchecked elements will be dropped.</label>
+    <separator/>
+    <label appearance="header">Custom Element Types</label>
+    <hbox>
+        <vbox>
+            <label appearance="header">Geometry</label>
+            <param name="circle" type="bool" gui-text="circle">true</param>
+            <param name="ellipse" type="bool" gui-text="ellipse">true</param>
+            <param name="line" type="bool" gui-text="line">true</param>
+            <param name="path" type="bool" gui-text="path">true</param>
+            <param name="polyline" type="bool" gui-text="polyline">true</param>
+            <param name="polygon" type="bool" gui-text="polygon">true</param>
+            <param name="rect" type="bool" gui-text="rect">true</param>
+        </vbox>
+        <separator/>
+        <vbox>
+            <label appearance="header">Objects / Misc</label>
+            <param name="clipPath" type="bool" gui-text="clipPath">true</param>
+            <param name="defs" type="bool" gui-text="defs">true</param>
+            <param name="image" type="bool" gui-text="image">true</param>
+            <!--<param name="sodipodi" type="bool" gui-text="sodipodi">true</param>  -->
+            <param name="svg" type="bool" gui-text="svg">true</param>
+            <param name="text" type="bool" gui-text="text">true</param>
+            <param name="tspan" type="bool" gui-text="tspan">true</param>
+        </vbox>
+        <separator/>
+        <vbox>
+            <label appearance="header">Gradients</label>
+            <param name="lineargradient" type="bool" gui-text="lineargradient">true</param>
+            <param name="radialgradient" type="bool" gui-text="radialgradient">true</param>
+            <param name="meshgradient" type="bool" gui-text="meshgradient">true</param>
+            <param name="meshrow" type="bool" gui-text="meshrow">true</param>
+            <param name="meshpatch" type="bool" gui-text="meshpatch">true</param>
+            <param name="script" type="bool" gui-text="script">true</param>
+            <param name="stop" type="bool" gui-text="stop">true</param>
+            <param name="use" type="bool" gui-text="use">true</param>
+        </vbox>
+    </hbox>
+    <separator/>
+    <param name="allitems" type="bool" gui-text="Ignore custom element types">true</param>
+    <param name="droponly" type="bool" gui-text="Do not ungroup (drop only)">false</param>
+    <param name="showdroplist" type="bool" gui-text="Show list of dropped items">false</param>
+    <separator/>
+    <label>Written by Mario Voigt / Stadtfabrikanten e.V. (2020)</label>
+    <label appearance="url">https://fablabchemnitz.de</label>
+    <label>License: GNU GPL v3</label>
     <effect needs-live-preview="true">
         <object-type>path</object-type>
         <effects-menu>
