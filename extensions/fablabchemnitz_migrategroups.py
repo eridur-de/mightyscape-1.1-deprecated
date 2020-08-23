@@ -149,6 +149,7 @@ class MigrateGroups(inkex.Effect):
         if self.options.showdroplist:
             self.msg(str(len(self.allNonMigrates)) + " elements were removed during nodes while migration:")
             for i in self.allNonMigrates:
-                self.msg(i.tag.replace("{http://www.w3.org/2000/svg}","svg:") + " id:" + i.get('id'))            
+                if i.get('id') is not None:
+                    self.msg(i.tag.replace("{http://www.w3.org/2000/svg}","svg:") + " id:" + i.get('id'))            
                     
 MigrateGroups().run()
