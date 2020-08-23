@@ -5,7 +5,7 @@
     <label>Running this extension works for current selection or if nothing is selected for whole document. It allows to flatten elements into one group and to drop elements while processing. Some element IDs might change while doing.</label>
     <label>Enable the checkbox "Ignore custom element types" to ignore custom selections, or disable it and select items you want to drop while ungrouping. Unchecked elements will be dropped.</label>
     <separator/>
-    <label appearance="header">Custom Element Types</label>
+    <label appearance="header">Custom Element Types To Keep</label>
     <hbox>
         <vbox>
             <label appearance="header">Geometry</label>
@@ -19,15 +19,12 @@
         </vbox>
         <separator/>
         <vbox>
-            <label appearance="header">Objects / Misc</label>
-            <param name="clipPath" type="bool" gui-text="clipPath">true</param>
-            <param name="defs" type="bool" gui-text="defs">true</param>
-            <param name="image" type="bool" gui-text="image">true</param>
-            <param name="script" type="bool" gui-text="script">true</param>
-            <param name="svg" type="bool" gui-text="svg">true</param>
+            <label appearance="header">Text</label>
             <param name="text" type="bool" gui-text="text">true</param>
             <param name="tspan" type="bool" gui-text="tspan">true</param>
-            <param name="use" type="bool" gui-text="use">true</param>
+            <param name="flowRoot" type="bool" gui-text="flowRoot">true</param>
+            <param name="flowRegion" type="bool" gui-text="flowRegion">true</param>
+            <param name="flowPara" type="bool" gui-text="flowPara">true</param>
         </vbox>
         <separator/>
         <vbox>
@@ -38,6 +35,16 @@
             <param name="meshrow" type="bool" gui-text="meshrow">true</param>
             <param name="meshpatch" type="bool" gui-text="meshpatch">true</param>
             <param name="stop" type="bool" gui-text="stop">true</param>
+        </vbox>
+        <separator/>
+        <vbox>
+            <label appearance="header">Objects / Misc</label>
+            <param name="clipPath" type="bool" gui-text="clipPath">true</param>
+            <param name="defs" type="bool" gui-text="defs">true</param>
+            <param name="image" type="bool" gui-text="image">true</param>
+            <param name="script" type="bool" gui-text="script">true</param>
+            <param name="svg" type="bool" gui-text="svg">true</param>
+            <param name="use" type="bool" gui-text="use">true</param>
         </vbox>
     </hbox>
     <separator/>

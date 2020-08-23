@@ -26,7 +26,6 @@ class MigrateGroups(inkex.Effect):
         self.arg_parser.add_argument("--allitems", type=inkex.Boolean, default=True)
         self.arg_parser.add_argument("--droponly", type=inkex.Boolean, default=False)
         self.arg_parser.add_argument("--showdroplist", type=inkex.Boolean, default=False)
-
         self.arg_parser.add_argument("--circle", type=inkex.Boolean, default=True)
         self.arg_parser.add_argument("--clipPath", type=inkex.Boolean, default=True)
         self.arg_parser.add_argument("--defs", type=inkex.Boolean, default=True)
@@ -49,7 +48,10 @@ class MigrateGroups(inkex.Effect):
         self.arg_parser.add_argument("--script", type=inkex.Boolean, default=True)
         self.arg_parser.add_argument("--stop", type=inkex.Boolean, default=True)
         self.arg_parser.add_argument("--use", type=inkex.Boolean, default=True)
-        
+        self.arg_parser.add_argument("--flowRoot", type=inkex.Boolean, default=True)
+        self.arg_parser.add_argument("--flowRegion", type=inkex.Boolean, default=True)
+        self.arg_parser.add_argument("--flowPara", type=inkex.Boolean, default=True)
+    
     def effect(self):
         namespace = []
         namespace.append("{http://www.w3.org/2000/svg}circle")         if self.options.circle         else ""
@@ -74,6 +76,9 @@ class MigrateGroups(inkex.Effect):
         namespace.append("{http://www.w3.org/2000/svg}script")         if self.options.script         else ""
         namespace.append("{http://www.w3.org/2000/svg}stop")           if self.options.stop           else ""
         namespace.append("{http://www.w3.org/2000/svg}use")            if self.options.use            else ""
+        namespace.append("{http://www.w3.org/2000/svg}flowRoot")       if self.options.flowRoot       else ""
+        namespace.append("{http://www.w3.org/2000/svg}flowRegion")     if self.options.flowRegion     else ""
+        namespace.append("{http://www.w3.org/2000/svg}flowPara")       if self.options.flowPara       else ""
         
         #check if we have selected elements or if we should parse the whole document instead
         selected = [] #list of elements to parse
