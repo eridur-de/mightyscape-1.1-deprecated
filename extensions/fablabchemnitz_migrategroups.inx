@@ -2,8 +2,6 @@
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
     <name>Ungrouper And Element Migrator/Filter</name>
     <id>fablabchemnitz.de.migrategroups</id>
-
-    <label appearance="header">Ungrouper / Element Migrator</label>
     <label>Running this extension works for current selection or if nothing is selected for whole document. It allows to flatten elements into one group and to drop elements while processing. Some element IDs might change while doing.</label>
     <label>Enable the checkbox "Ignore custom element types" to ignore custom selections, or disable it and select items you want to drop while ungrouping. Unchecked elements will be dropped.</label>
     <separator/>

@@ -2,6 +2,18 @@
 
 import inkex
 
+"""
+Extension for InkScape 1.0
+
+This extension is totally minimal. It will just clean the whole document from groups without content (dangling groups). That usually happens if you have a group but remove it's paths for example. The group will possibly stay in the XML tree. This also applies for layers because layers are just special types of groups. This effect applies to the whole document ONLY!
+ 
+Author: Mario Voigt / FabLab Chemnitz
+Mail: mario.voigt@stadtfabrikanten.org
+Date: 19.08.2020
+Last Patch: 23.08.2020
+License: GNU GPL v3
+"""
+
 class CleanGroups(inkex.Effect):
        
     def __init__(self):
