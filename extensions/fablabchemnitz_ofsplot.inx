@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <name>Ofsplot (Offset Paths)</name>
+    <id>fablabchemnitz.de.ofsplot</id>
+    <param name="count" type="int" min="0" max="100000" gui-text="Number of offset paths:">10</param>
+    <param name="offset" type="float" min="-1000" max="+1000" gui-text="Offset between two paths:">0.8</param>
+    <param name="init_offset" type="float" min="-1000" max="+1000" gui-text="Initial offset from original path:">0.8</param>
+    <param name="copy_org" type="bool" gui-text="Copy original path (=keep it)">false</param>
+    <param name="offset_increase" type="float" min="-1000" max="+1000" gui-text="Offset increase per iteration:">0.8</param>
+    <param name="miterlimit" type="float" min="0.0" max="1000" gui-text="Miter limit">3.0</param>
+    <param name="clipperscale" type="float" min="0.0" max="9999.0" gui-text="Scaling factor">1024.0</param>
+    <param name="jointype" appearance="combo" type="optiongroup" default="2" gui-text="Join type">
+        <option value="0">Square</option>
+        <option value="1">Round</option>
+        <option value="2">Miter</option>
+    </param>
+    <param name="settingsHelp" type="description">Python library pyclipper needs to be installed. Use Flatten Bezier plugin in advance of this plugin.</param>
+    <effect>
+        <object-type>all</object-type>
+        <effects-menu>
+            <submenu name="FabLab Chemnitz">
+				<submenu name="Shape/Pattern from existing Path(s)"/>
+			</submenu>
+        </effects-menu>
+    </effect>
+    <script>
+        <command location="inx" interpreter="python">fablabchemnitz_ofsplot.py</command>
+    </script>
+</inkscape-extension>
