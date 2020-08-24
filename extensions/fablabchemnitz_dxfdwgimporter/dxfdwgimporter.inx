@@ -89,7 +89,8 @@
             </param>   
             <label appearance="header">ezdxf Entity Filter</label>
             <label>What entity types do you want to filter? Only the listed one's are possible at the moment.</label>
-            <param name="allentities" type="bool" gui-text="Use all entities (override selection)">false</param>
+            <param name="allentities" type="bool" gui-text="Keep all listed entity types (override filter selection)">false</param>
+            <label>Or select the entity types you want to keep. Checked items will not be dropped while processing.</label>
             <hbox>
                 <hbox>
                     <label appearance="header">sk1 Supported</label>
@@ -123,16 +124,14 @@
                         <param type="bool" gui-text="3DSOLID"       name="THREE_DSOLID">true</param>
                         <param type="bool" gui-text="ATTRIB"        name="ATTRIB">true</param>
                         <param type="bool" gui-text="BODY"          name="BODY">true</param>
-                        <param type="bool" gui-text="DIMENSION"     name="DIMENSION">true</param>
                         <param type="bool" gui-text="ARC_DIMENSION" name="ARC_DIMENSION">true</param>
                         <param type="bool" gui-text="HATCH"         name="HATCH">true</param>
                         <param type="bool" gui-text="IMAGE"         name="IMAGE">true</param>
                         <param type="bool" gui-text="INSERT"        name="INSERT">true</param>
-                        <param type="bool" gui-text="LEADER"        name="LEADER">true</param>
+                        <param type="bool" gui-text="MESH"          name="MESH">true</param>
                     </vbox>
                     <separator/>
                     <vbox>  
-                        <param type="bool" gui-text="MESH"          name="MESH">true</param>
                         <param type="bool" gui-text="MTEXT"         name="MTEXT">true</param>
                         <param type="bool" gui-text="RAY"           name="RAY">true</param>
                         <param type="bool" gui-text="REGION"        name="REGION">true</param>

@@ -95,12 +95,10 @@ class DXFDWGImport(inkex.Effect):
         self.arg_parser.add_argument("--THREE_DSOLID",  type=inkex.Boolean, default=True) #3DSOLID
         self.arg_parser.add_argument("--ATTRIB",        type=inkex.Boolean, default=True)
         self.arg_parser.add_argument("--BODY",          type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--DIMENSION",     type=inkex.Boolean, default=True)
         self.arg_parser.add_argument("--ARC_DIMENSION", type=inkex.Boolean, default=True)
         self.arg_parser.add_argument("--HATCH",         type=inkex.Boolean, default=True)
         self.arg_parser.add_argument("--IMAGE",         type=inkex.Boolean, default=True)
         self.arg_parser.add_argument("--INSERT",        type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--LEADER",        type=inkex.Boolean, default=True)
         self.arg_parser.add_argument("--MESH",          type=inkex.Boolean, default=True)
         self.arg_parser.add_argument("--MTEXT",         type=inkex.Boolean, default=True)
         self.arg_parser.add_argument("--RAY",           type=inkex.Boolean, default=True)
@@ -155,12 +153,10 @@ class DXFDWGImport(inkex.Effect):
         if self.options.allentities or self.options.THREE_DSOLID:  entityspace.append("3DSOLID")
         if self.options.allentities or self.options.ATTRIB:        entityspace.append("ATTRIB")
         if self.options.allentities or self.options.BODY:          entityspace.append("BODY")
-        if self.options.allentities or self.options.DIMENSION:     entityspace.append("DIMENSION")
         if self.options.allentities or self.options.ARC_DIMENSION: entityspace.append("ARC_DIMENSION")
         if self.options.allentities or self.options.HATCH:         entityspace.append("HATCH")
         if self.options.allentities or self.options.IMAGE:         entityspace.append("IMAGE")
         if self.options.allentities or self.options.INSERT:        entityspace.append("INSERT")       
-        if self.options.allentities or self.options.LEADER:        entityspace.append("LEADER")
         if self.options.allentities or self.options.MESH:          entityspace.append("MESH")
         if self.options.allentities or self.options.MTEXT:         entityspace.append("MTEXT")
         if self.options.allentities or self.options.RAY:           entityspace.append("RAY")
@@ -281,9 +277,10 @@ class DXFDWGImport(inkex.Effect):
             # The auditor.errors attribute stores severe errors, which *may* raise exceptions when rendering.
             if len(auditor.errors) == 0:
                 fig = plt.figure()
-                ax = plt.axes([0., 0., 1., 1.], frameon=False, xticks=[], yticks=[])
-                #ax.patches = []
-                plt.axis('off')
+                ax = plt.axes([0., 0., 1., 1.], xticks=[], yticks=[])
+                #ax = plt.axes([0., 0., 1., 1.], frameon=False, xticks=[], yticks=[])
+                ax.patches = []
+                #plt.axis('off')
                 plt.margins(0, 0)
                 plt.gca().xaxis.set_major_locator(plt.NullLocator())
                 plt.gca().yaxis.set_major_locator(plt.NullLocator())
