@@ -71,7 +71,7 @@ class Triangulation(inkex.Effect):
             path = node.get('sodipodi:absref', path)
 
         if not os.path.isfile(path):
-            inkex.errormsg(_('File not found "{}". Unable to embed image.').format(path))
+            inkex.errormsg('File not found "{}". Unable to embed image.').format(path)
             return
 
         if (os.path.isfile(path)):
