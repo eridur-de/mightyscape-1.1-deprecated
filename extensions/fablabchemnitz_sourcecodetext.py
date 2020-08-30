@@ -27,9 +27,8 @@ class MyEffect(inkex.Effect):
         for path in matched_files:
             file = open(path)
             for word in file.read().split():
-                file.close()
                 yield word
-
+            file.close()
     def add_text(self, node):
         #Add the text to the node
         word_generator = self.text_generation()
