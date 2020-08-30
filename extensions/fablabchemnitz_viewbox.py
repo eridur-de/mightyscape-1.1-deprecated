@@ -34,7 +34,7 @@ class SetViewBoxEffect(inkex.Effect):
     def effect(self):
         if len(self.svg.selected) != 1:
             sys.exit("Error: You must select exactly one rectangle")
-        elif self.svg.selected[0].tag != inkex.addNS('rect','svg'):
+        if list(self.svg.selected.items())[0][1].tag != inkex.addNS('rect','svg'):
             sys.exit("Error: You must select exactly one rectangle")
             
         sel = None
