@@ -248,9 +248,8 @@ class IntersectionChecker(Checker):
         subpaths.append(raw[prev:])
         seg = []
         for simpath in subpaths:
-            closed = False
             if simpath[-1][0] == 'Z':
-                closed = True
+                simpath[-1][0] = 'L'
                 if simpath[-2][0] == 'L': simpath[-1][1] = simpath[0][1]
                 else: simpath.pop()
             for i in range(len(simpath)):
