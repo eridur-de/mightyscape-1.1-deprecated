@@ -17,7 +17,7 @@
     <param name="p_divs" type="int" min="1" max="1000" gui-text="Perspective angle divisions">10</param>
     <param name="border_th" type="float" min="0" max="1000" gui-text="Border Thickness [px]">3</param>
     <param name="div_th" type="float" min="0" max="1000" gui-text="Major grid division Thickness [px]">2</param>
-    <param name="div_color" type="color" appearance="colorbutton" gui-text="Major grid division color">black</param>
+    <param name="div_color" type="color" appearance="colorbutton" gui-text="Major grid division color">255</param>
     <effect>
         <object-type>all</object-type>
         <effects-menu>
