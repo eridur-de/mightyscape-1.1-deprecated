@@ -76,21 +76,16 @@ class PasteLengthEffect(inkex.Effect):
     def getLength(self, cspath, tolerance):
         parts = self.getPartsFromCubicSuper(cspath)
         curveLen = 0
-        
         for i, part in enumerate(parts):
             for j, seg in enumerate(part):
                 curveLen += bezier.bezierlength((seg[0], seg[1], seg[2], seg[3]), tolerance = tolerance)
-                
         return curveLen
 
     def effect(self):
         scale = self.options.scale
         scaleFrom = self.options.scaleFrom
-        
         tolerance = 10 ** (-1 * self.options.precision)
-        
-        printOut = False
-        selections = self.svg.selected     
+        selections = self.svg.selected
         pathNodes = self.document.xpath('//svg:path',namespaces=inkex.NSS)
         outStrs = [str(len(pathNodes))]
 
@@ -103,9 +98,11 @@ class PasteLengthEffect(inkex.Effect):
             for key, cspath in paths:
                 curveLen = self.getLength(cspath, tolerance)
                 
-                self.scaleCubicSuper(cspath, scaleFactor = scale * (srclen / curveLen), \
-                scaleFrom = scaleFrom)
-                selections[key].set('d', CubicSuperPath(cspath))
+                self.scaleCubicSuper(cspath, scaleFactor = scale * (srclen / curveLen), scaleFrom = scaleFrom)
+                try: #we wrap this in try-except because if the elements are within groups it will cause errors
+                    selections[key].set('d', CubicSuperPath(cspath))
+                except:
+                    pass
         else:
             inkex.errormsg("Please select at least two paths, with the path whose \
             length is to be copied at the top. You may have to convert the shape \
