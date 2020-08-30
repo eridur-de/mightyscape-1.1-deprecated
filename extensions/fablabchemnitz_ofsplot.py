@@ -19,8 +19,10 @@ class ofsplot(inkex.Effect):
         self.arg_parser.add_argument("--clipperscale", type=float, default=1024.0, help="Scaling factor")
         
     def effect(self):
-        paths = self.svg.selection.filter(inkex.PathElement)
-        if len(paths) == 0:
+        paths = self.svg.get_selected(inkex.PathElement)
+        count = sum(1 for path in paths)
+        paths = self.svg.get_selected(inkex.PathElement) #we need to call this twice because the sum function consumes the generator
+        if count == 0:
             inkex.errormsg("No paths selected.")
             exit()
         for path in paths:
