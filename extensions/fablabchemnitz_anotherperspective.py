@@ -288,11 +288,11 @@ class AnotherPerspective(inkex.Effect):
                     absolute_object_path=""
                     for p in obj.iterfind(".//{http://www.w3.org/2000/svg}path"):
 
-                        absolute_d = str(sPath(p.get('d')))
+                        absolute_d = str(Path(p.get('d')))
                         mat = p.transform * Transform([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0]])
                         path = CubicSuperPath(absolute_d)
                         Path(path).transform(mat)
-                        absolute_object_path += Path(path)
+                        absolute_object_path += str(Path(path))
                         # inkex.debug(absolute_object_path)
 
                 new_path = projection(absolute_object_path,coords_to_project)
