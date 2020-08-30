@@ -58,14 +58,11 @@ class RemoveRedundant(inkex.Effect):
         inkex.Effect.__init__(self)
 
     def effect(self):
-
-        pathTag = inkex.addNS('path','svg')
-
         seenSegments = set()
         coordsCache = FixedRadiusSearch()
 
         for id, node in self.svg.selected.items():
-            if node.tag == pathTag:
+            if node.tag == inkex.addNS('path','svg'):
                 d = node.get('d')
                 path = paths.CubicSuperPath(d).to_path().to_arrays()
                 newPath = []
