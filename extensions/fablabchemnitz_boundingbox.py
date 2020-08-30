@@ -12,8 +12,7 @@ class DrawBBoxes(inkex.Effect):
         self.arg_parser.add_argument('--circle', type=inkex.Boolean, default=0.0, help='Draw circles')
         self.arg_parser.add_argument('--split', type = inkex.Boolean, default = True, help = 'Handle selection as group')
       
-    def drawBBox(self, node):
-        bbox = node.bounding_box()
+    def drawBBox(self, bbox):
         if self.options.box:
             attribs = {
                 'style' : str(inkex.Style({'stroke':'#ff0000','stroke-width'  : '1','fill':'none'})),
@@ -38,8 +37,8 @@ class DrawBBoxes(inkex.Effect):
         if len(self.svg.selected) > 0:
             if self.options.split is False:
                 for id, item in self.svg.selected.items():
-                    self.drawBBox(item)
+                    self.drawBBox(item.bounding_box())
             else:
-                self.drawBBox(self.svg.selected)
+                self.drawBBox(self.svg.selection.bounding_box())
 
 DrawBBoxes().run()
