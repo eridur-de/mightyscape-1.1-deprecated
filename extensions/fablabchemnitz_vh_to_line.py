@@ -41,9 +41,8 @@ class VHToLine(inkex.Effect):
 			
             seg = []
             for simpath in subpaths:
-                closed = False
                 if simpath[-1][0] == 'Z':
-                    closed = True
+                    simpath[-1][0] = 'L'
                     if simpath[-2][0] == 'L': simpath[-1][1] = simpath[0][1]
                     else: simpath.pop()
                 for i in range(len(simpath)):
@@ -54,7 +53,7 @@ class VHToLine(inkex.Effect):
                         simpath[i][1].append(simpath[i][1][0]) #add the second (missing) argument by taking argument from previous segment
                         simpath[i][1][0]=add #replace with recent X after Y was appended
                     if simpath[i][0] == 'H': # vertical and horizontal lines only have one point in args, but 2 are required
-                        #inkex.utils.debug(simpath[i][0])
+                       #inkex.utils.debug(simpath[i][0])
                         simpath[i][0]='L' #overwrite H with regular L command
                         simpath[i][1].append(simpath[i-1][1][1]) #add the second (missing) argument by taking argument from previous segment				
                     #inkex.utils.debug(simpath[i])
