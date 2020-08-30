@@ -2165,12 +2165,14 @@ def inkscape_run_debug():
     import os
     import datetime
     import shutil
+    import tempfile
 
     # If we aren't calling this from our own script.
     if os.environ.get("DEBUG_RECURSION", "0") == "1":
         return
     script_path = os.path.abspath(sys.argv[0])
-    debug_dir = os.path.join(os.path.dirname(script_path), "debug")
+    #debug_dir = os.path.join(os.path.dirname(script_path), "debug")
+    debug_dir = tempfile.gettempdir()
     os.makedirs(debug_dir, exist_ok=True)
     base_name, _ = os.path.splitext(os.path.basename(script_path))
 
