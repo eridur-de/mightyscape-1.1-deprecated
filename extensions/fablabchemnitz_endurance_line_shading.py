@@ -285,10 +285,11 @@ class LineShading(inkex.Effect):
       else:
         w_png = str(round(poinnt_per_min_period*image_w*float(h_png)/max_period/image_h))
       id = node.get('id') 
-      cmd = ["inkscape", current_file, "--export-filename="+file, "--actions=export-width:"+w_png+";export-height:"+h_png+";export-background:rgb(255, 255, 255);export-background-opacity:255;export-id:"+id]
+      cmd = "inkscape " + current_file + " --export-type=\"png\" --export-filename=" + file + " --actions=\"export-width:"+w_png+";export-height:"+h_png+";export-background:rgb(255,255,255);export-background-opacity:255;export-id:"+id+"\""
       #inkex.errormsg(cmd)  
       proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-      #inkex.debug(proc.communicate())
+      #inkex.utils.debug(cmd)
+      #inkex.utils.debug(proc.communicate())
       #sys.exit(0)
       #return_code = proc.wait()
       #sys.exit(0)
