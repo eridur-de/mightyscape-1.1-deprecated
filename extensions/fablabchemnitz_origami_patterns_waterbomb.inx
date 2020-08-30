@@ -1,73 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-	<_name>Origami Pattern - Waterbomb</_name>
+	<name>Origami Pattern - Waterbomb</name>
 	<id>fablabchemnitz.de.origami_patterns.magic_ball</id>
 	<param name='active-tab' type="notebook">
-		<page name="title" _gui-text="Options">
-			<param name="pattern_first_line" type="optiongroup" _gui-text="First line:" >
-				<_option value="waterbomb">Regular waterbomb</_option>
-				<_option value="magic_ball">Magic ball</_option>
+		<page name="title" gui-text="Options">
+			<param name="pattern_first_line" type="optiongroup" appearance="combo" gui-text="First line:">
+				<option value="waterbomb">Regular waterbomb</option>
+				<option value="magic_ball">Magic ball</option>
 			</param>
-			<param name="pattern_last_line" type="optiongroup" _gui-text="Last line:" >
-				<_option value="waterbomb">Regular waterbomb</_option>
-				<_option value="magic_ball">Magic ball</_option>
+			<param name="pattern_last_line" type="optiongroup" appearance="combo" gui-text="Last line:">
+				<option value="waterbomb">Regular waterbomb</option>
+				<option value="magic_ball">Magic ball</option>
 			</param>
-			<param name="phase_shift" type="boolean" _gui-text="Shift phase?">false</param>
-			<_param name="help"   type="description" xml:space="preserve">------------------------------</_param>
-			<param name="lines" type="int"  min="1" max="100" _gui-text="Number of lines">8</param>
-			<param name="columns" type="int" min="1" max="100" _gui-text="Number of columns">16</param>
-			<_param name="help"   type="description" xml:space="preserve">------------------------------</_param>
-			<param name="length" type="float" max="10000" precision="3" _gui-text="Length of grid square">10.0</param>
-			<param name="units" type="optiongroup" appearance="minimal" _gui-text="">
+			<param name="phase_shift" type="bool" gui-text="Shift phase?">false</param>
+			<param name="help"   type="description" xml:space="preserve">------------------------------</param>
+			<param name="lines" type="int"  min="1" max="100" gui-text="Number of lines">8</param>
+			<param name="columns" type="int" min="1" max="100" gui-text="Number of columns">16</param>
+			<param name="help"   type="description" xml:space="preserve">------------------------------</param>
+			<param name="length" type="float" max="10000" precision="3" gui-text="Length of grid square">10.0</param>
+			<param name="units" type="optiongroup" appearance="combo" gui-text=" ">
 				<option value="mm">mm</option>
 				<option value="cm">cm</option>
 				<option value="in">in</option>
 				<option value="pt">pt</option>
 				<option value="px">px</option></param>
-			<_param name="help"   type="description" xml:space="preserve">"Waterbomb tessellation" creates a simple tessellation pattern repeating the Waterbomb base, with a half-step phase shift between each line.&#xA;The Magic ball is a different design that inverts both the upper half of the first line and the bottom half of the last line.</_param>
+			<param name="help"   type="description" xml:space="preserve">"Waterbomb tessellation" creates a simple tessellation pattern repeating the Waterbomb base, with a half-step phase shift between each line.&#xA;The Magic ball is a different design that inverts both the upper half of the first line and the bottom half of the last line.</param>
 
 		</page>
-		<page name="mountains" _gui-text="Mountain creases">
-			<param name="mountain_bool" type="boolean" _gui-text="Draw mountains?">true</param>
-			<param name="mountain_dashes_bool" type="boolean" _gui-text="Dashed strokes?">true</param>
-			<param name="mountain_dashes_len" type="float"  min="0.1" max="10" appearance="full" precision="2" _gui-text="Mountain dash + gap length">1</param>
-			<param name="mountain_dashes_duty" type="float"  min="0.1" max="1" appearance="full" precision="2" _gui-text="Mountain dash duty cycle">0.5</param>
-			<param name="mountain_stroke_width" type="float" min="0.01" max="3" appearance="full" _gui-text="Width of mountain strokes">0.1</param>
+		<page name="mountains" gui-text="Mountain creases">
+			<param name="mountain_bool" type="bool" gui-text="Draw mountains?">true</param>
+			<param name="mountain_dashes_bool" type="bool" gui-text="Dashed strokes?">true</param>
+			<param name="mountain_dashes_len" type="float"  min="0.1" max="10" appearance="full" precision="2" gui-text="Mountain dash + gap length">1</param>
+			<param name="mountain_dashes_duty" type="float"  min="0.1" max="1" appearance="full" precision="2" gui-text="Mountain dash duty cycle">0.5</param>
+			<param name="mountain_stroke_width" type="float" min="0.01" max="3" appearance="full" gui-text="Width of mountain strokes">0.1</param>
 			<param name="mountain_stroke_color" type="color" gui-text="Mountain creases color: ">4278190335</param>
 		</page>
-		<page name="valleys" _gui-text="Valley creases">
-			<param name="valley_bool" type="boolean" _gui-text="Draw valley?">true</param>
-			<param name="valley_dashes_bool" type="boolean" _gui-text="Dashed strokes?">true</param>
-			<param name="valley_dashes_len" type="float"  min="0.1" max="10" appearance="full" precision="2" _gui-text="Valley dash + gap length">1</param>
-			<param name="valley_dashes_duty" type="float"  min="0.1" max="1" appearance="full" precision="2" _gui-text="Valley dash duty cycle">0.25</param>
-			<param name="valley_stroke_width" type="float" min="0.01" max="3" appearance="full" _gui-text="Width of valley strokes">0.1</param>
+		<page name="valleys" gui-text="Valley creases">
+			<param name="valley_bool" type="bool" gui-text="Draw valley?">true</param>
+			<param name="valley_dashes_bool" type="bool" gui-text="Dashed strokes?">true</param>
+			<param name="valley_dashes_len" type="float"  min="0.1" max="10" appearance="full" precision="2" gui-text="Valley dash + gap length">1</param>
+			<param name="valley_dashes_duty" type="float"  min="0.1" max="1" appearance="full" precision="2" gui-text="Valley dash duty cycle">0.25</param>
+			<param name="valley_stroke_width" type="float" min="0.01" max="3" appearance="full" gui-text="Width of valley strokes">0.1</param>
 			<param name="valley_stroke_color" type="color" gui-text="Valley creases color: ">65535</param>
 		</page>
-		<page name="edge" _gui-text="Edge">
-			<param name="edge_bool" type="boolean" _gui-text="Draw edges?">true</param>
-			<param name="edge_single_path" type="boolean" _gui-text="Edges as single path?">true</param>
-			<param name="edge_dashes_bool" type="boolean" _gui-text="Dashed strokes?">false</param>
-			<param name="edge_dashes_len" type="float"  min="0.1" max="10" appearance="full" precision="2" _gui-text="Edge dash + gap length">1</param>
-			<param name="edge_dashes_duty" type="float"  min="0.1" max="1" appearance="full" precision="2" _gui-text="Edge dash duty cycle">0.25</param>
-			<param name="edge_stroke_width" type="float" min="0.01" max="3" appearance="full"  _gui-text="Width of edge strokes">0.1</param>
+		<page name="edge" gui-text="Edge">
+			<param name="edge_bool" type="bool" gui-text="Draw edges?">true</param>
+			<param name="edge_single_path" type="bool" gui-text="Edges as single path?">true</param>
+			<param name="edge_dashes_bool" type="bool" gui-text="Dashed strokes?">false</param>
+			<param name="edge_dashes_len" type="float"  min="0.1" max="10" appearance="full" precision="2" gui-text="Edge dash + gap length">1</param>
+			<param name="edge_dashes_duty" type="float"  min="0.1" max="1" appearance="full" precision="2" gui-text="Edge dash duty cycle">0.25</param>
+			<param name="edge_stroke_width" type="float" min="0.01" max="3" appearance="full"  gui-text="Width of edge strokes">0.1</param>
 			<param name="edge_stroke_color" type="color" gui-text="Edge color: ">255</param>
 		</page>
-		<page name="vertices" _gui-text="Vertices">
-			<param name="vertex_bool" type="boolean" _gui-text="Draw vertices?">false</param>
-			<param name="vertex_radius" type="float" min="0.01" max="50" appearance="full"  _gui-text="Radius of vertices">0.1</param>
-			<param name="vertex_stroke_width" type="float" min="0.01" max="3" appearance="full"  _gui-text="Width of vertex strokes">0.1</param>
+		<page name="vertices" gui-text="Vertices">
+			<param name="vertex_bool" type="bool" gui-text="Draw vertices?">false</param>
+			<param name="vertex_radius" type="float" min="0.01" max="50" appearance="full"  gui-text="Radius of vertices">0.1</param>
+			<param name="vertex_stroke_width" type="float" min="0.01" max="3" appearance="full"  gui-text="Width of vertex strokes">0.1</param>
 			<param name="vertex_stroke_color" type="color" gui-text="Vertices\' color: ">255</param>
 		</page>
 	</param>
 	<effect>
 	<object-type>all</object-type>
 		<effects-menu>
-			<submenu _name="FabLab Chemnitz">
-				<submenu _name="Paper/Cardboard Boxes"/>
+			<submenu name="FabLab Chemnitz">
+				<submenu name="Paper/Cardboard Boxes"/>
 			</submenu>
 		</effects-menu>
 	</effect>
 	<script>
-		<command reldir="extensions" interpreter="python">OrigamiPatterns/Waterbomb.py</command>
+		<command location="inx" interpreter="python">OrigamiPatterns/Waterbomb.py</command>
 	</script>
 </inkscape-extension>
