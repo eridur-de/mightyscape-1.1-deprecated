@@ -88,17 +88,6 @@ class Pixel2SVG(inkex.Effect):
         if (os.path.isfile(path)):
             return path
 
-    def getImage(self, node):
-        image_element=self.svg.find('.//{http://www.w3.org/2000/svg}image')
-        image_string=image_element.get('{http://www.w3.org/1999/xlink}href')
-        #find comma position
-        i=0
-        while i<40:
-            if image_string[i]==',':
-                break
-            i=i+1
-        return Image.open(BytesIO(base64.b64decode(image_string[i+1:len(image_string)])))
-
     def drawFilledRect(self, parent, svgpx):
         """
         Draw rect based on ((x, y), (width,height), ((r,g,b),a)), add to parent
