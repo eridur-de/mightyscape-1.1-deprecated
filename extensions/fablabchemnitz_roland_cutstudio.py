@@ -41,6 +41,8 @@ import subprocess
 import shutil
 import numpy
 from functools import reduce
+import inkex
+
 try:
     from functools import lru_cache
 except ImportError:
@@ -56,7 +58,7 @@ def debug(s):
 	sys.stderr.write(s+"\n");
 
 # copied from https://github.com/t-oster/VisiCut/blob/0abe785a30d5d5085dd3b5953b38239b1ff83358/tools/inkscape_extension/visicut_export.py
-def which(program, extraPaths=[], subdir=None):
+def which(program, raiseError, extraPaths=[], subdir=None):
     """
     find program in the $PATH environment variable and in $extraPaths.
     If $subdir is given, also look in the given subdirectory of each $PATH entry.
@@ -75,7 +77,10 @@ def which(program, extraPaths=[], subdir=None):
       exe_file = os.path.join(path, program)
       if is_exe(exe_file):
         return exe_file
-    raise Exception("Cannot find " + str(program) + " in any of these paths: " + str(pathlist) + ". Either the program is not installed, PATH is not set correctly, or this is a bug.")
+    if raiseError:
+        raise Exception("Cannot find " + str(program) + " in any of these paths: " + str(pathlist) + ". Either the program is not installed, PATH is not set correctly, or this is a bug.")
+    else:
+        return None
 
 # mostly copied from https://github.com/t-oster/VisiCut/blob/0abe785a30d5d5085dd3b5953b38239b1ff83358/tools/inkscape_extension/visicut_export.py
 @lru_cache()
@@ -356,11 +361,12 @@ def EPS2CutstudioEPS(src, dest, mirror=False):
     outputStr += postfix
     outputFile.write(outputStr)
     outputFile.close()
+    inputFile.close()
 
 if os.name=="nt": # windows
-	INKSCAPEBIN = which("inkscape.exe", subdir="Inkscape")
+	INKSCAPEBIN = which("inkscape.exe", True, subdir="Inkscape")
 else:
-	INKSCAPEBIN=which("inkscape")
+	INKSCAPEBIN=which("inkscape", True)
 
 assert os.path.isfile(INKSCAPEBIN),  "cannot find inkscape binary " + INKSCAPEBIN
 
@@ -387,7 +393,7 @@ else:
     cmd = [INKSCAPEBIN, "-T", "--export-ignore-filters",  "--export-area-drawing", "--export-filename="+filename+".inkscape.eps", filename+".filtered.svg"]
 inkscape_eps_file = filename + ".inkscape.eps"
 
-#print(" ".join(cmd), file=sys.stderr)
+#inkex.utils.debug(" ".join(cmd), file=sys.stderr)
 assert 0 == subprocess.call(cmd, stderr=DEVNULL), 'EPS conversion failed: command returned error: ' + '"' + '" "'.join(cmd) + '"'
 assert os.path.exists(inkscape_eps_file), 'EPS conversion failed: command did not create result file: ' + '"' + '" "'.join(cmd) + '"' 
 
@@ -395,13 +401,20 @@ EPS2CutstudioEPS(inkscape_eps_file, filename+".cutstudio.eps", mirror=("--mirror
 
 if os.name=="nt":
     DETACHED_PROCESS = 8 # start as "daemon"
-    Popen([which("CutStudio\CutStudio.exe"), "/import", filename+".cutstudio.eps"], creationflags=DETACHED_PROCESS, close_fds=True)
-else:
-    #raise Exception("CutStudio on Mac and on Linux-Wine not yet supported, please open cutstudio yourself.")
-    print("Your file was saved to:\n" + filename+".cutstudio.eps" + "\n Please open that with CutStudio.", file=sys.stderr)
-    # Popen(["inkscape", filename+".filtered.svg"], stderr=DEVNULL)
-    #Popen(["inkscape", filename+".cutstudio.eps"])
-    pass
+    Popen([which("CutStudio\CutStudio.exe", True), "/import", filename+".cutstudio.eps"], creationflags=DETACHED_PROCESS, close_fds=True)
+else: #check if we have access to "wine"
+    if which("wine", False) is not None:
+        if which("/opst/CutStudio/CutStudio.exe", False) is not None:
+            with os.popen("wine /opt/CutStudio/CutStudio.exe /import T:\\\\" + filename.split('/tmp/')[1] + ".cutstudio.eps", "r") as cutstudio:
+                result = cutstudio.read()
+        else:
+            inkex.utils.debug("Found a wine installation on your system but no CutStudio.exe. You can easily emulate this Windows application on Linux using wine. To do this provide a valid CutStudio installation in directory \"/opt/CutStudio/\". You may create a symlink with the shell command \"ln -sf /your/path/to/cutstudio /opt/CutStudio\" to point to this dir, or just edit the InkScape extension source code. As second step you need to configure the drive letter T: to point to the directory \"/tmp/\". This is done with a few mouse clicks within the \"winecfg\" utility. The wine emulation was tested to work properly with Roland CutStudio version 3.10. For now your file was saved to:\n" + filename + ".cutstudio.eps")
+            #os.popen("/usr/bin/xdg-open " + filename)
+    else:
+        inkex.utils.debug("Your file was saved to:\n" + filename + ".cutstudio.eps" + "\n Please open that with CutStudio.")
+        #os.popen("/usr/bin/xdg-open " + filename)
+        #Popen(["inkscape", filename+".filtered.svg"], stderr=DEVNULL)
+        #Popen(["inkscape", filename+".cutstudio.eps"])
 #os.unlink(filename+".filtered.svg")
 #os.unlink(filename)
 #os.unlink(filename+".cutstudio.eps")
