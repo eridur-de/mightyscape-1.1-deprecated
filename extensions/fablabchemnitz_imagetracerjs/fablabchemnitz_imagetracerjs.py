@@ -92,7 +92,10 @@ class Imagetracerjs (inkex.Effect):
                         image = Image.open(self.path)
                     
                     # Write the embedded or linked image to temporary directory
-                    exportfile = "imagetracerjs.png"
+                    if os.name == "nt":
+                         exportfile = "imagetracerjs.png"
+                    else:
+                         exportfile ="/tmp/imagetracerjs.png"
                     image.save(exportfile, "png")
            
                     nodeclipath = os.path.join("imagetracerjs-master", "nodecli", "nodecli.js")

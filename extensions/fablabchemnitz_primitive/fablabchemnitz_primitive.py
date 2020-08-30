@@ -91,11 +91,18 @@ class Primitive (inkex.Effect):
                         image = Image.open(self.path)
                     
                     # Write the embedded or linked image to temporary directory
-                    exportfile = "Primitive.png"
+                    if os.name == "nt":
+                        exportfile = "Primitive.png"
+                    else:
+                        exportfile = "/tmp/Primitive.png"
+                        
                     image.save(exportfile, "png")
            
                     ## Build up Primitive command according to your settings from extension GUI
-                    command  = "primitive"
+                    if os.name == "nt":
+                        command  = "primitive"
+                    else:
+                        command  = "./primitive"
                     command += " -m "   + str(self.options.m)
                     command += " -rep " + str(self.options.rep)
                     command += " -r "   + str(self.options.r)
@@ -116,6 +123,7 @@ class Primitive (inkex.Effect):
                         #inkex.utils.debug(result)
 
                     # proceed if new SVG file was successfully created
+                    doc = None
                     if os.path.exists(exportfile + ".svg"):
                         # Delete the temporary png file again because we do not need it anymore
                         if os.path.exists(exportfile):
@@ -136,6 +144,9 @@ class Primitive (inkex.Effect):
                         if os.path.exists(exportfile + ".svg"):
                             os.remove(exportfile + ".svg")
                     
+                    else:
+                        inkex.utils.debug("Error while creating output file! :-( The \"primitive\" executable seems to be missing or platform is imcompatible.")
+                        exit(1)
                     #remove the old image or not                    
                     if self.options.keeporiginal is not True:
                         node.getparent().remove(node)  
