@@ -99,7 +99,7 @@ class Travel(inkex.Effect):
         doc_h = self.svg.unittouu(svg.get('height'))
 
         # get selected items and validate
-        selected = self.svg.get_z_selected()
+        selected = self.svg.selection.paint_order()
 		
         if not selected:
             inkex.errormsg('Exactly two objects must be selected: a rect and a template. See "help" for details.')
