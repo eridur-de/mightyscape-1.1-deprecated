@@ -14,7 +14,7 @@
          <param name="dm" type="float" min="1" max="1000" precision="2" gui-text="Major grid division Spacing">100.00</param>
          <param name="y_divs" type="int" min="1" max="1000" gui-text="Major vertical divisions">3</param>
          <param name="x_divs" type="int" min="1" max="1000" gui-text="Major horizontal divisions">3</param>
-         <param name="grid_angle" type="float" min="0" max="180" gui-text="Grid angle [deg]">30</param>
+         <param name="grid_angle" type="float" min="0.1" max="89.9" gui-text="Grid angle [deg]">30.0</param>
          <param name="subdivs" type="int" min="1" max="1000" gui-text="Subdivisions per Major grid division">2</param>
          <param name="subsubdivs" type="int" min="1" max="1000" gui-text="Subsubdivs. per grid subdivision">5</param>
       </page>

@@ -128,14 +128,13 @@ class Grid_Triangular(inkex.Effect):
         x_end = end_points[1][0]
         y_end = end_points[1][1]
 
-        if (x_start >= 0 and x_start <= self.xmax and 
-                y_start >= 0 and y_start <= self.ymax and
-                x_end >= 0 and x_end <= self.xmax and 
-                y_end >= 0 and y_end <= self.ymax):
+        if (x_end >= 0 and x_end <= self.xmax and
+            y_end >= 0 and y_end <= self.ymax and
+            (y_start != y_end and x_start != x_end)):
             draw_SVG_line(x_start, y_start,
                           x_end, y_end,
                           thickness, colorString(color), label, groupName)
- 
+
     def effect(self):
         
         #find the pixel dimensions of the overall grid
@@ -236,13 +235,13 @@ class Grid_Triangular(inkex.Effect):
              
             for j in range (0, sd):  #subdivs
                 if j>0:#not for the first loop (this loop is for the subsubdivs before the first subdiv)
-                    self.drawAngledGridLine(0, dy*(i+j/float(sd)), 
+                    self.drawAngledGridLine(0, dy*(i+j/float(sd)),
                                self.options.grid_angle,
                                self.options.subdiv_th,
                                self.options.subdiv_color,
                                'MinorYDivP'+str(i),
                                minglp)
-                    self.drawAngledGridLine(0, dy*(i+j/float(sd)), 
+                    self.drawAngledGridLine(0, dy*(i+j/float(sd)),
                                -self.options.grid_angle,
                                self.options.subdiv_th,
                                self.options.subdiv_color,
