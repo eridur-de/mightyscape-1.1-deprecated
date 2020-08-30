@@ -104,7 +104,7 @@ class svgRounder(inkex.Effect):
     def opacity_round_it(self, node, typeOpacity):
         if node.tag == inkex.addNS('g','svg'):
             for e in node:
-                self.opacity_round_it(e)
+                self.opacity_round_it(e, typeOpacity)
         else:
             style = node.get('style')
             if style:
