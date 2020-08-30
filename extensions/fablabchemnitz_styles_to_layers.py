@@ -8,7 +8,7 @@ Features
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 19.08.2020
-Last patch: 22.08.2020
+Last patch: 29.08.2020
 License: GNU GPL v3
 """
 import inkex
@@ -79,6 +79,8 @@ class LayerGroup(inkex.Effect):
             fill           = element.get('fill')
             fill_opacity   = element.get('fill-opacity')
             
+            # possible values for fill are #HEXCOLOR (like #000000), color name (like purple, black, red) or gradients (URLs)
+
             neutral_value = None #we will use this value to slice the filter result into sub layers (threshold)
            
             if fill is not None:
@@ -86,39 +88,56 @@ class LayerGroup(inkex.Effect):
             if stroke is not None:    
                 style = style + 'stroke:' + stroke + ";"
                 
-            if style:
+            if style and element.tag != inkex.addNS('stop','svg'): #we don't want to destroy elements with gradients (they contain svg:stop elements which have a style too)
                 if self.options.separateby == "stroke":
                     stroke = re.search('stroke:(.*?)(;|$)', style)
                     if stroke is not None:
                         stroke = stroke[0]
                         stroke_value = stroke.split("stroke:")[1].split(";")[0]
-                        if stroke_value != "none": neutral_value = colorsort(stroke_value)
-                        layer_name = self.options.parsecolors + "-" + stroke
+                        if stroke_value != "none": 
+                            stroke_converted = str(Color(stroke_value).to_rgb()) #the color can be hex code or clear name. we handle both the same
+                            neutral_value = colorsort(stroke_converted)
+                            layer_name = "stroke-" + self.options.parsecolors + "-" + stroke_converted
+                    else:
+                        layer_name = "stroke-" + self.options.parsecolors + "-none"
                 elif self.options.separateby == "stroke_width":        
                     stroke_width = re.search('stroke-width:(.*?)(;|$)', style)
                     if stroke_width is not None:
                         stroke_width = stroke_width[0]
                         neutral_value = self.svg.unittouu(stroke_width.split("stroke-width:")[1].split(";")[0])
                         layer_name = stroke_width
+                    else:
+                        layer_name = "stroke-width-none"
                 elif self.options.separateby == "stroke_opacity":        
                     stroke_opacity = re.search('stroke-opacity:(.*?)(;|$)', style)
                     if stroke_opacity is not None:
                         stroke_opacity = stroke_opacity[0]
                         neutral_value = float(stroke_opacity.split("stroke-opacity:")[1].split(";")[0])
                         layer_name = stroke_opacity
+                    else:
+                        layer_name = "stroke-opacity-none"
                 elif self.options.separateby == "fill":        
                     fill = re.search('fill:(.*?)(;|$)', style)
                     if fill is not None:
                         fill = fill[0]
                         fill_value = fill.split("fill:")[1].split(";")[0]
-                        if fill_value != "none": neutral_value = colorsort(fill_value)
-                        layer_name = self.options.parsecolors + "-" + fill 
+                        #check if the fill color is a real color or a gradient. if it's a gradient we skip the element
+                        if fill_value != "none" and "url" not in fill_value:
+                            fill_converted = str(Color(fill_value).to_rgb()) #the color can be hex code or clear name. we handle both the same
+                            neutral_value = colorsort(fill_converted)
+                            layer_name = "fill-" + self.options.parsecolors + "-" + fill_converted 
+                        elif "url" in fill_value: #okay we found a gradient. we put it to some group
+                            layer_name = "fill-" + self.options.parsecolors + "-gradient"
+                    else:
+                        layer_name = "fill-" + self.options.parsecolors + "-none"
                 elif self.options.separateby == "fill_opacity":               
                     fill_opacity = re.search('fill-opacity:(.*?)(;|$)', style)
                     if fill_opacity is not None:
                         fill_opacity = fill_opacity[0]
                         neutral_value = float(fill_opacity.split("fill-opacity:")[1].split(";")[0])
                         layer_name = fill_opacity
+                    else:
+                        layer_name = "fill-opacity-none"
                 else:
                     inkex.utils.debug("No proper option selected.")
                     exit(1)

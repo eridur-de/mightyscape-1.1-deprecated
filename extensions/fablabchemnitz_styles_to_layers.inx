@@ -9,7 +9,7 @@
        <option value="fill">Fill color</option>
        <option value="fill_opacity">Fill opacity</option>
     </param>
-    <param name="parsecolor" gui-text="Sort colors by" type="optiongroup" appearance="combo">
+    <param name="parsecolor" gui-text="Sort colors by" type="optiongroup" appearance="combo" gui-description="This option only applies to stroke color and fill color">
        <option value="hexval">Hex value</option>
        <option value="hue">Hue</option>
        <option value="saturation">Saturation</option>
