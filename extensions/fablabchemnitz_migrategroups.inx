@@ -29,11 +29,11 @@
         <separator/>
         <vbox>
             <label appearance="header">Gradients</label>
-            <param name="lineargradient" type="bool" gui-text="lineargradient">true</param>
-            <param name="radialgradient" type="bool" gui-text="radialgradient">true</param>
-            <param name="meshgradient" type="bool" gui-text="meshgradient">true</param>
-            <param name="meshrow" type="bool" gui-text="meshrow">true</param>
-            <param name="meshpatch" type="bool" gui-text="meshpatch">true</param>
+            <param name="linearGradient" type="bool" gui-text="linearGradient">true</param>
+            <param name="radialGradient" type="bool" gui-text="radialGradient">true</param>
+            <param name="meshGradient" type="bool" gui-text="meshGradient">true</param>
+            <param name="meshRow" type="bool" gui-text="meshRow">true</param>
+            <param name="meshPatch" type="bool" gui-text="meshPatch">true</param>
             <param name="stop" type="bool" gui-text="stop">true</param>
         </vbox>
         <separator/>
