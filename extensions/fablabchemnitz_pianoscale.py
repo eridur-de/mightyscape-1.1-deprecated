@@ -200,7 +200,7 @@ class SVGPianoScale (inkex.Effect):
                 'style':'fill:%s;stroke:%s;stroke-width:%s;stroke-opacity:1;fill-opacity:1' %(Marker_color, Black, self.svg.unittouu('0.125 mm'))}
         ellipse = etree.SubElement(markerGroup, 'path', ellipce_atts)
         # draw the text
-        textstyle = {'font-size': '3 px',
+        textstyle = {'font-size': '4px',
                      'font-family': 'arial',
                      'text-anchor': 'middle',
                      'text-align': 'center',
