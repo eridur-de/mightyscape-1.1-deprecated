@@ -3,12 +3,12 @@
 """
 Extension for InkScape 1.0
 
-Import any DWG or DXF file using ODA File Converter, sk1 UniConverter, ezdxf and more tools.
+Import any DWG or DXF file using ODA File Converter, sk1 UniConvertor, ezdxf and more tools.
 
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 23.08.2020
-Last patch: 24.08.2020
+Last patch: 28.08.2020
 License: GNU GPL v3
 
 Module licenses
@@ -16,7 +16,7 @@ Module licenses
 - node.js (https://raw.githubusercontent.com/nodejs/node/master/LICENSE) - MIT License
 - https://github.com/bjnortier/dxf - MIT License
 - ODA File Converter - not bundled (due to restrictions by vendor)
-- sk1 UniConverter (https://github.com/sk1project/uniconvertor) - AGPL v3.0 - not bundled
+- sk1 UniConvertor (https://github.com/sk1project/uniconvertor) - AGPL v3.0 - not bundled
 
 ToDos:
 - change copy commands to movefile commands (put into temp. sub directories where the input file is located). We need to copy files in this script because ODA File Converter will process whole dirs instead of single files only.DXF files can be really large, which slows the process)
@@ -30,9 +30,10 @@ import subprocess, tempfile
 from lxml import etree
 from subprocess import Popen, PIPE
 import shutil
+from shutil import which
 from pathlib import Path    
-from mimetypes import MimeTypes
-import urllib.request as urllib
+#from mimetypes import MimeTypes
+#import urllib.request as urllib
 
 #ezdxf related imports
 import matplotlib.pyplot as plt
@@ -63,7 +64,7 @@ class DXFDWGImport(inkex.Effect):
         self.arg_parser.add_argument("--oda_skip_dxf_to_dxf",   type=inkex.Boolean, default=False,          help="Skip conversion from DXF to DXF")
         self.arg_parser.add_argument("--oda_audit_repair",      type=inkex.Boolean, default=True,           help="Perform audit / autorepair")
 
-        #sk1 UniConverter
+        #sk1 UniConvertor
         self.arg_parser.add_argument("--sk1_uniconverter", default=r"C:\Program Files (x86)\sK1 Project\UniConvertor-1.1.6\uniconvertor.cmd", help="Full path to 'uniconvertor.cmd'")
         self.arg_parser.add_argument("--opendironerror", type=inkex.Boolean, default=True, help="Open containing output directory on conversion errors")
 
@@ -114,6 +115,9 @@ class DXFDWGImport(inkex.Effect):
     def effect(self):
         #get input file and copy it to some new temporary directory
         inputfile = self.options.inputfile
+        if not os.path.exists(inputfile):
+            inkex.utils.debug("The input file does not exist. Please select a *.dxf or *.dwg file and try again.")
+            exit(1)
         temp_input_dir = os.path.join(tempfile.gettempdir(),"dxfdwg_input") 
         shutil.rmtree(temp_input_dir, ignore_errors=True) #remove the input directory before doing new job
         if not os.path.exists(temp_input_dir):
@@ -196,30 +200,37 @@ class DXFDWGImport(inkex.Effect):
         # Run ODA File Converter
         if self.options.oda_skip_dxf_to_dxf == False or inputfile_ending == ".dwg":
             # Executable test (check for proper configuration by checking mime type. Should return octet stream for a binary executable)
-            url = urllib.pathname2url(self.options.oda_fileconverter)
-            if  "application/octet-stream" not in str(MimeTypes().guess_type(url)):
-                inkex.utils.debug("ODA File Converter was not properly configured.")
+            if os.name == "nt" and "application/octet-stream" not in str(MimeTypes().guess_type(urllib.pathname2url(self.options.oda_fileconverter))):
+                inkex.utils.debug("ODA File Converter was not properly configured. Check for installation and path location. You can download ODA Converter from 'https://www.opendesign.com/guestfiles/oda_file_converter'")
+                exit(1)
+            elif os.path.isfile(self.options.oda_fileconverter) == False:
+                inkex.utils.debug("ODA File Converter was not properly configured. Check for installation and path location. You can download ODA Converter from 'https://www.opendesign.com/guestfiles/oda_file_converter'")
+                exit(1)
             else:
                 # Build and run ODA File Converter command
                 oda_cmd = [self.options.oda_fileconverter, temp_input_dir, temp_output_dir, autocad_version, autocad_format, "0", self.options.oda_audit_repair]
-                if self.options.oda_hidewindow:
-                    info = subprocess.STARTUPINFO() #hide the ODA File Converter window because it is annoying
-                    info.dwFlags = 1
-                    info.wShowWindow = 0
-                    proc = subprocess.Popen(oda_cmd, startupinfo=info, shell=False, stdout=PIPE, stderr=PIPE)
-                else: proc = subprocess.Popen(oda_cmd, shell=False, stdout=PIPE, stderr=PIPE)
+                if os.name == 'nt' and  self.options.oda_hidewindow:
+                        info = subprocess.STARTUPINFO() #hide the ODA File Converter window because it is annoying (does not work for Linux :-()
+                        info.dwFlags = 1
+                        info.wShowWindow = 0
+                        proc = subprocess.Popen(oda_cmd, startupinfo=info, shell=False, stdout=PIPE, stderr=PIPE)
+                else: 
+                        proc = subprocess.Popen(oda_cmd, shell=False, stdout=PIPE, stderr=PIPE)
                 stdout, stderr = proc.communicate()
-                if proc.returncode != 0: 
-                   inkex.errormsg("ODA File Converter failed: %d %s %s" % (proc.returncode, stdout, stderr))
+                if proc.returncode != 0 or (len(stderr) > 0 and stderr != b"Quit (core dumped)\n"): 
+                   inkex.utils.debug("ODAFileConverter failed: %d %s %s" % (proc.returncode, stdout, stderr))
+                   if os.name != 'nt':
+                       inkex.utils.debug("If the error message above contains a warning about wrong/missing Qt version please install the required version. You can get the installer from 'https://download.qt.io/archive/qt/'. Sadly you will need to create a free account to install. After installation please configure the shell script '/usr/bin/ODAFileConverter' to add a preceding line with content similar to 'LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/Qt5.14.2/5.14.2/gcc_64/lib/'.")
                    exit(1)   
             
-        # Preprocessing DXF to DXF (entity filter)
+        # Do some movings/copies of skipped or processed DXF
         if self.options.oda_skip_dxf_to_dxf: #if true we need to move the file to simulate "processed"
             shutil.move(os.path.join(temp_input_dir, Path(inputfile).name), os.path.join(temp_output_dir, Path(inputfile).name))
 
         if self.options.oda_keepconverted_dxf and inputfile_ending != ".dxf": #if the input file already was DXF we don't need to make another copy
             shutil.copy2(dxf_file, os.path.join(os.path.dirname(inputfile), outputfilebase + "_oda.dxf")) # complete target filename given
             
+        # Preprocessing DXF to DXF (entity filter) by using ezdxf the first time
         if self.options.ezdxf_preprocessing:
             # uniconverter does not handle all entities. we parse the file to exlude stuff which lets uniconverter fail
             dxf = ezdxf.readfile(dxf_file)
@@ -244,12 +255,14 @@ class DXFDWGImport(inkex.Effect):
                 shutil.copy2(dxf_file, os.path.join(os.path.dirname(inputfile), outputfilebase + "_ezdxf.dxf")) # complete target filename given
         
         # Make SVG from DXF
-        if sys.platform != "win32":
-            inkex.utils.debug("You selected sk1 UniConverter but you are not running on a Windows platform.")
-        sk1_command_ending = os.path.splitext(os.path.splitext(os.path.basename(self.options.sk1_uniconverter))[1])[0]
-        if sk1_command_ending != ".cmd":
-            inkex.utils.debug("You selected sk1 UniConverter but it was not configured properly. Check the path to the executable.")
-        elif self.options.dxf_to_svg_parser == "uniconverter":         
+        if self.options.dxf_to_svg_parser == "sk1":         
+            if os.name != "nt":
+                inkex.utils.debug("You selected sk1 UniConvertor but you are not running on a Windows platform. On Linux uniconverter 1.1.X can be installed using the now obsolete Python 2.7, but it will not run correctly because you finally will fail at installing liblcms1-dev library on newer systems. That leads to uncompilable sk1libs package. Unfortunately sk1 UniConvertor 2.X does not support dxf format. So please use another DXF to SVG converter.")
+                exit(1)
+            sk1_command_ending = os.path.splitext(os.path.splitext(os.path.basename(self.options.sk1_uniconverter))[1])[0]
+            if sk1_command_ending != ".cmd":
+                inkex.utils.debug("You selected sk1 UniConverter but it was not configured properly. Check the path to the executable.")
+                exit(1)
             uniconverter_cmd = [self.options.sk1_uniconverter, dxf_file, svg_file]
             #inkex.utils.debug(uniconverter_cmd)
             proc = subprocess.Popen(uniconverter_cmd, shell=False, stdout=PIPE, stderr=PIPE)
@@ -260,14 +273,18 @@ class DXFDWGImport(inkex.Effect):
                    subprocess.Popen(["explorer",temp_output_dir],close_fds=True)
                                     
         elif self.options.dxf_to_svg_parser == "bjnortier":
-            bjnortier_cmd = ["node", os.path.join("node_modules","dxf","lib","cli.js"), dxf_file, svg_file]
-            #inkex.utils.debug(bjnortier_cmd)
-            proc = subprocess.Popen(bjnortier_cmd, shell=False, stdout=PIPE, stderr=PIPE)
-            stdout, stderr = proc.communicate()
-            if proc.returncode != 0: 
-               inkex.errormsg("node.js DXF to SVG conversion failed: %d %s %s" % (proc.returncode, stdout, stderr))
-               if self.options.opendironerror:
-                   subprocess.Popen(["explorer",temp_output_dir],close_fds=True)
+            if which("node") is None:
+                inkex.utils.debug("NodeJS executable not found on path. Please check your installation.")
+                exit(1)
+            else:
+                bjnortier_cmd = ["node", os.path.join("node_modules","dxf","lib","cli.js"), dxf_file, svg_file]
+                #inkex.utils.debug(bjnortier_cmd)
+                proc = subprocess.Popen(bjnortier_cmd, shell=False, stdout=PIPE, stderr=PIPE)
+                stdout, stderr = proc.communicate()
+                if proc.returncode != 0: 
+                   inkex.errormsg("node.js DXF to SVG conversion failed: %d %s %s" % (proc.returncode, stdout, stderr))
+                   if self.options.opendironerror:
+                       subprocess.Popen(["explorer",temp_output_dir],close_fds=True)
         elif self.options.dxf_to_svg_parser == "ezdxf":
             doc = ezdxf.readfile(dxf_file)
             #doc.header['$DIMSCALE'] = 0.2 does not apply to the plot :-(
@@ -298,7 +315,11 @@ class DXFDWGImport(inkex.Effect):
             exit(1)
         
         # Write the generated SVG into InkScape's canvas
-        stream = open(svg_file, 'r')
+        try:
+            stream = open(svg_file, 'r')
+        except FileNotFoundError as e:
+            inkex.utils.debug("There was no SVG output generated. Cannot continue")
+            exit(1)
         p = etree.XMLParser(huge_tree=True)
         doc = etree.parse(stream, parser=etree.XMLParser(huge_tree=True)).getroot()
         stream.close()
@@ -306,7 +327,7 @@ class DXFDWGImport(inkex.Effect):
         self.document.getroot().append(doc)
 
         #get children of the doc and move them one group above - we don't do this for bjnortier tool because this has different structure which we don't want to disturb
-        if self.options.dxf_to_svg_parser == "uniconverter":
+        if self.options.dxf_to_svg_parser == "sk1":
             elements = []
             emptyGroup = None
             for firstGroup in doc.getchildren():

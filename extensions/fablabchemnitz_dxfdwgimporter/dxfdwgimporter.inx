@@ -8,7 +8,7 @@
         <label>The parser is the heart of your input-output chain because depending on the selection your result will greatly vary. You might receive no or bad results (e.g. wrong scalings, aborted imports, missing lines, duplicated lines, wrong rotations and other issues. Serious tip: ask the person who gave the input file to you about some measurement which you can compare with the processed file to ensure correct sizes)</label>
             <param name="dxf_to_svg_parser" gui-text="DXF to SVG parser" type="optiongroup" appearance="combo">
                 <option value="bjnortier">bjnortier DXF (good quality, some polygon artifacts)</option>
-                <option value="uniconverter">sk1 UniConverter (best output, but fails for all unknown/unfiltered entities)</option>
+                <option value="sk1">sk1 UniConverter (best output, but fails for all unknown/unfiltered entities)</option>
                 <option value="ezdxf">ezdxf (higher quality, many single nodes)</option>
                 <option value="legacy">legacy InkScape importer</option>
             </param>
@@ -32,7 +32,7 @@
             </page>
 		<page name="dwg_dxf" gui-text="DWG to DXF / DXF to DXF">
             <label appearance="header">Open Design Alliance (ODA) File Converter</label>
-            <param name="oda_fileconverter" type="path" gui-text="ODAFileConverter.exe" gui-description="Full path to 'ODAFileConverter executable'" filetypes="" mode="file">C:\Program Files\ODA\ODAFileConverter_title 21.6.0\ODAFileConverter.exe</param>
+            <param name="oda_fileconverter" type="path" gui-text="ODAFileConverter executable" gui-description="Full path to 'ODAFileConverter' executable. On Linux this usually should be '/usr/bin/ODAFileConverter' and on Windows it's 'C:\Program Files\ODA\OdaFileConverter_title XX.Y.Z\ODAFileConverter.exe'" filetypes="" mode="file">C:\Program Files\ODA\ODAFileConverter_title 21.6.0\ODAFileConverter.exe</param>
             <param name="oda_keepconverted_dxf" type="bool" gui-text="Keep ODA converted DXF file" gui-description="Will put a copy of the converted DXF into the directory where your input file is located.">true</param>
             <param name="oda_outputformat" gui-text="AutoCAD output version" type="optiongroup" appearance="combo">
                 <option value="ACAD2018_DXF">2018 ASCII DXF</option>
@@ -68,7 +68,7 @@
                 <option value="ACAD10_DXB"  >R10 Binary DXF</option>
                 -->       
             </param>
-            <param name="oda_hidewindow" type="bool" gui-text="Hide ODA GUI window" gui-description="Hide ODA GUI window">true</param>
+            <param name="oda_hidewindow" type="bool" gui-text="Hide ODA GUI window (Windows OS only)" gui-description="Hide ODA GUI window. This does not work for Linux OS.">true</param>
             <param name="oda_skip_dxf_to_dxf" type="bool" gui-text="Skip conversion from DXF to DXF (keep input as is)" gui-description="This will skip ODA File Converter execution if input is already DXF file. If your input is DWG this option will not apply. Might save some seconds of time and maybe prevents errors.">false</param>
             <param name="oda_audit_repair" type="bool" gui-text="Perform audit (auto-repair)">true</param>
         </page>
@@ -144,10 +144,9 @@
                 </hbox>
             </hbox>
             <spacer/>
-            <label appearance="header">sk1 UniConverter 1.1.X</label>
-            <label>sk1 UniConverter is only available for Windows platforms.</label>
+            <label appearance="header">sk1 UniConvertor 1.1.X</label>
             <separator/>
-            <param name="sk1_uniconverter" type="path" gui-text="uniconvertor.cmd" gui-description="Full path to 'uniconvertor.cmd'" filetypes="cmd" mode="file">C:\Program Files (x86)\sK1 Project\UniConvertor-1.1.6\uniconvertor.cmd</param>
+            <param name="sk1_uniconverter" type="path" gui-text="uniconvertor executable" gui-description="Full path to 'uniconvertor' executable" filetypes="cmd" mode="file">C:\Program Files (x86)\sK1 Project\UniConvertor-1.1.6\uniconvertor.cmd</param>
             <param name="opendironerror" type="bool" gui-text="Open containing output directory on conversion errors">true</param>
         </page>
     </param>
