@@ -1,9 +1,10 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """
 Inkcut, Plot HPGL directly from Inkscape.
-   inkcut.py
+   extension.py
 
-   Copyright 2018 The Inkcut Team
+   Copyright 2010-2018 The Inkcut Team
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -21,37 +22,48 @@ Inkcut, Plot HPGL directly from Inkscape.
    MA 02110-1301, USA.
 """
 import os
+import sys
 import inkex
+import importlib
+import subprocess
 from lxml import etree
-from subprocess import Popen, PIPE
-from shutil import copy2
-from distutils.spawn import find_executable
+from fablabchemnitz_inkcut import convert_objects_to_paths
 
-def contains_text(nodes):
-    for node in nodes:
-        tag = node.tag[node.tag.rfind("}")+1:]
-        if tag == 'text':
-            return True
-    return False
+DEBUG = False
+try:
+    from subprocess import DEVNULL # py3k
+except ImportError:
+    import os
+    DEVNULL = open(os.devnull, 'wb')
 
-def convert_objects_to_paths(file, document):
-    tempfile = os.path.splitext(file)[0] + "-prepare.svg"
-    # tempfile is needed here only because we want to force the extension to be .svg
-    # so that we can open and close it silently
-    copy2(file, tempfile)
 
-    command = 'inkscape --verb=EditSelectAllInAllLayers --verb=EditUnlinkClone --verb=ObjectToPath --verb=FileSave --verb=FileQuit ' + tempfile
+class InkscapeInkcutPlugin(inkex.Effect):
+    def effect(self):
+        """ Like cut but requires no selection and does no validation for
+        text nodes.
+        """
+        #: If running from source
+        if DEBUG:
+            python = '~/inkcut/venv/bin/python'
+            inkcut = '~/inkcut/main.py'
+            cmd = [python, inkcut]
+        else:
+            cmd = ['inkcut']
 
-    if find_executable('xvfb-run'):
-        command = 'xvfb-run -a ' + command
+        document = convert_objects_to_paths(self.options.input_file, self.document)
 
-    p = Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
-    (out, err) = p.communicate()
+        cmd += ['open', '-']
+        p = subprocess.Popen(cmd,
+                             stdin=subprocess.PIPE,
+                             stdout=DEVNULL,
+                             stderr=subprocess.STDOUT,
+                             close_fds=sys.platform != "win32")
+        p.stdin.write(etree.tostring(document))
+        p.stdin.close()
+        # Set the returncode to avoid this warning when popen is garbage collected:
+        # "ResourceWarning: subprocess XXX is still running".
+        # See https://bugs.python.org/issue38890 and
+        # https://bugs.python.org/issue26741.
+        p.returncode = 0
 
-    if p.returncode != 0:
-        inkex.errormsg("Failed to convert objects to paths. Continued without converting.")
-        inkex.errormsg(out)
-        inkex.errormsg(err)
-        return document.getroot()
-    else:
-            return etree.parse(tempfile).getroot()
+InkscapeInkcutPlugin().run()

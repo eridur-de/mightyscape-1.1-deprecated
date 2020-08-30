@@ -40,7 +40,7 @@ def convert_objects_to_paths(file, document):
     # so that we can open and close it silently
     copy2(file, tempfile)
 
-    command = 'inkscape --verb=EditSelectAllInAllLayers --verb=EditUnlinkClone --verb=ObjectToPath --verb=FileSave --verb=FileQuit ' + tempfile
+    command = "inkscape " + tempfile + ' --actions="EditSelectAllInAllLayers;EditUnlinkClone;ObjectToPath;FileSave;FileQuit"'
 
     if find_executable('xvfb-run'):
         command = 'xvfb-run -a ' + command
