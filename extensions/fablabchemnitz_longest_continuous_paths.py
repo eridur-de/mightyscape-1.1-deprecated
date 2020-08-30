@@ -173,7 +173,7 @@ class OptimizePaths(inkex.GenerateExtension):
         vertices = []
         edges = []
 
-        objects = self.svg.selection.filter(inkex.PathElement).values()
+        objects = self.svg.get_selected(inkex.PathElement)
 
         for node in objects:
             if node.tag == inkex.addNS('path', 'svg'):
@@ -613,6 +613,4 @@ class OptimizePaths(inkex.GenerateExtension):
         self.log("Total duration: {:.0f} sec ({:.1f} min)".format(totalDuration, totalDuration / 60))
         return group
 
-
-if __name__ == '__main__':
-    OptimizePaths().run()
+OptimizePaths().run()
