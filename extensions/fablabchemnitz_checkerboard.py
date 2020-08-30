@@ -21,7 +21,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
 
-from gettext import gettext as _
 import inkex
 from lxml import etree
 import re
@@ -66,8 +65,8 @@ class Checkerboard(inkex.Effect):
     def __init__(self):
         inkex.Effect.__init__(self)
         self.arg_parser.add_argument("--tab")
-        self.arg_parser.add_argument("--color1", type=Color)
-        self.arg_parser.add_argument("--color2", type=Color)
+        self.arg_parser.add_argument("--color1", type=Color, default=4286282751)
+        self.arg_parser.add_argument("--color2", type=Color, default=8092671)
         self.arg_parser.add_argument("--size")
         self.arg_parser.add_argument("--rows", type=int)
         self.arg_parser.add_argument("--cols", type=int)
@@ -90,5 +89,4 @@ class Checkerboard(inkex.Effect):
         x, y = self.svg.namedview.center[0] - cols * size / 2, self.svg.namedview.center[1] - rows * size / 2
         draw_grid(x, y, rows, cols, size, color1, color2, group)
 
-if __name__ == '__main__':
-    Checkerboard().run()
+Checkerboard().run()
