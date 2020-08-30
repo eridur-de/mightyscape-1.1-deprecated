@@ -33,17 +33,16 @@ class Pathpoints2Dots(inkex.Effect):
     
     def effect(self):
         if len(self.svg.selected) != 2:
-            errormsg("Please select exact two objects:\n1. object representing path,\n2. object representing dots.")
+            inkex.errormsg("Please select exact two objects:\n1. object representing path,\n2. object representing dots.")
             return
     
-        dot = self.svg.selected[0]
-        iddot = dot.get('id')
-        path = self.svg.selected[1]
-        idpath = path.get('id')
-        
+        nodes = list(self.svg.selected.items())
+        iddot  = nodes[0][0]
+        idpath = nodes[1][0]
+        dot    = self.svg.selected[iddot]
+        path   = self.svg.selected[idpath]
         self.svg.selected.popitem()
         self.svg.selected.popitem()
-  
         bb = dot.bounding_box()
         parent = path.find('..')
         group = inkex.Group()
