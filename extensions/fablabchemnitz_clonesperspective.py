@@ -18,10 +18,9 @@ class clonesPerspectiveEffect(inkex.Effect):
         if 1 != len(self.svg.selected) :
             inkex.errormsg("Select exactly 1 thing. Group if necessary")
             sys.exit(1)
-        id = self.svg.selected[0].get('id')
+        id = list(self.svg.selected.items())[0][0]
         sel = self.svg.selected[id]
         dic = sel.attrib
-	
         try :
             tx = dic[inkex.addNS('transform-center-x','inkscape') ]
         except KeyError :
@@ -35,12 +34,11 @@ class clonesPerspectiveEffect(inkex.Effect):
             inkex.errormsg("Center of rotation at center of object")
             sys.exit(1)
   
-        for node in sel:
-            width =  node.bounding_box().right - node.bounding_box().left
-            height = node.bounding_box().bottom - node.bounding_box().top
-            cx = float(node.bounding_box().left) + 0.5 * width  #Find center of selected object
-            cy = float(node.bounding_box().top) + 0.5 * height #Find center of selected object
-
+        bbox = sel.bounding_box()
+        width =  bbox.height
+        height = bbox.width
+        cx = float(bbox.left) + 0.5 * width  #Find center of selected object
+        cy = float(bbox.top) + 0.5 * height #Find center of selected object
         tx = float(tx)
         ty = float(ty)
         crat = 1.0
@@ -58,16 +56,10 @@ class clonesPerspectiveEffect(inkex.Effect):
                 inkex.addNS('href','xlink') : "#" + id,
                 inkex.addNS('transform-center-x','inkscape') : str(tx),
                 inkex.addNS('transform-center-y','inkscape') : str(ty),
-#            "x" : "0",
-#            "y" : "0",
-                'transform' : ("matrix(%f,0,0,%f,%f,%f)" %
-                               (crat, crat,(1. - crat)*(cx + otx),
-                                (1. - crat)*(cy - oty))),
-#WHY Inkscape and SVG run +y in OPPOSITE directions is BEYOND me.
-                "width" :  "100%",
-                "height" : "100%",
-                }
-            parent.insert(j, etree.Element('use', att) )
+                'transform' : ("matrix(%f,0,0,%f,%f,%f)" % (crat, crat,(1. - crat)*(cx + otx), (1. - crat)*(cy - oty))),
+            "width" :  "100%",
+            "height" : "100%",
+            }
+            parent.insert(j, etree.Element('use', att))
 
-# Create effect instance and apply it.
 clonesPerspectiveEffect().run()
