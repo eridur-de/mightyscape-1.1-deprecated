@@ -6,7 +6,7 @@
         <page name="top" gui-text="Color">
             <param name="h" type="description">Fills a box with a texture
       made of vertical line segments.</param>
-            <param name="strokeColour" type="color" appearance="colorbutton" gui-text="Line colour: ">0</param>
+            <param name="strokeColour" type="color" appearance="colorbutton" gui-text="Line colour: ">255</param>
             <param name="help" type="description" xml:space="preserve">
 	-----------
       </param>
