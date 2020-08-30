@@ -284,11 +284,11 @@ class Twist(inkex.Effect):
                 w = float(node.get('width', '0'))
                 h = float(node.get('height', '0'))
                 a = []
-                a.append(['M ', [x, y]])
-                a.append([' l ', [w, 0]])
-                a.append([' l ', [0, h]])
-                a.append([' l ', [-w, 0]])
-                a.append([' Z', []])
+                a.append(['M', [x, y]])
+                a.append(['l', [w, 0]])
+                a.append(['l', [0, h]])
+                a.append(['l', [-w, 0]])
+                a.append(['Z', []])
                 self.addPathVertices(Path(a), node, mat_new, clone_transform)
 
             elif node.tag in [inkex.addNS('line', 'svg'), 'line']:
@@ -504,7 +504,8 @@ class Twist(inkex.Effect):
         if self.options.ids:
             # Traverse the selected objects
             for id_ in self.options.ids:
-                self.recursivelyTraverseSvg([self.svg.selected[id_]])
+#                self.recursivelyTraverseSvg([self.svg.selected[id_]])
+                self.recursivelyTraverseSvg([self.svg.getElementById(id_)])
         else:
             # Traverse the entire document
             self.recursivelyTraverseSvg(self.document.getroot())
