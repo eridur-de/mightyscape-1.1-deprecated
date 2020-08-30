@@ -116,7 +116,7 @@ class JoinPathsOptimEffect(inkex.Effect):
         pathNodes = self.document.xpath('//svg:path',namespaces=inkex.NSS)
 
         paths = {p.get('id'): getPartsFromCubicSuper(CubicSuperPath(p.get('d'))) for p in  pathNodes }
-            
+   
         #paths.keys() Order disturbed
         pathIds = [p.get('id') for p in pathNodes]
         
