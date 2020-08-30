@@ -72,7 +72,7 @@ def getLine(XYstring):
   line = inkex.PathElement()
   line.style = { 'stroke': '#000000', 'stroke-width'  : str(linethickness), 'fill': 'none' }
   line.path = XYstring
-  #inkex.etree.SubElement(parent, inkex.addNS('path','svg'), drw)
+  #etree.SubElement(parent, inkex.addNS('path','svg'), drw)
   return line
 
 # jslee - shamelessly adapted from sample code on below Inkscape wiki page 2015-07-28
