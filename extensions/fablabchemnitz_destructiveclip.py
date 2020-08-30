@@ -35,8 +35,7 @@ class DestructiveClip(inkex.Effect):
         inkex.Effect.__init__(self)
         self.error_messages = []
 
-        self.curve_error = 'Unable to parse path.\nConsider removing curves '
-        self.curve_error += 'with Extensions > Modify Path > Flatten Beziers...'
+        self.curve_error = 'Unable to parse path.\nConsider removing curves with Extensions > Modify Path > Flatten Beziers...'
 
     def approxEqual(self, a, b):
         # compare with tiny tolerance
@@ -153,6 +152,7 @@ class DestructiveClip(inkex.Effect):
             clippedLines.extend(self.cullSegmentedLine(self.clipLine(lineToClip, clippingLineSegments), clippingLineSegments, self.maxX(clippingLineSegments)))
         return clippedLines
 
+    #you can also run the extension Modify Path > To Absolute Coordinates to convert VH to L
     def fixVHbehaviour(self, elem):
         raw = Path(elem.get("d")).to_arrays()
         subpaths, prev = [], 0
@@ -163,9 +163,8 @@ class DestructiveClip(inkex.Effect):
         subpaths.append(raw[prev:])
         seg = []
         for simpath in subpaths:
-            closed = False
             if simpath[-1][0] == 'Z':
-                closed = True
+                simpath[-1][0] = 'L'
                 if simpath[-2][0] == 'L': simpath[-1][1] = simpath[0][1]
                 else: simpath.pop()
             for i in range(len(simpath)):
@@ -194,10 +193,12 @@ class DestructiveClip(inkex.Effect):
             if node.tag == pathTag:
                 path = self.fixVHbehaviour(node)
                 if clippingLineSegments is None: # first path is the clipper
+                    #(clippingLineSegments, errors) = self.simplepathToLineSegments(node.path.to_arrays())
                     (clippingLineSegments, errors) = self.simplepathToLineSegments(path)
                     self.error_messages.extend(['{}: {}'.format(id, err) for err in errors])
                 else:
                     # do all the work!
+                    #segmentsToClip, errors = self.simplepathToLineSegments(node.path.to_arrays())
                     segmentsToClip, errors = self.simplepathToLineSegments(path)
                     self.error_messages.extend(['{}: {}'.format(id, err) for err in errors])
                     clippedSegments = self.clipLineSegments(segmentsToClip, clippingLineSegments)
