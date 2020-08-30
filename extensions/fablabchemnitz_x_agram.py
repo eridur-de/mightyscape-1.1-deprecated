@@ -74,10 +74,10 @@ class XGramEffect(inkex.Effect):
 
             if useInnerCircle and showInnerCircle:
                 if not isEllipse:
-                    cin = inkex.etree.SubElement(layer, inkex.addNS('circle','svg'))
+                    cin = etree.SubElement(layer, inkex.addNS('circle','svg'))
                     cin.set('r', str(rx * innerRatio))
                 else:
-                    cin = inkex.etree.SubElement(layer, inkex.addNS('ellipse','svg'))
+                    cin = etree.SubElement(layer, inkex.addNS('ellipse','svg'))
                     cin.set('rx', str(rx * innerRatio))
                     cin.set('ry', str(ry * innerRatio))
                 cin.set('cx', str(cx))
