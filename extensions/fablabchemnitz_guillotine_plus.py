@@ -174,10 +174,9 @@ class Guillotine(inkex.EffectExtension):
             output_files.append(fname)
             self.export_slice(slico, fname)
 
-        self.debug("The sliced bitmaps have been saved as:" + "\n\n" + "\n".join(output_files))
+        #self.debug("The sliced bitmaps have been saved as:" + "\n\n" + "\n".join(output_files))
 
     def effect(self):
         self.export_slices(self.get_slices())
 
-if __name__ == "__main__":
-    Guillotine().run()
+Guillotine().run()
