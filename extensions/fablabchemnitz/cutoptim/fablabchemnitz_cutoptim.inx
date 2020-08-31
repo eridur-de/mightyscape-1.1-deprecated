@@ -42,6 +42,6 @@
         </effects-menu>
     </effect>
     <script>
-        <command location="inx">CutOptim</command>
+        <command location="inx" interpreter="python">cutoptim.py</command>
     </script>
 </inkscape-extension>
