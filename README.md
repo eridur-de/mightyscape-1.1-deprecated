@@ -23,19 +23,19 @@ I think this package is ideal for makers who are travelling around and/or using 
 
 # Requirements / Tested environment
 
-   * tested with InkScape portable Version (1.1dev 2020-07-27). Definitely works with too InkScape *.msi / *.exe installation too!
+   * tested with InkScape
+       * Windows portable Version (1.1dev 2020-07-27) @ Windows 10
+       * Linux dev trunk (https://inkscape.org/de/release/inkscape-master/gnulinux/ubuntu/ppa/dl/) @ Ubuntu 20 LTS
    * tested using Python 3.8.5 64 Bit
-   * this package is oriented for Windows 10 64 Bit users (sorry for the Linux users - i will try to focus on that later) but most things should run on Linux too
-   * some extensions require custom Python installation. So i provide a description on how to do this (see documentation).
-   * some extensions require additional packages or other installers (see documentation).
+   * some extensions require custom Python installation/modules. So i provide a description on how to do this (see documentation).
+   * some extensions require additional packages or other installers (see documentation too).
 
 # Remaining ToDos
 
-  * Implement bug fixes like harmonizing the handling of external application calls 
-  * Integrate more extensions
-  * make extension GUIs nicer using recent *.inx feature set
   * clean code
   * make more precise documentation with more examples
+  * remove old deprecations
+  * check out command line handling of extension. This was totally ignored yet
 
 # Documentation and examples
 Please see at https://wiki.fablabchemnitz.de/pages/viewpage.action?pageId=73040380
