@@ -228,4 +228,5 @@ def solve_quadratic(a,b,c):
     x2 = (-b - disc_root) / (2*a)
     return (x1,x2)
 
-EllipseSolveEffect().run()
+if __name__ == '__main__':
+    EllipseSolveEffect().run()

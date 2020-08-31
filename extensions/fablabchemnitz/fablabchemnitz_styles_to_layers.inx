@@ -17,6 +17,7 @@
     </param>
     <param name="subdividethreshold" gui-text="Number of sub layers" gui-description="A min/max range of the selected style type value will be calculated and you retrieve a set of layer (coarse grouping) with sub-layers (fine grouping). If you have less calculated sub layers than this threshold it will be limited automatically." type="int" min="1" max="9999">1</param>
     <param name="decimals" gui-text="Decimal tolerance" gui-description="The more decimals the more distinct layers you will get. This only applies for the sub layers (threshold > 1)" type="int" min="0" max="10">1</param>
+    <param name="cleanup" gui-text="Cleanup all unused groups (requires separate extension)" type="boolean" gui-description="This will call the extension 'Remove Empty Groups' if available">true</param>
 
     <label>This extension will re-layer your selected items or the whole document according to their style (stroke or fill)</label>
     <label>Tinkered by Mario Voigt / Stadtfabrikanten e.V. (2020)</label>

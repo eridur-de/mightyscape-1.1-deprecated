@@ -416,4 +416,5 @@ class HexmapEffect(inkex.Effect):
                             for c in svg.iterchildren()]:
                 svg.append(layer)
 
-HexmapEffect().run()
+if __name__ == '__main__':
+    HexmapEffect().run()

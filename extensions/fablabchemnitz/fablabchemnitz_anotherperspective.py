@@ -309,4 +309,5 @@ class AnotherPerspective(inkex.Effect):
             inkex.errormsg("The first selected object is not a path.\nTry using the procedure Path->Object to Path.")
             exit()
 
-AnotherPerspective().run()
+if __name__ == '__main__':
+   AnotherPerspective().run()

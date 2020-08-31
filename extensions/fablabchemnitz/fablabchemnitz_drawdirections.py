@@ -18,7 +18,8 @@ class StartEndPoints(inkex.Effect):
     def effect(self):
         dot_group = self.svg.add(inkex.Group())
     
-        for node in self.svg.selection.filter(inkex.PathElement):
+        for node in self.svg.get_selected(inkex.PathElement): #works for InkScape (1:1.0+devel+202008292235+eff2292935) @ Linux and for Windows (but with deprecation)
+        #for node in self.svg.selection.filter(inkex.PathElement).values(): #works for InkScape 1.1dev (9b1fc87, 2020-08-27)) @ Windows
             points = list(node.path.end_points)
             start = points[0]
             end = points[len(points) - 1]
@@ -30,4 +31,5 @@ class StartEndPoints(inkex.Effect):
                 self.drawCircle(dot_group, '#FF0000', start)
                 self.drawCircle(dot_group, '#0000FF', end)
                   
-StartEndPoints().run()
+if __name__ == '__main__':
+    StartEndPoints().run()

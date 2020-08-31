@@ -699,5 +699,5 @@ class EllConicalBox(inkex.Effect):
         if self.fDebug:
             self.fDebug.close()
 
-# Create effect instance and apply it.
-EllConicalBox().run()
+if __name__ == '__main__':
+    EllConicalBox().run()

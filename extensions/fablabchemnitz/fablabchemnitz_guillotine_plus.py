@@ -179,4 +179,5 @@ class Guillotine(inkex.EffectExtension):
     def effect(self):
         self.export_slices(self.get_slices())
 
-Guillotine().run()
+if __name__ == '__main__':
+    Guillotine().run()

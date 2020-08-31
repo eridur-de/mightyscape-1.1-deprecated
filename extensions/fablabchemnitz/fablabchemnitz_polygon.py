@@ -177,4 +177,5 @@ class Polygon(inkex.Effect):
                 text.text+="  "+tag_2
             layer.append(text) 
 
-Polygon().run()
+if __name__ == '__main__':
+    Polygon().run()

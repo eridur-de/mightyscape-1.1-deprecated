@@ -45,6 +45,7 @@ class LayerGroup(inkex.Effect):
         self.arg_parser.add_argument("--parsecolors",default = "hexval", help = "Sort colors by")
         self.arg_parser.add_argument("--subdividethreshold", type=int, default = 1, help = "Threshold for splitting into sub layers")
         self.arg_parser.add_argument("--decimals", type=int, default = 1, help = "Decimal tolerance")
+        self.arg_parser.add_argument("--cleanup", type=inkex.Boolean, default = True, help = "Decimal tolerance")
 
     def effect(self):
     
@@ -225,5 +226,13 @@ class LayerGroup(inkex.Effect):
                     #inkex.utils.debug(layer[1])
                 for newLayerNode in topLevelLayerNodeList:            
                     newLayerNode[0].append(newLayerNode[1]) #append newlayer to layer     
+        
+        if self.options.cleanup == True:
+            try:
+                import fablabchemnitz_cleangroups
+                fablabchemnitz_cleangroups.CleanGroups.effect(self)
+            except:
+                inkex.utils.debug("Calling 'Remove Empty Groups' extension failed. Maybe the extension is not installed. You can download it from official InkScape Gallery.")
             
-LayerGroup().run()
+if __name__ == '__main__':
+    LayerGroup().run()

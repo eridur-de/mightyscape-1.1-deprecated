@@ -509,5 +509,5 @@ class LivingHinge(inkex.Effect):
                     self.livingHinge4(x+(Z/2), y, x+(Z/2)+EllipseCircumference(X/2, Z/2)/4, y + (dy/2) + thickness, True, 0, hingeThick) #Add thickness as a cheat so design 4 doesn't have to know if it's a short or long variant
                     self.livingHinge4(x+(Z/2), y + (dy/2) - thickness, (x+(Z/2)+(EllipseCircumference(X/2, Z/2)/4)), y + dy, True, 1, hingeThick) 
            
-# Create effect instance and apply it.
-LivingHinge().run()
+if __name__ == '__main__':
+    LivingHinge().run()

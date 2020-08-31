@@ -81,4 +81,5 @@ class ofsplot(inkex.Effect):
 
                 path.set('d',CubicSuperPath(new))
 
-ofsplot().run()
+if __name__ == '__main__':
+    ofsplot().run()

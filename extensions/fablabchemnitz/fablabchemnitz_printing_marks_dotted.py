@@ -473,5 +473,4 @@ class Printing_Marks (inkex.Effect):
 
 
 if __name__ == '__main__':
-    e = Printing_Marks()
-    e.run()
+    Printing_Marks().run()

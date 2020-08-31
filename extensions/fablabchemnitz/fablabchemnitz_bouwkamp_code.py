@@ -160,4 +160,5 @@ class BouwkampCodeExtension(inkex.Effect):
 
         etree.SubElement(parent, inkex.addNS('rect', 'svg'), rectangle_attributes)
 
-BouwkampCodeExtension().run()
+if __name__ == '__main__':
+    BouwkampCodeExtension().run()

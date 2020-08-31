@@ -23,7 +23,7 @@ class ScaleToSize(inkex.Effect):
 
     def effect(self):
         unit_factor = 1.0 / self.svg.uutounit(1.0,self.options.unit)
-        for node in self.svg.selected:
+        for id, node in self.svg.selected.items():
 		
             #get recent XY coordinates (top left corner of the bounding box)
             bbox = node.bounding_box()

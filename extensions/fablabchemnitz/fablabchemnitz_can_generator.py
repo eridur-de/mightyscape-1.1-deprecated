@@ -367,4 +367,5 @@ class Dose(inkex.Effect):
         branding_line = etree.SubElement(textgroup, inkex.addNS('text','svg'), einschnitt_line_attribs)
         branding_line.text = 'Die Einschnitte nur zu 70 Prozent in das Material lasern'
         
-Dose().run()
+if __name__ == '__main__':
+    Dose().run()

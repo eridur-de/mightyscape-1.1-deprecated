@@ -62,4 +62,5 @@ class clonesPerspectiveEffect(inkex.Effect):
             }
             parent.insert(j, etree.Element('use', att))
 
-clonesPerspectiveEffect().run()
+if __name__ == '__main__':
+    clonesPerspectiveEffect().run()

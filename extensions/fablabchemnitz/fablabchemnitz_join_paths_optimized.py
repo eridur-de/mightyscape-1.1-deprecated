@@ -160,4 +160,5 @@ class JoinPathsOptimEffect(inkex.Effect):
             newElem.set('id', oldId + '_joined')
             parent.insert(idx, newElem)
 
-JoinPathsOptimEffect().run()
+if __name__ == '__main__':
+    JoinPathsOptimEffect().run()

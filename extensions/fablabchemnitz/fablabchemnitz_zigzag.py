@@ -80,4 +80,5 @@ class RadiusRandomize(inkex.Effect):
 
                 node.set('d',CubicSuperPath(p))
 
-RadiusRandomize().run()
+if __name__ == '__main__':       
+    RadiusRandomize().run()

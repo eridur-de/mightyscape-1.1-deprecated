@@ -26,5 +26,6 @@ class AttribImport(inkex.Effect):
                                 inkex.utils.debug("Unknown Attribute")
                     except AttributeError:
                         inkex.utils.debug("element with id '" + id + "' not found in current selection.")
+                        
 if __name__ == '__main__':
     AttribImport().run()

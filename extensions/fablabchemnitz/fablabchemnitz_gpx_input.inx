@@ -23,6 +23,6 @@
 		<filetypetooltip>Import GPX Format</filetypetooltip>
 	</input>
 	<script>
-		<command location="inx" interpreter="python">fablabchemnitz_gpx2svg.py</command>
+		<command location="inx" interpreter="python">fablabchemnitz_gpx_input.py</command>
 	</script>
 </inkscape-extension>

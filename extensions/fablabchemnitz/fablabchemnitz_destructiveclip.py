@@ -216,4 +216,5 @@ class DestructiveClip(inkex.Effect):
         for error in self.error_messages:
             inkex.errormsg(error)
 
-DestructiveClip().run()
+if __name__ == '__main__':
+    DestructiveClip().run()

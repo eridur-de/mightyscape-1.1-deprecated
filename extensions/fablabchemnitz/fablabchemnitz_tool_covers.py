@@ -483,4 +483,5 @@ class PliersCover(inkex.Effect):
         part2 = Part2(self.g, part1, opt.dia2)
         part2.draw(origin_vpoint)
 
-PliersCover().run()
+if __name__ == '__main__':
+    PliersCover().run()

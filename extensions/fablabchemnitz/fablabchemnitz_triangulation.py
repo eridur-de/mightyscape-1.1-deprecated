@@ -244,4 +244,5 @@ class Triangulation(inkex.Effect):
             
             self.draw_SVG_path([v0, v1, v2], 1, tri_style, grp)
 
-Triangulation().run()
+if __name__ == '__main__':
+    Triangulation().run()

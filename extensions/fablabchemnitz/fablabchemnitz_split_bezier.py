@@ -163,5 +163,7 @@ class SubdividePathEffect(inkex.Effect):
                             cspath = getCubicSuperFromParts(parts)
                             elem.set('d', CubicSuperPath(cspath))
                 except:
-                    pass                
-SubdividePathEffect().run()
+                    pass
+                           
+if __name__ == '__main__':
+    SubdividePathEffect().run()

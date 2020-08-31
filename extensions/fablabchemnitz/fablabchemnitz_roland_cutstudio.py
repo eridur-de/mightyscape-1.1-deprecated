@@ -41,6 +41,7 @@ import subprocess
 import shutil
 import numpy
 from functools import reduce
+from pathlib import Path
 import inkex
 
 try:
@@ -69,6 +70,7 @@ def which(program, raiseError, extraPaths=[], subdir=None):
         pathlist.append(os.environ.get("ProgramFiles(x86)","C:\Program Files (x86)\\"))
         pathlist.append("C:\Program Files\\") # needed for 64bit inkscape on 64bit Win7 machines
         pathlist.append(os.path.dirname(os.path.dirname(os.getcwd()))) # portable application in the current directory
+    pathlist += extraPaths
     if subdir:
         pathlist = [os.path.join(p, subdir) for p in pathlist] + pathlist
     def is_exe(fpath):
@@ -404,14 +406,16 @@ if os.name=="nt":
     Popen([which("CutStudio\CutStudio.exe", True), "/import", filename+".cutstudio.eps"], creationflags=DETACHED_PROCESS, close_fds=True)
 else: #check if we have access to "wine"
     if which("wine", False) is not None:
-        if which("/opst/CutStudio/CutStudio.exe", False) is not None:
-            with os.popen("wine /opt/CutStudio/CutStudio.exe /import T:\\\\" + filename.split('/tmp/')[1] + ".cutstudio.eps", "r") as cutstudio:
+        if which("CutStudio.exe", False, [str(Path.home()) + "/.wine/drive_c/Program Files (x86)/CutStudio"]) is not None:
+            shutil.copyfile(filename + ".cutstudio.eps", str(Path.home()) + "/.wine/drive_c/cutstudio.eps")
+            inkex.utils.debug(str(Path.home()) + "/.wine/drive_c/'Program Files (x86)'/CutStudio/CutStudio.exe /import C:\\cutstudio.eps")
+            with os.popen("wine " + str(Path.home()) + "/.wine/drive_c/'Program Files (x86)'/CutStudio/CutStudio.exe /import C:\\cutstudio.eps", "r") as cutstudio:
                 result = cutstudio.read()
         else:
-            inkex.utils.debug("Found a wine installation on your system but no CutStudio.exe. You can easily emulate this Windows application on Linux using wine. To do this provide a valid CutStudio installation in directory \"/opt/CutStudio/\". You may create a symlink with the shell command \"ln -sf /your/path/to/cutstudio /opt/CutStudio\" to point to this dir, or just edit the InkScape extension source code. As second step you need to configure the drive letter T: to point to the directory \"/tmp/\". This is done with a few mouse clicks within the \"winecfg\" utility. The wine emulation was tested to work properly with Roland CutStudio version 3.10. For now your file was saved to:\n" + filename + ".cutstudio.eps")
+            inkex.utils.debug("Found a wine installation on your system but no CutStudio.exe. You can easily emulate this Windows application on Linux using wine. To do this provide a valid CutStudio installation in directory \"$HOME/.wine/drive_c/'Program Files (x86)'/CutStudio/CutStudio.exe\". The wine emulation was tested to work properly with Roland CutStudio version 3.10. For now your file was saved to:\n" + filename + ".cutstudio.eps")
             #os.popen("/usr/bin/xdg-open " + filename)
     else:
-        inkex.utils.debug("Your file was saved to:\n" + filename + ".cutstudio.eps" + "\n Please open that with CutStudio.")
+        inkex.utils.debug("Your file was saved to:\n" + filename + ".cutstudio.eps" + "\n Please open that with CutStudio manually. Tip: install wine on your system and use it to install CutStudio on Linux. This InkScape extension will automatically detect it. It allows you to directly import the exported InkScape file into CutStudio.")
         #os.popen("/usr/bin/xdg-open " + filename)
         #Popen(["inkscape", filename+".filtered.svg"], stderr=DEVNULL)
         #Popen(["inkscape", filename+".cutstudio.eps"])

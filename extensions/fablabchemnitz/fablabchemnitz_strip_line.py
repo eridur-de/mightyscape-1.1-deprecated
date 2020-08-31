@@ -228,4 +228,5 @@ class StripLineEffect(inkex.Effect):
             att3={"d":pathstr,"r":"1","fill":"none","stroke-width":"1","stroke":"white"}
             pt=etree.Element("path",att3)
 
-StripLineEffect().run()
+if __name__ == '__main__':
+    StripLineEffect().run()

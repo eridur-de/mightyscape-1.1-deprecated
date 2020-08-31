@@ -84,4 +84,5 @@ class Archimedes(inkex.Effect):
             else: break
         return i
 
-Archimedes().run()
+if __name__ == '__main__':
+    Archimedes().run()

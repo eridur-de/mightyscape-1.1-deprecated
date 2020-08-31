@@ -391,5 +391,5 @@ def rotateTransform( a ):
 def scale_transform( sx, sy ):
     return [[sx,0,0],[0,sy,0]]
 
-
-BezierEnvelope().run()
+if __name__ == '__main__':
+    BezierEnvelope().run()

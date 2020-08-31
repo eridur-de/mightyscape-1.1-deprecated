@@ -279,4 +279,5 @@ class ChainPaths(inkex.Effect):
       if debug: inkex.utils.debug("min_missed_distance: "+str(math.sqrt(float(self.min_missed_distance_sq))/self.unit_factor)+'>'+str(self.chain_epsilon)+str(self.options.units))
     if debug: inkex.utils.debug("Successful link operations: "+str(self.chained_count))
 
-ChainPaths().run()
+if __name__ == '__main__':
+    ChainPaths().run()

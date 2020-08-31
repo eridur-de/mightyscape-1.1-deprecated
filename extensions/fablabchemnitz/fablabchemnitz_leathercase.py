@@ -156,4 +156,5 @@ class LeatherCase1(inkex.Effect):
         
         fourthPiece = etree.SubElement(parent, inkex.addNS('path','svg'), fourthPiece_attribs )
               
-LeatherCase1().run()
+if __name__ == '__main__':
+    LeatherCase1().run()

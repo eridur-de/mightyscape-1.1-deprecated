@@ -33,5 +33,7 @@ class CleanGroups(inkex.Effect):
                     continue #we found minimum of one element to delete. so we should run another cycle to check if the parent of this group is empty after deletion
             newLen = len(self.document.xpath('//svg:g',namespaces=inkex.NSS))
             if newLen == oldLen: #found no more empty groups. Leaving the loop
-                break            
-CleanGroups().run()
+                break
+            
+if __name__ == '__main__':            
+    CleanGroups().run()

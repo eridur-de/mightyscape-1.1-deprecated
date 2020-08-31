@@ -146,5 +146,4 @@ class SheriffStarEffect(inkex.Effect):
             inkex.errormsg('Selection must contain a circle or ellipse.')
 
 if __name__ == '__main__':
-    effect = SheriffStarEffect()
-    effect.run()
+    effect = SheriffStarEffect().run()

@@ -427,4 +427,5 @@ class SheetMetalConus(inkex.Effect):
         text.text = "%4.3f" %(base_dia)
         text.transform = Transform(frustrum_repos) * text.transform
         
-SheetMetalConus().run()
+if __name__ == '__main__':
+    SheetMetalConus().run()

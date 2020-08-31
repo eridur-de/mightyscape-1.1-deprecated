@@ -53,5 +53,4 @@ class SliderElectrodes(inkex.Effect):
 			e = etree.SubElement(group, inkex.addNS('path', 'svg'), {'style':str(inkex.Style({'stroke':'none','fill'	:'#000000'})),'d' : path})
 			
 if __name__ == '__main__':
-	effect = SliderElectrodes()
-	effect.run()
+	effect = SliderElectrodes().run()

@@ -780,5 +780,5 @@ def addparms( p ) :
         s += parm + ' '
     return s
 
-# Create effect instance and apply it.
-noiseEffect().run()
+if __name__ == '__main__':
+    noiseEffect().run()

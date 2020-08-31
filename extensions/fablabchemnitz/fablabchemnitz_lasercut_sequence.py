@@ -38,4 +38,5 @@ class LaserSort(inkex.Effect):
             newpathstring = "z ".join(sections) + nonClosedSection
             el.set('d', newpathstring)
         
-LaserSort().run()
+if __name__ == '__main__':
+    LaserSort().run()

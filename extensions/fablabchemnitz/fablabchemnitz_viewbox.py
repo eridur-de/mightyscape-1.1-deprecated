@@ -67,4 +67,5 @@ def transformPoint(mat, pt):
     Transform(mat).apply_to_point(pt2)
     return (pt2[0], pt2[1])
 
-SetViewBoxEffect().run()
+if __name__ == '__main__':
+    SetViewBoxEffect().run()

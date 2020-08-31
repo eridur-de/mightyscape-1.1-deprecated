@@ -107,4 +107,5 @@ class StrokeColorAsFill(inkex.Effect):
             self.color_swaper(element)
         sys.stdout = saveout
 
-StrokeColorAsFill().run()
+if __name__ == '__main__':
+    StrokeColorAsFill().run()

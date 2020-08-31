@@ -228,5 +228,6 @@ class Zoetrope(inkex.Effect):
                      'x': '0', 'y': str(ystart + font_height*3.2) }
             text = etree.SubElement(templategroup, 'text', text_atts)
             text.text = "At %d dpi. Image = %d x %d pixels" % (self.options.dpi, w, h)
-
-Zoetrope().run()
+            
+if __name__ == '__main__':       
+    Zoetrope().run()

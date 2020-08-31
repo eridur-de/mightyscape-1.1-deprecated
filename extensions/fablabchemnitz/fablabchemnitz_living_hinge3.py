@@ -78,4 +78,5 @@ class BendWoodCutsPattern(inkex.Effect):
                     
                     self.draw_SVG_line(x * horizontalLineSeparation, y0, x * horizontalLineSeparation, y1, parent)
                 
-BendWoodCutsPattern().run()
+if __name__ == '__main__':
+    BendWoodCutsPattern().run()

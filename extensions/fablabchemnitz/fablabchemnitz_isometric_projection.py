@@ -158,5 +158,5 @@ class IsometricProjectionTools(inkex.Effect):
             # Adjust the transformation center.
             self.moveTransformationCenter(node, midpoint, center_new)
 
-# Create effect instance and apply it.
-IsometricProjectionTools().run()
+if __name__ == '__main__':
+    IsometricProjectionTools().run()

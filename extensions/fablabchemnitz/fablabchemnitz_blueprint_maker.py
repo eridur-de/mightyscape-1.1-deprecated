@@ -114,5 +114,4 @@ class bluePrintMaker(inkex.Effect):
 		return None
 
 if __name__ == '__main__':
-	program=bluePrintMaker()
-program.run()
+	program=bluePrintMaker().run()

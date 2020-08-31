@@ -89,4 +89,5 @@ class Checkerboard(inkex.Effect):
         x, y = self.svg.namedview.center[0] - cols * size / 2, self.svg.namedview.center[1] - rows * size / 2
         draw_grid(x, y, rows, cols, size, color1, color2, group)
 
-Checkerboard().run()
+if __name__ == '__main__':
+    Checkerboard().run()

@@ -41,7 +41,16 @@ def linesNumber(path):
     return retval
 
 def to_complex(point):
-    return complex(point.x, point.y)
+        c = None
+        try:
+            c = complex(point.x, point.y)
+        except Exception as e:
+            pass
+        if c is not None:
+            return c
+        else:
+            inkex.utils.debug("The selection seems not be be a usable polypath. QuickJoint does not operate on curves. Try to flatten bezier curves or splitting up the path.")
+            exit(1)
     
 
 class QuickJoint(inkex.Effect):

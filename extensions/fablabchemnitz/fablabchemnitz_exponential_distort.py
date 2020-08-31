@@ -104,4 +104,5 @@ class TransformExponential(inkex.Effect):
 
                 node.set('d', str(pts))
 
-TransformExponential().run()
+if __name__ == '__main__':
+    TransformExponential().run()

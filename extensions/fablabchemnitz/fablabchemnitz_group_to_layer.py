@@ -44,4 +44,5 @@ class GroupToLayerEffect(inkex.Effect):
         for child in node:
             self.convert_group(child, depth - 1)
 
-GroupToLayerEffect().run()
+if __name__ == '__main__':
+    GroupToLayerEffect().run()

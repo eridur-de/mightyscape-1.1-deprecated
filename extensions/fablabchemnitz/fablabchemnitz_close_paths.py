@@ -39,4 +39,6 @@ class CloseCurves(inkex.Effect):
 				d = re.sub(r'(?i)(m[^mz]+)',r'\1 Z ',d)
 				d = re.sub(r'(?i)\s*z\s*z\s*',r' Z ',d)
 				node.set('d', d)	
-CloseCurves().run()
+
+if __name__ == '__main__':
+    CloseCurves().run()

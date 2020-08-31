@@ -218,5 +218,4 @@ class Knob_Scale(inkex.Effect):
                                     subtick_length, parent)
 
 if __name__ == '__main__':
-    e = Knob_Scale()
-    e.run()
+    e = Knob_Scale().run()

@@ -216,4 +216,5 @@ class Tangent(inkex.Effect):
                             'd':'m '+str(llx1+conversionBottom[0])+','+str(lly1+conversionBottom[1])+' l '+str(ll2x2)+','+str(ll2y2)}
             etree.SubElement(parent, inkex.addNS('path','svg'), attribsLine1 )
 
-Tangent().run()
+if __name__ == '__main__':
+    Tangent().run()

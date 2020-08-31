@@ -113,4 +113,5 @@ class RemoveRedundant(inkex.Effect):
                     newPath = newPath[:-1]
                 node.set('d',str(paths.Path(newPath)))
 
-RemoveRedundant().run()
+if __name__ == '__main__':
+    RemoveRedundant().run()

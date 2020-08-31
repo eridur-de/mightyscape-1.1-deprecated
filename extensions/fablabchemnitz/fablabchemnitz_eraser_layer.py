@@ -143,4 +143,5 @@ class EraserLayer(inkex.Effect):
                     filterElement[0].insert(1,node)
         sys.stdout = saveout
         
-EraserLayer().run()
+if __name__ == '__main__':
+    EraserLayer().run()

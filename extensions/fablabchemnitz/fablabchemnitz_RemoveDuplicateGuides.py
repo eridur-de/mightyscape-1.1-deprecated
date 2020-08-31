@@ -129,5 +129,4 @@ class RemoveDuplicateGuidesEffect(inkex.Effect):
 				guide.node.getparent().remove(guide.node)
 
 if __name__ == '__main__':
-	effect = RemoveDuplicateGuidesEffect()
-	effect.run()
+	effect = RemoveDuplicateGuidesEffect().run()

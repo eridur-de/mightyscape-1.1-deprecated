@@ -342,4 +342,5 @@ class GridStrip_Creator(inkex.Effect):
 								'd':pathstring}
 			etree.SubElement(grp, inkex.addNS('path','svg'), strip_attribs )
 				
-GridStrip_Creator().run()
+if __name__ == '__main__':
+    GridStrip_Creator().run()

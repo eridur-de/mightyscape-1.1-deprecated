@@ -280,4 +280,5 @@ class Pixel2SVG(inkex.Effect):
             inkex.errormsg("Please select one or more bitmap image(s) for Pixel2SVG")
             sys.exit(0)
 
-Pixel2SVG().run()
+if __name__ == '__main__':
+    Pixel2SVG().run()

@@ -115,4 +115,5 @@ class ConvexHull(inkex.Effect):
         paths_clone_transform = None
         self.joinWithNode(path, pdata, makeGroup, paths_clone_transform )
     
-ConvexHull().run()
+if __name__ == '__main__':
+    ConvexHull().run()

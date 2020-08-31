@@ -154,4 +154,5 @@ class StreaksEffect(inkex.Effect):
         # Connect elements together.
         layer.append(path)
 
-StreaksEffect().run()
+if __name__ == '__main__':
+    StreaksEffect().run()

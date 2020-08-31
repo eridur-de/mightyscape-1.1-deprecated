@@ -235,4 +235,5 @@ def project(curve, node):
     projection = curveat(curve, t)
     return node - projection
     
-root().run()
+if __name__ == '__main__':
+    root().run()

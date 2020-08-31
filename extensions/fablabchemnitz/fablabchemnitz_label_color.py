@@ -141,4 +141,5 @@ class LabelColour(inkex.Effect):
             
         return nodeX, nodeY, nodeWidth, nodeHeight
 
-LabelColour().run()
+if __name__ == '__main__':
+    LabelColour().run()

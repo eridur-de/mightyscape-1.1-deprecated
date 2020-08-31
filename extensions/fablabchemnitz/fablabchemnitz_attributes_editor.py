@@ -34,4 +34,5 @@ class AttribEditor(inkex.Effect):
 			else:
 				inkex.errormsg("Invalid mode: " + self.options.mode)
 
-AttribEditor().run()
+if __name__ == '__main__':
+    AttribEditor().run()

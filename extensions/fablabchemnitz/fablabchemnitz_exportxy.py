@@ -41,4 +41,6 @@ class ExportXY(inkex.Effect):
                         for csp in subpath:
                             output_nodes += str(csp[1][0]) + "\t" + str(csp[1][1]) + "\n"
             sys.stderr.write(output_nodes)
-ExportXY().run()
+
+if __name__ == '__main__':
+    ExportXY().run()

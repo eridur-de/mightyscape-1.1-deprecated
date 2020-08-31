@@ -328,4 +328,5 @@ class SVGPianoScale (inkex.Effect):
             self.createPiano(group)
             self.createMarkersFromIntervals(group, self.options.intervals)
 
-SVGPianoScale().run()
+if __name__ == '__main__':
+    SVGPianoScale().run()

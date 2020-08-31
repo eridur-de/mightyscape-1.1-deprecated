@@ -290,11 +290,12 @@ class Voronoi2svg(inkex.Effect):
             middleX=(p1.x+p2.x+p3.x)/3.0
             middleY=(p1.y+p2.y+p3.y)/3.0
             if width>middleX and height>middleY and middleX>=0 and middleY>=0:
-                r,g,b = img.getpixel((middleX,middleY))
-                facestyle["fill"]=str(inkex.Color((r, g, b)))
+                pixelColor = img.getpixel((middleX,middleY))
+                facestyle["fill"]=str(inkex.Color((pixelColor[0], pixelColor[1], pixelColor[2])))
             else:
                 facestyle["fill"]="black"
             path.set('style', str(inkex.Style(facestyle)))
             groupDelaunay.append(path)
 
-Voronoi2svg().run()
+if __name__ == '__main__':
+    Voronoi2svg().run()

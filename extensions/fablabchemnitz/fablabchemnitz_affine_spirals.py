@@ -95,4 +95,5 @@ class AffineTorus(inkex.Effect): # choose a better name
         curve_attribs = { 'style': styles[0], 'd': payload}
         etree.SubElement(topgroup, inkex.addNS('path','svg'), curve_attribs)
 
-AffineTorus().run()
+if __name__ == '__main__':
+    AffineTorus().run()

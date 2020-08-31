@@ -260,5 +260,5 @@ class HingeCuts(inkex.Effect):
 
     return (ret, l, d, dd)
 
-# Create effect instance and apply it.
-HingeCuts().run()
+if __name__ == '__main__':
+    HingeCuts().run()

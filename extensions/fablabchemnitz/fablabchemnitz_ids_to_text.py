@@ -47,4 +47,5 @@ class IdsToText(inkex.Effect):
             node.set('y', str(ty))
             node.set('transform', 'rotate(%s, %s, %s)' % (-int(self.options.angle), tx, ty))            
 
-IdsToText().run()
+if __name__ == '__main__':
+    IdsToText().run()

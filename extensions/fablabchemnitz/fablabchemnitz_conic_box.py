@@ -349,5 +349,5 @@ class ConicalBox(inkex.Effect):
         #puis pour le petit cercle
         gen_cercle(d1, nombre_pas, thickness, -xmax - d1/2 + xOffset + 10,  d1/2 + yOffset - ymin + 10, layer)                                  
 
-# Create effect instance and apply it.
-ConicalBox().run()
+if __name__ == '__main__':
+    ConicalBox().run()

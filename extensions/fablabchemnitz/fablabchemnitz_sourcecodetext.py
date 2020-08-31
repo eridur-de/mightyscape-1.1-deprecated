@@ -6,7 +6,7 @@ import random
 import inkex
 from lxml import etree
 
-class MyEffect(inkex.Effect):
+class SourceCodeText(inkex.Effect):
     def __init__(self):
         inkex.Effect.__init__(self)
         self.arg_parser.add_argument("--directory", default='~/', help="Default directory")
@@ -68,4 +68,5 @@ class MyEffect(inkex.Effect):
             rect=etree.SubElement(flowRegion,inkex.addNS('rect','svg'),rattribs)
             self.add_text(flowRoot)
 
-MyEffect().run()
+if __name__ == '__main__':
+    SourceCodeText().run()

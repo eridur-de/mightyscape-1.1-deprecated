@@ -82,4 +82,5 @@ class FibonacciSpiral(inkex.Effect):
 				self.options.SpreadFactor,
 				self.svg.get_current_layer())
 			
-FibonacciSpiral().run()
+if __name__ == '__main__':
+    FibonacciSpiral().run()

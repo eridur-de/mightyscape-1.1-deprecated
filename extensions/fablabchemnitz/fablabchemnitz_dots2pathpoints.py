@@ -71,4 +71,5 @@ class Pathpoints2Dots(inkex.Effect):
             clone.set('y',point.y-bb.center.y)
             group.add(clone)
         
-Pathpoints2Dots().run()
+if __name__ == '__main__':
+    Pathpoints2Dots().run()

@@ -22,13 +22,13 @@ from distutils.spawn import find_executable
 import subprocess
 import math
 import inkex
+import shutil
 
 inkex.localization.localize
 
 class JPEGExport(inkex.Effect):
 
     def __init__(self):
-        """Init the effect library and get options from gui."""
         inkex.Effect.__init__(self)
 
         self.arg_parser.add_argument("--path", default="")
@@ -57,7 +57,9 @@ class JPEGExport(inkex.Effect):
             exit()
 
         outfile=self.options.path
-        curfile = self.options.input_file
+        
+        shutil.copy(self.options.input_file, self.options.input_file + ".svg") #make a file copy with file ending to suppress import warnings
+        curfile = self.options.input_file + ".svg"
         #inkex.utils.debug("curfile:" + curfile)
         
         # Test if color is valid
@@ -186,4 +188,5 @@ class JPEGExport(inkex.Effect):
         else:
             return '/tmp/'
 
-JPEGExport().run()
+if __name__ == '__main__':
+    JPEGExport().run()

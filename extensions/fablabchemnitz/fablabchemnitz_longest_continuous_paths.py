@@ -613,4 +613,5 @@ class OptimizePaths(inkex.GenerateExtension):
         self.log("Total duration: {:.0f} sec ({:.1f} min)".format(totalDuration, totalDuration / 60))
         return group
 
-OptimizePaths().run()
+if __name__ == '__main__':
+    OptimizePaths().run()

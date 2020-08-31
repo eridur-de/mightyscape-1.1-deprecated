@@ -79,4 +79,5 @@ class Circle(inkex.Effect):
         else:
             inkex.utils.debug("No rectangle(s) have been selected.")
 
-Circle().run()
+if __name__ == '__main__':
+    Circle().run()

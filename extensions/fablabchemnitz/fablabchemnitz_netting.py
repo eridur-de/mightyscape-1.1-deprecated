@@ -56,4 +56,5 @@ class RadiusRandomize(inkex.Effect):
                 my_path.set('d', " ".join(net_strings))
                 self.svg.get_current_layer().append( my_path )
                     
-RadiusRandomize().run()
+if __name__ == '__main__':
+    RadiusRandomize().run()

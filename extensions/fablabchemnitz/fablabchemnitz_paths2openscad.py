@@ -1490,4 +1490,5 @@ module chamfer_sphere(rad=chamfer, res=chamfer_fn)
                     stdout.close()
                     stderr.close()
 
-OpenSCAD().run()
+if __name__ == '__main__':
+    OpenSCAD().run()

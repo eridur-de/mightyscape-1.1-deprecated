@@ -60,4 +60,5 @@ class VHToLine(inkex.Effect):
                     seg.append(simpath[i])
             curr.set("d", Path(seg))
 			
-VHToLine().run()
+if __name__ == '__main__':
+    VHToLine().run()

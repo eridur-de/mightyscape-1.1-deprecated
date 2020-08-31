@@ -76,4 +76,6 @@ class ReplaceColorAlpha(inkex.Effect):
                 style = style + ";stroke-opacity:" + alphaTo
                 element.set('style',style)
     sys.stdout = saveout
-ReplaceColorAlpha().run()
+    
+if __name__ == '__main__':
+    ReplaceColorAlpha().run()

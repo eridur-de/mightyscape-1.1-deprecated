@@ -99,7 +99,8 @@ class Travel(inkex.Effect):
         doc_h = self.svg.unittouu(svg.get('height'))
 
         # get selected items and validate
-        selected = self.svg.selection.paint_order()
+        selected = svg.get_z_selected() #works for InkScape (1:1.0+devel+202008292235+eff2292935) @ Linux and for Windows (but with deprecation)
+        #selected = svg.selection.paint_order() #works for InkScape 1.1dev (9b1fc87, 2020-08-27)) @ Windows
 		
         if not selected:
             inkex.errormsg('Exactly two objects must be selected: a rect and a template. See "help" for details.')
@@ -265,4 +266,5 @@ class Travel(inkex.Effect):
                 attribs['d'] = str(Path(path))
                 obj_copy = etree.SubElement(group, obj.tag, attribs)
 
-Travel().run()
+if __name__ == '__main__':
+    Travel().run()

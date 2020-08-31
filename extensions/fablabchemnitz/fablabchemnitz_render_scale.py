@@ -544,6 +544,5 @@ class ScaleGen(inkex.Effect):
                 line_attribs = {'style' : str(inkex.Style(line_style)), inkex.addNS('label','inkscape') : 'name', 'd' : 'M '+str(-10)+','+str(10)+' L '+str(10)+','+str(-10)}
                 line = etree.SubElement(grpRadMark, inkex.addNS('path','svg'), line_attribs )
 
-# Create effect instance and apply it.
-effect = ScaleGen()
-effect.run()
+if __name__ == '__main__':
+    ScaleGen().run()

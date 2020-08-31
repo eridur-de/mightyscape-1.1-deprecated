@@ -657,4 +657,5 @@ class Gears(inkex.Effect):
                 self.add_text(g, note, [0,y], text_height)
                 y += text_height * 1.2
 
-Gears().run()
+if __name__ == '__main__':
+    Gears().run()

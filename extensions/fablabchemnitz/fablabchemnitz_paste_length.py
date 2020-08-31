@@ -108,4 +108,5 @@ class PasteLengthEffect(inkex.Effect):
             length is to be copied at the top. You may have to convert the shape \
             to path with path->Object to Path.")
 
-PasteLengthEffect().run()
+if __name__ == '__main__':
+    PasteLengthEffect().run()

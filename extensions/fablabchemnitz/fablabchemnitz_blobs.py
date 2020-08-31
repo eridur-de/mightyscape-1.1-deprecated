@@ -31,8 +31,8 @@ result in loopy splines.
         global cave
         if self.options.pgsizep:
             svg = self.document.getroot()
-            rx = self.svg.unittouu(svg.get('width'))
-            ry = self.svg.unittouu(svg.attrib['height'])
+            rx = int(self.svg.unittouu(svg.get('width')))
+            ry = int(self.svg.unittouu(svg.attrib['height']))
         else:
             rx = self.options.rx
             ry = self.options.ry
@@ -167,5 +167,5 @@ def findall(a, f):
             r.append(j)
     return r
 
-# Create effect instance and apply it.
-blobsEffect().run()
+if __name__ == '__main__':
+    blobsEffect().run()
