@@ -431,4 +431,5 @@ class CircularGround(inkex.Effect):
         ## Draw everything
         self.draw(points,line=lambda a: self.line(a))
 
-CircularGround().run()
+if __name__ == '__main__':
+    CircularGround().run()

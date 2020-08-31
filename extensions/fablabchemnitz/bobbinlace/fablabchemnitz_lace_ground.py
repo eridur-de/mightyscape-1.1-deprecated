@@ -168,5 +168,5 @@ class LaceGround(inkex.Effect):
         # For now, assume style is Checker but could change in future
         self.draw(result['data'],result['rowCount'],result['colCount'])
 
-# Create effect instance and apply it.
-LaceGround().run()
+if __name__ == '__main__':
+    LaceGround().run()

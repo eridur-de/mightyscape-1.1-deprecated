@@ -180,6 +180,5 @@ class PolarGrid(inkex.Effect):
 			for i in range(2, len(self.generatedCircles), 4):
 				self.removeDots(i, 0, self.options.dots)
 
-# Create effect instance and apply it.
 if __name__ == '__main__':
 	PolarGrid().run()

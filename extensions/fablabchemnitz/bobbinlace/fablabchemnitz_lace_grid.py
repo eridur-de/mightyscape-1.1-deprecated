@@ -104,5 +104,5 @@ class LaceGrid(inkex.Effect):
         self.options.dotcolor = self.options.dotcolor.to_rgb()
         self.draw()
 
-# Create effect instance and apply it.
-LaceGrid().run()
+if __name__ == '__main__':
+    LaceGrid().run()
