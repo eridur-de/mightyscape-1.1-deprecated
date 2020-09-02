@@ -285,6 +285,15 @@ class DXFDWGImport(inkex.Effect):
                    inkex.errormsg("node.js DXF to SVG conversion failed: %d %s %s" % (proc.returncode, stdout, stderr))
                    if self.options.opendironerror:
                        subprocess.Popen(["explorer",temp_output_dir],close_fds=True)
+                       
+        elif self.options.dxf_to_svg_parser == "kabeja":         
+            wd = os.path.join(os.getcwd(), "kabeja")
+            #inkex.utils.debug(wd)
+            proc = subprocess.Popen("java -jar launcher.jar -nogui -pipeline svg " + dxf_file + " " + svg_file, cwd=wd, shell=True, stdout=PIPE, stderr=PIPE)
+            stdout, stderr = proc.communicate()
+            if proc.returncode != 0: 
+               inkex.errormsg("kabeja failed: %d %s %s" % (proc.returncode, stdout, stderr))  
+                       
         elif self.options.dxf_to_svg_parser == "ezdxf":
             doc = ezdxf.readfile(dxf_file)
             #doc.header['$DIMSCALE'] = 0.2 does not apply to the plot :-(
