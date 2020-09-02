@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <name>Papercraft Unfold ASCII</name>
+    <id>fablabchemnitz.de.papercraft_unfold_ascii</id>
+    <input>
+        <extension>.stl</extension>
+        <mimetype>application/sla</mimetype>
+        <filetypename>Unfoldable Stereolitography File ASCII (*.stl)</filetypename>
+        <filetypetooltip>Unfold STL Files</filetypetooltip>
+    </input>
+    <script>
+        <command location="inx" interpreter="python">papercraft_unfold_ascii.py</command>
+    </script>
+</inkscape-extension>

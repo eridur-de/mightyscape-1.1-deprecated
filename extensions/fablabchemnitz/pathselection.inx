@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <name>Colorize Path Lengths</name>
+    <id>fablabchemnitz.de.pathselection</id>
+    <param name="selection" type="optiongroup" appearance="combo" gui-text="Selection: ">
+        <option value="Path_lengthselection">Length_selection</option>
+        <option value="Path_slantselection">Slant_selection</option>
+    </param>
+    <param name="len1" type="float" gui-text="Len1: red                       &lt;     (px)" min="1" max="100">12</param>
+    <param name="len2" type="float" gui-text="Len2: green                   &lt; =" min="1" max="100">25</param>
+    <param name="len3" type="float" gui-text="Len3: greenyellow         &lt; =" min="1" max="100">40</param>
+    <param name="len4" type="float" gui-text="Len4: skyblue                &lt; =" min="1" max="100">60</param>
+    <param name="len5" type="float" gui-text="Len5: blue                      &gt; " min="1" max="100">60</param>
+    <param name="hor" type="float" gui-text="hor: red                         &lt; (H/W)" min="0.01" max="100">0.1</param>
+    <param name="ver" type="float" gui-text="ver: blue                        &gt; " min="1" max="100">10</param>
+    <effect>
+        <object-type>path</object-type>
+        <effects-menu>
+            <submenu name="FabLab Chemnitz">
+                <submenu name="Tracing/Edge Detection"/>
+            </submenu>
+        </effects-menu>
+    </effect>
+    <script>
+        <command location="inx" interpreter="python">pathselection.py</command>
+    </script>
+</inkscape-extension>

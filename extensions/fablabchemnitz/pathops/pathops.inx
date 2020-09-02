@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <name>PathOps Custom</name>
+    <id>fablabchemnitz.de.pathops</id>
+    <param name="ink_verb" type="optiongroup" gui-text="Path operation:">
+        <option value="SelectionUnion">Union</option>
+        <option value="SelectionDiff">Difference</option>
+        <option value="SelectionIntersect">Intersection</option>
+        <option value="SelectionSymDiff">Exclusion</option>
+        <option value="SelectionDivide">Division</option>
+        <option value="SelectionCutPath">Cut Path</option>
+        <option value="SelectionCombine">Combine</option>
+    </param>
+    <param name="max_ops" type="int" min="2" max="9999" gui-text="Max operations per run">500</param>
+    <param name="recursive_sel" type="bool" gui-text="Recurse into groups" gui-description="If unchecked, only direct children of top-level groups in the selection will be processed for inclusion.">true</param>
+    <param name="keep_top" type="bool" gui-text="Keep top element when done">true</param>
+    <param name="dry_run" type="bool" gui-text="Dry run">false</param>
+    <effect needs-document="true" needs-live-preview="false">
+        <effects-menu hidden="false">
+            <submenu name="FabLab Chemnitz">
+                <submenu name="PathOps"/>
+            </submenu>
+        </effects-menu>
+        <menu-tip>Apply Inkscape path operations to multiple objects.</menu-tip>
+        <object-type>all</object-type>
+    </effect>
+    <script>
+        <command location="inx" interpreter="python">pathops.py</command>
+    </script>
+</inkscape-extension>

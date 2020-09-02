@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+   <name>Polyhedra - Other</name>
+   <id>fablabchemnitz.de.polyhedra.other</id>
+   <param name="poly" gui-text="Polyhedra to render net for" type="optiongroup" appearance="combo">
+      <option value="ElongatedDodecahedron">ElongatedDodecahedron</option>
+      <option value="MathematicaPolyhedron">MathematicaPolyhedron</option>
+   </param>
+   <param name="size" type="float" min="1.0" max="1000.0" gui-text="length of first edge, px">100.0</param>
+   <param name="tabs" type="optiongroup" appearance="combo" gui-text="Tab style">
+      <option value="0">Tab and Slot</option>
+      <option value="1">Double Tabs</option>
+      <option value="2">Single Tabs</option>
+      <option value="3">None</option>
+   </param>
+   <effect>
+      <object-type>all</object-type>
+      <effects-menu>
+         <submenu name="FabLab Chemnitz">
+            <submenu name="Paper/Cardboard Boxes"/>
+         </submenu>
+      </effects-menu>
+   </effect>
+   <script>
+      <command location="inx" interpreter="python">polyhedra.py</command>
+   </script>
+</inkscape-extension>

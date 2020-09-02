@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+   <name>Cut-Craft RollerBot</name>
+   <id>fablabchemnitz.de.cutcraft.rollerbot</id>
+   <param name="active-tab" type="notebook">
+      <page name="title" gui-text="RollerBot Properties">
+         <param name="unit" gui-text="Measurement Units" type="optiongroup" appearance="combo">
+            <option value="mm">mm</option>
+            <option value="cm">cm</option>
+            <option value="in">in</option>
+         </param>
+         <param name="help1" type="description" xml:space="preserve">------------------------------</param>
+         <param name="supwidth" type="float" min="0.1" max="1000.0" gui-text="Support Width">12.0</param>
+         <param name="help2" type="description" xml:space="preserve">------------------------------</param>
+         <param name="thickness" type="float" min="0.1" max="1000.0" precision="3" gui-text="Material Thickness">5.0</param>
+         <param name="kerf" type="float" min="0.0" max="1000.0" precision="3" gui-text="Laser Cutter Kerf">0.01</param>
+         <param name="linethickness" gui-text="Line Thickness" type="optiongroup">
+            <option value="1px">1 pixel</option>
+            <option value="0.002in">hairline</option>
+         </param>
+      </page>
+      <page name="Usage1" gui-text="Help">
+         <param name="use1" type="description" xml:space="preserve">Cut Craft RollerBot: Help
+
+
+Measurement Units: Unit of measurement for all subsequent values entered in this dialog.
+
+
+Support Width: Width of the supports holding the robot together.
+
+
+Thickness: Thickness of the material.
+
+Kerf: Laser Cutter Kerf (tolerance).  Varies based on cutter and material thickness.
+
+Line Thickness: Thickness of the cutting line on the display.
+
+
+			</param>
+      </page>
+   </param>
+   <effect>
+      <object-type>all</object-type>
+      <effects-menu>
+         <submenu name="FabLab Chemnitz">
+            <submenu name="Finger-jointed/Tabbed Boxes"/>
+         </submenu>
+      </effects-menu>
+   </effect>
+   <script>
+      <command location="inx" interpreter="python">cutcraftrollerbot.py</command>
+   </script>
+</inkscape-extension>

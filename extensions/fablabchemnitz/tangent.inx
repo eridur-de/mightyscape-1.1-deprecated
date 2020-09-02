@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+	<name>Circle Tangents</name>
+	<id>fablabchemnitz.de.tangent</id>
+	<param name="position" type="optiongroup" appearance="combo" gui-text="Outer or inner?">
+		<option value="inner">Inner</option>
+		<option value="outer">Outer</option>
+	</param>
+	<param name="selector" type="optiongroup" appearance="combo" gui-text="Which tangents?">
+		<option value="first">First</option>
+		<option value="second">Second</option>
+		<option value="both">Both</option>
+	</param>
+	<effect>
+		<object-type>all</object-type>
+		<effects-menu>
+            <submenu name="FabLab Chemnitz">
+			    <submenu name="Shape/Pattern from existing Path(s)"/>
+			</submenu>
+		</effects-menu>
+	</effect>
+	<script>
+		<command location="inx" interpreter="python">tangent.py</command>
+	</script>
+</inkscape-extension>

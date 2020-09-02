@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <name>Ungrouper And Element Migrator/Filter</name>
+    <id>fablabchemnitz.de.migrategroups</id>
+    <label>Running this extension works for current selection or if nothing is selected for whole document. It allows to flatten elements into one group and to drop elements while processing.</label>
+    <label>Unchecked elements will be dropped, if you selected a filter mode. Groups with transformations might puzzle anywhere. Please run "apply transformations" extension before to avoid this.</label>
+    <separator/>
+    <label appearance="header">Custom Element Types To Keep</label>
+    <hbox>
+        <vbox>
+            <label appearance="header">Geometry</label>
+            <param name="circle" type="bool" gui-text="circle">true</param>
+            <param name="ellipse" type="bool" gui-text="ellipse">true</param>
+            <param name="line" type="bool" gui-text="line">true</param>
+            <param name="path" type="bool" gui-text="path">true</param>
+            <param name="polyline" type="bool" gui-text="polyline">true</param>
+            <param name="polygon" type="bool" gui-text="polygon">true</param>
+            <param name="rect" type="bool" gui-text="rect">true</param>
+        </vbox>
+        <separator/>
+        <vbox>
+            <label appearance="header">Text</label>
+            <param name="text" type="bool" gui-text="text">true</param>
+            <param name="tspan" type="bool" gui-text="tspan">true</param>
+            <param name="flowRoot" type="bool" gui-text="flowRoot">true</param>
+            <param name="flowRegion" type="bool" gui-text="flowRegion">true</param>
+            <param name="flowPara" type="bool" gui-text="flowPara">true</param>
+        </vbox>
+        <separator/>
+        <vbox>
+            <label appearance="header">Gradients</label>
+            <param name="linearGradient" type="bool" gui-text="linearGradient">true</param>
+            <param name="radialGradient" type="bool" gui-text="radialGradient">true</param>
+            <param name="meshGradient" type="bool" gui-text="meshGradient">true</param>
+            <param name="meshRow" type="bool" gui-text="meshRow">true</param>
+            <param name="meshPatch" type="bool" gui-text="meshPatch">true</param>
+            <param name="stop" type="bool" gui-text="stop">true</param>
+        </vbox>
+        <separator/>
+        <vbox>
+            <label appearance="header">Objects / Misc</label>
+            <!--<param name="svg" type="bool" gui-text="svg">true</param>-->
+            <!--<param name="sodipodi" type="bool" gui-text="sodipodi">true</param>-->
+            <param name="clipPath" type="bool" gui-text="clipPath">true</param>
+            <param name="defs" type="bool" gui-text="defs">true</param>
+            <param name="image" type="bool" gui-text="image">true</param>
+            <param name="metadata" type="bool" gui-text="metadata">true</param>
+            <param name="script" type="bool" gui-text="script">true</param>
+            <param name="use" type="bool" gui-text="use">true</param>
+        </vbox>
+    </hbox>
+    <separator/>
+    <param name="operationmode" type="optiongroup" appearance="combo" gui-text="Operation mode">
+        <option value="ungroup_only">Ungroup (flatten) only</option>
+        <option value="ungroup_and_filter">Ungroup (flatten) + Filter (drop)</option>
+        <option value="filter_only">Filter (drop) only</option>
+    </param>
+    <param name="parsechildren" type="bool" gui-text="Perform operations on children of selection">true</param>
+    <param name="showdroplist" type="bool" gui-text="Show list of dropped items">false</param>
+    <param name="shownewgroupname" type="bool" gui-text="Show name of new group formation" gui-description="This helps to better identify the generated output.">false</param>
+    <param name="cleanup" gui-text="Cleanup all unused groups (requires separate extension)" type="boolean" gui-description="This will call the extension 'Remove Empty Groups' if available">true</param>
+    <separator/>
+    <label>Written by Mario Voigt / Stadtfabrikanten e.V. (2020)</label>
+    <label appearance="url">https://fablabchemnitz.de</label>
+    <label>License: GNU GPL v3</label>
+    <effect needs-live-preview="true">
+        <object-type>path</object-type>
+        <effects-menu>
+            <submenu name="FabLab Chemnitz">
+                <submenu name="Groups and Layers"/>
+            </submenu>
+        </effects-menu>
+    </effect>
+    <script>
+        <command location="inx" interpreter="python">migrategroups.py</command>
+    </script>
+</inkscape-extension>

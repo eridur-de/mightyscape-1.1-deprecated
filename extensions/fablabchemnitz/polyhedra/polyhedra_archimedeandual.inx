@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+   <name>Polyhedra - Archimedean Dual</name>
+   <id>fablabchemnitz.de.polyhedra.archimedeandual</id>
+   <param name="poly" gui-text="Polyhedra to render net for" type="optiongroup" appearance="combo">
+      <option value="DeltoidalHexecontahedron">DeltoidalHexecontahedron</option>
+      <option value="DeltoidalIcositetrahedron">DeltoidalIcositetrahedron</option>
+      <option value="DisdyakisDodecahedron">DisdyakisDodecahedron</option>
+      <option value="DisdyakisTriacontahedron">DisdyakisTriacontahedron</option>
+      <option value="PentagonalIcositetrahedron">PentagonalIcositetrahedron</option>
+      <option value="PentagonalHexecontahedron">PentagonalHexecontahedron</option>
+      <option value="PentakisDodecahedron">PentakisDodecahedron</option>
+      <option value="RhombicDodecahedron">RhombicDodecahedron</option>
+      <option value="RhombicTriacontahedron">RhombicTriacontahedron</option>
+      <option value="SmallTriakisOctahedron">SmallTriakisOctahedron</option>
+      <option value="TetrakisHexahedron">TetrakisHexahedron</option>
+      <option value="TriakisIcosahedron">TriakisIcosahedron</option>
+      <option value="TriakisTetrahedron">TriakisTetrahedron</option>
+   </param>
+   <param name="size" type="float" min="1.0" max="1000.0" gui-text="length of first edge, px">100.0</param>
+   <param name="tabs" type="optiongroup" appearance="combo" gui-text="Tab style">
+      <option value="0">Tab and Slot</option>
+      <option value="1">Double Tabs</option>
+      <option value="2">Single Tabs</option>
+      <option value="3">None</option>
+   </param>
+   <effect>
+      <object-type>all</object-type>
+      <effects-menu>
+         <submenu name="FabLab Chemnitz">
+            <submenu name="Paper/Cardboard Boxes"/>
+         </submenu>
+      </effects-menu>
+   </effect>
+   <script>
+      <command location="inx" interpreter="python">polyhedra.py</command>
+   </script>
+</inkscape-extension>
