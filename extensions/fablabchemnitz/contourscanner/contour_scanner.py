@@ -63,8 +63,9 @@ class ContourScanner(inkex.Effect):
         self.arg_parser.add_argument("--main_tabs")
   
     #split combined contours into single contours if enabled - this is exactly the same as "Path -> Break Apart"
+    replacedNodes = []
+    
     def breakContours(self, node):
-        replacedNodes = []
         if node.tag == inkex.addNS('path','svg'):
             parent = node.getparent()
             idx = parent.index(node)
@@ -84,11 +85,10 @@ class ContourScanner(inkex.Effect):
                 replacedNode.set('id', oldId + str(idSuffix).zfill(5))
                 parent.insert(idx, replacedNode)
                 idSuffix += 1
-                replacedNodes.append(replacedNode)
+                self.replacedNodes.append(replacedNode)
             parent.remove(node)
         for child in node:
             self.breakContours(child)
-        return replacedNodes
     
     def scanContours(self, node):
         if node.tag == inkex.addNS('path','svg'):
@@ -176,7 +176,12 @@ class ContourScanner(inkex.Effect):
                                         node.getparent().remove(node)
                     except Exception as e: # we skip AssertionError
                         #inkex.utils.debug("Accuracy Error. Try to reduce the precision of the paths using the extension called Rounder to cutoff unrequired decimals.")        
-                        print(str(e))        
+                        print(str(e))
+                #if the dot_group was created but nothing attached we delete it again to prevent messing the SVG XML tree
+                if len(dot_group.getchildren()) == 0:
+                    dot_group.getparent().remove(dot_group)
+                else: #put the node into the dot_group to bundle the path with it's error markers
+                    dot_group.insert(0, node)        
         for child in node:
             self.scanContours(child) 
  
@@ -188,10 +193,9 @@ class ContourScanner(inkex.Effect):
             else:
                 newContourSet = []
                 for id, item in self.svg.selected.items():
-                    newContourSet.append(self.breakContours(item))    
-                    for newContours in newContourSet:
-                        for newContour in newContours:                        
-                            self.scanContours(newContour) 
+                    self.breakContours(item)
+                for newContours in self.replacedNodes:
+                    self.scanContours(newContours) 
         else:
             if len(self.svg.selected) == 0:
                  self.scanContours(self.document.getroot())

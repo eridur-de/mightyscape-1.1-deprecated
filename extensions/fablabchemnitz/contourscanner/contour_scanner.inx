@@ -6,7 +6,7 @@
         <page name="tab_active" gui-text="Active">
             <param name="desc" type="description">This tool helps you to find nasty contours which might bug you and prevent your work from being ready for production. You can find the complete documentation at the Wiki space of https://fablabchemnitz.de</param>
             <param name="help_general" type="description" appearance="header">General</param>
-            <param name="breakapart" type="bool" gui-text="Break apart contours">false</param>
+            <param name="breakapart" type="bool" gui-text="Break apart contours and groups">false</param>
             <param name="removefillsetstroke" type="bool" gui-text="Remove fill and define stroke">false</param>
             <param name="strokewidth" min="0.0" max="10000.0" gui-text="Stroke width (px)" type="float">1.0</param>
             <param name="help_highlight" type="description" appearance="header">Highlight paths</param>
@@ -24,11 +24,14 @@
             <param name="remove_closed" type="bool" gui-text="Remove closed contours">false</param>
             <param name="remove_selfintersecting" type="bool" gui-text="Remove self-intersecting contours">false</param>
         </page>
-        <page name="tab_info" gui-text="License/Version">
-            <param name="desc1" type="description">Written by Mario Voigt (Stadtfabrikanten e.V. / FabLab Chemnitz) (https://gitea.fablabchemnitz.de)</param>
-            <param name="desc2" type="description">Last update: 09.08.2020</param>
-            <param name="desc3" type="description">This piece of software is part of the MightyScape for InkScape 1.0/1.1dev Extension Collection</param>
-            <param name="desc4" type="description" appearance="header">you found a bug or got some fresh code? Just report to mario.voigt@stadtfabrikanten.org. Thanks!</param>
+        <page name="tab_info" gui-text="About">
+            <label appearance="header">About</label>
+            <separator/>
+            <label>Contour Scanner by Mario Voigt / Stadtfabrikanten e.V. (2020)</label>
+            <label>This piece of software is part of the MightyScape for InkScape 1.0/1.1dev Extension Collection</label>
+            <label>you found a bug or got some fresh code? Just report to mario.voigt@stadtfabrikanten.org. Thanks!</label>
+            <label appearance="url">https://fablabchemnitz.de</label>
+            <label>License: GNU GPL v3</label>
         </page>
     </param>
     <effect>
