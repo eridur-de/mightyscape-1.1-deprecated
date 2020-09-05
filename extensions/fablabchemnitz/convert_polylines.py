@@ -20,6 +20,7 @@ class ConvertToPolylines(inkex.Effect):
     def __init__(self):
         inkex.Effect.__init__(self)
 
+    #convert a path (curve) to a polyline and remove dangling/duplicate/useless overlapping handles (points)
     def convertPath(self, node):
         if node.tag == inkex.addNS('path','svg'):
             polypath = []
@@ -29,6 +30,10 @@ class ConvertToPolylines(inkex.Effect):
                     polypath.append(['M', [x,y]])
                 else:
                     polypath.append(['L', [x,y]])
+                    if i == 1 and polypath[len(polypath)-2][1] == polypath[len(polypath)-1][1]:
+                        polypath.pop(len(polypath)-1) #special handling for the seconds point after M command
+                    elif polypath[len(polypath)-2] == polypath[len(polypath)-1]: #get the previous point
+                        polypath.pop(len(polypath)-1)
                 i += 1
                 node.set('d', str(Path(polypath)))
         children = node.getchildren()

@@ -25,24 +25,6 @@ from lxml import etree
 import poly_point_isect
 import copy
 
-def adjustStyle(self, node):
-    if node.attrib.has_key('style'):
-        style = node.get('style')
-        if style:
-            declarations = style.split(';')
-            for i,decl in enumerate(declarations):
-                parts = decl.split(':', 2)
-                if len(parts) == 2:
-                    (prop, val) = parts
-                    prop = prop.strip().lower()
-                    if prop == 'stroke-width':
-                        declarations[i] = prop + ':' + str(self.svg.unittouu(str(self.options.strokewidth) +"px"))
-                    if prop == 'fill':
-                        declarations[i] = prop + ':none'
-            node.set('style', ';'.join(declarations) + ';stroke:#000000;stroke-opacity:1.0')
-    else:
-        node.set('style', 'stroke:#000000;stroke-opacity:1.0')
-
 class ContourScanner(inkex.Effect):
 
     def __init__(self):
@@ -59,28 +41,66 @@ class ContourScanner(inkex.Effect):
         self.arg_parser.add_argument("--color_selfintersecting", type=Color, default='1923076095', help="Color closed contours")
         self.arg_parser.add_argument("--color_intersectionpoints", type=Color, default='4239343359', help="Color closed contours")
         self.arg_parser.add_argument("--addlines", type=inkex.Boolean, default=True, help="Add closing lines for self-crossing contours")
+        self.arg_parser.add_argument("--polypaths", type=inkex.Boolean, default=True, help="Add polypath outline for self-crossing contours")
         self.arg_parser.add_argument("--dotsize", type=int, default=10, help="Dot size (px) for self-intersecting points")
         self.arg_parser.add_argument("--remove_opened", type=inkex.Boolean, default=False, help="Remove opened contours")
         self.arg_parser.add_argument("--remove_closed", type=inkex.Boolean, default=False, help="Remove closed contours")
         self.arg_parser.add_argument("--remove_selfintersecting", type=inkex.Boolean, default=False, help="Remove self-intersecting contours")
         self.arg_parser.add_argument("--main_tabs")
   
+    #function to refine the style of the lines  
+    def adjustStyle(self, node):
+        if node.attrib.has_key('style'):
+            style = node.get('style')
+            if style:
+                declarations = style.split(';')
+                for i,decl in enumerate(declarations):
+                    parts = decl.split(':', 2)
+                    if len(parts) == 2:
+                        (prop, val) = parts
+                        prop = prop.strip().lower()
+                        if prop == 'stroke-width':
+                            declarations[i] = prop + ':' + str(self.svg.unittouu(str(self.options.strokewidth) +"px"))
+                        if prop == 'fill':
+                            declarations[i] = prop + ':none'
+                node.set('style', ';'.join(declarations) + ';stroke:#000000;stroke-opacity:1.0')
+        else:
+            node.set('style', 'stroke:#000000;stroke-opacity:1.0')
+
+  
+    #get polyline from path
+    def getPolyline(self, node):
+        if node.tag == inkex.addNS('path','svg'):
+            polypath = []
+            i = 0
+            for x, y in node.path.end_points:
+                if i == 0:
+                    polypath.append(['M', [x,y]])
+                else:
+                    polypath.append(['L', [x,y]])
+                    if i == 1 and polypath[len(polypath)-2][1] == polypath[len(polypath)-1][1]:
+                        polypath.pop(len(polypath)-1) #special handling for the seconds point after M command
+                    elif polypath[len(polypath)-2] == polypath[len(polypath)-1]: #get the previous point
+                        polypath.pop(len(polypath)-1)
+                i += 1
+            return Path(polypath)
+   
+   
     #split combined contours into single contours if enabled - this is exactly the same as "Path -> Break Apart"
-    replacedNodes = []
-    
-    def breakContours(self, node):
+    replacedNodes = [] 
+    def breakContours(self, node): #this does the same as "CTRL + SHIFT + K"
         if node.tag == inkex.addNS('path','svg'):
             parent = node.getparent()
             idx = parent.index(node)
             idSuffix = 0    
             raw = Path(node.get("d")).to_arrays()
-            subpaths, prev = [], 0
+            subPaths, prev = [], 0
             for i in range(len(raw)): # Breaks compound paths into simple paths
                 if raw[i][0] == 'M' and i != 0:
-                    subpaths.append(raw[prev:i])
+                    subPaths.append(raw[prev:i])
                     prev = i
-            subpaths.append(raw[prev:])  
-            for subpath in subpaths:
+            subPaths.append(raw[prev:])  
+            for subpath in subPaths:
                 replacedNode = copy.copy(node)
                 oldId = replacedNode.get('id')
                 
@@ -96,19 +116,19 @@ class ContourScanner(inkex.Effect):
     def scanContours(self, node):
         if node.tag == inkex.addNS('path','svg'):
             if self.options.removefillsetstroke:
-                adjustStyle(self, node)
+                self.adjustStyle(node)
       
-            dot_group = node.getparent().add(inkex.Group())
+            intersectionGroup = node.getparent().add(inkex.Group())
 
             raw = (Path(node.get('d')).to_arrays())
-            subpaths, prev = [], 0
+            subPaths, prev = [], 0
             for i in range(len(raw)): # Breaks compound paths into simple paths
                 if raw[i][0] == 'M' and i != 0:
-                    subpaths.append(raw[prev:i])
+                    subPaths.append(raw[prev:i])
                     prev = i
-            subpaths.append(raw[prev:])
+            subPaths.append(raw[prev:])
             
-            for simpath in subpaths:
+            for simpath in subPaths:
                 closed = False
                 if simpath[-1][0] == 'Z':
                     closed = True
@@ -152,49 +172,84 @@ class ContourScanner(inkex.Effect):
                             pass #we ignore that parent can be None
  
                 #if one of the options is activated we also check for self-intersecting
-                if self.options.highlight_selfintersecting or self.options.highlight_intersectionpoints:
+                if self.options.highlight_selfintersecting or self.options.highlight_intersectionpoints:    
+                    
+                    #Style definitions        
+                    closingLineStyle = Style({'stroke-linejoin': 'miter', 'stroke-width': str(self.svg.unittouu(str(self.options.strokewidth) +"px")), 
+                        'stroke-opacity': '1.0', 'fill-opacity': '1.0', 
+                        'stroke': self.options.color_intersectionpoints, 'stroke-linecap': 'butt', 'fill': 'none'}).to_str()
+                    
+                    intersectionPointStyle = Style({'stroke': 'none', 'fill': self.options.color_intersectionpoints}).to_str()
+                    
+                    intersectionStyle = Style({'stroke-linejoin': 'miter', 'stroke-width': str(self.svg.unittouu(str(self.options.strokewidth) +"px")), 
+                        'stroke-opacity': '1.0', 'fill-opacity': '1.0', 
+                        'stroke': self.options.color_selfintersecting, 'stroke-linecap': 'butt', 'fill': 'none'}).to_str()
+                    
                     try: 
                         if len(points) > 0: #try to find self-intersecting /overlapping polygons
-                            isect = poly_point_isect.isect_polygon(points)                            
+                            isect = poly_point_isect.isect_polygon(points)         
                             if len(isect) > 0:
                                 if closed == False and self.options.addlines == True: #if contour is open and we found intersection points those points might be not relevant
-                                    line = dot_group.add(inkex.PathElement())
-                                    line.path = [
+                                    closingLine = intersectionGroup.add(inkex.PathElement())
+                                    closingLine.set('id', self.svg.get_unique_id('closingline-'))
+                                    closingLine.path = [
                                         ['M', [points[0][0],points[0][1]]],
                                         ['L', [points[-1][0],points[-1][1]]],
                                         ['Z', []]
                                     ]
-                                    style = {'stroke-linejoin': 'miter', 'stroke-width': str(self.svg.unittouu(str(self.options.strokewidth) +"px")), 
-                                        'stroke-opacity': '1.0', 'fill-opacity': '1.0', 
-                                        'stroke': self.options.color_intersectionpoints, 'stroke-linecap': 'butt', 'fill': 'none'}
-                                    line.attrib['style'] = Style(style).to_str()
+                                    closingLine.attrib['style'] = closingLineStyle
+                                    
+                                #draw polylines if option is enabled
+                                if self.options.polypaths == True:
+                                    polyNode = intersectionGroup.add(inkex.PathElement())
+                                    polyNode.set('id', self.svg.get_unique_id('polypath-'))
+                                    polyNode.set('d', str(self.getPolyline(node)))
+                                    polyNode.attrib['style'] = closingLineStyle
+                                    
                                 #make dot markings at the intersection points
                                 if self.options.highlight_intersectionpoints:
                                     for xy in isect:
                                         #Add a dot label for this path element
-                                        style = inkex.Style({'stroke': 'none', 'fill': self.options.color_intersectionpoints})
-                                        circle = dot_group.add(Circle(cx=str(xy[0]), cy=str(xy[1]), r=str(self.svg.unittouu(str(self.options.dotsize/2) + "px"))))
-                                        circle.style = style
-                                
+                                        intersectionPoint = intersectionGroup.add(Circle(cx=str(xy[0]), cy=str(xy[1]), r=str(self.svg.unittouu(str(self.options.dotsize/2) + "px"))))
+                                        intersectionPoint.set('id', self.svg.get_unique_id('intersectionpoint-'))
+                                        intersectionPoint.style = intersectionPointStyle
+                         
                                 if self.options.highlight_selfintersecting:
-                                    style = {'stroke-linejoin': 'miter', 'stroke-width': str(self.svg.unittouu(str(self.options.strokewidth) +"px")), 
-                                        'stroke-opacity': '1.0', 'fill-opacity': '1.0', 
-                                        'stroke': self.options.color_selfintersecting, 'stroke-linecap': 'butt', 'fill': 'none'}
-                                    node.attrib['style'] = Style(style).to_str()
+                                    node.attrib['style'] = intersectionStyle
                                 if self.options.remove_selfintersecting:
                                     if node.getparent() is not None: #might be already been deleted by previously checked settings so check again
                                         node.getparent().remove(node)
+                                        
+                        #draw intersections segment lines - useless at the moment. We could use this information to cut the original polyline to get a new curve path which included the intersection points
+                        #isectSegs = poly_point_isect.isect_polygon_include_segments(points)
+                        #for seg in isectSegs:
+                        #    isectSegsPath = []    
+                        #    isecX = seg[0][0] #the intersection point - X
+                        #    isecY = seg[0][1] #the intersection point - Y
+                        #    isecSeg1X = seg[1][0][0][0] #the first intersection point segment - X
+                        #    isecSeg1Y = seg[1][0][0][1] #the first intersection point segment - Y
+                        #    isecSeg2X = seg[1][1][0][0] #the second intersection point segment - X
+                        #    isecSeg2Y = seg[1][1][0][1] #the second intersection point segment - Y
+                        #    isectSegsPath.append(['L', [isecSeg2X, isecSeg2Y]])
+                        #    isectSegsPath.append(['L', [isecX, isecY]])
+                        #    isectSegsPath.append(['L', [isecSeg1X, isecSeg1Y]])
+                        #    #fix the really first point. Has to be an 'M' command instead of 'L'
+                        #    isectSegsPath[0][0] = 'M'
+                        #    polySegsNode = intersectionGroup.add(inkex.PathElement())
+                        #    polySegsNode.set('id', self.svg.get_unique_id('intersectsegments-'))
+                        #    polySegsNode.set('d', str(Path(isectSegsPath)))
+                        #    polySegsNode.attrib['style'] = closingLineStyle
+
                     except Exception as e: # we skip AssertionError
-                        #inkex.utils.debug("Accuracy Error. Try to reduce the precision of the paths using the extension called Rounder to cutoff unrequired decimals.")        
-                        print(str(e))
-                #if the dot_group was created but nothing attached we delete it again to prevent messing the SVG XML tree
-                if len(dot_group.getchildren()) == 0:
-                    dot_parent = dot_group.getparent()
-                    if dot_parent is not None:
-                        dot_group.getparent().remove(dot_group)
-                #put the node into the dot_group to bundle the path with it's error markers. If removal is selected we need to avoid dot_group.insert(), because it will break the removal
+                        inkex.utils.debug(str(e))
+                #if the intersectionGroup was created but nothing attached we delete it again to prevent messing the SVG XML tree
+                if len(intersectionGroup.getchildren()) == 0:
+                    intersectionGroupParent = intersectionGroup.getparent()
+                    if intersectionGroupParent is not None:
+                        intersectionGroup.getparent().remove(intersectionGroup)
+                #put the node into the intersectionGroup to bundle the path with it's error markers. If removal is selected we need to avoid intersectionGroup.insert(), because it will break the removal
                 elif self.options.remove_selfintersecting == False:
-                    dot_group.insert(0, node)
+                    intersectionGroup.insert(0, node)
         children = node.getchildren()
         if children is not None: 
             for child in children:

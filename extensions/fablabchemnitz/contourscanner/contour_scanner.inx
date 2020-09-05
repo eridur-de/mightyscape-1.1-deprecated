@@ -19,6 +19,7 @@
             <param name="color_intersectionpoints" type="color" appearance="colorbutton" gui-text="Color self-intersecting points">4239343359</param>
             <param name="dotsize" type="int" min="0" max="10000" gui-text="Dot size (px) for self-intersecting points">10</param>
             <param name="addlines" type="bool" gui-text="Add closing lines for open self-crossing contours" gui-description="They will have the same color as the intersection points and help to better visualize possible virtual crossings. The algorithm can only detect intersections for closed contours by it's nature, but we handle open contours like they were closed. This may put put too much intersection points.">true</param>
+            <param name="polypaths" type="bool" gui-text="Add polypath outline for self-crossing contours" gui-description="This makes only sense if your path is actually a curve. If it's already a polyline you just get a duplicate line (but with reduced nodes)">true</param>
             <label appearance="header">Remove paths</label>
             <param name="remove_opened" type="bool" gui-text="Remove opened contours">false</param>
             <param name="remove_closed" type="bool" gui-text="Remove closed contours">false</param>
