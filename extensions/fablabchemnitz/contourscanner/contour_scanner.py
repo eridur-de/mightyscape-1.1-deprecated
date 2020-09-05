@@ -13,7 +13,7 @@ Features
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 09.08.2020
-Last patch: 19.08.2020
+Last patch: 05.09.2020
 License: GNU GPL v3
 """
 
@@ -39,13 +39,15 @@ def adjustStyle(self, node):
                         declarations[i] = prop + ':' + str(self.svg.unittouu(str(self.options.strokewidth) +"px"))
                     if prop == 'fill':
                         declarations[i] = prop + ':none'
-            node.set('style', ';'.join(declarations) + ';stroke:#000000;stroke-opacity:1.0')  
+            node.set('style', ';'.join(declarations) + ';stroke:#000000;stroke-opacity:1.0')
+    else:
+        node.set('style', 'stroke:#000000;stroke-opacity:1.0')
 
 class ContourScanner(inkex.Effect):
 
     def __init__(self):
         inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("--breakapart", type=inkex.Boolean, default=False, help="Break apart contours")
+        self.arg_parser.add_argument("--breakapart", type=inkex.Boolean, default=False, help="Break apart selection into single contours")
         self.arg_parser.add_argument("--removefillsetstroke", type=inkex.Boolean, default=False, help="Remove fill and define stroke")
         self.arg_parser.add_argument("--strokewidth", type=float, default=1.0, help="Stroke width (px)")
         self.arg_parser.add_argument("--highlight_opened", type=inkex.Boolean, default=True, help="Highlight opened contours")
@@ -56,6 +58,7 @@ class ContourScanner(inkex.Effect):
         self.arg_parser.add_argument("--highlight_intersectionpoints", type=inkex.Boolean, default=True, help="Highlight self-intersecting points")
         self.arg_parser.add_argument("--color_selfintersecting", type=Color, default='1923076095', help="Color closed contours")
         self.arg_parser.add_argument("--color_intersectionpoints", type=Color, default='4239343359', help="Color closed contours")
+        self.arg_parser.add_argument("--addlines", type=inkex.Boolean, default=True, help="Add closing lines for self-crossing contours")
         self.arg_parser.add_argument("--dotsize", type=int, default=10, help="Dot size (px) for self-intersecting points")
         self.arg_parser.add_argument("--remove_opened", type=inkex.Boolean, default=False, help="Remove opened contours")
         self.arg_parser.add_argument("--remove_closed", type=inkex.Boolean, default=False, help="Remove closed contours")
@@ -106,41 +109,12 @@ class ContourScanner(inkex.Effect):
             subpaths.append(raw[prev:])
             
             for simpath in subpaths:
-                if len(simpath) > 0:
-                    closed = False
-                    if simpath[-1][0] == 'Z':
-                        closed = True
-
-                    if not closed:
-                        if self.options.highlight_opened:                        
-                             style = {'stroke-linejoin': 'miter', 'stroke-width': str(self.svg.unittouu(str(self.options.strokewidth) +"px")), 
-                                 'stroke-opacity': '1.0', 'fill-opacity': '1.0', 
-                                 'stroke': self.options.color_opened, 'stroke-linecap': 'butt', 'fill': 'none'}
-                             node.attrib['style'] = Style(style).to_str()
-                        if self.options.remove_opened:
-                            try:
-                                node.getparent().remove(node)
-                            except AttributeError:
-                                pass #we ignore that parent can be None
-                    if closed:
-                        if self.options.highlight_closed:                        
-                            style = {'stroke-linejoin': 'miter', 'stroke-width': str(self.svg.unittouu(str(self.options.strokewidth) +"px")), 
-                                'stroke-opacity': '1.0', 'fill-opacity': '1.0', 
-                                'stroke': self.options.color_closed, 'stroke-linecap': 'butt', 'fill': 'none'}
-                            node.attrib['style'] = Style(style).to_str()
-                        if self.options.remove_closed:
-                            try:
-                                node.getparent().remove(node)
-                            except AttributeError:
-                                pass #we ignore that parent can be None
- 
-            for simpath in subpaths:
                 closed = False
                 if simpath[-1][0] == 'Z':
                     closed = True
                     if simpath[-2][0] == 'L': simpath[-1][1] = simpath[0][1]
                     else: simpath.pop()
-                nodes = []
+                points = []
                 for i in range(len(simpath)):
                     if simpath[i][0] == 'V': # vertical and horizontal lines only have one point in args, but 2 are required
                         simpath[i][0]='L' #overwrite V with regular L command
@@ -149,15 +123,51 @@ class ContourScanner(inkex.Effect):
                         simpath[i][1][0]=add #replace with recent X after Y was appended
                     if simpath[i][0] == 'H': # vertical and horizontal lines only have one point in args, but 2 are required
                         simpath[i][0]='L' #overwrite H with regular L command
-                        simpath[i][1].append(simpath[i-1][1][1]) #add the second (missing) argument by taking argument from previous segment				
-                    nodes.append(simpath[i][1][-2:])
-            
+                        simpath[i][1].append(simpath[i-1][1][1]) #add the second (missing) argument by taking argument from previous segment                
+                    points.append(simpath[i][1][-2:])
+                if points[0] == points[-1]: #if first is last point the path is also closed. The "Z" command is not required
+                    closed = True
+
+                if closed == False:
+                    if self.options.highlight_opened:                        
+                         style = {'stroke-linejoin': 'miter', 'stroke-width': str(self.svg.unittouu(str(self.options.strokewidth) +"px")), 
+                             'stroke-opacity': '1.0', 'fill-opacity': '1.0', 
+                             'stroke': self.options.color_opened, 'stroke-linecap': 'butt', 'fill': 'none'}
+                         node.attrib['style'] = Style(style).to_str()
+                    if self.options.remove_opened:
+                        try:
+                            node.getparent().remove(node)
+                        except AttributeError:
+                            pass #we ignore that parent can be None
+                if closed == True:
+                    if self.options.highlight_closed:                        
+                        style = {'stroke-linejoin': 'miter', 'stroke-width': str(self.svg.unittouu(str(self.options.strokewidth) +"px")), 
+                            'stroke-opacity': '1.0', 'fill-opacity': '1.0', 
+                            'stroke': self.options.color_closed, 'stroke-linecap': 'butt', 'fill': 'none'}
+                        node.attrib['style'] = Style(style).to_str()
+                    if self.options.remove_closed:
+                        try:
+                            node.getparent().remove(node)
+                        except AttributeError:
+                            pass #we ignore that parent can be None
+ 
                 #if one of the options is activated we also check for self-intersecting
                 if self.options.highlight_selfintersecting or self.options.highlight_intersectionpoints:
                     try: 
-                        if len(nodes) > 0: #try to find self-intersecting /overlapping polygons
-                            isect = poly_point_isect.isect_polygon(nodes) #TODO: FIND OUT HOW TO HANDLE OPEN CONTOURS TO OMIT VIRTUALLY CROSSING LINES (WHICH DO NOT INTERSECT)
+                        if len(points) > 0: #try to find self-intersecting /overlapping polygons
+                            isect = poly_point_isect.isect_polygon(points)                            
                             if len(isect) > 0:
+                                if closed == False and self.options.addlines == True: #if contour is open and we found intersection points those points might be not relevant
+                                    line = dot_group.add(inkex.PathElement())
+                                    line.path = [
+                                        ['M', [points[0][0],points[0][1]]],
+                                        ['L', [points[-1][0],points[-1][1]]],
+                                        ['Z', []]
+                                    ]
+                                    style = {'stroke-linejoin': 'miter', 'stroke-width': str(self.svg.unittouu(str(self.options.strokewidth) +"px")), 
+                                        'stroke-opacity': '1.0', 'fill-opacity': '1.0', 
+                                        'stroke': self.options.color_intersectionpoints, 'stroke-linecap': 'butt', 'fill': 'none'}
+                                    line.attrib['style'] = Style(style).to_str()
                                 #make dot markings at the intersection points
                                 if self.options.highlight_intersectionpoints:
                                     for xy in isect:
@@ -179,11 +189,16 @@ class ContourScanner(inkex.Effect):
                         print(str(e))
                 #if the dot_group was created but nothing attached we delete it again to prevent messing the SVG XML tree
                 if len(dot_group.getchildren()) == 0:
-                    dot_group.getparent().remove(dot_group)
-                else: #put the node into the dot_group to bundle the path with it's error markers
-                    dot_group.insert(0, node)        
-        for child in node:
-            self.scanContours(child) 
+                    dot_parent = dot_group.getparent()
+                    if dot_parent is not None:
+                        dot_group.getparent().remove(dot_group)
+                #put the node into the dot_group to bundle the path with it's error markers. If removal is selected we need to avoid dot_group.insert(), because it will break the removal
+                elif self.options.remove_selfintersecting == False:
+                    dot_group.insert(0, node)
+        children = node.getchildren()
+        if children is not None: 
+            for child in children:
+                self.scanContours(child) 
  
     def effect(self):
         if self.options.breakapart:    

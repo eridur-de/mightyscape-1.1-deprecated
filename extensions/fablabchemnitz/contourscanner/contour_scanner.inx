@@ -4,22 +4,23 @@
     <id>fablabchemnitz.de.contour_scanner</id>
     <param name="main_tabs" type="notebook">
         <page name="tab_active" gui-text="Active">
-            <param name="desc" type="description">This tool helps you to find nasty contours which might bug you and prevent your work from being ready for production. You can find the complete documentation at the Wiki space of https://fablabchemnitz.de</param>
-            <param name="help_general" type="description" appearance="header">General</param>
-            <param name="breakapart" type="bool" gui-text="Break apart contours and groups">false</param>
+            <label>This tool helps you to find nasty contours which might bug you and prevent your work from being ready for production. You can find the complete documentation at the Wiki space of https://fablabchemnitz.de</label>
+            <label appearance="header">General</label>
+            <param name="breakapart" type="bool" gui-text="Break apart selection into single contours" gui-description="(with ignoring the group hirarchy by taking all children elements)">false</param>
             <param name="removefillsetstroke" type="bool" gui-text="Remove fill and define stroke">false</param>
             <param name="strokewidth" min="0.0" max="10000.0" gui-text="Stroke width (px)" type="float">1.0</param>
-            <param name="help_highlight" type="description" appearance="header">Highlight paths</param>
+            <label appearance="header">Highlight paths</label>
             <param name="highlight_opened" type="bool" gui-text="Highlight opened contours">true</param>
             <param name="color_opened" type="color" appearance="colorbutton" gui-text="Color opened contours">4012452351</param>
             <param name="highlight_closed" type="bool" gui-text="Highlight closed contours">true</param>
             <param name="color_closed" type="color" appearance="colorbutton" gui-text="Color closed contours">2330080511</param>
-            <param name="highlight_selfintersecting" type="bool" gui-text="Highlight self-intersecting contours">true</param>
+            <param name="highlight_selfintersecting" type="bool" gui-text="Highlight self-intersecting contours" gui-description="Due to the nature of the algorithm this might detect non-closed contours too.">true</param>
             <param name="color_selfintersecting" type="color" appearance="colorbutton" gui-text="Color self-intersecting contours">1923076095</param>
             <param name="highlight_intersectionpoints" type="bool" gui-text="Highlight self-intersecting points">true</param>
             <param name="color_intersectionpoints" type="color" appearance="colorbutton" gui-text="Color self-intersecting points">4239343359</param>
             <param name="dotsize" type="int" min="0" max="10000" gui-text="Dot size (px) for self-intersecting points">10</param>
-            <param name="help_remove" type="description" appearance="header">Remove paths</param>
+            <param name="addlines" type="bool" gui-text="Add closing lines for open self-crossing contours" gui-description="They will have the same color as the intersection points and help to better visualize possible virtual crossings. The algorithm can only detect intersections for closed contours by it's nature, but we handle open contours like they were closed. This may put put too much intersection points.">true</param>
+            <label appearance="header">Remove paths</label>
             <param name="remove_opened" type="bool" gui-text="Remove opened contours">false</param>
             <param name="remove_closed" type="bool" gui-text="Remove closed contours">false</param>
             <param name="remove_selfintersecting" type="bool" gui-text="Remove self-intersecting contours">false</param>
