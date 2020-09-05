@@ -4,7 +4,6 @@
     <id>fablabchemnitz.de.contour_scanner</id>
     <param name="main_tabs" type="notebook">
         <page name="tab_active" gui-text="Active">
-            <label>This tool helps you to find nasty contours which might bug you and prevent your work from being ready for production. You can find the complete documentation at the Wiki space of https://fablabchemnitz.de</label>
             <label appearance="header">General</label>
             <param name="breakapart" type="bool" gui-text="Break apart selection into single contours" gui-description="(with ignoring the group hirarchy by taking all children elements)">false</param>
             <param name="removefillsetstroke" type="bool" gui-text="Remove fill and define stroke">false</param>
@@ -33,6 +32,8 @@
             <label>you found a bug or got some fresh code? Just report to mario.voigt@stadtfabrikanten.org. Thanks!</label>
             <label appearance="url">https://fablabchemnitz.de</label>
             <label>License: GNU GPL v3</label>
+            <separator/>
+            <label>This tool helps you to find nasty contours which might bug you and prevent your work from being ready for production. Ideally you should convert your paths to polylines because the algorithm used by Contour Scanner is not able to distinguish between curves and polylines. It will handle curves like polylines but that creates visual and measurable errors. Either use "Split Bezier (Subdivide Path)" or "Add Nodes" extension to split into smaller segments which makes more precise. You can also run "Flatten Bezier" to make smooth polylines. For roughest approximation use "Convert to Polylines" extension to create real polylines. You can find the complete documentation at the Wiki space of https://fablabchemnitz.de</label>
         </page>
     </param>
     <effect>
