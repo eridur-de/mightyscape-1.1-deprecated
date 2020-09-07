@@ -51,6 +51,7 @@ class MigrateGroups(inkex.Effect):
         self.arg_parser.add_argument("--meshPatch",      type=inkex.Boolean, default=True)
         self.arg_parser.add_argument("--metadata",       type=inkex.Boolean, default=True)
         self.arg_parser.add_argument("--script",         type=inkex.Boolean, default=True)
+        self.arg_parser.add_argument("--symbol",         type=inkex.Boolean, default=True)
         self.arg_parser.add_argument("--stop",           type=inkex.Boolean, default=True)
         self.arg_parser.add_argument("--use",            type=inkex.Boolean, default=True)
         self.arg_parser.add_argument("--flowRoot",       type=inkex.Boolean, default=True)
@@ -79,6 +80,7 @@ class MigrateGroups(inkex.Effect):
         namespace.append("{http://www.w3.org/2000/svg}meshRow")        if self.options.meshRow        else ""
         namespace.append("{http://www.w3.org/2000/svg}meshPatch")      if self.options.meshPatch      else ""
         namespace.append("{http://www.w3.org/2000/svg}script")         if self.options.script         else ""
+        namespace.append("{http://www.w3.org/2000/svg}symbol")         if self.options.symbol         else ""
         namespace.append("{http://www.w3.org/2000/svg}metadata")       if self.options.metadata       else ""
         namespace.append("{http://www.w3.org/2000/svg}stop")           if self.options.stop           else ""
         namespace.append("{http://www.w3.org/2000/svg}use")            if self.options.use            else ""
@@ -188,8 +190,8 @@ class MigrateGroups(inkex.Effect):
         # finally removed dangling empty groups using external extension (if installed)
         if self.options.cleanup == True:
             try:
-                import fablabchemnitz_cleangroups
-                fablabchemnitz_cleangroups.CleanGroups.effect(self)
+                import cleangroups
+                cleangroups.CleanGroups.effect(self)
             except:
                 inkex.utils.debug("Calling 'Remove Empty Groups' extension failed. Maybe the extension is not installed. You can download it from official InkScape Gallery.")
          
