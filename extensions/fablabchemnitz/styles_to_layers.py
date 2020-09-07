@@ -229,8 +229,8 @@ class LayerGroup(inkex.Effect):
         
         if self.options.cleanup == True:
             try:
-                import fablabchemnitz_cleangroups
-                fablabchemnitz_cleangroups.CleanGroups.effect(self)
+                import cleangroups
+                cleangroups.CleanGroups.effect(self)
             except:
                 inkex.utils.debug("Calling 'Remove Empty Groups' extension failed. Maybe the extension is not installed. You can download it from official InkScape Gallery.")
             
