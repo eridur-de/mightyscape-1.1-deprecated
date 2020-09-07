@@ -44,7 +44,9 @@
             <param name="clipPath" type="bool" gui-text="clipPath">true</param>
             <param name="defs" type="bool" gui-text="defs">true</param>
             <param name="image" type="bool" gui-text="image">true</param>
+            <param name="marker" type="bool" gui-text="marker">true</param>
             <param name="metadata" type="bool" gui-text="metadata">true</param>
+            <param name="pattern" type="bool" gui-text="pattern">true</param>
             <param name="script" type="bool" gui-text="script">true</param>
             <param name="symbol" type="bool" gui-text="symbol">true</param>
             <param name="use" type="bool" gui-text="use">true</param>

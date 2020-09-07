@@ -57,6 +57,9 @@ class MigrateGroups(inkex.Effect):
         self.arg_parser.add_argument("--flowRoot",       type=inkex.Boolean, default=True)
         self.arg_parser.add_argument("--flowRegion",     type=inkex.Boolean, default=True)
         self.arg_parser.add_argument("--flowPara",       type=inkex.Boolean, default=True)
+        self.arg_parser.add_argument("--marker",         type=inkex.Boolean, default=True)
+        self.arg_parser.add_argument("--pattern",        type=inkex.Boolean, default=True)
+
     
     def effect(self):
         namespace = [] #a list of selected types we are going to process for filtering (dropping items)
@@ -87,6 +90,8 @@ class MigrateGroups(inkex.Effect):
         namespace.append("{http://www.w3.org/2000/svg}flowRoot")       if self.options.flowRoot       else ""
         namespace.append("{http://www.w3.org/2000/svg}flowRegion")     if self.options.flowRegion     else ""
         namespace.append("{http://www.w3.org/2000/svg}flowPara")       if self.options.flowPara       else ""
+        namespace.append("{http://www.w3.org/2000/svg}marker")         if self.options.marker         else ""
+        namespace.append("{http://www.w3.org/2000/svg}pattern")        if self.options.pattern        else ""
         #inkex.utils.debug(namespace)
 
         #in case the user made a manual selection instead of whole document parsing, we need to collect all required elements first
