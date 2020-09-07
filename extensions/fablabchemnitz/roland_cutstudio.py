@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
 # The source code is a horrible mess. I apologize for your inconvenience, but hope that it still helps. Feel free to improve :-)
-
+# Keep everything python2 compatible as long as people out there are using Inkscape <= 0.92.4!
 
 from __future__ import division
 from __future__ import print_function
@@ -41,9 +41,16 @@ import subprocess
 import shutil
 import numpy
 from functools import reduce
-from pathlib import Path
-import inkex
-
+import atexit
+import filecmp
+try:
+    from pathlib import Path
+except ImportError:
+    # Workaround for Python < 3.5
+    class fakepath:
+        def home(self):
+            return os.path.expanduser("~")
+    Path = fakepath()
 try:
     from functools import lru_cache
 except ImportError:
@@ -54,9 +61,12 @@ except ImportError:
 import tempfile
 
 DEVNULL = open(os.devnull, 'w')
+atexit.register(DEVNULL.close)
 
+def message(s):
+    sys.stderr.write(s+"\n")
 def debug(s):
-	sys.stderr.write(s+"\n");
+    message(s)
 
 # copied from https://github.com/t-oster/VisiCut/blob/0abe785a30d5d5085dd3b5953b38239b1ff83358/tools/inkscape_extension/visicut_export.py
 def which(program, raiseError, extraPaths=[], subdir=None):
@@ -283,32 +293,40 @@ def EPS2CutstudioEPS(src, dest, mirror=False):
             return output(arr+[stack[-1]])
     def transform(x, y):
         #debug("trafo from: {} {}".format(x, y))
-        p=numpy.matrix([[float(x),float(y),1]]).transpose()
-        multiply = lambda a, b: a*b
+        p=numpy.array([[float(x),float(y),1]]).transpose()
+        multiply = lambda a, b: numpy.matmul(a, b)
         # concatenate transformations by multiplying: new = transformation x previousTransformtaion
         m=reduce(multiply, scalingStack[::-1])
         m=m.transpose()
         #debug("with {}".format(m))
-        pnew=m*p
+        pnew = numpy.matmul(m, p)
         x=float(pnew[0])
         y=float(pnew[1])
         #debug("to: {} {}".format(x, y))
         return [x, y]
+    def toString(v):
+        """
+        like str(), but gives the exact same output for floats across python2 and python3
+        """
+        if isinstance(v, (type(float()), type(int()))):
+            return repr(v)
+        else:
+            return str(v)
     def outputMoveto(x, y):
         [xx, yy]=transform(x, y)
-        return output([str(xx), str(yy), "m"])
+        return output([toString(xx), toString(yy), "m"])
     def outputLineto(x, y):
         [xx, yy]=transform(x, y)
-        return output([str(xx), str(yy), "l"])
+        return output([toString(xx), toString(yy), "l"])
     def output(array):
-        array=list(map(str, array))
+        array=list(map(toString, array))
         output=" ".join(array)
         #debug("OUTPUT: "+output)
         return output + "\n"
     stack=[]
-    scalingStack=[numpy.matrix(numpy.identity(3))]
+    scalingStack=[numpy.identity(3)]
     if mirror:
-        scalingStack.append(numpy.matrix(numpy.diag([-1, 1, 1])))
+        scalingStack.append(numpy.diag([-1, 1, 1]))
     lastMoveCoordinates=None
     outputStr=prefix
     inputFile=open(src)
@@ -344,11 +362,11 @@ def EPS2CutstudioEPS(src, dest, mirror=False):
                     outputStr += outputLineto(x, y+dy)
                     outputStr += outputLineto(x, y)
             elif item=="cm": # matrix transformation
-                newTrafo=numpy.matrix([[float(stack[-7]), float(stack[-6]), 0], [float(stack[-5]), float(stack[-4]), 0], [float(stack[-3]), float(stack[-2]), 1]])
+                newTrafo=numpy.array([[float(stack[-7]), float(stack[-6]), 0], [float(stack[-5]), float(stack[-4]), 0], [float(stack[-3]), float(stack[-2]), 1]])
                 #debug("applying trafo "+str(newTrafo))
-                scalingStack[-1]*=newTrafo
+                scalingStack[-1] = numpy.matmul(scalingStack[-1], newTrafo)
             elif item=="q": # save graphics state to stack
-                scalingStack.append(numpy.matrix(numpy.identity(3)))
+                scalingStack.append(numpy.identity(3))
             elif item=="Q": # pop graphics state from stack
                 scalingStack.pop()
             elif item in ["m", "l"]:
@@ -366,9 +384,9 @@ def EPS2CutstudioEPS(src, dest, mirror=False):
     inputFile.close()
 
 if os.name=="nt": # windows
-	INKSCAPEBIN = which("inkscape.exe", True, subdir="Inkscape")
+    INKSCAPEBIN = which("inkscape.exe", True, subdir="Inkscape")
 else:
-	INKSCAPEBIN=which("inkscape", True)
+    INKSCAPEBIN=which("inkscape", True)
 
 assert os.path.isfile(INKSCAPEBIN),  "cannot find inkscape binary " + INKSCAPEBIN
 
@@ -379,7 +397,8 @@ for arg in sys.argv[1:]:
             selectedElements +=[arg[5:]]
     else:
         filename = arg
-
+if "--selftest" in sys.argv:
+    filename = "./test-input.svg"
 
 if len(selectedElements)==0:
     shutil.copyfile(filename, filename+".filtered.svg")
@@ -395,27 +414,46 @@ else:
     cmd = [INKSCAPEBIN, "-T", "--export-ignore-filters",  "--export-area-drawing", "--export-filename="+filename+".inkscape.eps", filename+".filtered.svg"]
 inkscape_eps_file = filename + ".inkscape.eps"
 
-#inkex.utils.debug(" ".join(cmd), file=sys.stderr)
+#debug(" ".join(cmd))
 assert 0 == subprocess.call(cmd, stderr=DEVNULL), 'EPS conversion failed: command returned error: ' + '"' + '" "'.join(cmd) + '"'
 assert os.path.exists(inkscape_eps_file), 'EPS conversion failed: command did not create result file: ' + '"' + '" "'.join(cmd) + '"' 
 
-EPS2CutstudioEPS(inkscape_eps_file, filename+".cutstudio.eps", mirror=("--mirror=true" in sys.argv))
+
+if "--selftest" in sys.argv:
+    # used for unit-testing: fixed location of output file
+    destination = "./test-output-actual.cutstudio.eps"
+else:
+    # normally
+    destination = filename + ".cutstudio.eps"
+
+EPS2CutstudioEPS(inkscape_eps_file, destination, mirror=("--mirror=true" in sys.argv))
+
+if "--selftest" in sys.argv:
+    # unittest: compare with known reference output
+    TEST_REFERENCE_FILE = "./test-output-reference.cutstudio.eps"
+    assert filecmp.cmp(destination, TEST_REFERENCE_FILE), "Test output changed. Please compare " + destination + " and " + TEST_REFERENCE_FILE
+    print("Selftest successful :-)")
+    sys.exit(0)
 
 if os.name=="nt":
     DETACHED_PROCESS = 8 # start as "daemon"
-    Popen([which("CutStudio\CutStudio.exe", True), "/import", filename+".cutstudio.eps"], creationflags=DETACHED_PROCESS, close_fds=True)
+    Popen([which("CutStudio\CutStudio.exe", True), "/import", destination], creationflags=DETACHED_PROCESS, close_fds=True)
 else: #check if we have access to "wine"
-    if which("wine", False) is not None:
-        if which("CutStudio.exe", False, [str(Path.home()) + "/.wine/drive_c/Program Files (x86)/CutStudio"]) is not None:
-            shutil.copyfile(filename + ".cutstudio.eps", str(Path.home()) + "/.wine/drive_c/cutstudio.eps")
-            inkex.utils.debug(str(Path.home()) + "/.wine/drive_c/'Program Files (x86)'/CutStudio/CutStudio.exe /import C:\\cutstudio.eps")
-            with os.popen("wine " + str(Path.home()) + "/.wine/drive_c/'Program Files (x86)'/CutStudio/CutStudio.exe /import C:\\cutstudio.eps", "r") as cutstudio:
-                result = cutstudio.read()
-        else:
-            inkex.utils.debug("Found a wine installation on your system but no CutStudio.exe. You can easily emulate this Windows application on Linux using wine. To do this provide a valid CutStudio installation in directory \"$HOME/.wine/drive_c/'Program Files (x86)'/CutStudio/CutStudio.exe\". The wine emulation was tested to work properly with Roland CutStudio version 3.10. For now your file was saved to:\n" + filename + ".cutstudio.eps")
-            #os.popen("/usr/bin/xdg-open " + filename)
-    else:
-        inkex.utils.debug("Your file was saved to:\n" + filename + ".cutstudio.eps" + "\n Please open that with CutStudio manually. Tip: install wine on your system and use it to install CutStudio on Linux. This InkScape extension will automatically detect it. It allows you to directly import the exported InkScape file into CutStudio.")
+    CUTSTUDIO_C_DRIVE = str(Path.home()) + "/.wine/drive_c/"
+    CUTSTUDIO_PATH_LINUX_WINE = CUTSTUDIO_C_DRIVE + "Program Files (x86)/CutStudio/CutStudio.exe"
+    CUTSTUDIO_COMMANDLINE = ["wine", CUTSTUDIO_PATH_LINUX_WINE, "/import", r'C:\cutstudio.eps']
+    try:
+        if not which("wine", False):
+            raise Exception("Cannot find 'wine'")
+        if not os.path.exists(CUTSTUDIO_PATH_LINUX_WINE):
+            raise Exception("Cannot find CutStudio in " + CUTSTUDIO_PATH_LINUX_WINE)
+        shutil.copyfile(destination, CUTSTUDIO_C_DRIVE + "cutstudio.eps")
+        subprocess.check_call(CUTSTUDIO_COMMANDLINE)
+    except Exception as exc:
+        message("Could not open CutStudio.\nInstead, your file was saved to:\n" + destination + "\n" + \
+            "Please open that with CutStudio manually. \n\n" + \
+            "Tip: On Linux, you can use 'wine' to install CutStudio 3.10. Then, the file will be directly opened with CutStudio. \n" + \
+            " Diagnostic information: \n" + str(exc))
         #os.popen("/usr/bin/xdg-open " + filename)
         #Popen(["inkscape", filename+".filtered.svg"], stderr=DEVNULL)
         #Popen(["inkscape", filename+".cutstudio.eps"])
