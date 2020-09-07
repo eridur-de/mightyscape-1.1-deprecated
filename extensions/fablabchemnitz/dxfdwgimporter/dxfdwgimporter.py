@@ -110,7 +110,11 @@ class DXFDWGImport(inkex.Effect):
         self.arg_parser.add_argument("--UNDERLAY",      type=inkex.Boolean, default=True)
         self.arg_parser.add_argument("--XLINE",         type=inkex.Boolean, default=True)
         
-        
+    def openExplorer(self, temp_output_dir):
+        if os.name == 'nt':
+            subprocess.Popen(["explorer",temp_output_dir],close_fds=True)
+        else:
+            subprocess.Popen(["xdg-open",temp_output_dir],close_fds=True)
         
     def effect(self):
         #get input file and copy it to some new temporary directory
@@ -270,7 +274,7 @@ class DXFDWGImport(inkex.Effect):
             if proc.returncode != 0: 
                inkex.errormsg("UniConverter failed: %d %s %s" % (proc.returncode, stdout, stderr))
                if self.options.opendironerror:
-                   subprocess.Popen(["explorer",temp_output_dir],close_fds=True)
+                   self.openExplorer(temp_output_dir)
                                     
         elif self.options.dxf_to_svg_parser == "bjnortier":
             if which("node") is None:
@@ -284,7 +288,7 @@ class DXFDWGImport(inkex.Effect):
                 if proc.returncode != 0: 
                    inkex.errormsg("node.js DXF to SVG conversion failed: %d %s %s" % (proc.returncode, stdout, stderr))
                    if self.options.opendironerror:
-                       subprocess.Popen(["explorer",temp_output_dir],close_fds=True)
+                       self.openExplorer(temp_output_dir)
                        
         elif self.options.dxf_to_svg_parser == "kabeja":         
             wd = os.path.join(os.getcwd(), "kabeja")
@@ -293,6 +297,8 @@ class DXFDWGImport(inkex.Effect):
             stdout, stderr = proc.communicate()
             if proc.returncode != 0: 
                inkex.errormsg("kabeja failed: %d %s %s" % (proc.returncode, stdout, stderr))  
+               if self.options.opendironerror:
+                   self.openExplorer(temp_output_dir)
                        
         elif self.options.dxf_to_svg_parser == "ezdxf":
             doc = ezdxf.readfile(dxf_file)

@@ -23,6 +23,7 @@
                <option value="px">px</option>
             </param>
             <param name="inputfile" type="path" gui-text="Import File (*.dxf, .dwg)" gui-description="Full path to your file, e.g. 'C:\Users\Username\Documents\myimage.jpg'" filetypes="dxf,dwg" mode="file">C:\Users\</param>
+            <param name="opendironerror" type="bool" gui-text="Open containing output directory on conversion errors">true</param>
             <spacer/>
             <label appearance="header">About</label>
             <separator/>
@@ -148,7 +149,6 @@
             <label appearance="header">sk1 UniConvertor 1.1.X</label>
             <separator/>
             <param name="sk1_uniconverter" type="path" gui-text="uniconvertor executable" gui-description="Full path to 'uniconvertor' executable" filetypes="cmd" mode="file">C:\Program Files (x86)\sK1 Project\UniConvertor-1.1.6\uniconvertor.cmd</param>
-            <param name="opendironerror" type="bool" gui-text="Open containing output directory on conversion errors">true</param>
         </page>
     </param>
     <effect needs-live-preview="true">
