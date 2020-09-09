@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <name>Papercraft Unfold</name>
+    <id>fablabchemnitz.de.papercraft_unfold</id>
+	<param name="tab" type="notebook">
+		<page name="general" gui-text="Input / General">
+		    <param name="inputfile" type="path" gui-text="Input File" gui-description="The model to unfold" filetypes="amf,gcode,jscad,js,json,obj,off,ply,scad,stl"
+		 mode="file">/your/beautiful/3dmodel/file</param>
+		    <param name="resizetoimport" type="bool" gui-text="Resize the canvas to the imported drawing's bounding box">true</param>
+		    <param name="extraborder" type="float" precision="3" gui-text="Add extra border around fitted canvas">0.0</param>
+		    <param name="extraborder_units" type="optiongroup" appearance="combo" gui-text="Border offset units">
+		       <option value="mm">mm</option>
+		       <option value="cm">cm</option>
+		       <option value="in">in</option>
+		       <option value="pt">pt</option>
+		       <option value="px">px</option>
+		    </param>
+		    <param name="show_fstl" type="bool" gui-text="Show converted (and fixed) STL in fstl Viewer">true</param>
+        </page>
+		<page name="meshfixing" gui-text="Mesh Fixing">
+		    <param name="fixmesh" type="bool" gui-text="Try to repair meshes before flattening using ADMmesh (recommended)">true</param>
+			<separator/>
+		    <param name="exact" type="bool" gui-text="Only check for perfectly matched edges">true</param>
+		    <param name="nearby" type="bool" gui-text="Find and connect nearby facets. Correct bad facets">true</param>
+		    <param name="tolerance" type="float" min="0.0" max="10000.0" precision="4" gui-text="Initial tolerance to use for nearby check">0.0</param>
+		    <param name="iterations" type="int" min="1" max="1000" gui-text="Number of iterations for nearby check">1</param>
+		    <param name="increment" type="float" min="0.0" max="10000.0" precision="4" gui-text="Amount to increment tolerance after iteration">0.0</param>
+		    <param name="remove_unconnected" type="bool" gui-text="Remove facets that have 0 neighbors">true</param>
+		    <param name="fill_holes" type="bool" gui-text="Add facets to fill holes">true</param>
+		    <param name="normal_directions" type="bool" gui-text="Check and fix direction of normals (ie cw, ccw)">true</param>
+		    <param name="reverse_all" type="bool" gui-text="Reverse the directions of all facets and normals">true</param>
+		    <param name="normal_values" type="bool" gui-text="Check and fix normal values">true</param>
+        </page>
+    </param>
+    <effect needs-live-preview="true">
+        <object-type>all</object-type>
+        <effects-menu>
+            <submenu name="FabLab Chemnitz">
+				<submenu name="Import/Export/Transfer"/>
+			</submenu>
+        </effects-menu>
+    </effect>
+    <script>
+        <command location="inx" interpreter="python">papercraft_unfold.py</command>
+    </script>
+</inkscape-extension>
