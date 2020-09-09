@@ -26,7 +26,8 @@ import inkex
 import sys
 import os
 import re
-import subprocess, tempfile
+import subprocess
+import tempfile
 from lxml import etree
 from subprocess import Popen, PIPE
 import shutil
@@ -112,9 +113,9 @@ class DXFDWGImport(inkex.Effect):
         
     def openExplorer(self, temp_output_dir):
         if os.name == 'nt':
-            subprocess.Popen(["explorer",temp_output_dir],close_fds=True)
+            subprocess.Popen(["explorer",temp_output_dir], close_fds=True)
         else:
-            subprocess.Popen(["xdg-open",temp_output_dir],close_fds=True)
+            subprocess.Popen(["xdg-open",temp_output_dir], close_fds=True)
         
     def effect(self):
         #get input file and copy it to some new temporary directory
@@ -357,8 +358,8 @@ class DXFDWGImport(inkex.Effect):
             if emptyGroup is not None:
                  emptyGroup.getparent().remove(emptyGroup)
              
-        #empty the following vals because they destroy the size aspects of the import        
-        if self.options.dxf_to_svg_parser == "bjnortier":        
+        #empty the following vals because they destroy the size aspects of the import / make viewbox looking wrong       
+        if self.options.dxf_to_svg_parser == "bjnortier" or self.options.dxf_to_svg_parser == "kabeja":        
             doc.set('width','')
             doc.set('height','')
             doc.set('viewBox','')
@@ -371,19 +372,22 @@ class DXFDWGImport(inkex.Effect):
                 #if child.tag == inkex.addNS('g','svg'):
                 elements.append(child)
 
-            #build some of bounding boxes and ignore errors for faulty elements (sum function often fails for that usecase!)
+            #build sum of bounding boxes and ignore errors for faulty elements (sum function often fails for that usecase!)
             bbox = None
             try:
                 bbox = elements[0].bounding_box() #init with the first bounding box of the tree (and hope that it is not a faulty one)
-            except:
+            except Exception as e:
+                #inkex.utils.debug(str(e))
                 pass
             count = 0
             for element in elements:
-                if count == 0: continue #skip the first
-                try:
-                    bbox.add(element.bounding_box())
-                except:
-                    pass
+                if count != 0: #skip the first
+                    try:
+                        #bbox.add(element.bounding_box())
+                        bbox += element.bounding_box()
+                    except Exception as e:
+                        #inkex.utils.debug(str(e))
+                        pass
                 count += 1 #some stupid counter
             if bbox is not None:
                 root = self.svg.getElement('//svg:svg');
