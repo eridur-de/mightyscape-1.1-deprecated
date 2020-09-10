@@ -18,7 +18,7 @@ import math
 from operator import itemgetter
 from inkex.colors import Color
 
-class LayerGroup(inkex.Effect):
+class StylesToLayers(inkex.Effect):
 
     def findLayer(self, layerName):
         svg_layers = self.document.xpath('//svg:g[@inkscape:groupmode="layer"]', namespaces=inkex.NSS)
@@ -89,7 +89,8 @@ class LayerGroup(inkex.Effect):
             if stroke is not None:    
                 style = style + 'stroke:' + stroke + ";"
                 
-            if style and element.tag != inkex.addNS('stop','svg'): #we don't want to destroy elements with gradients (they contain svg:stop elements which have a style too)
+            #we don't want to destroy elements with gradients (they contain svg:stop elements which have a style too) and we don't want to mess with tspans (text)
+            if style and element.tag != inkex.addNS('stop','svg') and element.tag != inkex.addNS('tspan','svg'): 
                 if self.options.separateby == "stroke":
                     stroke = re.search('stroke:(.*?)(;|$)', style)
                     if stroke is not None:
@@ -154,13 +155,13 @@ class LayerGroup(inkex.Effect):
                     else:
                         layerNodeList.append([currentLayer, neutral_value, element, self.options.separateby]) #layer is existent. append items to this later
 
-        contentlength = 0 #some counter to track if there layers inside or if it is just a list with empty children
+        contentlength = 0 #some counter to track if there are layers inside or if it is just a list with empty children
         for layerNode in layerNodeList:
             layerNode[0].append(layerNode[2]) #append element to created layer           
             if layerNode[1] is not None: contentlength += 1 #for each found layer we increment +1
           
         # Additionally if threshold was defined re-arrange the previously created layers by putting them into sub layers        
-        if self.options.subdividethreshold > 1 and contentlength > 0: #check if there if we need to subdivide and if there items we could rearrange into sub layers
+        if self.options.subdividethreshold > 1 and contentlength > 0: #check if we need to subdivide and if there are items we could rearrange into sub layers
             
             #disabled sorting because it can return NoneType values which will kill the algorithm
             #layerNodeList.sort(key=itemgetter(1)) #sort by neutral values from min to max to put them with ease into parent layers
@@ -235,4 +236,4 @@ class LayerGroup(inkex.Effect):
                 inkex.utils.debug("Calling 'Remove Empty Groups' extension failed. Maybe the extension is not installed. You can download it from official InkScape Gallery.")
             
 if __name__ == '__main__':
-    LayerGroup().run()
+    StylesToLayers().run()
