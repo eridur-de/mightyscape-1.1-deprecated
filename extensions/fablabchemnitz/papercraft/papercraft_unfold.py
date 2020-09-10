@@ -86,10 +86,10 @@ command line is not important.
 #################################################################
 
 Module licenses
-- papercraft      (https://github.com/osresearch/papercraft)            - GPL v2 License
-- openjscad       (https://github.com/jscad/OpenJSCAD.org)              - MIT License and other, not bundled. Install it separately
-- model-converter (https://github.com/tforgione/model-converter-python) - MIT License
-- admesh          (https://github.com/admesh/admesh)                    - GPL License
+- papercraft      - 26307b8        (https://github.com/osresearch/papercraft)            - GPL v2 License
+- openjscad       - 1.6.1          (https://github.com/jscad/OpenJSCAD.org)              - MIT License and other (installed using npm install -g @jscad/openjscad)
+- model-converter - commit a8d809a (https://github.com/tforgione/model-converter-python) - MIT License
+- admesh          - 0.98.3         (https://github.com/admesh/admesh)                    - GPL License
 
 #TODO
 - admesh Parameter als extra Tab in InkScape
@@ -104,6 +104,7 @@ class Unfold(inkex.Effect):
         inkex.Effect.__init__(self)
         self.arg_parser.add_argument("--tab")
         self.arg_parser.add_argument("--inputfile")
+        self.arg_parser.add_argument("--generatelabels", type=inkex.Boolean, default=True, help="Generate labels for edges")
         self.arg_parser.add_argument("--resizetoimport", type=inkex.Boolean, default=True, help="Resize the canvas to the imported drawing's bounding box") 
         self.arg_parser.add_argument("--extraborder", type=float, default=0.0)
         self.arg_parser.add_argument("--extraborder_units")              
@@ -119,7 +120,11 @@ class Unfold(inkex.Effect):
         self.arg_parser.add_argument("--normal_directions", type=inkex.Boolean, default=True, help="Check and fix direction of normals (ie cw, ccw)")
         self.arg_parser.add_argument("--reverse_all", type=inkex.Boolean, default=True, help="Reverse the directions of all facets and normals")
         self.arg_parser.add_argument("--normal_values", type=inkex.Boolean, default=True, help="Check and fix normal values")
-                     
+        self.arg_parser.add_argument("--xy_mirror", type=inkex.Boolean, default=True)
+        self.arg_parser.add_argument("--yz_mirror", type=inkex.Boolean, default=True)
+        self.arg_parser.add_argument("--xz_mirror", type=inkex.Boolean, default=True)
+        self.arg_parser.add_argument("--scale", type=float, default=1.0)
+                                 
     def effect(self):
         import_formats_model_converter=[".obj", ".off", ".ply"] #we could also handle stl but openscad does the better job 
         import_formats_openjscad=[".jscad", ".js", ".scad", ".stl", ".amf", ".gcode", ".json"] #we could also handle obj but model converter does the better job
@@ -142,21 +147,29 @@ class Unfold(inkex.Effect):
             with open(converted_inputfile, 'w') as f:
                 f.write(mt.convert(inputfile, converted_inputfile, up_conversion))
         if inputfile_format in import_formats_openjscad:
-            cmd = "openjscad \"" + inputfile + "\" -of stlb -o \"" + converted_inputfile + "\""
-            p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+            if os.name=="nt":
+                jscad_cmd = "openjscad\\node_modules\\.bin\\openjscad.cmd "
+            else:
+                jscad_cmd = "./openjscad/node_modules/.bin/openjscad "         
+            jscad_cmd += "\"" + inputfile + "\" -of stlb -o \"" + converted_inputfile + "\""
+            p = Popen(jscad_cmd, shell=True, stdout=PIPE, stderr=PIPE)
             stdout, stderr = p.communicate()
             p.wait()
             if p.returncode != 0 or len(stderr) > 0: 
-               inkex.utils.debug("openjscad conversion failed: %d %s %s" % (p.returncode, stdout, stderr))
-
+               inkex.utils.debug("first openjscad conversion failed: %d %s %s" % (p.returncode, stdout, stderr))
+            
         #we do this to convert possibly previously generated ASCII STL from model converter to binary STL to ensure always binary STLs
-        cmd = "openjscad \"" + converted_inputfile + "\" -of stlb -o \"" + converted_inputfile + "\""
-        p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+        if os.name=="nt":
+            jscad2_cmd = "openjscad\\node_modules\\.bin\\openjscad.cmd "
+        else:
+            jscad2_cmd = "./openjscad/node_modules/.bin/openjscad "          
+        jscad2_cmd += "\"" + converted_inputfile + "\" -of stlb -o \"" + converted_inputfile + "\""
+        p = Popen(jscad2_cmd, shell=True, stdout=PIPE, stderr=PIPE)
         stdout, stderr = p.communicate()
         p.wait()
         if p.returncode != 0 or len(stderr) > 0: 
-           inkex.utils.debug("openjscad conversion failed: %d %s %s" % (p.returncode, stdout, stderr))
-               
+            inkex.utils.debug("second openjscad conversion failed: %d %s %s" % (p.returncode, stdout, stderr))
+            
         if not os.path.exists(converted_inputfile):
             inkex.utils.debug("Cannot find conversion output. Unable to continue")
             exit(1)
@@ -164,48 +177,58 @@ class Unfold(inkex.Effect):
         # Run ADMesh mesh fixer to overwrite the STL with fixed output (binary output too)
         if self.options.fixmesh == True:
             if os.name=="nt":
-                cmd = "admesh\\admesh.exe "
+                admesh_cmd = "admesh\\admesh.exe "
             else:
-                cmd = "./admesh/admesh " 
-            if self.options.exact == True: cmd += "--exact "
-            if self.options.nearby == True: cmd += "--nearby "
-            if self.options.tolerance > 0.0: cmd += "--tolerance " + str(self.options.tolerance) + " "
-            if self.options.iterations > 1: cmd += "--iterations " + str(self.options.iterations) + " "
-            if self.options.increment > 0.0: cmd += "--increment " + str(self.options.increment) + " "
-            if self.options.remove_unconnected == True: cmd += "--remove-unconnected "
-            if self.options.normal_directions == True: cmd += "--normal-directions "
-            if self.options.fill_holes == True: cmd += "--fill-holes "
-            if self.options.reverse_all == True: cmd += "--reverse-all "
-            if self.options.normal_values == True: cmd += "--normal-values "    
-            cmd += "\"" + converted_inputfile + "\" "
-            cmd += "-b \"" + converted_inputfile + "\""
-            p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+                admesh_cmd = "./admesh/admesh "
+
+            if self.options.xy_mirror == True: admesh_cmd += "--xy-mirror "
+            if self.options.yz_mirror == True: admesh_cmd += "--yz-mirror "
+            if self.options.xz_mirror == True: admesh_cmd += "--xz-mirror "
+            if self.options.scale != 1.0: admesh_cmd += "--scale " + str(self.options.scale) + " "
+            if self.options.exact == True: admesh_cmd += "--exact "
+            if self.options.nearby == True: admesh_cmd += "--nearby "
+            if self.options.tolerance > 0.0: admesh_cmd += "--tolerance " + str(self.options.tolerance) + " "
+            if self.options.iterations > 1: admesh_cmd += "--iterations " + str(self.options.iterations) + " "
+            if self.options.increment > 0.0: admesh_cmd += "--increment " + str(self.options.increment) + " "
+            if self.options.remove_unconnected == True: admesh_cmd += "--remove-unconnected "
+            if self.options.normal_directions == True: admesh_cmd += "--normal-directions "
+            if self.options.fill_holes == True: admesh_cmd += "--fill-holes "
+            if self.options.reverse_all == True: admesh_cmd += "--reverse-all "
+            if self.options.normal_values == True: admesh_cmd += "--normal-values "    
+            admesh_cmd += "\"" + converted_inputfile + "\" "
+            admesh_cmd += "-b \"" + converted_inputfile + "\""
+            p = Popen(admesh_cmd, shell=True, stdout=PIPE, stderr=PIPE)
             stdout, stderr = p.communicate()
             p.wait()
             if p.returncode != 0: 
                inkex.utils.debug("admesh failed: %d %s %s" % (p.returncode, stdout, stderr))
+               exit(1)
          
         # Run papercraft flattening   
         converted_flattenfile = os.path.join(tempfile.gettempdir(), os.path.splitext(os.path.basename(inputfile))[0] + ".svg")
         if os.path.exists(converted_flattenfile):
-              os.remove(converted_flattenfile) #remove previously generated conversion file  
-        if os.name=="nt":
-            cmd = "unfold\\unfold.exe" + " < \"" + converted_inputfile + "\" > \"" + converted_flattenfile + "\""
+              os.remove(converted_flattenfile) #remove previously generated conversion file
+        if self.options.generatelabels:
+            unfold_exec = "unfold_labels"
         else:
-            cmd = "./unfold/unfold" + " < \"" + converted_inputfile + "\" > \"" + converted_flattenfile + "\"" 
-        p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+            unfold_exec = "unfold_nolabels"
+        if os.name=="nt":
+            papercraft_cmd = "unfold\\" + unfold_exec + ".exe" + " < \"" + converted_inputfile + "\" > \"" + converted_flattenfile + "\""
+        else:
+            papercraft_cmd = "./unfold/" + unfold_exec + " < \"" + converted_inputfile + "\" > \"" + converted_flattenfile + "\"" 
+        p = Popen(papercraft_cmd, shell=True, stdout=PIPE, stderr=PIPE)
         stdout, stderr = p.communicate()
         p.wait()
         if p.returncode != 0: 
-           inkex.utils.debug("osresearch/papercraft unfold failed: %d %s %s" % (p.returncode, stdout, stderr))
-               
+            inkex.utils.debug("osresearch/papercraft unfold failed: %d %s %s" % (p.returncode, stdout, stderr))
+            
         # Open converted output in fstl       
         if self.options.show_fstl == True:
             if os.name=="nt":
-                cmd = "fstl\\fstl.exe \"" + converted_inputfile + "\""
+                fstl_cmd = "fstl\\fstl.exe \"" + converted_inputfile + "\""
             else:
-                cmd = "./fstl/fstl \"" + converted_inputfile + "\""
-            p = Popen(cmd, shell=True)
+                fstl_cmd = "./fstl/fstl \"" + converted_inputfile + "\""
+            p = Popen(fstl_cmd, shell=True)
             p.wait()
                
         # Write the generated SVG into InkScape's canvas

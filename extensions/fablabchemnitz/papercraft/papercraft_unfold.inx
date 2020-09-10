@@ -6,6 +6,7 @@
 		<page name="general" gui-text="Input / General">
 		    <param name="inputfile" type="path" gui-text="Input File" gui-description="The model to unfold" filetypes="amf,gcode,jscad,js,json,obj,off,ply,scad,stl"
 		 mode="file">/your/beautiful/3dmodel/file</param>
+		    <param name="generatelabels" type="bool" gui-text="Generate labels for edges">true</param>
 		    <param name="resizetoimport" type="bool" gui-text="Resize the canvas to the imported drawing's bounding box">true</param>
 		    <param name="extraborder" type="float" precision="3" gui-text="Add extra border around fitted canvas">0.0</param>
 		    <param name="extraborder_units" type="optiongroup" appearance="combo" gui-text="Border offset units">
@@ -17,7 +18,7 @@
 		    </param>
 		    <param name="show_fstl" type="bool" gui-text="Show converted (and fixed) STL in fstl Viewer">true</param>
         </page>
-		<page name="meshfixing" gui-text="Mesh Fixing">
+		<page name="meshfixing" gui-text="Mesh Fixing / Adjusting (ADMesh)">
 		    <param name="fixmesh" type="bool" gui-text="Try to repair meshes before flattening using ADMmesh (recommended)">true</param>
 			<separator/>
 		    <param name="exact" type="bool" gui-text="Only check for perfectly matched edges">true</param>
@@ -30,6 +31,11 @@
 		    <param name="normal_directions" type="bool" gui-text="Check and fix direction of normals (ie cw, ccw)">true</param>
 		    <param name="reverse_all" type="bool" gui-text="Reverse the directions of all facets and normals">true</param>
 		    <param name="normal_values" type="bool" gui-text="Check and fix normal values">true</param>
+			<separator/>
+		    <param name="xy_mirror" type="bool" gui-text="XY-Mirror">false</param>
+		    <param name="yz_mirror" type="bool" gui-text="YZ-Mirror">false</param>
+		    <param name="xz_mirror" type="bool" gui-text="XZ-Mirror">false</param>
+		    <param name="scale" type="float" min="0.0001" max="10000.0" precision="4" gui-text="Scale">1.0</param>
         </page>
     </param>
     <effect needs-live-preview="true">
