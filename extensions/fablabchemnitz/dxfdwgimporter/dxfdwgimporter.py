@@ -232,7 +232,7 @@ class DXFDWGImport(inkex.Effect):
         if self.options.oda_skip_dxf_to_dxf: #if true we need to move the file to simulate "processed"
             shutil.move(os.path.join(temp_input_dir, Path(inputfile).name), os.path.join(temp_output_dir, Path(inputfile).name))
 
-        if self.options.oda_keepconverted_dxf and inputfile_ending != ".dxf": #if the input file already was DXF we don't need to make another copy
+        if self.options.oda_keepconverted_dxf:
             shutil.copy2(dxf_file, os.path.join(os.path.dirname(inputfile), outputfilebase + "_oda.dxf")) # complete target filename given
             
         # Preprocessing DXF to DXF (entity filter) by using ezdxf the first time
