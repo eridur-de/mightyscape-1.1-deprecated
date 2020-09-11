@@ -33,8 +33,8 @@ from subprocess import Popen, PIPE
 import shutil
 from shutil import which
 from pathlib import Path    
-#from mimetypes import MimeTypes
-#import urllib.request as urllib
+from mimetypes import MimeTypes
+import urllib.request as urllib
 
 #ezdxf related imports
 import matplotlib.pyplot as plt
@@ -226,8 +226,18 @@ class DXFDWGImport(inkex.Effect):
                    inkex.utils.debug("ODAFileConverter failed: %d %s %s" % (proc.returncode, stdout, stderr))
                    if os.name != 'nt':
                        inkex.utils.debug("If the error message above contains a warning about wrong/missing Qt version please install the required version. You can get the installer from 'https://download.qt.io/archive/qt/'. Sadly you will need to create a free account to install. After installation please configure the shell script '/usr/bin/ODAFileConverter' to add a preceding line with content similar to 'LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/Qt5.14.2/5.14.2/gcc_64/lib/'.")
-                   exit(1)   
-            
+                   exit(1)
+            # check if ODA converted successfully. This is the case if no error file was created
+            oda_errorfile = os.path.join(temp_output_dir, Path(inputfile).name + ".err")
+            if os.path.exists(oda_errorfile):
+                inkex.utils.debug("ODA File Converter failed to process the file. Cannot continue DXF/DWG import. The error message is:")
+                errormessage = open(oda_errorfile, 'r')
+                errorlines = errormessage.readlines() 
+                for errorline in errorlines: 
+                    inkex.utils.debug(errorline.strip())
+                errormessage.close()
+                exit(1)
+        
         # Do some movings/copies of skipped or processed DXF
         if self.options.oda_skip_dxf_to_dxf: #if true we need to move the file to simulate "processed"
             shutil.move(os.path.join(temp_input_dir, Path(inputfile).name), os.path.join(temp_output_dir, Path(inputfile).name))
