@@ -349,7 +349,7 @@ class DXFDWGImport(inkex.Effect):
         p = etree.XMLParser(huge_tree=True)
         doc = etree.parse(stream, parser=etree.XMLParser(huge_tree=True)).getroot()
         stream.close()
-        doc.set('id', self.svg.get_unique_id('dxf_dwg_import'))
+        doc.set('id', self.svg.get_unique_id("dxf_dwg_import-" + self.options.dxf_to_svg_parser + "-"))
         self.document.getroot().append(doc)
 
         #get children of the doc and move them one group above - we don't do this for bjnortier tool because this has different structure which we don't want to disturb
