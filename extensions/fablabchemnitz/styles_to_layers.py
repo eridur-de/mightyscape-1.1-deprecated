@@ -8,7 +8,7 @@ Features
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 19.08.2020
-Last patch: 29.08.2020
+Last patch: 10.09.2020
 License: GNU GPL v3
 """
 import inkex

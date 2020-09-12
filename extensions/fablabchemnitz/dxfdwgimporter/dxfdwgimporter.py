@@ -8,7 +8,7 @@ Import any DWG or DXF file using ODA File Converter, sk1 UniConvertor, ezdxf and
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 23.08.2020
-Last patch: 28.08.2020
+Last patch: 12.09.2020
 License: GNU GPL v3
 
 Module licenses
@@ -17,6 +17,7 @@ Module licenses
 - https://github.com/bjnortier/dxf - MIT License
 - ODA File Converter - not bundled (due to restrictions by vendor)
 - sk1 UniConvertor (https://github.com/sk1project/uniconvertor) - AGPL v3.0 - not bundled
+- kabeja (http://kabeja.sourceforge.net/) - Apache v2
 
 ToDos:
 - change copy commands to movefile commands (put into temp. sub directories where the input file is located). We need to copy files in this script because ODA File Converter will process whole dirs instead of single files only.DXF files can be really large, which slows the process)
@@ -393,7 +394,6 @@ class DXFDWGImport(inkex.Effect):
             for element in elements:
                 if count != 0: #skip the first
                     try:
-                        #bbox.add(element.bounding_box())
                         bbox += element.bounding_box()
                     except Exception as e:
                         #inkex.utils.debug(str(e))

@@ -186,7 +186,7 @@ class ContourScanner(inkex.Effect):
                         'stroke': self.options.color_selfintersecting, 'stroke-linecap': 'butt', 'fill': 'none'}).to_str()
                     
                     try: 
-                        if len(points) > 0: #try to find self-intersecting /overlapping polygons
+                        if len(points) > 2: #try to find self-intersecting /overlapping polygons. We need at least 3 points to detect for intersections (only possible if first points matched last point)
                             isect = poly_point_isect.isect_polygon(points)         
                             if len(isect) > 0:
                                 if closed == False and self.options.addlines == True: #if contour is open and we found intersection points those points might be not relevant
@@ -240,8 +240,8 @@ class ContourScanner(inkex.Effect):
                         #    polySegsNode.set('d', str(Path(isectSegsPath)))
                         #    polySegsNode.attrib['style'] = closingLineStyle
 
-                    except Exception as e: # we skip AssertionError
-                        inkex.utils.debug(str(e))
+                    except AssertionError as e: # we skip AssertionError
+                        inkex.utils.debug("Error: " + str(e))
                 #if the intersectionGroup was created but nothing attached we delete it again to prevent messing the SVG XML tree
                 if len(intersectionGroup.getchildren()) == 0:
                     intersectionGroupParent = intersectionGroup.getparent()
