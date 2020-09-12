@@ -8,11 +8,12 @@ This extension parses the selection and will put all elements into one single gr
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 13.08.2020
-Last Patch: 31.08.2020
+Last Patch: 13.09.2020
 License: GNU GPL v3
 """
 
 import inkex
+import os
 from lxml import etree
 
 class MigrateGroups(inkex.Effect):
@@ -157,14 +158,35 @@ class MigrateGroups(inkex.Effect):
         #inkex.utils.debug("--- All dropouts ---")
         #inkex.utils.debug(len(self.allDrops))
         #inkex.utils.debug(self.allDrops)
-            
+
+
+        migrate_log = "migrategroups.log"
+
+        # Clean up possibly previously generated log file
+        if os.path.exists(migrate_log):
+            try:
+                os.remove(migrate_log)
+            except OSError as e: 
+                inkex.utils.debug("Error while deleting previously generated log file " + migrate_log)
+
         # show a list with items to delete. For ungroup mode it does not apply because we are not going to remove anything
         if self.options.operationmode == "filter_only" or self.options.operationmode == "ungroup_and_filter":
             if self.options.showdroplist:
-                self.msg(str(len(self.allDrops)) + " elements were removed during nodes while migration:")
+                inkex.utils.debug(str(len(self.allDrops)) + " elements were removed during nodes while migration:")
+                if len(self.allDrops) > 100: #if we print too much to the output stream we will freeze InkScape forever wihtout any visual error message. So we write to file instead
+                    migrate_log_file = open('migrategroups.log', 'w')
+                else:
+                    migrate_log_file = None
                 for i in self.allDrops:
                     if i.get('id') is not None:
-                        self.msg(i.tag.replace("{http://www.w3.org/2000/svg}","svg:") + " id:" + i.get('id'))
+                        migrateString = i.tag.replace("{http://www.w3.org/2000/svg}","svg:") + " id:" + i.get('id')
+                        if migrate_log_file is None:
+                            inkex.utils.debug(migrateString)
+                        else:
+                            migrate_log_file.write(migrateString + "\n")
+                if migrate_log_file is not None:
+                    migrate_log_file.close()
+                    inkex.utils.debug("Detailed output was dumped into file " + os.path.join(os.getcwd(), migrate_log))
 
         # remove all groups from the selection and form a new single group of it by copying with old IDs.
         if self.options.operationmode == "ungroup_only" or self.options.operationmode == "ungroup_and_filter":
@@ -177,7 +199,7 @@ class MigrateGroups(inkex.Effect):
                 for element in self.allElements: #we have a list of elements which does not cotain any other elements like svg:g or svg:svg 
                     newGroup.insert(index, element) #we do not copy any elements. we just rearrange them by moving to another place (group index)
                     index += 1 #we must count up the index or we would overwrite each previous element
-   
+    
        # remove the stuff from drop list list. this has to be done before we drop the groups where they are located in
         if self.options.operationmode == "filter_only" or self.options.operationmode == "ungroup_and_filter":
             if len(self.allDrops) > 0:
