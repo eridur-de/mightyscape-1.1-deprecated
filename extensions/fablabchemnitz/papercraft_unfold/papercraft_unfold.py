@@ -24,13 +24,7 @@ Date: 08.09.2020
 Last patch: 13.09.2020
 License: GNU GPL v3
 
-This tool converts a lot of different formats into STL Format. The STL then gets unfolded (flattened) to make a papercraft model.
-
-#################################################################
-openjscad [-v] <file> [-of <format>] [-o <output>]
-    <file>  :    input file (Supported types: .jscad, .js, .scad, .stl, .amf, .obj, .gcode, .svg, .json)
-    <output>:    output file (Supported types: .jscad, .stl, .amf, .dxf, .svg, .json)
-    <format>:    'jscad', 'stla' (STL ASCII, default), 'stlb' (STL Binary), 'amf', 'dxf', 'svg', 'json'
+This tool converts a STL/OFF/PLY/OBJ into binary STL Format. The STL then gets unfolded (flattened) to make a papercraft model.
 
 #################################################################
 ADMesh version 0.99.0dev
@@ -75,18 +69,11 @@ NOTE: If admesh on linux fails just run "make clean && make" to re-create the ex
 "papercraft_unfold/admesh/linux/.libs/admesh: error while loading shared libraries: libadmesh.so.1: cannot open shared object file: No such file or directory"
 admesh is sensible for moving from one dir to another
 
-
 #################################################################
 Module licenses
 - papercraft      - 26307b8        (https://github.com/osresearch/papercraft)            - GPL v2 License
-- openjscad       - 1.6.1          (https://github.com/jscad/OpenJSCAD.org)              - MIT License and other (installed using npm install -g @jscad/openjscad)
 - model-converter - commit a8d809a (https://github.com/tforgione/model-converter-python) - MIT License
 - admesh          - 0.98.3         (https://github.com/admesh/admesh)                    - GPL License
-
-#TODO
-- Windows Executables
-- fix Linux admesh
-- Doku Seite mit HowTo Compile / install openjscad + admesh
 
 """
 
