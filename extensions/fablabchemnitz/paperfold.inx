@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <name>Paperfold</name>
+    <id>fablabchemnitz.de.paperfold</id>
+	<param name="inputfile" type="path" gui-text="Input File" filetypes="obj,off,ply,stl" gui-description="The model to unfold" mode="file">/your/beautiful/3dmodel/file</param>
+    <param name="printNumbers" type="bool" gui-text="Print numbers on the cut edges">true</param>
+    <param name="scalefactor" type="float" precision="3" min="0.0001" max="10000.0" gui-text="Manual scale factor" gui-description="default is 1.0">1.0</param>
+    <param name="resizetoimport" type="bool" gui-text="Resize the canvas to the imported drawing's bounding box">true</param>
+    <param name="extraborder" type="float" precision="3" gui-text="Add extra border around fitted canvas">0.0</param>
+    <param name="extraborder_units" type="optiongroup" appearance="combo" gui-text="Border offset units">
+       <option value="mm">mm</option>
+       <option value="cm">cm</option>
+       <option value="in">in</option>
+       <option value="pt">pt</option>
+       <option value="px">px</option>
+    </param>
+    <param name="color_valley_cut" type="color" appearance="colorbutton" gui-text="Color for valley cuts">255</param>
+    <param name="color_mountain_cut" type="color" appearance="colorbutton" gui-text="Color for mountain cuts">1968208895</param>
+    <param name="color_valley_perforate" type="color" appearance="colorbutton" gui-text="Color for valley perforations">3422552319</param>
+    <param name="color_mountain_perforate" type="color" appearance="colorbutton" gui-text="Color for mountain perforations">879076607</param>
+    <separator/>
+    <label>paperfold for InkScape - by Mario Voigt / Stadtfabrikanten e.V. (2020)</label>
+    <label appearance="url">https://fablabchemnitz.de</label>
+    <label>License: GNU GPL v3</label>
+    <label>This project is strongly based on:</label>
+    <label appearance="url">https://github.com/felixfeliz/paperfoldmodels</label>
+    <effect needs-live-preview="true">
+        <object-type>all</object-type>
+        <effects-menu>
+            <submenu name="FabLab Chemnitz">
+				<submenu name="Papercraft Flatteners"/>
+			</submenu>
+        </effects-menu>
+    </effect>
+    <script>
+        <command location="inx" interpreter="python">paperfold.py</command>
+    </script>
+</inkscape-extension>
