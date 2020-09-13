@@ -44,7 +44,7 @@
         <object-type>all</object-type>
         <effects-menu>
             <submenu name="FabLab Chemnitz">
-				<submenu name="Paper/Cardboard Boxes"/>
+				<submenu name="Papercraft Flatteners"/>
 			</submenu>
         </effects-menu>
     </effect>
