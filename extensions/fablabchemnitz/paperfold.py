@@ -37,6 +37,14 @@ possible import file types -> https://www.graphics.rwth-aachen.de/media/openmesh
 ToDos:
 - Add glue tabs
 - Fix bug with canvas resizing. bounding box of paperfoldMainGroup returns undexplainable wrong results. Why the fuck? How to update the view to get correct values here?
+- Print statistics about 
+  - groups
+  - triagle count
+  - edge count per type (valley cut, mountain cut, valley fold, mountain fold)
+  - remove unrequired extra folding edges on plane surfaces (compare the output from osresearch/papercraft and paperfoldmodels) which should be removed before printing/cutting. 
+    For example take a pentagon - it's face gets divided into three triangles if we put it into a mesh triangulation tool. Means we receive two fold edges which we don't need.
+    This would create more convenient output like osresearch/papercraft and dxf2papercraft do. 
+    See https://github.com/osresearch/papercraft/blob/master/unfold.c > coplanar_check() method
 
 """
 
@@ -294,8 +302,7 @@ def unfold(mesh):
     # Calculate the minimum spanning tree
     spanningTree = nx.minimum_spanning_tree(dualGraph)
 
-    #Unfold the tree
-
+    # Unfold the tree
     fullUnfolding = unfoldSpanningTree(mesh, spanningTree)
     [unfoldedMesh, isFoldingEdge, connections, glueNumber, foldingDirection] = fullUnfolding
 
@@ -316,7 +323,6 @@ def unfold(mesh):
                     triangle2.append(unfoldedMesh.point(unfoldedMesh.from_vertex_handle(halfedge)))
                 if triangleIntersection(triangle1, triangle2, epsilon):
                     faceIntersections.append([connections[face1.idx()], connections[face2.idx()]])
-
 
     # Find the paths
     # We find the minimum number of cuts to resolve any self-intersection
