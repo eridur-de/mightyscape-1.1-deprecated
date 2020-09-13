@@ -12,13 +12,22 @@ from inkex import Transform, TextElement, Tspan, Color
 """
 Extension for InkScape 1.0
 
-Import any DWG or DXF file using ODA File Converter, sk1 UniConvertor, ezdxf and more tools.
+Paperfold is another flattener for triangle mesh files, heavily based on paperfoldmodels by Felix Scholz aka felixfeliz.
 
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 13.09.2020
 Last patch: 13.09.2020
 License: GNU GPL v3
+
+To run this you need to install OpenMesh with python pip. 
+
+The algorithm of paperfoldmodels consists of three steps:
+  - Find a minimum spanning tree of the dual graph of the mesh.
+  - Unfold the dual graph.
+  - Remove self-intersections by adding additional cuts along edges.
+  
+Reference: The code is mostly based on the algorithm presented in a by Straub and Prautzsch (https://geom.ivd.kit.edu/downloads/proj-paper-models_cut_out_sheets.pdf).
 
 Module licenses
 - paperfoldmodels (https://github.com/felixfeliz/paperfoldmodels) - MIT License
