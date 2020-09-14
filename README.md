@@ -27,14 +27,15 @@ I think this package is ideal for makers who are travelling around and/or using 
        * Windows portable Version (1.1dev 2020-07-27) @ Windows 10
        * Linux dev trunk (https://inkscape.org/de/release/inkscape-master/gnulinux/ubuntu/ppa/dl/) @ Ubuntu 20 LTS
    * tested using Python 3.8.5 64 Bit
-   * some extensions require custom Python installation/modules. So i provide a description on how to do this (see documentation).
-   * some extensions require additional packages or other installers (see documentation too).
+   * some extensions require custom Python installation/modules. So i provide a description on how to do this (see documentation at our FabLab Chemnitz Wiki (see below)).
+   * some extensions require additional commands, packages or other installers (see documentation too).
+   * the structure of this repo is intended the following way: all extensions which require exactly one *.py and one *.inx file are kept on the top level /mightyscape-1.X/extensions/fablabchemnitz. So just copy them to your InkScape's extension directory. All extension which require additional libraries have their own sub directory. You will find redundancies in this repo like node.exe (NodeJS). I did it this way to give easy possibilty to only pick the extensions you want (i dont want to make about 200 repositories).
 
 # Remaining ToDos
 
   * clean code
   * make more precise documentation with more examples
-  * remove old deprecations
+  * remove deprecation warnings
   * check out command line handling of extension. This was totally ignored yet
 
 # Documentation and examples
