@@ -36,7 +36,7 @@ possible import file types -> https://www.graphics.rwth-aachen.de/media/openmesh
 
 ToDos:
 - Add glue tabs
-- Fix bug with canvas resizing. bounding box of paperfoldMainGroup returns undexplainable wrong results. Why the fuck? How to update the view to get correct values here?
+- Fix bug with canvas resizing. bounding box of paperfoldMainGroup returns unexplainable wrong results. How to update the view to get correct values here?
 - Print statistics about 
   - groups
   - triagle count
