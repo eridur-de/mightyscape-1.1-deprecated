@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <name>Maze</name>
+    <id>fablabchemnitz.de.maze</id>
+    <param name="verti" type="int" min="2" max="1000" gui-text="Height">20</param>
+    <param name="horiz" type="int" min="2" max="1000" gui-text="Length">20</param>
+    <param name="size" type="float" max="100.0" gui-text="Cell Size">10.0</param>
+    <param name="width" type="float" gui-text="Line Width">1.0</param>
+    <param name="algo" type="optiongroup" appearance="minimal" gui-text="Algorithm">
+        <option value="kruskal">Kruskal</option>
+        <option value="recursive_backtrack">Recursive Backtrack</option>
+        <option value="empty">Empty</option>
+        <option value="full">Full</option>
+    </param>
+    <param name="use2" type="description" xml:space="preserve">This script will generate a maze according to a certain algorithm.</param>
+    <effect>
+        <object-type>path</object-type>
+        <effects-menu>
+            <submenu name="FabLab Chemnitz">
+                <submenu name="Shape/Pattern from Generator" />
+            </submenu>
+        </effects-menu>
+    </effect>
+    <script>
+        <command reldir="inx" interpreter="python">laby.py</command>
+    </script>
+</inkscape-extension>
