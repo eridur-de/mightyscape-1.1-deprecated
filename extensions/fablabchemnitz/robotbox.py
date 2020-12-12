@@ -311,7 +311,7 @@ class RobotBox(inkex.Effect):
         g = etree.SubElement(self.svg.get_current_layer(), 'g', g_attribs)
 
         # Create SVG Path for box bounds
-        style = { 'stroke': '#000000', 'fill': 'none', 'stroke-width':'1' }
+        style = { 'stroke': '#000000', 'fill': 'none', 'stroke-width':'0.1' }
         etree.SubElement(g, inkex.addNS('path','svg'), {'style':str(inkex.Style(style)), 'd':dirtyFormat(bound_points)} )
 
         # Create SVG paths for crmap slots if set
@@ -324,10 +324,11 @@ class RobotBox(inkex.Effect):
 
         # Create SVG Paths for bend lines
         # draw bend lines with blue
-        style = { 'stroke': '#44aaff', 'fill': 'none', 'stroke-width':'1', 
-            'stroke-dasharray': str(dashwidth) + ',' + str(dashstep),
+        style = { 'stroke': '#44aaff', 'fill': 'none', 'stroke-width':'0.1', 
+            #'stroke-dasharray': str(dashwidth) + ',' + str(dashstep),
             # positive dash offset moves dash backward
-            'stroke-dashoffset': str(dashwidth) }
+            #'stroke-dashoffset': str(dashwidth) 
+            }
 
         # left
         etree.SubElement(g, inkex.addNS('path','svg'), {'style':str(inkex.Style(style)), 'd':dirtyFormat(bend_line_vl1)} )
