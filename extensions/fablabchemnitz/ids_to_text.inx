@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<inkscape-extension xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
     <name>Ids To Text</name>
-    <id>org.inkscape.render.ids_to_text</id>
+    <id>fablabchemnitz.de.ids_to_text</id>
     <param name="fontsize" type="int" min="1" max="1000" gui-text="Font size (px):">10</param>
     <param name="color" type="color" appearance="colorbutton" gui-text="Color (in hex)">255</param>
     <param name="font" type="string" gui-text="Font">Roboto</param>

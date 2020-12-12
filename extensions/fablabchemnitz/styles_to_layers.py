@@ -157,8 +157,11 @@ class StylesToLayers(inkex.Effect):
 
         contentlength = 0 #some counter to track if there are layers inside or if it is just a list with empty children
         for layerNode in layerNodeList:
-            layerNode[0].append(layerNode[2]) #append element to created layer           
-            if layerNode[1] is not None: contentlength += 1 #for each found layer we increment +1
+            try: #some nasty workaround. Make better code
+                layerNode[0].append(layerNode[2]) #append element to created layer           
+                if layerNode[1] is not None: contentlength += 1 #for each found layer we increment +1
+            except:
+                continue
           
         # Additionally if threshold was defined re-arrange the previously created layers by putting them into sub layers        
         if self.options.subdividethreshold > 1 and contentlength > 0: #check if we need to subdivide and if there are items we could rearrange into sub layers

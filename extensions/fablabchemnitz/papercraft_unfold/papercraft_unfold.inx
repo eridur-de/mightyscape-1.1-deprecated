@@ -35,7 +35,7 @@
 		    <param name="xz_mirror" type="bool" gui-text="XZ-Mirror">false</param>
 		    <param name="scale" type="float" min="0.0001" max="10000.0" precision="4" gui-text="Scale">1.0</param>
         </page>
-		<page name="meshfixing" gui-text="About">
+		<page name="about" gui-text="About">
 		    <label>Papercraft Unfold - by Mario Voigt / Stadtfabrikanten e.V. (2020)</label>
 		    <label appearance="url">https://fablabchemnitz.de</label>
 		    <label>License: GNU GPL v3</label>
