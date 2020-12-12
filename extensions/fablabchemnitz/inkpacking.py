@@ -111,7 +111,7 @@ class inkpacking(inkex.Effect):
 
         box_id = self.svg.get_unique_id('box')
         self.box = g = etree.SubElement(self.svg.get_current_layer(), 'g', {'id':box_id})
-        line_style = str(inkex.Style(({ 'stroke': '#000000', 'fill': 'none' })))
+        line_style = str(inkex.Style(({ 'stroke': '#000000', 'fill': 'none', 'stroke-width':'0.1' })))
         gflapoffy = (gflapsize / sin( (gflapangle /  360) * 6.28  )) * sin( ((90 - gflapangle) / 360 ) * 6.28)
 
         # Side Glueflap
