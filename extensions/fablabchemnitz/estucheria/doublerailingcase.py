@@ -126,112 +126,98 @@ class GenerateBox(inkex.EffectExtension):
         line = group.add(inkex.PathElement(id=id_box + '-profile-splits-1'))
         line.path = [
 			['M', [0,eyelash_width]],
-			['l', [box_width,0]],
-			['Z', []]
+			['l', [box_width,0]]
 		]
         line.style = cleft_line_style
 
         line = group.add(inkex.PathElement(id=id_box + '-profile-splits-2'))
         line.path = [
 			['M', [0,(box_height+eyelash_width)]],
-			['l', [box_width,0]],
-			['Z', []]
+			['l', [box_width,0]]
 		]
         line.style = cleft_line_style
         
         line = group.add(inkex.PathElement(id=id_box + '-profile-splits-3'))
         line.path = [
 			['M', [0-box_height,((box_height*2)+eyelash_width)]],
-			['l', [box_width+(box_height*2),0]],
-			['Z', []]
+			['l', [box_width+(box_height*2),0]]
 		]
         line.style = cleft_line_style
         
         line = group.add(inkex.PathElement(id=id_box + '-profile-splits-4'))
         line.path = [
 			['M', [0-box_height,(((box_height*2)+eyelash_width)+box_length)]],
-			['l', [box_width+(box_height*2),0]],
-			['Z', []]
+			['l', [box_width+(box_height*2),0]]
 		]
         line.style = cleft_line_style
         
         line = group.add(inkex.PathElement(id=id_box + '-profile-splits-5'))
         line.path = [
 			['M', [0,(box_height*3)+box_length+eyelash_width]],
-			['l', [box_width,0]],
-			['Z', []]
+			['l', [box_width,0]]
 		]
         line.style = cleft_line_style
         
         line = group.add(inkex.PathElement(id=id_box + '-profile-splits-6'))
         line.path = [
 			['M', [0,(box_height*4)+box_length+eyelash_width]],
-			['l', [box_width,0]],
-			['Z', []]
+			['l', [box_width,0]]
 		]
         line.style = cleft_line_style
         
         line = group.add(inkex.PathElement(id=id_box + '-profile-splits-7'))
         line.path = [
 			['M', [0,eyelash_width]],
-			['l', [0,box_length+(box_height*4)]],
-			['Z', []]
+			['l', [0,box_length+(box_height*4)]]
 		]
         line.style = cleft_line_style
         
         line = group.add(inkex.PathElement(id=id_box + '-profile-splits-8'))
         line.path = [
 			['M', [box_width,eyelash_width]],
-			['l', [0,box_length+(box_height*4)]],
-			['Z', []]
+			['l', [0,box_length+(box_height*4)]]
 		]
         line.style = cleft_line_style
         
         line = group.add(inkex.PathElement(id=id_box + '-profile-splits-9'))
         line.path = [
 			['M', [0-box_height,eyelash_width+(box_height*2)]],
-			['l', [0,box_length]],
-			['Z', []]
+			['l', [0,box_length]]
 		]
         line.style = cleft_line_style
         
         line = group.add(inkex.PathElement(id=id_box + '-profile-splits-10'))
         line.path = [
 			['M', [box_width+box_height,eyelash_width+(box_height*2)]],
-			['l', [0,box_length]],
-			['Z', []]
+			['l', [0,box_length]]
 		]
         line.style = cleft_line_style
         
         line = group.add(inkex.PathElement(id=id_box + '-profile-splits-11'))
         line.path = [
 			['M', [0,eyelash_width+(box_height*2)]],
-			['l', [0-(box_height-eyelash_measure3),0-(box_height-eyelash_measure3)]],
-			['Z', []]
+			['l', [0-(box_height-eyelash_measure3),0-(box_height-eyelash_measure3)]]
 		]
         line.style = cleft_line_style
         
         line = group.add(inkex.PathElement(id=id_box + '-profile-splits-12'))
         line.path = [
 			['M', [box_width,eyelash_width+(box_height*2)]],
-			['l', [box_height-eyelash_measure3,0-(box_height-eyelash_measure3)]],
-			['Z', []]
+			['l', [box_height-eyelash_measure3,0-(box_height-eyelash_measure3)]]
 		]
         line.style = cleft_line_style
         
         line = group.add(inkex.PathElement(id=id_box + '-profile-splits-13'))
         line.path = [
 			['M', [box_width,eyelash_width+(box_height*2)+box_length]],
-			['l', [box_height-eyelash_measure3,box_height-eyelash_measure3]],
-			['Z', []]
+			['l', [box_height-eyelash_measure3,box_height-eyelash_measure3]]
 		]
         line.style = cleft_line_style
         
         line = group.add(inkex.PathElement(id=id_box + '-profile-splits-14'))
         line.path = [
 			['M', [0,eyelash_width+(box_height*2)+box_length]],
-			['l', [0-(box_height-eyelash_measure3),box_height-eyelash_measure3]],
-			['Z', []]
+			['l', [0-(box_height-eyelash_measure3),box_height-eyelash_measure3]]
 		]
         line.style = cleft_line_style
 

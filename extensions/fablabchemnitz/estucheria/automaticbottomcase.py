@@ -155,88 +155,77 @@ class AutomaticBottomCase(inkex.EffectExtension):
         line = group.add(inkex.PathElement(id=box_id + '-profile-splits-1'))
         line.path = [
 			['M', [0,0]],
-			['l', [0,box_height]],
-			['Z', []]
+			['l', [0,box_height]]
 		]
         line.style = cleft_line_style
 
         line = group.add(inkex.PathElement(id=box_id + '-profile-splits-2'))
         line.path = [
 			['M', [box_width,0]],
-			['l', [0,box_height]],
-			['Z', []]
+			['l', [0,box_height]]
 		]
         line.style = cleft_line_style
         
         line = group.add(inkex.PathElement(id=box_id + '-profile-splits-3'))
         line.path = [
 			['M', [box_width+box_length,0]],
-			['l', [0,box_height]],
-			['Z', []]
+			['l', [0,box_height]]
 		]
         line.style = cleft_line_style
         
         line = group.add(inkex.PathElement(id=box_id + '-profile-splits-4'))
         line.path = [
 			['M', [box_width+box_width+box_length,0]],
-			['l', [0,box_height]],
-			['Z', []]
+			['l', [0,box_height]]
 		]
         line.style = cleft_line_style
         
         line = group.add(inkex.PathElement(id=box_id + '-profile-splits-5'))
         line.path = [
 			['M', [0,0]],
-			['l', [box_width,0]],
-			['Z', []]
+			['l', [box_width,0]]
 		]
         line.style = cleft_line_style
         
         line = group.add(inkex.PathElement(id=box_id + '-profile-splits-6'))
         line.path = [
 			['M', [0,box_height]],
-			['l', [((box_length+box_width)*2),0]],
-			['Z', []]
+			['l', [((box_length+box_width)*2),0]]
 		]
         line.style = cleft_line_style
  
         line = group.add(inkex.PathElement(id=box_id + '-profile-splits-7'))
         line.path = [
 			['M', [box_width,0]],
-			['l', [box_length,0]],
-			['Z', []]
+			['l', [box_length,0]]
 		]
         line.style = cleft_line_style
         
         line = group.add(inkex.PathElement(id=box_id + '-profile-splits-8'))
         line.path = [
 			['M', [box_length+box_width*2,0]],
-			['l', [box_length,0]],
-			['Z', []]
+			['l', [box_length,0]]
 		]
         line.style = cleft_line_style
         
         line = group.add(inkex.PathElement(id=box_id + '-profile-splits-9'))
         line.path = [
 			['M', [0,0-(box_length)]],
-			['l', [box_width,0]],
-			['Z', []]
+			['l', [box_width,0]]
 		]
         line.style = cleft_line_style
         
         line = group.add(inkex.PathElement(id=box_id + '-profile-drill-1'))
         line.path = [
 			['M', [box_width-measure2_side_blind,box_height+measure2_side_blind]],
-			['l', [0-((box_length*0.5)),(box_length*0.5)]],
-			['Z', []]
+			['l', [0-((box_length*0.5)),(box_length*0.5)]]
 		]
         line.style = line_style_drills
         
         line = group.add(inkex.PathElement(id=box_id + '-profile-drill-2'))
         line.path = [
 			['M', [((box_width*2)+box_length)-measure2_side_blind,box_height+measure2_side_blind]],
-			['l', [0-((box_length*0.5)),(box_length*0.5)]],
-			['Z', []]
+			['l', [0-((box_length*0.5)),(box_length*0.5)]]
 		]
         line.style = line_style_drills
 

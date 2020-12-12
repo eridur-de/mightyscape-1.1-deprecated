@@ -154,96 +154,84 @@ class GenerarEstuche(inkex.EffectExtension):
         line = group.add(inkex.PathElement(id=id_caja + '-perfil-hendidos-1'))
         line.path = [
 			['M', [0,0]],
-			['l', [0,alto_caja]],
-			['Z', []]
+			['l', [0,alto_caja]]
 		]
         line.style = estilo_linea_hendidos
 
         line = group.add(inkex.PathElement(id=id_caja + '-perfil-hendidos-2'))
         line.path = [
 			['M', [ancho_caja,0]],
-			['l', [0,alto_caja]],
-			['Z', []]
+			['l', [0,alto_caja]]
 		]
         line.style = estilo_linea_hendidos
         
         line = group.add(inkex.PathElement(id=id_caja + '-perfil-hendidos-3'))
         line.path = [
 			['M', [ancho_caja+largo_caja,0]],
-			['l', [0,alto_caja]],
-			['Z', []]
+			['l', [0,alto_caja]]
 		]
         line.style = estilo_linea_hendidos
         
         line = group.add(inkex.PathElement(id=id_caja + '-perfil-hendidos-4'))
         line.path = [
 			['M', [ancho_caja+ancho_caja+largo_caja,0]],
-			['l', [0,alto_caja]],
-			['Z', []]
+			['l', [0,alto_caja]]
 		]
         line.style = estilo_linea_hendidos
         
         line = group.add(inkex.PathElement(id=id_caja + '-perfil-hendidos-5'))
         line.path = [
 			['M', [ancho_caja,0]],
-			['l', [largo_caja,0]],
-			['Z', []]
+			['l', [largo_caja,0]]
 		]
         line.style = estilo_linea_hendidos
         
         line = group.add(inkex.PathElement(id=id_caja + '-perfil-hendidos-6'))
         line.path = [
 			['M', [0,0]],
-			['l', [ancho_caja,0]],
-			['Z', []]
+			['l', [ancho_caja,0]]
 		]
         line.style = estilo_linea_hendidos
         
         line = group.add(inkex.PathElement(id=id_caja + '-perfil-hendidos-7'))
         line.path = [
 			['M', [(ancho_caja*2)+largo_caja,0]],
-			['l', [largo_caja,0]],
-			['Z', []]
+			['l', [largo_caja,0]]
 		]
         line.style = estilo_linea_hendidos
  
         line = group.add(inkex.PathElement(id=id_caja + '-perfil-hendidos-8'))
         line.path = [
 			['M', [0,alto_caja]],
-			['l', [ancho_caja,0]],
-			['Z', []]
+			['l', [ancho_caja,0]]
 		]
         line.style = estilo_linea_hendidos
         
         line = group.add(inkex.PathElement(id=id_caja + '-perfil-hendidos-9'))
         line.path = [
 			['M', [ancho_caja,alto_caja]],
-			['l', [largo_caja,0]],
-			['Z', []]
+			['l', [largo_caja,0]]
 		]
         line.style = estilo_linea_hendidos
         
         line = group.add(inkex.PathElement(id=id_caja + '-perfil-hendidos-10'))
         line.path = [
 			['M', [(ancho_caja*2)+largo_caja,alto_caja]],
-			['l', [largo_caja,0]],
-			['Z', []]
+			['l', [largo_caja,0]]
 		]
         line.style = estilo_linea_hendidos
         
         line = group.add(inkex.PathElement(id=id_caja + '-perfil-hendidos-11'))
         line.path = [
 			['M', [0,0-(largo_caja)]],
-			['l', [ancho_caja,0]],
-			['Z', []]
+			['l', [ancho_caja,0]]
 		]
         line.style = estilo_linea_hendidos
         
         line = group.add(inkex.PathElement(id=id_caja + '-perfil-hendidos-12'))
         line.path = [
 			['M', [0,alto_caja+largo_caja]],
-			['l', [ancho_caja,0]],
-			['Z', []]
+			['l', [ancho_caja,0]]
 		]
         line.style = estilo_linea_hendidos
 		

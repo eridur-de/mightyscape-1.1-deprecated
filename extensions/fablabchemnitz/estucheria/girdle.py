@@ -107,32 +107,28 @@ class GenerarEstuche(inkex.EffectExtension):
         line = group.add(inkex.PathElement(id=id_caja + '-perfil-hendidos-1'))
         line.path = [
 			['M', [0,0]],
-			['l', [0,alto_caja]],
-			['Z', []]
+			['l', [0,alto_caja]]
 		]
         line.style = estilo_linea_hendidos
 
         line = group.add(inkex.PathElement(id=id_caja + '-perfil-hendidos-2'))
         line.path = [
 			['M', [ancho_caja,0]],
-			['l', [0,alto_caja]],
-			['Z', []]
+			['l', [0,alto_caja]]
 		]
         line.style = estilo_linea_hendidos
         
         line = group.add(inkex.PathElement(id=id_caja + '-perfil-hendidos-3'))
         line.path = [
 			['M', [ancho_caja+largo_caja,0]],
-			['l', [0,alto_caja]],
-			['Z', []]
+			['l', [0,alto_caja]]
 		]
         line.style = estilo_linea_hendidos
         
         line = group.add(inkex.PathElement(id=id_caja + '-perfil-hendidos-4'))
         line.path = [
 			['M', [ancho_caja+ancho_caja+largo_caja,0]],
-			['l', [0,alto_caja]],
-			['Z', []]
+			['l', [0,alto_caja]]
 		]
         line.style = estilo_linea_hendidos
               

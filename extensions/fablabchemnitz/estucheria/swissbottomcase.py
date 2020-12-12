@@ -65,7 +65,7 @@ class GenerarEstuche(inkex.EffectExtension):
             medida_pestana3=0.4
             medida_pestana3=0.3
             medida_pestana5=1.0
-			
+            
         if self.options.unit=="in":
             medida_pestana1=0.196
             medida_pestana2=0.039
@@ -95,132 +95,123 @@ class GenerarEstuche(inkex.EffectExtension):
         #Perfil Exterior de la caja
         line = group.add(inkex.PathElement(id=id_caja + '-perfil-exterior'))
         line.path = [
-			['M', [0, 0]],
-			['l', [ancho_caja, 0]],
-			['l', [0,0]],
-			['l', [0, 0]],
-			['l', [0, 0-medida1_pestanas_laterales]],
-			['l', [medida2_pestanas_laterales, 0-medida2_pestanas_laterales]],
-			['l', [medida3_pestanas_laterales, 0-(alto_pestana-medida2_pestanas_laterales-medida1_pestanas_laterales)]], 
-			['l', [(largo_caja-medida2_pestanas_laterales-medida3_pestanas_laterales-medida4_pestanas_laterales), 0]],
-			['l', [0,alto_pestana-medida4_pestanas_laterales]],
-			['l', [medida4_pestanas_laterales, medida4_pestanas_laterales]],
-			['l', [0, 0-largo_caja]],
-			['l', [0, 0]],
-			['q', [0,0-alto_pestana_cierre,alto_pestana_cierre, 0-alto_pestana_cierre]],
-			['l', [ancho_caja-(alto_pestana_cierre*2), 0]],
-			['q', [alto_pestana_cierre,0,alto_pestana_cierre,alto_pestana_cierre]],
-			['l', [0, 0]],
-			['l', [0, (largo_caja)]],
-			['l', [medida4_pestanas_laterales, 0-medida4_pestanas_laterales]],
-			['l', [0,0-(alto_pestana-medida4_pestanas_laterales)]],
-			['l', [(largo_caja-medida2_pestanas_laterales-medida3_pestanas_laterales-medida4_pestanas_laterales), 0]],
-			['l', [medida3_pestanas_laterales, (alto_pestana-medida2_pestanas_laterales-medida1_pestanas_laterales)]],
-			['l', [medida2_pestanas_laterales, medida2_pestanas_laterales]],
-			['l', [0, medida1_pestanas_laterales]],
-			['l', [0,0]],
-			['l', [0, alto_caja]],
-			['l', [0,(largo_caja*0.5)+medida1_pestanas_cierre]],
-			['l', [0-(largo_caja)*0.5,0]],
-			['l', [0,0-medida1_pestanas_cierre]],
-			['l', [0-(largo_caja)*0.5,0-((largo_caja)*0.5)]],
-			['l', [0,(largo_caja*0.5)+medida1_pestanas_cierre]],
-			['l', [0-(ancho_caja)*0.25,0]],
-			['l', [0, 0-medida1_pestanas_cierre]],
-			['l', [0-(ancho_caja)*0.5,0]],
-			['l', [0, medida1_pestanas_cierre]],
-			['l', [0-(ancho_caja)*0.25,0]],
-			['l', [0,0-((largo_caja*0.5)+medida1_pestanas_cierre)]],
-			['l', [0-(largo_caja)*0.5,((largo_caja*0.5))]],
-			['l', [0,medida1_pestanas_cierre]],
-			['l', [0-(largo_caja)*0.5,0]],
-			['l', [0,0-((largo_caja*0.5)+medida1_pestanas_cierre)]],
-			['l', [0-ancho_caja*0.25,(largo_caja*0.5)]],
-			['l', [0,medida1_pestanas_cierre]],
-			['l', [0-ancho_caja*0.5,0]],
-			['l', [0,0-medida1_pestanas_cierre]],
-			['l', [0-ancho_caja*0.25,0-(largo_caja*0.5)]],
-			['l', [0, 0]],
-			['l', [0, 0]],
-			['l', [0, 0-medida2_pestanas_laterales]],
-			['l', [0-ancho_pestana_cola, 0-(ancho_pestana_cola/2)]],
-			['l', [0, 0-(alto_caja-ancho_pestana_cola-(medida2_pestanas_laterales*2))]],
-			['l', [ancho_pestana_cola, 0-(ancho_pestana_cola/2)]],
-			['Z', []]
+            ['M', [0, 0]],
+            ['l', [ancho_caja, 0]],
+            ['l', [0,0]],
+            ['l', [0, 0]],
+            ['l', [0, 0-medida1_pestanas_laterales]],
+            ['l', [medida2_pestanas_laterales, 0-medida2_pestanas_laterales]],
+            ['l', [medida3_pestanas_laterales, 0-(alto_pestana-medida2_pestanas_laterales-medida1_pestanas_laterales)]], 
+            ['l', [(largo_caja-medida2_pestanas_laterales-medida3_pestanas_laterales-medida4_pestanas_laterales), 0]],
+            ['l', [0,alto_pestana-medida4_pestanas_laterales]],
+            ['l', [medida4_pestanas_laterales, medida4_pestanas_laterales]],
+            ['l', [0, 0-largo_caja]],
+            ['l', [0, 0]],
+            ['q', [0,0-alto_pestana_cierre,alto_pestana_cierre, 0-alto_pestana_cierre]],
+            ['l', [ancho_caja-(alto_pestana_cierre*2), 0]],
+            ['q', [alto_pestana_cierre,0,alto_pestana_cierre,alto_pestana_cierre]],
+            ['l', [0, 0]],
+            ['l', [0, (largo_caja)]],
+            ['l', [medida4_pestanas_laterales, 0-medida4_pestanas_laterales]],
+            ['l', [0,0-(alto_pestana-medida4_pestanas_laterales)]],
+            ['l', [(largo_caja-medida2_pestanas_laterales-medida3_pestanas_laterales-medida4_pestanas_laterales), 0]],
+            ['l', [medida3_pestanas_laterales, (alto_pestana-medida2_pestanas_laterales-medida1_pestanas_laterales)]],
+            ['l', [medida2_pestanas_laterales, medida2_pestanas_laterales]],
+            ['l', [0, medida1_pestanas_laterales]],
+            ['l', [0,0]],
+            ['l', [0, alto_caja]],
+            ['l', [0,(largo_caja*0.5)+medida1_pestanas_cierre]],
+            ['l', [0-(largo_caja)*0.5,0]],
+            ['l', [0,0-medida1_pestanas_cierre]],
+            ['l', [0-(largo_caja)*0.5,0-((largo_caja)*0.5)]],
+            ['l', [0,(largo_caja*0.5)+medida1_pestanas_cierre]],
+            ['l', [0-(ancho_caja)*0.25,0]],
+            ['l', [0, 0-medida1_pestanas_cierre]],
+            ['l', [0-(ancho_caja)*0.5,0]],
+            ['l', [0, medida1_pestanas_cierre]],
+            ['l', [0-(ancho_caja)*0.25,0]],
+            ['l', [0,0-((largo_caja*0.5)+medida1_pestanas_cierre)]],
+            ['l', [0-(largo_caja)*0.5,((largo_caja*0.5))]],
+            ['l', [0,medida1_pestanas_cierre]],
+            ['l', [0-(largo_caja)*0.5,0]],
+            ['l', [0,0-((largo_caja*0.5)+medida1_pestanas_cierre)]],
+            ['l', [0-ancho_caja*0.25,(largo_caja*0.5)]],
+            ['l', [0,medida1_pestanas_cierre]],
+            ['l', [0-ancho_caja*0.5,0]],
+            ['l', [0,0-medida1_pestanas_cierre]],
+            ['l', [0-ancho_caja*0.25,0-(largo_caja*0.5)]],
+            ['l', [0, 0]],
+            ['l', [0, 0]],
+            ['l', [0, 0-medida2_pestanas_laterales]],
+            ['l', [0-ancho_pestana_cola, 0-(ancho_pestana_cola/2)]],
+            ['l', [0, 0-(alto_caja-ancho_pestana_cola-(medida2_pestanas_laterales*2))]],
+            ['l', [ancho_pestana_cola, 0-(ancho_pestana_cola/2)]],
+            ['Z', []]
         ]
         line.style = estilo_linea_cortes
         
         #Hendidos
         line = group.add(inkex.PathElement(id=id_caja + '-perfil-hendidos-1'))
         line.path = [
-			['M', [0,0]],
-			['l', [0,alto_caja]],
-			['Z', []]
-		]
+            ['M', [0,0]],
+            ['l', [0,alto_caja]]
+        ]
         line.style = estilo_linea_hendidos
 
         line = group.add(inkex.PathElement(id=id_caja + '-perfil-hendidos-2'))
         line.path = [
-			['M', [ancho_caja,0]],
-			['l', [0,alto_caja]],
-			['Z', []]
-		]
+            ['M', [ancho_caja,0]],
+            ['l', [0,alto_caja]]
+        ]
         line.style = estilo_linea_hendidos
         
         line = group.add(inkex.PathElement(id=id_caja + '-perfil-hendidos-3'))
         line.path = [
-			['M', [ancho_caja+largo_caja,0]],
-			['l', [0,alto_caja]],
-			['Z', []]
-		]
+            ['M', [ancho_caja+largo_caja,0]],
+            ['l', [0,alto_caja]]
+        ]
         line.style = estilo_linea_hendidos
         
         line = group.add(inkex.PathElement(id=id_caja + '-perfil-hendidos-4'))
         line.path = [
-			['M', [ancho_caja+ancho_caja+largo_caja,0]],
-			['l', [0,alto_caja]],
-			['Z', []]
-		]
+            ['M', [ancho_caja+ancho_caja+largo_caja,0]],
+            ['l', [0,alto_caja]]
+        ]
         line.style = estilo_linea_hendidos
         
         line = group.add(inkex.PathElement(id=id_caja + '-perfil-hendidos-5'))
         line.path = [
-			['M', [ancho_caja,0]],
-			['l', [largo_caja,0]],
-			['Z', []]
-		]
+            ['M', [ancho_caja,0]],
+            ['l', [largo_caja,0]]
+        ]
         line.style = estilo_linea_hendidos
         
         line = group.add(inkex.PathElement(id=id_caja + '-perfil-hendidos-6'))
         line.path = [
-			['M', [largo_caja+ancho_caja,0]],
-			['l', [ancho_caja,0]],
-			['Z', []]
-		]
+            ['M', [largo_caja+ancho_caja,0]],
+            ['l', [ancho_caja,0]]
+        ]
         line.style = estilo_linea_hendidos
         
         line = group.add(inkex.PathElement(id=id_caja + '-perfil-hendidos-7'))
         line.path = [
-			['M', [(ancho_caja*2)+largo_caja,0]],
-			['l', [largo_caja,0]],
-			['Z', []]
-		]
+            ['M', [(ancho_caja*2)+largo_caja,0]],
+            ['l', [largo_caja,0]]
+        ]
         line.style = estilo_linea_hendidos
         
         line = group.add(inkex.PathElement(id=id_caja + '-perfil-hendidos-8'))
         line.path = [
-			['M', [ancho_caja+largo_caja,0-largo_caja]],
-			['l', [ancho_caja,0]],
-			['Z', []]
-		]
+            ['M', [ancho_caja+largo_caja,0-largo_caja]],
+            ['l', [ancho_caja,0]]
+        ]
         line.style = estilo_linea_hendidos
         
         line = group.add(inkex.PathElement(id=id_caja + '-perfil-hendidos-9'))
         line.path = [
-			['M', [0,alto_caja]],
-			['l', [(ancho_caja+largo_caja)*2,0]],
-			['Z', []]
-		]
+            ['M', [0,alto_caja]],
+            ['l', [(ancho_caja+largo_caja)*2,0]]
+        ]
         line.style = estilo_linea_hendidos
 
 if __name__ == '__main__':
