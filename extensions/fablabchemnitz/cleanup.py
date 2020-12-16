@@ -26,7 +26,7 @@ class Cleanup(inkex.Effect):
         inkex.Effect.__init__(self)
         self.arg_parser.add_argument("--stroke_width", type=float, default=0.1, help="Stroke width")
         self.arg_parser.add_argument("--stroke_units", default="mm", help="Stroke unit")
-        self.arg_parser.add_argument("--remove_styles", default="mm", help="Remove stroke styles")
+        self.arg_parser.add_argument("--remove_styles", type=inkex.Boolean, help="Remove stroke styles")
         self.arg_parser.add_argument("--opacity", type=float, default="100.0", help="Opacity")
 
     def effect(self):
@@ -57,16 +57,17 @@ class Cleanup(inkex.Effect):
                         if prop == 'stroke-opacity':
                             new_val = str(self.options.opacity / 100)
                             declarations[i] = prop + ':' + new_val
-                        if prop == 'stroke-dasharray':
-                            declarations[i] = ''
-                        if prop == 'stroke-dashoffset':
-                            declarations[i] = ''
-                        if prop == 'stroke-linejoin':
-                            declarations[i] = ''
-                        if prop == 'stroke-linecap':
-                            declarations[i] = ''
-                        if prop == 'stroke-miterlimit':
-                            declarations[i] = ''
+                        if self.options.remove_styles == True:
+                            if prop == 'stroke-dasharray':
+                                declarations[i] = ''
+                            if prop == 'stroke-dashoffset':
+                                declarations[i] = ''
+                            if prop == 'stroke-linejoin':
+                                declarations[i] = ''
+                            if prop == 'stroke-linecap':
+                                declarations[i] = ''
+                            if prop == 'stroke-miterlimit':
+                                declarations[i] = ''
                 node.set('style', ';'.join(declarations))
 
 if __name__ == '__main__':
