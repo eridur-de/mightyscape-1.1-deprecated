@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <name>Fix Global Stroke Width / Opacity</name>
+    <name>Fix Global Stroke Width / Opacity / Style</name>
     <id>fablabchemnitz.de.cleanup</id>
     <param name="stroke_width" type="float" precision="4" min="0" max="5" gui-text="Stroke width">0.1</param>
     <param name="stroke_units" gui-text="Units" type="optiongroup" appearance="combo">
@@ -11,6 +11,7 @@
        <option value="mm">mm</option>
     </param>
     <param name="opacity" type="float" precision="1" min="0" max="100" gui-text="Opacity (%)">100.0</param>
+    <param name="remove_styles" type="bool" gui-text="Remove stroke styles">true</param>
     <effect needs-live-preview="true">
         <object-type>all</object-type>
         <effects-menu>
