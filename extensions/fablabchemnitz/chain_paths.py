@@ -142,8 +142,7 @@ class ChainPaths(inkex.Effect):
       return
 
     segments = []
-    for id in self.svg.selected:
-      node = self.svg.selected[id]
+    for id, node in self.svg.selected.items():
       if node.tag != inkex.addNS('path', 'svg'):
         inkex.errormsg("Object " + id + " is not a path. Try\n  - Path->Object to Path\n  - Object->Ungroup")
         return

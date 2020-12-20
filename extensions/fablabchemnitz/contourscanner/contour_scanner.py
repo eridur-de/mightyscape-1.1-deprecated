@@ -241,7 +241,8 @@ class ContourScanner(inkex.Effect):
                         #    polySegsNode.attrib['style'] = closingLineStyle
 
                     except AssertionError as e: # we skip AssertionError
-                        inkex.utils.debug("Error: " + str(e))
+                        #inkex.utils.debug("Error: " + str(e))
+                        continue
                 #if the intersectionGroup was created but nothing attached we delete it again to prevent messing the SVG XML tree
                 if len(intersectionGroup.getchildren()) == 0:
                     intersectionGroupParent = intersectionGroup.getparent()
