@@ -16,7 +16,7 @@ class bluePrintMakerData():
 		self.set_colors()
 		self.selected_nodes=[]
 		if len(effect.options.ids)==0:
-			self.selected_nodes=[effect.svg.getElementById(x) for x in effect.doc_ids]
+			self.selected_nodes=[effect.svg.getElementById(x) for x in effect.svg.get_ids()]
 			self.selected_nodes=[node for node in self.selected_nodes if effect.is_geometry(node)]
 		else:
 			self.selected_nodes=[y for x,y in effect.svg.selected.items()]
