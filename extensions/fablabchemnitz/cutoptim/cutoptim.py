@@ -8,7 +8,7 @@ CutOptim OS Wrapper script to make CutOptim work on Windows and Linux systems wi
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 31.08.2020
-Last patch: 31.08.2020
+Last patch: 14.01.2021
 License: GNU GPL v3
 
 """
@@ -50,10 +50,13 @@ class CutOptimWrapper(inkex.Effect):
                 else:
                     cmd += " --" + arg + " " + str(getattr(self.options, arg))
 
+        output_file = None
         if os.name == "nt":
-            cmd += " --output cutoptim.svg"    
+            output_file = "cutoptim.svg"    
         else:
-            cmd += " --output /tmp/cutoptim.svg"
+            output_file = "/tmp/cutoptim.svg"
+        
+        cmd += " --output " + output_file 
         #inkex.utils.debug(str(cmd))
         
         # run CutOptim with the parameters provided
@@ -62,7 +65,7 @@ class CutOptimWrapper(inkex.Effect):
         
         # check output existence
         try:
-            stream = open("/tmp/cutoptim.svg", 'r')
+            stream = open(output_file, 'r')
         except FileNotFoundError as e:
             inkex.utils.debug("There was no SVG output generated. Cannot continue")
             exit(1)
