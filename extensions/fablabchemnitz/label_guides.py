@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 '''
 Label Guides Creator
 
@@ -21,7 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 '''
 
 import inkex
-import simplestyle
 from lxml import etree
 
 # Colours to use for the guides
@@ -385,6 +384,7 @@ class LabelGuides(inkex.Effect):
 
         x = label_opts['margin']['l']
 
+        # Vertical guides, left to right
         for x_idx in range(label_opts['count']['x']):
 
             l_pos = x + inset
@@ -395,20 +395,18 @@ class LabelGuides(inkex.Effect):
             # Step over to next label
             x += label_opts['pitch']['x']
 
-        # Horizontal guides, top to bottom
-        height = self.svg.unittouu(self.svg.height)
-
-        y = height - label_opts['margin']['t']
+        # Horizontal guides, bottom to top
+        y = label_opts['margin']['t']
 
         for y_idx in range(label_opts['count']['y']):
 
-            t_pos = y - inset
-            b_pos = y - label_opts['size']['y'] + inset
+            t_pos = y + inset
+            b_pos = y + label_opts['size']['y'] - inset
 
             guides['h'].extend([t_pos, b_pos])
 
             # Step over to next label
-            y -= label_opts['pitch']['y']
+            y += label_opts['pitch']['y']
 
         return guides
 
@@ -428,8 +426,9 @@ class LabelGuides(inkex.Effect):
         for g in guides['v']:
             add_SVG_guide(g, 0, 'vert', colour, nv)
 
+        # Draw horizontal guides
         for g in guides['h']:
-            add_SVG_guide(0, g, 'horz', colour, nv)
+            add_SVG_guide(0, self.svg.height - g, 'horz', colour, nv)
 
     def _draw_centre_guides(self, document, label_opts, colour):
         """
@@ -445,7 +444,7 @@ class LabelGuides(inkex.Effect):
 
         for g in range(0, len(guides['h']), 2):
             pos = (guides['h'][g] + guides['h'][g + 1]) / 2
-            add_SVG_guide(0, pos, 'horz', colour, nv)
+            add_SVG_guide(0, self.svg.height - pos, 'horz', colour, nv)
 
     def _draw_shapes(self, document, label_opts, inset):
         """
@@ -468,9 +467,6 @@ class LabelGuides(inkex.Effect):
                 self.svg.get_unique_id("outlineLayer"),
                 "Label outlines")
 
-        # guides start from the bottom, SVG items from the top
-        height = self.svg.unittouu(self.svg.height)
-
         # draw shapes between every set of two guides
         for xi in range(0, len(guides['v']), 2):
 
@@ -481,24 +477,22 @@ class LabelGuides(inkex.Effect):
                     cy = (guides['h'][yi] + guides['h'][yi + 1]) / 2
 
                     rx = cx - guides['v'][xi] - inset
-                    ry = guides['h'][yi] - cy - inset
+                    ry = cy - guides['h'][yi] - inset
 
-                    draw_SVG_ellipse(rx, ry, cx, height - cy, style,
-                                     shapeLayer)
+                    draw_SVG_ellipse(rx, ry, cx, cy, style, shapeLayer)
 
                 elif shape in ["rect", "rrect"]:
 
                     x = guides['v'][xi] + inset
                     w = guides['v'][xi + 1] - x - inset
 
-                    y = guides['h'][yi] - inset
-                    h = y - guides['h'][yi + 1] - inset
+                    y = guides['h'][yi] + inset
+                    h = guides['h'][yi + 1] - y - inset
 
                     rnd = self._to_uu(label_opts['corner_rad'],
                                       label_opts['units'])
 
-                    draw_SVG_rect(x, height - y, w, h, rnd, style, shapeLayer)
-
+                    draw_SVG_rect(x, y, w, h, rnd, style, shapeLayer)
     def _set_page_size(self, document, label_opts):
         """
         Set the SVG page size from the given label template definition
@@ -544,7 +538,7 @@ class LabelGuides(inkex.Effect):
             self._draw_label_guides(self.document, label_opts, 0,
                                     GUIDE_COLOURS['edge'])
 
-        if self._draw_centre_guides:
+        if self.options.draw_centre_guides:
             self._draw_centre_guides(self.document, label_opts,
                                      GUIDE_COLOURS['centre'])
 
