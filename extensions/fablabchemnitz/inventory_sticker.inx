@@ -5,7 +5,7 @@
     <param name="main_tabs" type="notebook">
         <page name="tab_active" gui-text="Active">
             <label appearance="header">Inventory Download</label>
-            <param name="server_address" type="string" gui-text="inventory.csv URL">https://things.fablabchemnitz.de/flc/inventory.csv</param>
+            <param name="server_address" type="string" gui-text="inventory.csv URL">https://the.domain.de/items.csv</param>
             <param name="htuser" type="string" gui-text="Basic Auth User">User</param>
             <param name="htpassword" type="string" gui-text="Basic Auth Password">Password</param>
             <label appearance="header">Sticker Customization</label>

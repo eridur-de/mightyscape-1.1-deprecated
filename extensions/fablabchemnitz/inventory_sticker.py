@@ -360,7 +360,7 @@ class InventorySticker(inkex.Effect):
     def __init__(self):
         inkex.Effect.__init__(self)
         self.arg_parser.add_argument("--main_tabs")
-        self.arg_parser.add_argument("--server_address", default="https://the.domain.de/inventory.csv")
+        self.arg_parser.add_argument("--server_address", default="https://the.domain.de/items.csv")
         self.arg_parser.add_argument("--htuser", default="user")
         self.arg_parser.add_argument("--htpassword", default="password")
         self.arg_parser.add_argument("--sticker_ids", default="*")
