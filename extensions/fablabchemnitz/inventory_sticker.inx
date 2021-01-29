@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <name>Inventory Sticker</name>
+    <id>fablabchemnitz.de.inventory_sticker</id>
+    <param name="main_tabs" type="notebook">
+        <page name="tab_active" gui-text="Active">
+            <label appearance="header">Inventory Download</label>
+            <param name="server_address" type="string" gui-text="inventory.csv URL">https://things.fablabchemnitz.de/flc/inventory.csv</param>
+            <param name="htuser" type="string" gui-text="Basic Auth User">User</param>
+            <param name="htpassword" type="string" gui-text="Basic Auth Password">Password</param>
+            <label appearance="header">Sticker Customization</label>
+            <param name="target_url" type="string" gui-text="Target URL" gui-description="The URL which will be embedded into DataMatrix">qwa.es</param>
+            <param name="target_owner" type="string" gui-text="Owner">Stadtfabrikanten e.V.</param>
+            <label appearance="header">Sticker Export options</label>
+            <param name="sticker_ids" type="string" gui-text="Sticker Ids" gui-description="comma-separated list of numeric Ids. Type * (wildcard) to generate just ALL possible Ids">1</param>
+            <param name="export_dir" type="path" gui-text="Export directory" gui-description="The directory to export the stickers" mode="folder">/home/</param>
+            <param name="flat_export" type="bool" gui-text="Flat export" gui-description="If enabled no sub directories are created.">false</param>
+            <param name="export_svg" type="bool" gui-text="Export SVG">true</param>
+            <param name="export_png" type="bool" gui-text="Export PNG">false</param>
+            <param name="print_png" type="int" gui-text="Print PNG to Brother QL-720NW (count)" gui-description="Enter desired amount of stickers to print for each Id">0</param>
+            <param name="print_device" type="string" gui-text="Printer interface (USB)" gui-description="[VendorID:ProductID], Example: 04f9:2044">04f9:2044</param>
+            <param name="preview" type="bool" gui-text="Generate preview only" gui-description="If enabled stickers will not be exported. Just generate sticker for the first given Id">false</param>
+        </page>
+        <page name="tab_info" gui-text="About">
+            <label appearance="header">About</label>
+            <separator />
+            <label>Inventory Stickers by Mario Voigt / Stadtfabrikanten e.V. (2021)</label>
+            <label>This piece of software is part of the MightyScape for InkScape 1.0/1.1dev Extension Collection</label>
+            <label>you found a bug or got some fresh code? Just report to mario.voigt@stadtfabrikanten.org. Thanks!</label>
+            <label appearance="url">https://fablabchemnitz.de</label>
+            <label>License: GNU GPL v3</label>
+            <separator />
+            <label>This extension generates inventory stickers for thermo printers (we use Brother QL-720NW) from our Teedy instance. Teedy is an open source software document management system (DMS). You can find the complete documentation at the Wiki space of https://fablabchemnitz.de</label>
+        </page>
+    </param>
+    <effect>
+        <object-type>all</object-type>
+        <effects-menu>
+            <submenu name="FabLab Chemnitz" />
+        </effects-menu>
+    </effect>
+    <script>
+        <command location="inx" interpreter="python">inventory_sticker.py</command>
+    </script>
+</inkscape-extension>
