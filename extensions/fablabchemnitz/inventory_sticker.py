@@ -377,14 +377,22 @@ class InventorySticker(inkex.Effect):
     def effect(self):
         # Adjust the document view for the desired sticker size
         root = self.svg.getElement("//svg:svg")
-        
-        #our QR Code has size 16x16, each cube is sized by 16x16px -> total size is 256x256px. We use 4px padding for all directions
+
+        subline_fontsize = 40 #px; one line of bottom text (id and owner) creates a box of that height
+          
+        #our DataMatrix has size 16x16, each cube is sized by 16x16px -> total size is 256x256px. We use 4px padding for all directions
         DataMatrix_xy = 16
         DataMatrix_height = 16 * DataMatrix_xy
         DataMatrix_width = DataMatrix_height
         sticker_padding = 4
-        sticker_height = DataMatrix_height + 2 * sticker_padding
+        sticker_height = DataMatrix_height + subline_fontsize + 3 * sticker_padding
         sticker_width = 696
+        
+        #configure font sizes and box heights to define how large the font size may be at maximum (to omit overflow)
+        objectNameMaxHeight = sticker_height - 2 * subline_fontsize - 4 * sticker_padding
+        objectNameMaxLines = 5
+        objectNameFontSize = objectNameMaxHeight / objectNameMaxLines #px; generate main font size from lines and box size
+    
         root.set("width", str(sticker_width) + "px")
         root.set("height", str(sticker_height) + "px")
         root.set("viewBox", "%f %f %f %f" % (0, 0, sticker_width, sticker_height))
@@ -395,7 +403,10 @@ class InventorySticker(inkex.Effect):
             ct = ct + 1
             if ct > 3: #we keep svg:svg, sodipodi:namedview and svg:defs which defines the default canvas without any content inside
                 #inkex.errormsg(str(node))
-                root.remove(node)
+                try:
+                    root.remove(node)
+                except Exception as e:
+                    pass
             
         #set the document units
         self.document.getroot().find(inkex.addNS("namedview", "sodipodi")).set("inkscape:document-units", "px")
@@ -455,12 +466,6 @@ class InventorySticker(inkex.Effect):
                         DataMatrixStyle = inkex.Style({"stroke": "none", "stroke-width": "1", "fill": "#000000"})
                         DataMatrixAttribs = {"style": str(DataMatrixStyle), "height": str(DataMatrix_xy) + "px", "width": str(DataMatrix_xy) + "px"}
                         
-                        #configure font sizes and box heights to define how large the font size may be at maximum (to omit overflow)
-                        subline_fontsize = 40 #px; one line of bottom text (id and owner) creates a box of that height
-                        objectNameMaxHeight = sticker_height - subline_fontsize - 4 * sticker_padding
-                        objectNameMaxLines = 5
-                        objectNameFontSize = objectNameMaxHeight / objectNameMaxLines #px; generate main font size from lines and box size
-    
                         # 1 - create DataMatrix (create a 2d list corresponding to the 1"s and 0s of the DataMatrix)
                         encoded = self.encode(self.options.target_url + "/" + sticker_id)
                         DataMatrixGroup = stickerGroup.add(inkex.Group(id="DataMatrix_Id" + sticker_id)) #make a new group at root level
@@ -496,18 +501,17 @@ class InventorySticker(inkex.Effect):
                             inkex.addNS("text", "svg"),
                             {
                                 "font-size": str(subline_fontsize) + "px",
-                                "x": str(x_pos) + "px",
+                                "x": str(sticker_padding) + "px",
                                 "transform": "translate(0," + str(sticker_height - subline_fontsize) + ")",
-                                #"y": "4px", #if set it does not correctly apply
-                                "text-align" : "right", 
-                                "text-anchor": "right", 
+                                "text-align" : "left", 
+                                "text-anchor": "left", 
                                 "vertical-align" : "bottom",
                                 "style": str(inkex.Style({"fill": "#000000", "inline-size":str(inline_size) + "px", "stroke": "none", "font-family": "Miso", "font-weight": "bold"})) #inline-size required for text wrapping
                             }
                         )
                         objectId.set("id", "objectId_Id" + sticker_id)
                         objectIdTextSpan = etree.SubElement(objectId, inkex.addNS("tspan", "svg"), {})
-                        objectIdTextSpan.text = sticker_id
+                        objectIdTextSpan.text = "Thing #" + sticker_id
           
                         # 4 - Add Owner Text
                         owner = etree.SubElement(stickerGroup,
@@ -516,25 +520,41 @@ class InventorySticker(inkex.Effect):
                                 "font-size": str(subline_fontsize) + "px",
                                 "x": str(x_pos) + "px",
                                 "transform": "translate(0," + str(sticker_height - subline_fontsize) + ")",
-                                #"y": "4px", #if set it does not correctly apply
-                                "text-align" : "left", 
-                                "text-anchor": "left", 
+                                "text-align" : "right", 
+                                "text-anchor": "right", 
                                 "vertical-align" : "bottom",
-                                "style": str(inkex.Style({"fill": "#000000", "inline-size":str(inline_size) + "px", "stroke": "none", "font-family": "Miso"})) #inline-size required for text wrapping
+                                "style": str(inkex.Style({"fill": "#000000", "inline-size":str(inline_size) + "px", "stroke": "none", "font-family": "Miso", "font-weight": "300"})) #inline-size required for text wrapping
                             }
                         )
                         owner.set("id", "owner_Id" + sticker_id)
                         ownerTextSpan = etree.SubElement(owner, inkex.addNS("tspan", "svg"), {})
                         ownerTextSpan.text = self.options.target_owner
+
+                        # 5 - Add Level Text
+                        levelText = etree.SubElement(stickerGroup,
+                            inkex.addNS("text", "svg"),
+                            {
+                                "font-size": str(subline_fontsize) + "px",
+                                "x": str(x_pos) + "px",
+                                "transform": "translate(0," + str(sticker_height - subline_fontsize - subline_fontsize) + ")",
+                                "text-align" : "right", 
+                                "text-anchor": "right", 
+                                "vertical-align" : "bottom",
+                                "style": str(inkex.Style({"fill": "#000000", "inline-size":str(inline_size) + "px", "stroke": "none", "font-family": "Miso", "font-weight": "bold"})) #inline-size required for text wrapping
+                            }
+                        )
+                        levelText.set("id", "level_Id" + sticker_id)
+                        levelTextTextSpan = etree.SubElement(levelText, inkex.addNS("tspan", "svg"), {})
+                        levelTextTextSpan.text = level
                    
-                        # 5 - Add horizontal divider line
+                        # 6 - Add horizontal divider line
                         line_thickness = 2 #px
                         line_x_pos = 350 #px; start of the line (left coord)
                         line_length = sticker_width - line_x_pos
                         divider = etree.SubElement(stickerGroup,
                             inkex.addNS("path", "svg"),
                             {
-                                "d": "m " + str(line_x_pos) + "," + str(sticker_height - subline_fontsize) + " h " + str(line_length) ,
+                                "d": "m " + str(line_x_pos) + "," + str(sticker_height - subline_fontsize - subline_fontsize) + " h " + str(line_length) ,
                                 "style": str(inkex.Style({"fill": "none", "stroke": "#000000", "stroke-width": str(line_thickness) + "px", "stroke-linecap": "butt", "stroke-linejoin":"miter", "stroke-opacity": "1"})) #inline-size required for text wrapping
                             }
                         )
