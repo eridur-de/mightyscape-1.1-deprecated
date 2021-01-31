@@ -63,7 +63,7 @@ class NextGenerator(inkex.base.TempDirMixin, inkex.base.InkscapeExtension):
         # spaces around commas will be stripped
         csv.register_dialect('generator', 'excel', skipinitialspace=True)
 
-        with open(self.options.csv_file, newline='', encoding='utf-8') as csvfile:
+        with open(self.options.csv_file, newline='', encoding='utf-8-sig') as csvfile:
 
             data = csv.DictReader(csvfile, dialect='generator')
 
@@ -130,7 +130,8 @@ class NextGenerator(inkex.base.TempDirMixin, inkex.base.InkscapeExtension):
                 self.debug(cli_output)
                 return False
             return True
-
+        return True
+    
     def load(self, stream):
         return str(stream.read(), 'utf-8')
 
