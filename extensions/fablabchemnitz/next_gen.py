@@ -129,7 +129,6 @@ class NextGenerator(inkex.base.TempDirMixin, inkex.base.InkscapeExtension):
                 self.debug(_("Inkscape returned the following output when trying to run the file export; the file export may still have worked:"))
                 self.debug(cli_output)
                 return False
-            return True
         return True
     
     def load(self, stream):
