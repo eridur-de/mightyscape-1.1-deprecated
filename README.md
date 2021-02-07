@@ -39,4 +39,4 @@ I think this package is ideal for makers who are travelling around and/or using 
   * check out command line handling of extension. This was totally ignored yet
 
 # Documentation and examples
-Please see at https://wiki.fablabchemnitz.de/pages/viewpage.action?pageId=73040380
+Please see at https://fablabchemnitz.de/pages/viewpage.action?pageId=73040380
