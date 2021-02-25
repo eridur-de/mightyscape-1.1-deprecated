@@ -455,7 +455,7 @@ class InventorySticker(inkex.Effect):
                             if not zone:
                                 zoneDir = os.path.join(inventoryCSVParent, "Keinem Bereich zugeordnet")
                             else:
-                                zoneDir = os.path.join(inventoryCSVParent, zone)
+                                zoneDir = os.path.join(inventoryCSVParent, get_valid_filename(zone)) #remove invalid charaters from zone
                             if not os.path.exists(zoneDir):
                                 os.mkdir(zoneDir)
                         else:
