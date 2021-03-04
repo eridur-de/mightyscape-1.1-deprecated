@@ -40,8 +40,9 @@ import urllib.request as urllib
 #ezdxf related imports
 import matplotlib.pyplot as plt
 import ezdxf 
-from ezdxf.addons.drawing import RenderContext, Frontend 
-from ezdxf.addons.drawing.matplotlib_backend import MatplotlibBackend
+from ezdxf.addons.drawing import RenderContext, Frontend
+#from ezdxf.addons.drawing.matplotlib_backend import MatplotlibBackend for older ezdxf library 0.14.1
+from ezdxf.addons.drawing.matplotlib import MatplotlibBackend #for recent ezdxf library 0.15.2
 from ezdxf.addons import Importer
 
 class DXFDWGImport(inkex.Effect):
