@@ -312,28 +312,39 @@ class DXFDWGImport(inkex.Effect):
                if self.options.opendironerror:
                    self.openExplorer(temp_output_dir)
                        
-        elif self.options.dxf_to_svg_parser == "ezdxf":
-            doc = ezdxf.readfile(dxf_file)
-            #doc.header['$DIMSCALE'] = 0.2 does not apply to the plot :-(
-            #inkex.utils.debug(doc.header['$DIMSCALE'])
-            #inkex.utils.debug(doc.header['$MEASUREMENT'])
-            auditor = doc.audit() #audit & repair DXF document before rendering
-            # The auditor.errors attribute stores severe errors, which *may* raise exceptions when rendering.
-            if len(auditor.errors) == 0:
-                fig = plt.figure()
-                ax = plt.axes([0., 0., 1., 1.], xticks=[], yticks=[])
-                #ax = plt.axes([0., 0., 1., 1.], frameon=False, xticks=[], yticks=[])
-                ax.patches = []
-                #plt.axis('off')
-                plt.margins(0, 0)
-                plt.gca().xaxis.set_major_locator(plt.NullLocator())
-                plt.gca().yaxis.set_major_locator(plt.NullLocator())
-                plt.subplots_adjust(top=1, bottom=0, right=1, left=0, hspace=0, wspace=0)
-                out = MatplotlibBackend(fig.add_axes(ax))
-                Frontend(RenderContext(doc), out).draw_layout(doc.modelspace(), finalize=True)
-                #plt.show()
-                #fig.savefig(os.path.join(temp_output_dir, outputfilebase + ".png"), dpi=300)  
-                fig.savefig(svg_file) #see https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.savefig.html
+        elif self.options.dxf_to_svg_parser == "ezdxf":       
+            try:
+                doc = ezdxf.readfile(dxf_file)           
+                #msp = doc.modelspace() #loop through entities
+                #for e in msp:
+                #    inkex.errormsg(e)
+                #doc.header['$DIMSCALE'] = 0.2 does not apply to the plot :-(
+                #inkex.utils.debug(doc.header['$DIMSCALE'])
+                #inkex.utils.debug(doc.header['$MEASUREMENT'])
+                auditor = doc.audit() #audit & repair DXF document before rendering
+                # The auditor.errors attribute stores severe errors, which *may* raise exceptions when rendering.
+                if len(auditor.errors) == 0:
+                    fig = plt.figure()
+                    ax = plt.axes([0., 0., 1., 1.], xticks=[], yticks=[])
+                    #ax = plt.axes([0., 0., 1., 1.], frameon=False, xticks=[], yticks=[])
+                    ax.patches = []
+                    #plt.axis('off')
+                    plt.margins(0, 0)
+                    plt.gca().xaxis.set_major_locator(plt.NullLocator())
+                    plt.gca().yaxis.set_major_locator(plt.NullLocator())
+                    plt.subplots_adjust(top=1, bottom=0, right=1, left=0, hspace=0, wspace=0)
+                    out = MatplotlibBackend(fig.add_axes(ax))
+                    Frontend(RenderContext(doc), out).draw_layout(msp, finalize=True)
+                    #plt.show()
+                    #fig.savefig(os.path.join(temp_output_dir, outputfilebase + ".png"), dpi=300)  
+                    fig.savefig(svg_file) #see https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.savefig.html
+            except IOError:
+                inkex.errormsg("Not a DXF file or a generic I/O error.")
+                exit(1)
+            except ezdxf.DXFStructureError:
+                inkex.errormsg("Invalid or corrupted DXF file.")
+                exit(1)
+            
         elif self.options.dxf_to_svg_parser == "legacy":
             inkex.utils.debug("The selected legacy DXF to SVG parser is not supported by this extension yet. Use File > Import > *.dxf. This calls the \"dxf_input.inx\" extension.")
             exit(1)
