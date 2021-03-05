@@ -316,8 +316,8 @@ class DXFDWGImport(inkex.Effect):
         elif self.options.dxf_to_svg_parser == "ezdxf":       
             try:
                 doc = ezdxf.readfile(dxf_file)           
-                #msp = doc.modelspace() #loop through entities
-                #for e in msp:
+                msp = doc.modelspace()
+                #for e in msp: #loop through entities
                 #    inkex.errormsg(e)
                 #doc.header['$DIMSCALE'] = 0.2 does not apply to the plot :-(
                 #inkex.utils.debug(doc.header['$DIMSCALE'])
