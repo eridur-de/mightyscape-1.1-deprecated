@@ -142,10 +142,19 @@ class Imagetracerjs (inkex.Effect):
                         # new parse the SVG file and insert it as new group into the current document tree
                         doc = etree.parse(exportfile + ".svg").getroot()
                         newGroup = self.document.getroot().add(inkex.Group())
+                        trace_width = None
+                        trace_height = None
+                        if doc.get('width') is not None and doc.get('height') is not None:
+                            trace_width = doc.get('width')
+                            trace_height = doc.get('height')
+                        else:
+                            viewBox = doc.get('viewBox') #eg "0 0 700 600"
+                            trace_width = viewBox.split(' ')[2]
+                            trace_height = viewBox.split(' ')[3]
                         newGroup.attrib['transform'] = "matrix(" + \
-                            str(float(node.get('width')) / float(doc.get('width'))) + \
+                            str(float(node.get('width')) / float(trace_width)) + \
                             ", 0, 0 , " + \
-                            str(float(node.get('height')) / float(doc.get('height'))) + \
+                            str(float(node.get('height')) / float(trace_height)) + \
                             "," + node.get('x') + \
                             "," + node.get('y') + ")"
                         newGroup.append(doc)

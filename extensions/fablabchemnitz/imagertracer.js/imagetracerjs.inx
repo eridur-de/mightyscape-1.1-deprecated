@@ -37,7 +37,7 @@
             <param name="linefilter" type="bool" gui-text="Noise reduction line filter">false</param>
             <!--<param name="scale" type="float" min="0.0" max="9999" gui-text="Coordinate scale factor">1.0</param> disabled because we resize to the size of the original image-->
             <param name="roundcoords" type="int" min="0" max="10" gui-text="Decimal places for rounding">1</param>
-            <param name="viewbox" type="bool" gui-text="Enable or disable SVG viewBox">false</param>
+            <param name="viewbox" type="bool" gui-text="Resize to SVG viewBox">false</param>
             <param name="desc" type="bool" gui-text="SVG descriptions">false</param> 
             <spacer/>
             <label appearance="header">Blur Preprocessing</label>
