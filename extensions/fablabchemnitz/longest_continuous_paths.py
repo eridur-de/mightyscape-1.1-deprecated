@@ -173,7 +173,7 @@ class OptimizePaths(inkex.GenerateExtension):
         vertices = []
         edges = []
 
-        objects = self.svg.get_selected(inkex.PathElement)
+        objects = self.svg.selection.filter(inkex.PathElement).values()
 
         for node in objects:
             if node.tag == inkex.addNS('path', 'svg'):
