@@ -208,10 +208,10 @@ class DXFDWGImport(inkex.Effect):
         if self.options.oda_skip_dxf_to_dxf == False or inputfile_ending == ".dwg":
             # Executable test (check for proper configuration by checking mime type. Should return octet stream for a binary executable)
             if os.name == "nt" and "application/octet-stream" not in str(MimeTypes().guess_type(urllib.pathname2url(self.options.oda_fileconverter))):
-                inkex.utils.debug("ODA File Converter was not properly configured. Check for installation and path location. You can download ODA Converter from 'https://www.opendesign.com/guestfiles/oda_file_converter'")
+                inkex.utils.debug("You selected to use ODA File Converter but it is not configured properly. Check for installation and path location or select 'Skip conversion from DXF to DXF'. You can download ODA Converter from 'https://www.opendesign.com/guestfiles/oda_file_converter'. You need to install it in order to use it.")
                 exit(1)
             elif os.path.isfile(self.options.oda_fileconverter) == False:
-                inkex.utils.debug("ODA File Converter was not properly configured. Check for installation and path location. You can download ODA Converter from 'https://www.opendesign.com/guestfiles/oda_file_converter'")
+                inkex.utils.debug("You selected to use ODA File Converter but it is not configured properly. Check for installation and path location or select 'Skip conversion from DXF to DXF'. You can download ODA Converter from 'https://www.opendesign.com/guestfiles/oda_file_converter'. You need to install it in order to use it.")
                 exit(1)
             else:
                 # Build and run ODA File Converter command
@@ -316,8 +316,8 @@ class DXFDWGImport(inkex.Effect):
         elif self.options.dxf_to_svg_parser == "ezdxf":       
             try:
                 doc = ezdxf.readfile(dxf_file)           
-                #msp = doc.modelspace() #loop through entities
-                #for e in msp:
+                msp = doc.modelspace()
+                #for e in msp: #loop through entities
                 #    inkex.errormsg(e)
                 #doc.header['$DIMSCALE'] = 0.2 does not apply to the plot :-(
                 #inkex.utils.debug(doc.header['$DIMSCALE'])
