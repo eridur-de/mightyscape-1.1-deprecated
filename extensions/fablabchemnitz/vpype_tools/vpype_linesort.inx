@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <name>Optimize Sequence: Line Sorting (vpype)</name>
+    <id>fablabchemnitz.de.vpype_linesorting</id>
+    <label appearance="header">Line Sorting</label>
+    <label>Sort lines to minimize travel distances.</label>
+    <param name="linesort_no_flip" type="bool" gui-text="Disable flipping" gui-description="Disable reversing stroke direction for optimization '--no-flip'">false</param>
+	<spacer/>
+    <label appearance="header">General Settings</label>
+    <param name="apply_transformations" type="bool" gui-text="Use 'Apply Transformations' extension" gui-description="Run 'Apply Transformations' extension before running vpype. Helps avoiding geometry shifting">false</param>
+ 	<param name="output_show" type="bool" gui-text="Show debug output" gui-description="This will open a new matplotlib window showing modified SVG data">false</param>
+ 	<param name="output_stats" type="bool" gui-text="Show conversion statistics" gui-description="Show output statistics before/after conversion">false</param>
+ 	<param name="output_trajectories" type="bool" gui-text="Import travel trajectories" gui-description="Add paths for the travel trajectories">false</param>
+ 	<param name="keep_selection" type="bool" gui-text="Keep selected paths" gui-description="If false, selected paths will be removed">false</param>
+    <label appearance="header">About</label>
+    <separator/>
+    <label appearance="url">https://fablabchemnitz.de</label>
+    <label>License: GNU GPL v3</label>
+    <effect needs-live-preview="true">
+		<effects-menu>
+         <submenu name="FabLab Chemnitz">
+	         <submenu name="Nesting/Cut Optimization"/>
+		</submenu>
+		</effects-menu>
+    </effect>
+    <script>
+        <command location="inx" interpreter="python">vpypetools.py</command>
+    </script>
+</inkscape-extension>
