@@ -10,12 +10,12 @@ This extension is totally minimal. It will just clean the whole document from gr
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 19.08.2020
-Last Patch: 23.08.2020
+Last Patch: 01.04.2021
 License: GNU GPL v3
 """
 
-class CleanGroups(inkex.Effect):
-       
+class CleanGroups(inkex.EffectExtension):
+     
     def __init__(self):
         inkex.Effect.__init__(self)
 
