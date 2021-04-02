@@ -30,35 +30,37 @@ class VHToLine(inkex.Effect):
     def effect(self):
         if len(self.svg.selected) == 0: exit("Please select at least one path.")
         for obj in self.svg.selected: # The objects are the paths, which may be compound
-            curr = self.svg.selected[obj]
-            raw = Path(curr.get("d")).to_arrays()
-            subpaths, prev = [], 0
-            for i in range(len(raw)): # Breaks compound paths into simple paths
-                if raw[i][0] == 'M' and i != 0:
-                    subpaths.append(raw[prev:i])
-                    prev = i
-            subpaths.append(raw[prev:])
-			
-            seg = []
-            for simpath in subpaths:
-                if simpath[-1][0] == 'Z':
-                    simpath[-1][0] = 'L'
-                    if simpath[-2][0] == 'L': simpath[-1][1] = simpath[0][1]
-                    else: simpath.pop()
-                for i in range(len(simpath)):
-                    if simpath[i][0] == 'V': # vertical and horizontal lines only have one point in args, but 2 are required
-                        #inkex.utils.debug(simpath[i][0])
-                        simpath[i][0]='L' #overwrite V with regular L command
-                        add=simpath[i-1][1][0] #read the X value from previous segment
-                        simpath[i][1].append(simpath[i][1][0]) #add the second (missing) argument by taking argument from previous segment
-                        simpath[i][1][0]=add #replace with recent X after Y was appended
-                    if simpath[i][0] == 'H': # vertical and horizontal lines only have one point in args, but 2 are required
-                       #inkex.utils.debug(simpath[i][0])
-                        simpath[i][0]='L' #overwrite H with regular L command
-                        simpath[i][1].append(simpath[i-1][1][1]) #add the second (missing) argument by taking argument from previous segment				
-                    #inkex.utils.debug(simpath[i])
-                    seg.append(simpath[i])
-            curr.set("d", Path(seg))
-			
+            if obj.tag == inkex.addNS('path','svg'):
+                curr = self.svg.selected[obj]
+                raw = Path(curr.get("d")).to_arrays()
+                subpaths, prev = [], 0
+                for i in range(len(raw)): # Breaks compound paths into simple paths
+                    if raw[i][0] == 'M' and i != 0:
+                        subpaths.append(raw[prev:i])
+                        prev = i
+                subpaths.append(raw[prev:])
+    			
+                seg = []
+                for simpath in subpaths:
+                    if simpath[-1][0] == 'Z':
+                        simpath[-1][0] = 'L'
+                        if simpath[-2][0] == 'L': simpath[-1][1] = simpath[0][1]
+                        else: simpath.pop()
+                    for i in range(len(simpath)):
+                        if simpath[i][0] == 'V': # vertical and horizontal lines only have one point in args, but 2 are required
+                            #inkex.utils.debug(simpath[i][0])
+                            simpath[i][0]='L' #overwrite V with regular L command
+                            add=simpath[i-1][1][0] #read the X value from previous segment
+                            simpath[i][1].append(simpath[i][1][0]) #add the second (missing) argument by taking argument from previous segment
+                            simpath[i][1][0]=add #replace with recent X after Y was appended
+                        if simpath[i][0] == 'H': # vertical and horizontal lines only have one point in args, but 2 are required
+                           #inkex.utils.debug(simpath[i][0])
+                            simpath[i][0]='L' #overwrite H with regular L command
+                            simpath[i][1].append(simpath[i-1][1][1]) #add the second (missing) argument by taking argument from previous segment				
+                        #inkex.utils.debug(simpath[i])
+                        seg.append(simpath[i])
+                curr.set("d", Path(seg))
+            else:
+                inkex.utils.debug("Object " + obj.get('id') + " is not a path. Please convert it to a path first.")
 if __name__ == '__main__':
     VHToLine().run()
