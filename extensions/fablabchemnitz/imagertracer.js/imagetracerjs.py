@@ -159,7 +159,7 @@ class Imagetracerjs (inkex.Effect):
                             "," + node.get('y') + ")"
                         newGroup.append(doc)
 
-                        # Delet the temporary svg file
+                        # Delete the temporary svg file
                         if os.path.exists(exportfile + ".svg"):
                             os.remove(exportfile + ".svg")
                     
