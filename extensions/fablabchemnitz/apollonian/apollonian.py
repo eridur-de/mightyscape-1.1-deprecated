@@ -21,7 +21,7 @@ def draw_SVG_circle(parent, r, cx, cy, name):
     
     circle = etree.SubElement(parent, inkex.addNS('circle','svg'), circ_attribs )
 
-class Gasket(inkex.Effect): # choose a better name
+class Gasket(inkex.EffectExtension): # choose a better name
     
     def __init__(self):
         " define how the options are mapped from the inx file "
@@ -55,7 +55,7 @@ class Gasket(inkex.Effect): # choose a better name
                  'stroke-width': path_stroke_width }
 
         # This finds center of current view in inkscape
-        t = 'translate(%s,%s)' % (self.svg.namedview.center[0], self.svg.namedview.center[1] )
+        t = 'translate(%s,%s)' % (self.svg.namedview.center[0], self.svg.namedview.center[1])
         
         # add a group to the document's current layer
         #all the circles inherit style from this group
@@ -65,7 +65,7 @@ class Gasket(inkex.Effect): # choose a better name
                       'transform': t,
                       'style' : str(inkex.Style((style_curve))),
                       'info':'N: '}
-        topgroup = etree.SubElement(self.svg.get_current_layer(), 'g', g_attribs )
+        topgroup = etree.SubElement(self.svg.get_current_layer(), 'g', g_attribs)
            
         circles = apolloniangasket_func.main(c1=self.options.c1,
                          c2=self.options.c2,
@@ -89,8 +89,8 @@ class Gasket(inkex.Effect): # choose a better name
             cx, cy, r = c.m.real, c.m.imag, abs(c.r)
             
             #rescale and add circle to document
-            cx, cy, r  = scale_factor*cx , scale_factor*cy, scale_factor*r
-            draw_SVG_circle(topgroup,r,cx,cy,'apo')          
+            cx, cy, r  = scale_factor * cx , scale_factor * cy, scale_factor * r
+            draw_SVG_circle(topgroup, r, cx, cy, 'apo')          
                          
 if __name__ == '__main__':
     Gasket().run()
