@@ -535,7 +535,7 @@ class MatcboxDrawer(BoxBase):
 		else:
 			self._CreateRectangleInMillimetres(self.Height, fudgeDepth, col5, row3)
 
-class TuckboxCreateEffect(inkex.Effect):
+class TuckboxCreateEffect(inkex.EffectExtension):
 	def __init__(self):
 		inkex.Effect.__init__(self)
 		self.arg_parser.add_argument('-t', '--type', type = str, dest = 'BoxType')

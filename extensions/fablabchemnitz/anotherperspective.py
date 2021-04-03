@@ -239,7 +239,7 @@ def projection(path_object,coords):
 def complex2tulpe(complexNb):
     return (complexNb.real,complexNb.imag)
 '''
-class AnotherPerspective(inkex.Effect):
+class AnotherPerspective(inkex.EffectExtension):
 
     def __init__(self):
         inkex.Effect.__init__(self)

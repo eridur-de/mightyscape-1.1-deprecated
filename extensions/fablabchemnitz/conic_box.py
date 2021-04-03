@@ -225,7 +225,7 @@ def gen_cercle(diametre, nombre_pas, epaisseur, xOffset, yOffset, parent):
         index_pas += 1
     path.GenPath()
 
-class ConicalBox(inkex.Effect):
+class ConicalBox(inkex.EffectExtension):
     """
     Creates a new layer with the drawings for a parametrically generaded box.
     """

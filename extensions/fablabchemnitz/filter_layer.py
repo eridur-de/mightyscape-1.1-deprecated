@@ -31,7 +31,7 @@ import inkex
 import sys
 import re
 
-class FilterAndLiveEffectsLayer(inkex.Effect):
+class FilterAndLiveEffectsLayer(inkex.EffectExtension):
 
     def __init__(self):
         inkex.Effect.__init__(self)

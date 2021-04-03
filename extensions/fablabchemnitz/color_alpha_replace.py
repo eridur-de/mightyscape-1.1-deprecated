@@ -32,7 +32,7 @@ import sys
 import re
 from lxml import etree
 
-class ReplaceColorAlpha(inkex.Effect):
+class ReplaceColorAlpha(inkex.EffectExtension):
   def __init__(self):
     inkex.Effect.__init__(self)
     self.arg_parser.add_argument("--from_color", default="000000", help="Replace color")

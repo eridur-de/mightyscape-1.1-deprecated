@@ -57,7 +57,7 @@ def qhull(sample):
     else:
         return sample
    
-class ConvexHull(inkex.Effect):
+class ConvexHull(inkex.EffectExtension):
     def __init__(self):
         inkex.Effect.__init__(self)
         self.paths = {}

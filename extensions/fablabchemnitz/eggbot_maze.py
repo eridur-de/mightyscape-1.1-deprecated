@@ -97,7 +97,7 @@ def draw_SVG_rect(x, y, w, h, c, t, fill, parent):
     etree.SubElement(parent, inkex.addNS('rect', 'svg'), rect_attribs)
 
 
-class Maze(inkex.Effect):
+class Maze(inkex.EffectExtension):
     """
     Each cell in the maze is represented using 9 bits:
 

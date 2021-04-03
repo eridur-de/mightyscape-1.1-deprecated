@@ -21,7 +21,7 @@ Based on coloreffect.py by Jos Hirth and Aaron C. Spike
 
 import inkex
 
-class Cleanup(inkex.Effect):
+class Cleanup(inkex.EffectExtension):
     def __init__(self):
         inkex.Effect.__init__(self)
         self.arg_parser.add_argument("--stroke_width", type=float, default=0.1, help="Stroke width")

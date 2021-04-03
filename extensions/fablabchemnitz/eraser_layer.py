@@ -32,7 +32,7 @@ import inkex
 import sys
 from lxml import etree
 
-class EraserLayer(inkex.Effect):
+class EraserLayer(inkex.EffectExtension):
     def __init__(self):
         inkex.Effect.__init__(self) 
 

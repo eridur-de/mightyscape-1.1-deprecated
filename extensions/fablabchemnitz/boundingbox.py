@@ -4,7 +4,7 @@ import inkex
 import math
 from lxml import etree
 
-class DrawBBoxes(inkex.Effect):
+class DrawBBoxes(inkex.EffectExtension):
     def __init__(self):
         inkex.Effect.__init__(self)
         self.arg_parser.add_argument('--offset', type=float, default=0.0, help='Offset from object (all directions)')

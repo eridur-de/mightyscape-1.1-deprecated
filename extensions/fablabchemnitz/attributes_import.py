@@ -2,7 +2,7 @@
 
 import inkex
 
-class AttribImport(inkex.Effect):
+class AttribImport(inkex.EffectExtension):
     def __init__(self):
         inkex.Effect.__init__(self)
         self.arg_parser.add_argument("--data", default="", help="data file")

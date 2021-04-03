@@ -63,7 +63,7 @@ def drawKthCircle(k,firstRadius,lastRadius,numNodes,spreadFactor,parent):
 	draw_SVG_ellipse(nodeRadiusTxt,nodeRadiusTxt,x,y,parent)
 
 
-class FibonacciSpiral(inkex.Effect):
+class FibonacciSpiral(inkex.EffectExtension):
 	def __init__(self):
 		inkex.Effect.__init__(self)
 		self.arg_parser.add_argument("-f", "--FirstRadius",	type=int, default="5", help="The radius of the first layer of circles in pixels.")

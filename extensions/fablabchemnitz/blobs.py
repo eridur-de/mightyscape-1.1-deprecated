@@ -8,7 +8,7 @@ from simplestyle import *
 import random
 from lxml import etree
 
-class blobsEffect(inkex.Effect):
+class blobsEffect(inkex.EffectExtension):
     """
 Creates a random blob from a convex hull over n points.
 The expected degree of the polygon is sqrt(n).  The corners

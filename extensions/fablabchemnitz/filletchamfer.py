@@ -158,7 +158,7 @@ def d_str(self, useSandT=False, use_closed_attrib=False, rel=False):
     s = ' '.join(parts)
     return s if not rel else s.lower()
         
-class FilletChamfer(inkex.Effect):
+class FilletChamfer(inkex.EffectExtension):
     def __init__(self):
         inkex.Effect.__init__(self)
         self.arg_parser.add_argument("-t", "--fillet_type", default="fillet", help="Selects whether using fillet or chamfer")

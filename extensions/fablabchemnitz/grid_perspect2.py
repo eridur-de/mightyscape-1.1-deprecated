@@ -49,7 +49,7 @@ def colorString(pickerColor):
         longcolor = longcolor & 0xFFFFFFFF
     return '#' + format(longcolor >> 8, '06X')
 	
-class Grid_Perspective(inkex.Effect):
+class Grid_Perspective(inkex.EffectExtension):
     def __init__(self):
         inkex.Effect.__init__(self)
         self.arg_parser.add_argument("--size_unit", default="", help="Units for geometry")

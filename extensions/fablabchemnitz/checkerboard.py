@@ -61,7 +61,7 @@ def draw_grid(x, y, rows, cols, size, color1, color2, parent):
             id_ = 'cell{0}x{1}'.format(col, row)
             draw_square(x + col * size, y + row * size, size, size, color, group, id_)
 	
-class Checkerboard(inkex.Effect):
+class Checkerboard(inkex.EffectExtension):
     def __init__(self):
         inkex.Effect.__init__(self)
         self.arg_parser.add_argument("--tab")

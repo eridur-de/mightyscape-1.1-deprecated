@@ -24,7 +24,7 @@ Foundation, Inc., 51 Fraanklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import inkex 
 
-class Pathpoints2Dots(inkex.Effect):
+class Pathpoints2Dots(inkex.EffectExtension):
     def __init__(self):
         inkex.Effect.__init__(self)
         self.arg_parser.add_argument("--tab")

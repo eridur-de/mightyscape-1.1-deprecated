@@ -111,7 +111,7 @@ class Fretboard:
         return hline_cross_path, vline_cross_path
 
 
-class Inxfb(inkex.Effect):
+class Inxfb(inkex.EffectExtension):
     def __init__(self):
         inkex.Effect.__init__(self)
         self.arg_parser.add_argument("-s", "--scale", default="25in", help="The fingerboard scalelenght")

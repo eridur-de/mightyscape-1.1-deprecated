@@ -28,7 +28,7 @@ import inkex
 import re
 from inkex.paths import Path
 			
-class CloseCurves(inkex.Effect):
+class CloseCurves(inkex.EffectExtension):
 	def __init__(self):
 		inkex.Effect.__init__(self)
 	def effect(self):

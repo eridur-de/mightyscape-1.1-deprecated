@@ -108,7 +108,7 @@ def draw_ellipse_segment_rotated(cx,cy,rx,ry, width, fill, name, parent, rotatio
     etree.SubElement(parent, inkex.addNS('path','svg'), circle_attribs)
 
 
-class Globe(inkex.Effect):
+class Globe(inkex.EffectExtension):
     def __init__(self):
         inkex.Effect.__init__(self)
         self.arg_parser.add_argument("--longitudeLineCount", type=int, default=15, help="Number of longitude lines")

@@ -4,7 +4,7 @@ import inkex
 from inkex.paths import Path
 from inkex import Circle
 
-class StartEndPoints(inkex.Effect):
+class StartEndPoints(inkex.EffectExtension):
 
     def drawCircle(self, group, color, point):
         style = inkex.Style({'stroke': 'none', 'fill': color})

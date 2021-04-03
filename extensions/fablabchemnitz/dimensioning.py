@@ -40,7 +40,7 @@ def rotate(tangentvec, point):
     return 'rotate(' + str(angle/np.pi*180) + ',' + str(point[0]) + ',' + str(point[1]) + ')'
 
 
-class Dimensioning(inkex.Effect):
+class Dimensioning(inkex.EffectExtension):
     def __init__(self):
         inkex.Effect.__init__(self)
         # the options given in the dialouge

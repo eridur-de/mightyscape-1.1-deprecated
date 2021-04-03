@@ -3,7 +3,7 @@
 import inkex
 import sys
 
-class AttribEditor(inkex.Effect):
+class AttribEditor(inkex.EffectExtension):
 	def __init__(self):
 		inkex.Effect.__init__(self)
 		self.arg_parser.add_argument("-a", "--attributeName", help="attribute name to set")

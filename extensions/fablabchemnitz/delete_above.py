@@ -30,7 +30,7 @@ def contains(outer, inner):
            inner.br.x <= outer.br.x and inner.br.y <= outer.br.y
 
 
-class DeleteAboveEffect(inkex.Effect):
+class DeleteAboveEffect(inkex.EffectExtension):
     """ Delete the selected node and everything above it """
     node_info = None
 

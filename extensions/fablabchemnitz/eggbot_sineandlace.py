@@ -249,7 +249,7 @@ def drawSine(cycles=8, rn=0, rm=0, nPoints=50, offset=None,
     return path_data, path_desc
 
 
-class SpiroSine(inkex.Effect):
+class SpiroSine(inkex.EffectExtension):
     nsURI = 'http://sample.com/ns'
     nsPrefix = 'doof'
 

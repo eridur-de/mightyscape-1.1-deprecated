@@ -31,7 +31,7 @@ from copy import deepcopy
 import math
 from math import sqrt
 
-class EllipseSolveEffect(inkex.Effect):
+class EllipseSolveEffect(inkex.EffectExtension):
     def __init__(self):
         inkex.Effect.__init__(self)
 

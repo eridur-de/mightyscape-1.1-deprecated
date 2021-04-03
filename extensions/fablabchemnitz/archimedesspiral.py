@@ -17,7 +17,7 @@ import inkex
 from lxml import etree
 from math import cos, sin, pi, log, sqrt
 
-class Archimedes(inkex.Effect):
+class Archimedes(inkex.EffectExtension):
     def __init__(self):
         inkex.Effect.__init__(self)
         self.arg_parser.add_argument('--r', type = int, default = '50')

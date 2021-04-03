@@ -13,7 +13,7 @@
 import inkex
 from lxml import etree
 
-def recup(selection,attrib):
+def recup(selection, attrib):
     l = []
     for i in selection:
         selec = i
@@ -21,7 +21,7 @@ def recup(selection,attrib):
         l.append(valr)
     return l
 
-def generCircle(y,x,r):
+def generCircle(y, x, r):
     circle = etree.Element('{http://www.w3.org/2000/svg}circle')
     circle.set('cy',str(y))
     circle.set('cx',str(x))
@@ -36,7 +36,7 @@ def toFloat(l):
         l[i] = float(l[i])
     return l
 
-class Circle(inkex.Effect):
+class Circle(inkex.EffectExtension):
     def __init__(self):
         inkex.Effect.__init__(self)
         self.arg_parser.add_argument('--radius', type = float, default = 3.0, help = 'Radius to enter')

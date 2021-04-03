@@ -6,7 +6,7 @@ import math
 import inkex
 from inkex.paths import CubicSuperPath
 
-class TransformExponential(inkex.Effect):
+class TransformExponential(inkex.EffectExtension):
     def __init__(self):
         inkex.Effect.__init__(self)
         #self.arg_parser.add_argument('-a', '--axis', default='x', help='distortion axis. Valid values are "x", "y", or "xy". Default is "x"')

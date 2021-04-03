@@ -75,7 +75,7 @@ global /inxGen/ =1 and run the file stand-alone.
 - AK Sept 2018
 """
 
-class noiseEffect(inkex.Effect):
+class noiseEffect(inkex.EffectExtension):
     """
 Creates visual noise.  3 kinds: Scratches, chips, specks.
 50, 100, 100 instances are predefined.  These are chosen

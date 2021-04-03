@@ -346,7 +346,7 @@ def generate_spokes_path(root_radius, spoke_width, spoke_count, mount_radius, mo
     return (path, messages)
 
 
-class Gears(inkex.Effect):
+class Gears(inkex.EffectExtension):
     def __init__(self):
         inkex.Effect.__init__(self)
         # an alternate way to get debug info:

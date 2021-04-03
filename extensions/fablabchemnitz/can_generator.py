@@ -34,7 +34,7 @@ def punkte_erstellen(punkte, x, y):
     ###Schreibt die aktuellen Koordinaten in die Punkteliste
     punkte.append((x, y))
 
-class Dose(inkex.Effect): 
+class Dose(inkex.EffectExtension): 
     def __init__(self):
         inkex.Effect.__init__(self)
         self.arg_parser.add_argument("--height", type=int, default = 50, help="Höhe der Dose")

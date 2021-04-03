@@ -4,7 +4,7 @@ import math
 import inkex
 from lxml import etree
 
-class clonesPerspectiveEffect(inkex.Effect):
+class clonesPerspectiveEffect(inkex.EffectExtension):
     def __init__(self):
         inkex.Effect.__init__(self)
         self.arg_parser.add_argument('--num', type = int, default = 5, help = 'Drag out center of rotation before calling')

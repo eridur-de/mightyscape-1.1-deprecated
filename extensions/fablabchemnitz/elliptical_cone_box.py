@@ -67,7 +67,7 @@ class inkcape_polar:
         line_attribs = {'style': objStyle, 'd': self.Path}
         etree.SubElement(self.group, inkex.addNS('path', 'svg'), line_attribs)
 
-class EllConicalBox(inkex.Effect):
+class EllConicalBox(inkex.EffectExtension):
     """
     Creates a new layer with the drawings for a parametrically generaded box.
     """

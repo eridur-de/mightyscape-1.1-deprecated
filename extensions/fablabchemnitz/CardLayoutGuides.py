@@ -432,7 +432,7 @@ class LineGeneratorForHorizontalCards(LineGeneratorBase):
 
 		return lines
 
-class FoldedCardLayoutGuidesEffect(inkex.Effect):
+class FoldedCardLayoutGuidesEffect(inkex.EffectExtension):
 	def __init__(self):
 		inkex.Effect.__init__(self)
 

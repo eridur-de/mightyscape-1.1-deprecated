@@ -40,7 +40,7 @@ def pts2curve(cplxs):
     pth = [ '%.2f, %.2f '%z for z in data]
     return 'M '+ ''.join(pth) 
         
-class AffineTorus(inkex.Effect): # choose a better name
+class AffineSpirals(inkex.EffectExtension):
     
     def __init__(self):
         inkex.Effect.__init__(self)
@@ -96,4 +96,4 @@ class AffineTorus(inkex.Effect): # choose a better name
         etree.SubElement(topgroup, inkex.addNS('path','svg'), curve_attribs)
 
 if __name__ == '__main__':
-    AffineTorus().run()
+    AffineSpirals().run()

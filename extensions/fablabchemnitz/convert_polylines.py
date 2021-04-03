@@ -15,7 +15,7 @@ License: GNU GPL v3
 import inkex
 from inkex.paths import Path
 
-class ConvertToPolylines(inkex.Effect):
+class ConvertToPolylines(inkex.EffectExtension):
 
     def __init__(self):
         inkex.Effect.__init__(self)

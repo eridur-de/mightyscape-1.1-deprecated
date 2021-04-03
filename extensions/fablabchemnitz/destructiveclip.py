@@ -28,7 +28,7 @@ import sys
 from inkex.paths import Path
 
 
-class DestructiveClip(inkex.Effect):
+class DestructiveClip(inkex.EffectExtension):
 
     def __init__(self):
         self.tolerance = 0.0001  # arbitrary fudge factor

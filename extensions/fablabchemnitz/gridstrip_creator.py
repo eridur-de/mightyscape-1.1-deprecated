@@ -29,7 +29,7 @@ from lxml import etree
 def printDebug(string):
 	inkex.errormsg(string)
 	
-class GridStrip_Creator(inkex.Effect):
+class GridStrip_Creator(inkex.EffectExtension):
 	def __init__(self):
 		inkex.Effect.__init__(self)
 

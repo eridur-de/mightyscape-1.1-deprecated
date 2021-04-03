@@ -4,7 +4,7 @@ import inkex
 from inkex import bezier
 from inkex.paths import Path, CubicSuperPath
 
-class DistortionExtension(inkex.Effect):
+class DistortionExtension(inkex.EffectExtension):
     def __init__(self):
         inkex.Effect.__init__(self)
         self.arg_parser.add_argument("--lambda_coef", type=float, default=-5.0, help="command line help")

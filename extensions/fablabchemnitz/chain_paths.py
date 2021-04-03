@@ -36,7 +36,7 @@ from inkex.paths import CubicSuperPath, Path
 from optparse import SUPPRESS_HELP
 debug = False
 
-class ChainPaths(inkex.Effect):
+class ChainPaths(inkex.EffectExtension):
 
   def __init__(self):
     inkex.Effect.__init__(self)

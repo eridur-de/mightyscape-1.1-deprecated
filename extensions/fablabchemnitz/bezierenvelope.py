@@ -69,7 +69,7 @@ import sys
 import ffgeom
 
 
-class BezierEnvelope(inkex.Effect):
+class BezierEnvelope(inkex.EffectExtension):
 
     segmentTypes = ["move","line","quad","cubic","close"]
 

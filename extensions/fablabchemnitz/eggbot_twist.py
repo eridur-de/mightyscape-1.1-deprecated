@@ -88,7 +88,7 @@ def distanceSquared(p1, p2):
     return dx * dx + dy * dy
 
 
-class Twist(inkex.Effect):
+class Twist(inkex.EffectExtension):
 
     def __init__(self):
 

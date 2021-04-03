@@ -24,7 +24,7 @@ def warn(*args, **kwargs):
 import warnings
 warnings.warn = warn
 
-class ExportXY(inkex.Effect):
+class ExportXY(inkex.EffectExtension):
     def __init__(self):
         inkex.Effect.__init__(self)
     def effect(self):

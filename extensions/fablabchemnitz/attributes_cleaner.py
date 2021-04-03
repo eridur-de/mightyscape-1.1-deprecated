@@ -17,7 +17,7 @@ element.attrib.pop("{http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd}absref",
 import inkex
 import sys
 
-class AbsrefRemover(inkex.Effect):
+class AbsrefRemover(inkex.EffectExtension):
 	def __init__(self):
 		inkex.Effect.__init__(self)
 		self.arg_parser.add_argument("-a", "--removeAbsref", type=inkex.Boolean, default=True, help="Remove sodipodi:absref")
