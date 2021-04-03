@@ -57,6 +57,7 @@ Todo's
 - command chain is slow on Windows
 - add some debugging options to remove deprecation warnings
 - allow to select other units than mm for tolerance, trimming, ...
+- fix occult plugin sometimes not removing duplicate lines. maybe different stroke widths?
 """
 
 class vpypetools (inkex.EffectExtension):
