@@ -8,7 +8,7 @@ Import any DWG or DXF file using ODA File Converter, sk1 UniConvertor, ezdxf and
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 23.08.2020
-Last patch: 12.09.2020
+Last patch: 04.04.2021
 License: GNU GPL v3
 
 Module licenses
@@ -18,6 +18,8 @@ Module licenses
 - ODA File Converter - not bundled (due to restrictions by vendor)
 - sk1 UniConvertor (https://github.com/sk1project/uniconvertor) - AGPL v3.0 - not bundled
 - kabeja (http://kabeja.sourceforge.net/) - Apache v2
+- vpype (https://github.com/abey79/vpype) - MIT License
+- vpype-dxf (https://github.com/tatarize/vpype-dxf) - MIT License
 
 ToDos:
 - change copy commands to movefile commands (put into temp. sub directories where the input file is located). We need to copy files in this script because ODA File Converter will process whole dirs instead of single files only.DXF files can be really large, which slows the process)
@@ -45,7 +47,7 @@ from ezdxf.addons.drawing import RenderContext, Frontend
 from ezdxf.addons.drawing.matplotlib import MatplotlibBackend #for recent ezdxf library 0.15.2
 from ezdxf.addons import Importer
 
-class DXFDWGImport(inkex.Effect):
+class DXFDWGImport(inkex.EffectExtension):
     def __init__(self):
         inkex.Effect.__init__(self)
         
@@ -76,6 +78,11 @@ class DXFDWGImport(inkex.Effect):
         self.arg_parser.add_argument("--ezdfx_keep_preprocessed", type=inkex.Boolean, default=True, help="Keep ezdxf preprocessed DXF file")        
         self.arg_parser.add_argument("--ezdxf_preprocessing", type=inkex.Boolean, default=True)
         self.arg_parser.add_argument("--allentities",         type=inkex.Boolean, default=True)
+        
+        #vpype-dxf (dread)
+        self.arg_parser.add_argument("--vpype_quantization",  type=float, default=0.1, help="Maximum length of segments approximating curved elements (default 0.1mm)")
+        self.arg_parser.add_argument("--vpype_simplify", type=inkex.Boolean, default=False, help="Simplify curved elements")
+        self.arg_parser.add_argument("--vpype_parallel", type=inkex.Boolean, default=False, help="Multiprocessing curve conversion")  
         
         #sk1 compatible entities
         self.arg_parser.add_argument("--THREE_DFACE",   type=inkex.Boolean, default=True) #3DFACE
@@ -312,7 +319,39 @@ class DXFDWGImport(inkex.Effect):
                inkex.errormsg("kabeja failed: %d %s %s" % (proc.returncode, stdout, stderr))  
                if self.options.opendironerror:
                    self.openExplorer(temp_output_dir)
-                       
+        
+        elif self.options.dxf_to_svg_parser == "vpype_dxf":
+            try:
+                from inkex.command import inkscape
+                import vpype
+                from vpype_cli import execute
+            except Exception as e:
+                inkex.errormsg("Error importing vpype. Did you properly install the vpype and vpype-dxf python modules?")
+                exit(1)
+            doc = vpype.Document() #create new vpype document
+            command = "dread  --quantization " + str(self.options.vpype_quantization)
+            if self.options.vpype_simplify is True:     
+                command += " --simplify"
+            if self.options.vpype_parallel is True:     
+                command += " --parallel"     
+            #command += " '" + inputfile + "'"
+            command += " '" + dxf_file + "'"
+                
+            #inkex.errormsg(command)   
+            doc = execute(command, doc)
+            if doc.length() == 0:
+                inkex.errormsg('No lines left after vpype conversion. Conversion result is empty. Cannot continue')
+                exit(1)
+            # save the vpype document to new svg file and close it afterwards
+            output_fileIO = open(svg_file, "w", encoding="utf-8")
+            vpype.write_svg(output_fileIO, doc, page_size=None, center=False, source_string='', layer_label_format='%d', show_pen_up=False, color_mode='layer')       
+            output_fileIO.close()
+            # convert vpype polylines/lines/polygons to regular paths again. We need to use "--with-gui" to respond to "WARNING: ignoring verb FileSave - GUI required for this verb."
+            cli_output = inkscape(svg_file, "--with-gui", actions="EditSelectAllInAllLayers;EditUnlinkClone;ObjectToPath;FileSave;FileQuit")
+            if len(cli_output) > 0:
+                self.debug(_("Inkscape returned the following output when trying to run the vpype object to path back-conversion:"))
+                self.debug(cli_output)
+              
         elif self.options.dxf_to_svg_parser == "ezdxf":       
             try:
                 doc = ezdxf.readfile(dxf_file)           

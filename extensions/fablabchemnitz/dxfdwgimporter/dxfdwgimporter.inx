@@ -11,6 +11,7 @@
                 <option value="sk1">sk1 UniConverter (best output, but fails for all unknown/unfiltered entities)</option>
                 <option value="ezdxf">ezdxf (higher quality, many single nodes)</option>
                 <option value="kabeja">kabeja (Java library)</option>
+                <option value="vpype_dxf (recommended to disable 'Filter entities with ezdxf using this)">vpype-dxf</option>
                 <option value="legacy">legacy InkScape importer</option>
             </param>
             <param name="resizetoimport" type="bool" gui-text="Resize the canvas to the imported drawing's bounding box">true</param>
@@ -149,6 +150,12 @@
             <label appearance="header">sk1 UniConvertor 1.1.X</label>
             <separator/>
             <param name="sk1_uniconverter" type="path" gui-text="uniconvertor executable" gui-description="Full path to 'uniconvertor' executable" filetypes="cmd" mode="file">C:\Program Files (x86)\sK1 Project\UniConvertor-1.1.6\uniconvertor.cmd</param>
+            <label appearance="header">vpype-dxf</label>
+            <separator/>
+			<param name="vpype_quantization" type="float" min="0.001" max="99999.000" precision="3" gui-text="Quantization" gui-description="Maximum length of segments approximating curved elements (default 0.1mm)">0.100</param>	
+    		<param name="vpype_simplify" type="bool" gui-text="Simplify curved elements" gui-description="Apply simplification algorithm to curved elements">false</param>
+ 			<param name="vpype_parallel" type="bool" gui-text="Multiprocessing curve conversion" gui-description="Enable multiprocessing for curve conversion.">false</param>
+
         </page>
     </param>
     <effect needs-live-preview="true">
