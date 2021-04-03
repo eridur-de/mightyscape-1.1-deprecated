@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <name>Line Sorting</name>
-    <id>fablabchemnitz.de.vpype_linesorting</id>
-    <label appearance="header">Line Sorting</label>
-    <label>Sort lines to minimize travel distances.</label>
- 	<param name="linesort" type="bool" gui-hidden="true">true</param>
-    <param name="linesort_no_flip" type="bool" gui-text="Disable flipping" gui-description="Disable reversing stroke direction for optimization '--no-flip'">false</param>
+    <name>Occult Plugin (HLR)</name>
+    <id>fablabchemnitz.de.vpype_plugin_occult</id>
+	<label appearance="header">Occult Plugin (Concealed / Hidden Line Removal)</label>
+	<label>This plugin command removes duplicated lines. It acts like a trimmer to receive a clean set of visible paths only. You need to install occult plugin for vpype and a working pygeos library.</label>
+ 	<param name="plugin_occult" type="bool" gui-hidden="true">true</param>
+	<param name="plugin_occult_tolerance" type="float" min="0.000"  max="99999.000" precision="3" gui-text="tolerance (mm)" gui-description="Max distance between start and end point to consider a path closed (default 0.01 mm)">0.01</param>  
 	<spacer/>
     <label appearance="header">General Settings</label>
     <param name="flattenbezier" type="bool" gui-text="Flatten bezier curves to polylines" gui-description="Converts bezier curves to polylines.">true</param>	

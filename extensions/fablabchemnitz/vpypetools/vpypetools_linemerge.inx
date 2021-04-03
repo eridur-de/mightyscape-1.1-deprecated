@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <name>Line Merging (vpype)</name>
+    <name>Line Merging</name>
     <id>fablabchemnitz.de.vpype_linemerging</id>
 	<label appearance="header">Line Merging</label>
 	<label>Merge lines whose endings and starts overlap or are very close.</label>
  	<param name="linemerge" type="bool" gui-hidden="true">true</param>
-	<param name="linemerge_tolerance" type="float" min="0.0" gui-text="tolerance (mm)" gui-description="Maximum distance between two line endings that should be merged (default 0.5 mm)">0.5</param>           
+	<param name="linemerge_tolerance" type="float" min="0.000"  max="99999.000" precision="3" gui-text="tolerance (mm)" gui-description="Maximum distance between two line endings that should be merged (default 0.500 mm)">0.500</param>           
 	<param name="linemerge_no_flip" type="bool" gui-text="no flip" gui-description="Disable reversing stroke direction for merging">false</param>
 	<spacer/>
     <label appearance="header">General Settings</label>
     <param name="flattenbezier" type="bool" gui-text="Flatten bezier curves to polylines" gui-description="Converts bezier curves to polylines.">true</param>	
-	<param name="flatness" type="float" min="0.001" precision="3" gui-text="flatness" gui-description="Minimum flatness = 0.001. The smaller the value the more fine segments you will get.">0.1</param>	
+	<param name="flatness" type="float" min="0.001" max="99999.000" precision="3" gui-text="flatness" gui-description="Minimum flatness = 0.001. The smaller the value the more fine segments you will get.">0.100</param>	
     <param name="apply_transformations" type="bool" gui-text="Use 'Apply Transformations' extension" gui-description="Run 'Apply Transformations' extension before running vpype. Helps avoiding geometry shifting">false</param>
  	<param name="output_show" type="bool" gui-text="Show debug output" gui-description="This will open a new matplotlib window showing modified SVG data">false</param>
  	<param name="output_stats" type="bool" gui-text="Show conversion statistics" gui-description="Show output statistics before/after conversion">false</param>
@@ -24,7 +24,7 @@
     <effect needs-live-preview="true">
 		<effects-menu>
          <submenu name="FabLab Chemnitz">
-	         <submenu name="Modify existing Path(s)"/>
+	         <submenu name="vpype Tools"/>
 		</submenu>
 		</effects-menu>
     </effect>

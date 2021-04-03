@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <name>Line Sorting</name>
-    <id>fablabchemnitz.de.vpype_linesorting</id>
-    <label appearance="header">Line Sorting</label>
-    <label>Sort lines to minimize travel distances.</label>
- 	<param name="linesort" type="bool" gui-hidden="true">true</param>
-    <param name="linesort_no_flip" type="bool" gui-text="Disable flipping" gui-description="Disable reversing stroke direction for optimization '--no-flip'">false</param>
+    <name>Trimming</name>
+    <id>fablabchemnitz.de.vpype_trimming</id>
+	<label appearance="header">Trimming</label>
+	<label>This command trims the geometries by the provided X and Y margins with respect to the current bounding box.</label>
+ 	<param name="trim" type="bool" gui-hidden="true">true</param>	
+	<param name="trim_x_margin" type="float" min="0.000"  max="99999.000" precision="3" gui-text="trim margin - x direction (mm)">0.000</param>
+	<param name="trim_y_margin" type="float" min="0.000"  max="99999.000" precision="3" gui-text="trim margin - y direction (mm)">0.000</param>
 	<spacer/>
     <label appearance="header">General Settings</label>
     <param name="flattenbezier" type="bool" gui-text="Flatten bezier curves to polylines" gui-description="Converts bezier curves to polylines.">true</param>	

@@ -37,10 +37,11 @@ Extension for InkScape 1.X
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 02.04.2021
-Last patch: 02.04.2021
+Last patch: 03.04.2021
 License: GNU GPL v3
 
-Used version of vpype: commit id https://github.com/abey79/vpype/commit/0b0dc8dd7e32998dbef639f9db578c3bff02690b
+Used (tested) version of vpype: commit id https://github.com/abey79/vpype/commit/0b0dc8dd7e32998dbef639f9db578c3bff02690b (29.03.2021)
+Used (tested) version of vpype occult: commit id https://github.com/LoicGoulefert/occult/commit/2d04ca57d69078755c340066c226fd6cd927d41e (04.02.2021)
 
 CLI / API docs:
 - https://vpype.readthedocs.io/en/stable/api/vpype_cli.html#module-vpype_cli
@@ -55,6 +56,7 @@ Todo's
 - https://github.com/abey79/vpype/issues/243
 - command chain is slow on Windows
 - add some debugging options to remove deprecation warnings
+- allow to select other units than mm for tolerance, trimming, ...
 """
 
 class vpypetools (inkex.EffectExtension):
@@ -63,14 +65,41 @@ class vpypetools (inkex.EffectExtension):
         inkex.Effect.__init__(self)
         
         # Line Sorting
-        self.arg_parser.add_argument("--linesort", default=False, type=inkex.Boolean)
+        self.arg_parser.add_argument("--linesort", type=inkex.Boolean, default=False)
         self.arg_parser.add_argument("--linesort_no_flip", type=inkex.Boolean, default=False, help="Disable reversing stroke direction for optimization")
         
         # Line Merging
-        self.arg_parser.add_argument("--linemerge", default=False, type=inkex.Boolean)
-        self.arg_parser.add_argument("--linemerge_tolerance", type=float, default=False, help="Maximum distance between two line endings that should be merged (default 0.5 mm)")
-        self.arg_parser.add_argument("--linemerge_no_flip", type=inkex.Boolean, default=False, help="Disable reversing stroke direction for merging")   
+        self.arg_parser.add_argument("--linemerge", type=inkex.Boolean, default=False)
+        self.arg_parser.add_argument("--linemerge_tolerance", type=float, default=0.500, help="Maximum distance between two line endings that should be merged (default 0.500 mm)")
+        self.arg_parser.add_argument("--linemerge_no_flip", type=inkex.Boolean, default=False, help="Disable reversing stroke direction for merging")
         
+        # Trimming
+        self.arg_parser.add_argument("--trim", type=inkex.Boolean, default=False)
+        self.arg_parser.add_argument("--trim_x_margin", type=float, default=0.000, help="trim margin - x direction (mm)") # keep default at 0.000 to keep clean bbox
+        self.arg_parser.add_argument("--trim_y_margin", type=float, default=0.000, help="trim margin - y direction (mm)") # keep default at 0.000 to keep clean bbox
+    
+        # Relooping
+        self.arg_parser.add_argument("--reloop", type=inkex.Boolean, default=False)
+        self.arg_parser.add_argument("--reloop_tolerance", type=float, default=0.500, help="Controls how close the path beginning and end must be to consider it closed (default 0.500 mm)")
+ 
+        # Multipass
+        self.arg_parser.add_argument("--multipass", type=inkex.Boolean, default=False)
+        self.arg_parser.add_argument("--multipass_count", type=int, default=2, help="How many passes for each line (default 2)")
+ 
+        # Filter
+        self.arg_parser.add_argument("--filter", type=inkex.Boolean, default=False)
+        self.arg_parser.add_argument("--filter_tolerance", type=float, default=0.050, help="Tolerance used to determined if a line is closed or not (default 0.050 mm)")
+        self.arg_parser.add_argument("--filter_closed", type=inkex.Boolean, default=False, help="Keep closed lines")
+        self.arg_parser.add_argument("--filter_not_closed", type=inkex.Boolean, default=False, help="Keep open lines")
+        self.arg_parser.add_argument("--filter_min_length_enabled", type=inkex.Boolean, default=False, help="filter by min length")
+        self.arg_parser.add_argument("--filter_min_length", type=float, default=0.000, help="Keep lines whose length isn't shorter than value")
+        self.arg_parser.add_argument("--filter_max_length_enabled", type=inkex.Boolean, default=False, help="filter by max length") 
+        self.arg_parser.add_argument("--filter_max_length", type=float, default=0.000, help="Keep lines whose length isn't greater than value") 
+ 
+        # Plugin Occult
+        self.arg_parser.add_argument("--plugin_occult", type=inkex.Boolean, default=False)
+        self.arg_parser.add_argument("--plugin_occult_tolerance", type=float, default=0.01, help="Max distance between start and end point to consider a path closed (default 0.01 mm)")
+ 
         # General Settings
         self.arg_parser.add_argument("--flattenbezier", type=inkex.Boolean, default=False, help="Flatten bezier curves to polylines")        
         self.arg_parser.add_argument("--flatness", type=float, default=0.1, help="Minimum flatness = 0.1. The smaller the value the more fine segments you will get.")    
@@ -132,19 +161,19 @@ class vpypetools (inkex.EffectExtension):
             applytransform.ApplyTransform().recursiveFuseTransform(self.document.getroot())
 
         # getting the bounding box of the current selection. We use to calculate the offset XY from top-left corner of the canvas. This helps us placing back the elements
-        bbox = None
+        input_bbox = None
         if len(self.svg.selected) == 0:
             convertPath(self.document.getroot())
             for element in nodesToConvert:
-                bbox += element.bounding_box()      
+                input_bbox += element.bounding_box()      
         else:
             for id, item in self.svg.selected.items():
                 convertPath(item)
-            bbox = inkex.elements._selected.ElementList.bounding_box(self.svg.selected) # get BoundingBox for selection
+            input_bbox = inkex.elements._selected.ElementList.bounding_box(self.svg.selected) # get BoundingBox for selection
             
-        # inkex.utils.debug(bbox)
+        # inkex.utils.debug(input_bbox)
             
-        #l c.as_mls() #cast LineString array to MultiLineString
+        # lc.as_mls() #cast LineString array to MultiLineString
 
         if len(lc) == 0:
             inkex.errormsg('Selection appears to be empty or does not contain any valid svg:path nodes. Try to cast your objects to paths using CTRL + SHIFT + C or strokes to paths using CTRL + ALT+ C')
@@ -155,11 +184,11 @@ class vpypetools (inkex.EffectExtension):
         # we add the lineCollection (converted selection) to the vpype document
         doc.add(lc, layer_id=None)
 
-        if self.options.output_stats is True:
-            tooling_length_before = doc.length()
-            traveling_length_before = doc.pen_up_length()
+        tooling_length_before = doc.length()
+        traveling_length_before = doc.pen_up_length()
         
         # build and execute the conversion command
+        # the following code block is not intended to sum up the commands to build a series (pipe) of commands!
         ##########################################
         
         # Line Sort
@@ -172,35 +201,70 @@ class vpypetools (inkex.EffectExtension):
         if self.options.linemerge is True:     
             command = "linemerge --tolerance " + str(self.options.linemerge_tolerance)
             if self.options.linemerge_no_flip is True:
-                command += " --no-flip" 
-            
-        #inkex.utils.debug(command)
+                command += " --no-flip"
+ 
+        # Trimming
+        if self.options.trim is True:     
+            command = "trim " + str(self.options.trim_x_margin) + " " + str(self.options.trim_y_margin)
+ 
+        # Relooping
+        if self.options.reloop is True:     
+            command = "reloop --tolerance " + str(self.options.reloop_tolerance)
+ 
+        # Multipass
+        if self.options.multipass is True:     
+            command = "multipass --count " + str(self.options.multipass_count)
+ 
+        # Filter
+        if self.options.filter is True:     
+            command = "filter --tolerance " + str(self.options.filter_tolerance)
+            if self.options.filter_min_length_enabled is True:
+                command += " --min-length " + str(self.options.filter_min_length)
+            if self.options.filter_max_length_enabled is True:
+                command += " --max-length " + str(self.options.filter_max_length)
+            if self.options.filter_closed is True:
+                command += " --closed"
+            if self.options.filter_not_closed is True:
+                command += " --not-closed"
+            if self.options.filter_closed is False and self.options.filter_not_closed is False and self.options.filter_min_length_enabled is False and self.options.filter_max_length_enabled is False:
+                inkex.errormsg('No filters to apply. Please select at least one filter.')
+                return
+
+        # Plugin Occult
+        if self.options.plugin_occult is True:     
+            command = "occult --tolerance " + str(self.options.plugin_occult_tolerance)
+
+        # inkex.utils.debug(command)
         doc = execute(command, doc)
 
         ##########################################
         
-        # show the vpype document visually
-        # there are missing options to set pen_width and pen_opacity. This is anchored in "Engine" class
-        if self.options.output_show:
-            vpype_viewer.show(doc, view_mode=ViewMode.PREVIEW, show_pen_up=self.options.output_trajectories, show_points=False, argv=None) # https://vpype.readthedocs.io/en/stable/api/vpype_viewer.ViewMode.html
-      
+        tooling_length_after = doc.length()
+        traveling_length_after = doc.pen_up_length()        
+        if tooling_length_before > 0:
+            tooling_length_saving = (1.0 - tooling_length_after / tooling_length_before) * 100.0
+        else:
+            tooling_length_saving = 0.0            
+        if traveling_length_before > 0:
+            traveling_length_saving = (1.0 - traveling_length_after / traveling_length_before) * 100.0
+        else:
+            traveling_length_saving = 0.0  
         if self.options.output_stats is True:
-            tooling_length_after = doc.length()
-            traveling_length_after = doc.pen_up_length()        
-            if tooling_length_before > 0:
-                tooling_length_saving = (1.0 - tooling_length_after / tooling_length_before) * 100.0
-            else:
-                tooling_length_saving = 0.0            
-            if traveling_length_before > 0:
-                traveling_length_saving = (1.0 - traveling_length_after / traveling_length_before) * 100.0
-            else:
-                traveling_length_saving = 0.0                 
             inkex.utils.debug('Total tooling length before vpype conversion: '   + str('{:0.2f}'.format(tooling_length_before))   + ' mm')
             inkex.utils.debug('Total traveling length before vpype conversion: ' + str('{:0.2f}'.format(traveling_length_before)) + ' mm')
             inkex.utils.debug('Total tooling length after vpype conversion: '    + str('{:0.2f}'.format(tooling_length_after))    + ' mm')
             inkex.utils.debug('Total traveling length after vpype conversion: '  + str('{:0.2f}'.format(traveling_length_after))  + ' mm')
             inkex.utils.debug('Total tooling length optimized: '   + str('{:0.2f}'.format(tooling_length_saving))   + ' %')
             inkex.utils.debug('Total traveling length optimized: ' + str('{:0.2f}'.format(traveling_length_saving)) + ' %')
+         
+        if tooling_length_after == 0:
+            inkex.errormsg('No lines left after vpype conversion. Conversion result is empty. Cannot continue')
+            return
+         
+        # show the vpype document visually
+        # there are missing options to set pen_width and pen_opacity. This is anchored in "Engine" class
+        if self.options.output_show:
+            vpype_viewer.show(doc, view_mode=ViewMode.PREVIEW, show_pen_up=self.options.output_trajectories, show_points=False, argv=None) # https://vpype.readthedocs.io/en/stable/api/vpype_viewer.ViewMode.html
           
         # save the vpype document to new svg file and close it afterwards
         output_file = self.options.input_file + ".vpype.svg"
@@ -216,7 +280,10 @@ class vpypetools (inkex.EffectExtension):
                 self.debug(cli_output)
         
         # new parse the SVG file and insert it as new group into the current document tree
-        #vpype_svg = etree.parse(output_file).getroot().xpath("//svg:g", namespaces=inkex.NSS)
+        # vpype_svg = etree.parse(output_file).getroot().xpath("//svg:g", namespaces=inkex.NSS)
+        
+        # when using the trim function the bounding box of the original elements will not match the vpype'd ones. So we need to do some calculation for exact placement
+        
         
         # the label id is the number of layer_id=None (will start with 1)
         lines = etree.parse(output_file).getroot().xpath("//svg:g[@inkscape:label='1']",namespaces=inkex.NSS) 
@@ -225,10 +292,17 @@ class vpypetools (inkex.EffectExtension):
         for item in lines:
             for child in item.getchildren(): 
                 vpypeLinesGroup.append(child)
-        vpypeLinesGroup.attrib['transform'] = 'translate(' + str(bbox.left) + ',' + str(bbox.top) + ')'
+        # get the output's bounding box size (which might be other size than previous input bounding box, e.g. when using trim feature)
+        # output_bbox = vpypeLinesGroup.bounding_box()
+        translation = 'translate(' + str(input_bbox.left + self.options.trim_x_margin) + ',' + str(input_bbox.top + self.options.trim_y_margin) + ')' # we use the same translation for trajectory lines
+        vpypeLinesGroup.attrib['transform'] = translation
         vpypeLinesGroupId = self.svg.get_unique_id('vpypetools-lines-')
         vpypeLinesGroup.set('id', vpypeLinesGroupId)
-
+    
+        # inkex.utils.debug(self.svg.selection.first()) # get the first selected element. Chould be None
+        self.svg.selection.set(vpypeLinesGroupId)
+        # inkex.utils.debug(self.svg.selection.first()) # get the first selected element again to check if changing selection has worked
+    
         if self.options.output_trajectories is True:
             trajectories = etree.parse(output_file).getroot().xpath("//svg:g[@id='pen_up_trajectories']",namespaces=inkex.NSS)
             vpypeTrajectoriesGroup = self.document.getroot().add(inkex.Group())
@@ -236,14 +310,11 @@ class vpypetools (inkex.EffectExtension):
             for item in trajectories:
                 for child in item.getchildren(): 
                     vpypeTrajectoriesGroup.append(child)
-            vpypeTrajectoriesGroup.attrib['transform'] = 'translate(' + str(bbox.left) + ',' + str(bbox.top) + ')'
+            vpypeTrajectoriesGroup.attrib['transform'] = translation
             vpypeTrajectoriesId = self.svg.get_unique_id('vpypetools-trajectories-')
             vpypeTrajectoriesGroup.set('id', vpypeTrajectoriesId)
-
-        # inkex.utils.debug(self.svg.selection.first()) # get the first selected element. Chould be None
-        self.svg.selection.set(vpypeLinesGroupId)
-        #inkex.utils.debug(self.svg.selection.first()) # get the first selected element again to check if changing selection has worked
-      
+            self.svg.selection.add(vpypeTrajectoriesId) # we also add trajectories to selection to remove translations in following step
+          
         # we apply transformations also for new group to remove the "translate()" again
         if self.options.apply_transformations and applyTransformAvailable:
             for node in self.svg.selection:

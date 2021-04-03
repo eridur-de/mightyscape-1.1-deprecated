@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <name>Line Sorting</name>
-    <id>fablabchemnitz.de.vpype_linesorting</id>
-    <label appearance="header">Line Sorting</label>
-    <label>Sort lines to minimize travel distances.</label>
- 	<param name="linesort" type="bool" gui-hidden="true">true</param>
-    <param name="linesort_no_flip" type="bool" gui-text="Disable flipping" gui-description="Disable reversing stroke direction for optimization '--no-flip'">false</param>
+    <name>Multipass</name>
+    <id>fablabchemnitz.de.vpype_multipass</id>
+	<label appearance="header">Multipass</label>
+	<label>Add multiple passes to each line. Each line is extended with a mirrored copy of itself, optionally multiple times. This is useful for pens that need several passes to ensure a good quality.</label>
+ 	<param name="multipass" type="bool" gui-hidden="true">true</param>	
+	<param name="multipass_count" type="int" min="2" max="9999" gui-text="count" gui-description="How many passes for each line (default 2)">2</param>
 	<spacer/>
     <label appearance="header">General Settings</label>
     <param name="flattenbezier" type="bool" gui-text="Flatten bezier curves to polylines" gui-description="Converts bezier curves to polylines.">true</param>	
