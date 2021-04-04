@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <name>vpype Free Mode</name>
+    <id>fablabchemnitz.de.vpype_free_mode</id>
+	<param name="tab" type="notebook">
+		<page name="freemode" gui-text="Free Mode Entries">
+			<label>Enter your desired command pipes and enable/disable as much fields as you like.</label>
+		 	<param name="freemode" type="bool" gui-hidden="true">true</param>
+		 	<param name="freemode_cmd1" type="string" appearance="multiline" gui-text="Command Set 1">layout 1024x768 translate 150px 50px</param>
+		    <param name="freemode_cmd1_enabled" type="bool" gui-text="Enable Command Set 1">true</param>	
+		 	<param name="freemode_cmd2" type="string" appearance="multiline" gui-text="Command Set 2">scaleto -o 0 0 330 200</param>
+		    <param name="freemode_cmd2_enabled" type="bool" gui-text="Enable Command Set 2">false</param>			 	
+		 	<param name="freemode_cmd3" type="string" appearance="multiline" gui-text="Command Set 3">rotate 30.0</param>
+		    <param name="freemode_cmd3_enabled" type="bool" gui-text="Enable Command Set 3">false</param>			 	
+		 	<param name="freemode_cmd4" type="string" appearance="multiline" gui-text="Command Set 4">skew 45.0 60.0</param>
+		    <param name="freemode_cmd4_enabled" type="bool" gui-text="Enable Command Set 4">false</param>			 	
+		 	<param name="freemode_cmd5" type="string" appearance="multiline" gui-text="Command Set 5">splitall</param>
+		    <param name="freemode_cmd5_enabled" type="bool" gui-text="Enable Command Set 5">false</param>			 	
+		</page>
+		<page name="general_settings" gui-text="General Settings">
+		    <param name="flattenbezier" type="bool" gui-text="Flatten bezier curves to polylines" gui-description="Converts bezier curves to polylines.">true</param>	
+			<param name="flatness" type="float" min="0.001" max="99999.000" precision="3" gui-text="flatness" gui-description="Minimum flatness = 0.001. The smaller the value the more fine segments you will get.">0.100</param>	
+		    <param name="apply_transformations" type="bool" gui-text="Use 'Apply Transformations' extension" gui-description="Run 'Apply Transformations' extension before running vpype. Helps avoiding geometry shifting">false</param>
+		 	<param name="output_show" type="bool" gui-text="Show debug output" gui-description="This will open a new matplotlib window showing modified SVG data">false</param>
+		 	<param name="output_stats" type="bool" gui-text="Show conversion statistics" gui-description="Show output statistics before/after conversion">false</param>
+		 	<param name="output_trajectories" type="bool" gui-text="Import travel trajectories" gui-description="Add paths for the travel trajectories">false</param>
+		 	<param name="keep_selection" type="bool" gui-text="Keep selected paths" gui-description="If false, selected paths (original objects) will be removed">false</param>
+		 	<param name="strokes_to_paths" type="bool" gui-text="Auto-convert low-level strokes to paths" gui-description="Recommended option. Performs 'Path' > 'Stroke to Path' (CTRL + ALT + C) to convert vpype converted lines back to regular path objects">true</param>
+			<param name="use_style_of_first_element" type="bool" gui-text="Use style of first element" gui-description="If enabled the first element in selection is scanned and we apply it's style to all imported vpype lines">true</param>	
+			<param name="lines_stroke_width" type="float" min="0.001" max="99999.000" precision="3" gui-text="stroke width of tooling lines (px)" gui-description="Gets overwritten if 'Use style of first selected element' is enabled">1.000</param>	
+			<param name="trajectories_stroke_width" type="float" min="0.001" max="99999.000" precision="3" gui-text="stroke width of trajectory lines (px)">1.000</param>	
+		</page>
+		<page name="about" gui-text="About">
+		    <label appearance="url">https://fablabchemnitz.de</label>
+		    <label>License: GNU GPL v3</label>
+		</page>
+	</param>
+    <effect needs-live-preview="true">
+		<effects-menu>
+         <submenu name="FabLab Chemnitz">
+	         <submenu name="vpype Tools"/>
+		</submenu>
+		</effects-menu>
+    </effect>
+    <script>
+        <command location="inx" interpreter="python">vpypetools.py</command>
+    </script>
+</inkscape-extension>

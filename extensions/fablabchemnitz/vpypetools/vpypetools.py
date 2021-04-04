@@ -92,6 +92,20 @@ class vpypetools (inkex.EffectExtension):
         # Plugin Occult
         self.arg_parser.add_argument("--plugin_occult", type=inkex.Boolean, default=False)
         self.arg_parser.add_argument("--plugin_occult_tolerance", type=float, default=0.01, help="Max distance between start and end point to consider a path closed (default 0.01 mm)")
+
+        # Free Mode
+        self.arg_parser.add_argument("--tab")
+        self.arg_parser.add_argument("--freemode", type=inkex.Boolean, default=False)
+        self.arg_parser.add_argument("--freemode_cmd1")
+        self.arg_parser.add_argument("--freemode_cmd1_enabled", type=inkex.Boolean, default=True)
+        self.arg_parser.add_argument("--freemode_cmd2")
+        self.arg_parser.add_argument("--freemode_cmd2_enabled", type=inkex.Boolean, default=False)
+        self.arg_parser.add_argument("--freemode_cmd3")
+        self.arg_parser.add_argument("--freemode_cmd3_enabled", type=inkex.Boolean, default=False)
+        self.arg_parser.add_argument("--freemode_cmd4")
+        self.arg_parser.add_argument("--freemode_cmd4_enabled", type=inkex.Boolean, default=False)
+        self.arg_parser.add_argument("--freemode_cmd5")
+        self.arg_parser.add_argument("--freemode_cmd5_enabled", type=inkex.Boolean, default=False)
  
         # General Settings
         self.arg_parser.add_argument("--flattenbezier", type=inkex.Boolean, default=False, help="Flatten bezier curves to polylines")        
@@ -224,7 +238,10 @@ class vpypetools (inkex.EffectExtension):
                 command += " --closed"
             if self.options.filter_not_closed is True:
                 command += " --not-closed"
-            if self.options.filter_closed is False and self.options.filter_not_closed is False and self.options.filter_min_length_enabled is False and self.options.filter_max_length_enabled is False:
+            if self.options.filter_closed is False and \
+                self.options.filter_not_closed is False and \
+                self.options.filter_min_length_enabled is False and \
+                self.options.filter_max_length_enabled is False:
                 inkex.errormsg('No filters to apply. Please select at least one filter.')
                 return
 
@@ -232,8 +249,35 @@ class vpypetools (inkex.EffectExtension):
         if self.options.plugin_occult is True:     
             command = "occult --tolerance " + str(self.options.plugin_occult_tolerance)
 
+        # Free Mode
+        if self.options.freemode is True:
+            command = ""
+            if self.options.freemode_cmd1_enabled is True:
+                command += " " + self.options.freemode_cmd1.strip()
+            if self.options.freemode_cmd2_enabled is True:
+                command += " " + self.options.freemode_cmd2.strip()
+            if self.options.freemode_cmd3_enabled is True:
+                command += " " + self.options.freemode_cmd3.strip()
+            if self.options.freemode_cmd4_enabled is True:
+                command += " " + self.options.freemode_cmd4.strip()
+            if self.options.freemode_cmd5_enabled is True:
+                command += " " + self.options.freemode_cmd5.strip()
+            if self.options.freemode_cmd1_enabled is False and \
+                self.options.freemode_cmd2_enabled is False and \
+                self.options.freemode_cmd3_enabled is False and \
+                self.options.freemode_cmd4_enabled is False and \
+                self.options.freemode_cmd5_enabled is False:
+                inkex.utils.debug("Please enabled at least one set of commands")
+                return
+            else:
+                inkex.utils.debug("Your command pipe will be the following: " + command)
+
         # inkex.utils.debug(command)
-        doc = execute(command, doc)
+        try:
+            doc = execute(command, doc)
+        except Exception as e:
+            inkex.utils.debug("Error in vpype:" + str(e))
+            return
 
         ##########################################
         
