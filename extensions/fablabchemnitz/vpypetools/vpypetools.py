@@ -37,7 +37,7 @@ Extension for InkScape 1.X
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 02.04.2021
-Last patch: 03.04.2021
+Last patch: 04.04.2021
 License: GNU GPL v3
 
 Used (tested) version of vpype: commit id https://github.com/abey79/vpype/commit/0b0dc8dd7e32998dbef639f9db578c3bff02690b (29.03.2021)
@@ -156,7 +156,7 @@ class vpypetools (inkex.EffectExtension):
                 for child in children:
                     convertPath(child)
 
-        # inkex.utils.debug(str(applyTransformAvailable)) #check if ApplyTransform Extension is available. If yes we use it
+        # check if ApplyTransform Extension is available. If yes we use it
         if self.options.apply_transformations is True and applyTransformAvailable is True:
             applytransform.ApplyTransform().recursiveFuseTransform(self.document.getroot())
 
@@ -170,10 +170,6 @@ class vpypetools (inkex.EffectExtension):
             for id, item in self.svg.selected.items():
                 convertPath(item)
             input_bbox = inkex.elements._selected.ElementList.bounding_box(self.svg.selected) # get BoundingBox for selection
-            
-        # inkex.utils.debug(input_bbox)
-            
-        # lc.as_mls() #cast LineString array to MultiLineString
 
         if len(lc) == 0:
             inkex.errormsg('Selection appears to be empty or does not contain any valid svg:path nodes. Try to cast your objects to paths using CTRL + SHIFT + C or strokes to paths using CTRL + ALT+ C')
@@ -183,7 +179,6 @@ class vpypetools (inkex.EffectExtension):
         
         # we add the lineCollection (converted selection) to the vpype document
         doc.add(lc, layer_id=None)
-        #doc.translate(input_bbox.left, input_bbox.top) #wrong units?
 
         tooling_length_before = doc.length()
         traveling_length_before = doc.pen_up_length()
@@ -263,7 +258,6 @@ class vpypetools (inkex.EffectExtension):
             return
          
         # show the vpype document visually
-        # there are missing options to set pen_width and pen_opacity. This is anchored in "Engine" class
         if self.options.output_show:
             vpype_viewer.show(doc, view_mode=ViewMode.PREVIEW, show_pen_up=self.options.output_trajectories, show_points=False, argv=None) # https://vpype.readthedocs.io/en/stable/api/vpype_viewer.ViewMode.html
           
@@ -281,8 +275,6 @@ class vpypetools (inkex.EffectExtension):
                 self.debug(cli_output)
         
         # new parse the SVG file and insert it as new group into the current document tree
-        # vpype_svg = etree.parse(output_file).getroot().xpath("//svg:g", namespaces=inkex.NSS)
-        
         # the label id is the number of layer_id=None (will start with 1)
         lines = etree.parse(output_file).getroot().xpath("//svg:g[@inkscape:label='1']",namespaces=inkex.NSS) 
         vpypeLinesGroup = self.document.getroot().add(inkex.Group())
@@ -290,19 +282,10 @@ class vpypetools (inkex.EffectExtension):
         for item in lines:
             for child in item.getchildren(): 
                 vpypeLinesGroup.append(child)
-        # get the output's bounding box size (which might be other size than previous input bounding box, e.g. when using trim feature)
-        # output_bbox = vpypeLinesGroup.bounding_box()
-        
-        # when using the trim function the bounding box of the original elements will not match the vpype'd ones. So we need to do some calculation for exact placement
-        #translation = 'translate(' + str(input_bbox.left + self.options.trim_x_margin) + ',' + str(input_bbox.top + self.options.trim_y_margin) + ')' # we use the same translation for trajectory lines
-        #vpypeLinesGroup.attrib['transform'] = translation # disabled because we use PageSize with vpype now
+
         vpypeLinesGroupId = self.svg.get_unique_id('vpypetools-lines-')
         vpypeLinesGroup.set('id', vpypeLinesGroupId)
-    
-        # inkex.utils.debug(self.svg.selection.first()) # get the first selected element. Chould be None
-        self.svg.selection.set(vpypeLinesGroupId)
-        # inkex.utils.debug(self.svg.selection.first()) # get the first selected element again to check if changing selection has worked
-    
+       
         if self.options.output_trajectories is True:
             trajectories = etree.parse(output_file).getroot().xpath("//svg:g[@id='pen_up_trajectories']",namespaces=inkex.NSS)
             vpypeTrajectoriesGroup = self.document.getroot().add(inkex.Group())
@@ -310,16 +293,9 @@ class vpypetools (inkex.EffectExtension):
             for item in trajectories:
                 for child in item.getchildren(): 
                     vpypeTrajectoriesGroup.append(child)
-            #vpypeTrajectoriesGroup.attrib['transform'] = translation # disabled because we use PageSize with vpype now
             vpypeTrajectoriesId = self.svg.get_unique_id('vpypetools-trajectories-')
             vpypeTrajectoriesGroup.set('id', vpypeTrajectoriesId)
-            self.svg.selection.add(vpypeTrajectoriesId) # we also add trajectories to selection to remove translations in following step
           
-        # we apply transformations also for new group to remove the "translate()" again # disabled because we use PageSize with vpype now
-        #if self.options.apply_transformations and applyTransformAvailable:
-        #    for node in self.svg.selection:
-        #        applytransform.ApplyTransform().recursiveFuseTransform(node) 
-
         # Delete the temporary file again because we do not need it anymore
         if os.path.exists(output_file):
             os.remove(output_file)
