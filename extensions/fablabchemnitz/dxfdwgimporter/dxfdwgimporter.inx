@@ -11,7 +11,7 @@
                 <option value="sk1">sk1 UniConverter (best output, but fails for all unknown/unfiltered entities)</option>
                 <option value="ezdxf">ezdxf (higher quality, many single nodes)</option>
                 <option value="kabeja">kabeja (Java library)</option>
-                <option value="vpype_dxf">vpype-dxf (recommended to disable 'Filter entities with ezdxf using this)</option>
+                <option value="vpype_dxf">vpype-dxf (recommended to disable 'Filter entities with ezdxf' using this)</option>
                 <option value="legacy">legacy InkScape importer</option>
             </param>
             <param name="resizetoimport" type="bool" gui-text="Resize the canvas to the imported drawing's bounding box">true</param>
