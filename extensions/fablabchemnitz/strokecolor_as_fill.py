@@ -31,7 +31,7 @@ import sys
 import re
 from lxml import etree
 
-class StrokeColorAsFill(inkex.Effect):
+class StrokeColorAsFill(inkex.EffectExtension):
     def __init__(self):
         inkex.Effect.__init__(self)
         self.arg_parser.add_argument("--tab", help="The selected UI-tab")
@@ -42,7 +42,7 @@ class StrokeColorAsFill(inkex.Effect):
         self.arg_parser.add_argument("--fill_stroke_convert_unset",  type=inkex.Boolean, default=True, help="Convert 'Unset' property")
         self.arg_parser.add_argument("--nodash", type=inkex.Boolean, default="false", help="Fix dash-stroke to alow no line only markers")
 
-    def color_swaper(self, element):
+    def color_swapper(self, element):
         if element.tag == inkex.addNS('g', 'svg'):
             for e in element:
                 self.color_swaper(e)
@@ -104,7 +104,7 @@ class StrokeColorAsFill(inkex.Effect):
         sys.stdout = sys.stderr
         svg = self.document.getroot()
         for id, element in self.svg.selected.items():
-            self.color_swaper(element)
+            self.color_swapper(element)
         sys.stdout = saveout
 
 if __name__ == '__main__':
