@@ -10,13 +10,16 @@
 	<spacer/>
     <label appearance="header">General Settings</label>
     <param name="flattenbezier" type="bool" gui-text="Flatten bezier curves to polylines" gui-description="Converts bezier curves to polylines.">true</param>	
-	<param name="flatness" type="float" min="0.001"  max="99999.000" precision="3" gui-text="flatness" gui-description="Minimum flatness = 0.001. The smaller the value the more fine segments you will get.">0.100</param>	
+	<param name="flatness" type="float" min="0.001" max="99999.000" precision="3" gui-text="flatness" gui-description="Minimum flatness = 0.001. The smaller the value the more fine segments you will get.">0.100</param>	
     <param name="apply_transformations" type="bool" gui-text="Use 'Apply Transformations' extension" gui-description="Run 'Apply Transformations' extension before running vpype. Helps avoiding geometry shifting">false</param>
  	<param name="output_show" type="bool" gui-text="Show debug output" gui-description="This will open a new matplotlib window showing modified SVG data">false</param>
  	<param name="output_stats" type="bool" gui-text="Show conversion statistics" gui-description="Show output statistics before/after conversion">false</param>
  	<param name="output_trajectories" type="bool" gui-text="Import travel trajectories" gui-description="Add paths for the travel trajectories">false</param>
  	<param name="keep_selection" type="bool" gui-text="Keep selected paths" gui-description="If false, selected paths (original objects) will be removed">false</param>
  	<param name="strokes_to_paths" type="bool" gui-text="Auto-convert low-level strokes to paths" gui-description="Recommended option. Performs 'Path' > 'Stroke to Path' (CTRL + ALT + C) to convert vpype converted lines back to regular path objects">true</param>
+	<param name="use_style_of_first_element" type="bool" gui-text="Use style of first element" gui-description="If enabled the first element in selection is scanned and we apply it's style to all imported vpype lines">true</param>	
+	<param name="lines_stroke_width" type="float" min="0.001" max="99999.000" precision="3" gui-text="stroke width of tooling lines (px)" gui-description="Gets overwritten if 'Use style of first selected element' is enabled">1.000</param>	
+	<param name="trajectories_stroke_width" type="float" min="0.001" max="99999.000" precision="3" gui-text="stroke width of trajectory lines (px)">1.000</param>	
     <label appearance="header">About</label>
     <separator/>
     <label appearance="url">https://fablabchemnitz.de</label>

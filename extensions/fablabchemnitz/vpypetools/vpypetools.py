@@ -24,6 +24,15 @@ Date: 02.04.2021
 Last patch: 04.04.2021
 License: GNU GPL v3
 
+This piece of spaghetti-code, called "vpypetools", is a wrapper to pass (pipe) line elements from InkScape selection (or complete canvas) to vpype. 
+It allows to run basic commands on the geometry. The converted lines are getting pushed back into InkScape. 
+vpypetools allows to enable some important adjusters and debugging settings to get the best out of it.
+
+vpypetools is based on 
+ - Aaron Spike's "Flatten Bezier" extension, licensed by GPL v2
+ - Mark Riedesel's "Apply Transform" extension (https://github.com/Klowner/inkscape-applytransforms), licensed by GPL v2
+ - a lot of other extensions to rip off the required code pieces ;-)
+
 Used (tested) version of vpype: commit id https://github.com/abey79/vpype/commit/0b0dc8dd7e32998dbef639f9db578c3bff02690b (29.03.2021)
 Used (tested) version of vpype occult: commit id https://github.com/LoicGoulefert/occult/commit/2d04ca57d69078755c340066c226fd6cd927d41e (04.02.2021)
 
@@ -93,6 +102,9 @@ class vpypetools (inkex.EffectExtension):
         self.arg_parser.add_argument("--output_trajectories", type=inkex.Boolean, default=False, help="Add paths for the travel trajectories")
         self.arg_parser.add_argument("--keep_selection", type=inkex.Boolean, default=False, help="If false, selected paths will be removed")
         self.arg_parser.add_argument("--strokes_to_paths", type=inkex.Boolean, default=True, help="Recommended option. Performs 'Path' > 'Stroke to Path' (CTRL + ALT + C) to convert vpype converted lines back to regular path objects")
+        self.arg_parser.add_argument("--use_style_of_first_element", type=inkex.Boolean, default=True, help="If enabled the first element in selection is scanned and we apply it's style to all imported vpype lines")
+        self.arg_parser.add_argument("--lines_stroke_width", type=float, default=1.0, help="Stroke width of tooling lines (px). Gets overwritten if 'Use style of first selected element' is enabled")
+        self.arg_parser.add_argument("--trajectories_stroke_width", type=float, default=1.0, help="Stroke width of trajectory lines (px). Gets overwritten if 'Use style of first selected element' is enabled")
  
     def effect(self):  
         lc = vpype.LineCollection() # create a new array of LineStrings consisting of Points. We convert selected paths to polylines and grab their points
@@ -158,6 +170,12 @@ class vpypetools (inkex.EffectExtension):
         if len(lc) == 0:
             inkex.errormsg('Selection appears to be empty or does not contain any valid svg:path nodes. Try to cast your objects to paths using CTRL + SHIFT + C or strokes to paths using CTRL + ALT+ C')
             return
+
+        # find the first object in selection which has a style attribute (skips groups and other things which have no style)
+        firstElementStyle = None
+        for node in nodesToConvert:
+            if node.get('style') != None:
+                firstElementStyle = node.get('style')
 
         doc = vpype.Document(page_size=(input_bbox.width + input_bbox.left, input_bbox.height + input_bbox.top)) #create new vpype document
         
@@ -262,7 +280,10 @@ class vpypetools (inkex.EffectExtension):
         # the label id is the number of layer_id=None (will start with 1)
         lines = etree.parse(output_file).getroot().xpath("//svg:g[@inkscape:label='1']",namespaces=inkex.NSS) 
         vpypeLinesGroup = self.document.getroot().add(inkex.Group())
-        vpypeLinesGroup.set('style', 'stroke:#000000;stroke-width:1px;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;fill:none')       
+        if self.options.use_style_of_first_element is True and firstElementStyle is not None:
+            vpypeLinesGroup.style = firstElementStyle
+        else:
+            vpypeLinesGroup.set('style', 'stroke:#000000;stroke-width:'+ str(self.options.trajectories_stroke_width) + 'px;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;fill:none')       
         for item in lines:
             for child in item.getchildren(): 
                 vpypeLinesGroup.append(child)
@@ -273,7 +294,7 @@ class vpypetools (inkex.EffectExtension):
         if self.options.output_trajectories is True:
             trajectories = etree.parse(output_file).getroot().xpath("//svg:g[@id='pen_up_trajectories']",namespaces=inkex.NSS)
             vpypeTrajectoriesGroup = self.document.getroot().add(inkex.Group())
-            vpypeTrajectoriesGroup.set('style', 'stroke:#0000ff;stroke-width:1px;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;fill:none')       
+            vpypeTrajectoriesGroup.set('style', 'stroke:#0000ff;stroke-width:'+ str(self.options.trajectories_stroke_width) + 'px;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;fill:none')       
             for item in trajectories:
                 for child in item.getchildren(): 
                     vpypeTrajectoriesGroup.append(child)
