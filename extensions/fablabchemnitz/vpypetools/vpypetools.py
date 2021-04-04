@@ -53,11 +53,10 @@ vpype commands could be performed differently:
       working line of code (example:) doc = vpype.read_multilayer_svg(self.options.input_file, quantization=0.1, crop=False, simplify=False, parallel=False)
 
 Todo's
-- https://github.com/abey79/vpype/issues/243
-- command chain is slow on Windows
-- add some debugging options to remove deprecation warnings
-- allow to select other units than mm for tolerance, trimming, ...
-- fix occult plugin sometimes not removing duplicate lines. maybe different stroke widths?
+- allow to change pen width / opacity in vpype viewer: https://github.com/abey79/vpype/issues/243
+- command chain is really slow on Windows (takes ~5 times longer than Linux)
+- add some debugging options to remove deprecation warnings of vpype/vpype_viewer
+- allow to select other units than mm for tolerance, trimming, ... At the moment vpype uses millimeters regardless of the document units/display units in namedview
 """
 
 class vpypetools (inkex.EffectExtension):
@@ -180,10 +179,11 @@ class vpypetools (inkex.EffectExtension):
             inkex.errormsg('Selection appears to be empty or does not contain any valid svg:path nodes. Try to cast your objects to paths using CTRL + SHIFT + C or strokes to paths using CTRL + ALT+ C')
             return
 
-        doc = vpype.Document() #create new vpype document
+        doc = vpype.Document(page_size=(input_bbox.width + input_bbox.left, input_bbox.height + input_bbox.top)) #create new vpype document
         
         # we add the lineCollection (converted selection) to the vpype document
         doc.add(lc, layer_id=None)
+        #doc.translate(input_bbox.left, input_bbox.top) #wrong units?
 
         tooling_length_before = doc.length()
         traveling_length_before = doc.pen_up_length()
@@ -283,9 +283,6 @@ class vpypetools (inkex.EffectExtension):
         # new parse the SVG file and insert it as new group into the current document tree
         # vpype_svg = etree.parse(output_file).getroot().xpath("//svg:g", namespaces=inkex.NSS)
         
-        # when using the trim function the bounding box of the original elements will not match the vpype'd ones. So we need to do some calculation for exact placement
-        
-        
         # the label id is the number of layer_id=None (will start with 1)
         lines = etree.parse(output_file).getroot().xpath("//svg:g[@inkscape:label='1']",namespaces=inkex.NSS) 
         vpypeLinesGroup = self.document.getroot().add(inkex.Group())
@@ -295,8 +292,10 @@ class vpypetools (inkex.EffectExtension):
                 vpypeLinesGroup.append(child)
         # get the output's bounding box size (which might be other size than previous input bounding box, e.g. when using trim feature)
         # output_bbox = vpypeLinesGroup.bounding_box()
-        translation = 'translate(' + str(input_bbox.left + self.options.trim_x_margin) + ',' + str(input_bbox.top + self.options.trim_y_margin) + ')' # we use the same translation for trajectory lines
-        vpypeLinesGroup.attrib['transform'] = translation
+        
+        # when using the trim function the bounding box of the original elements will not match the vpype'd ones. So we need to do some calculation for exact placement
+        #translation = 'translate(' + str(input_bbox.left + self.options.trim_x_margin) + ',' + str(input_bbox.top + self.options.trim_y_margin) + ')' # we use the same translation for trajectory lines
+        #vpypeLinesGroup.attrib['transform'] = translation # disabled because we use PageSize with vpype now
         vpypeLinesGroupId = self.svg.get_unique_id('vpypetools-lines-')
         vpypeLinesGroup.set('id', vpypeLinesGroupId)
     
@@ -311,15 +310,15 @@ class vpypetools (inkex.EffectExtension):
             for item in trajectories:
                 for child in item.getchildren(): 
                     vpypeTrajectoriesGroup.append(child)
-            vpypeTrajectoriesGroup.attrib['transform'] = translation
+            #vpypeTrajectoriesGroup.attrib['transform'] = translation # disabled because we use PageSize with vpype now
             vpypeTrajectoriesId = self.svg.get_unique_id('vpypetools-trajectories-')
             vpypeTrajectoriesGroup.set('id', vpypeTrajectoriesId)
             self.svg.selection.add(vpypeTrajectoriesId) # we also add trajectories to selection to remove translations in following step
           
-        # we apply transformations also for new group to remove the "translate()" again
-        if self.options.apply_transformations and applyTransformAvailable:
-            for node in self.svg.selection:
-                applytransform.ApplyTransform().recursiveFuseTransform(node) 
+        # we apply transformations also for new group to remove the "translate()" again # disabled because we use PageSize with vpype now
+        #if self.options.apply_transformations and applyTransformAvailable:
+        #    for node in self.svg.selection:
+        #        applytransform.ApplyTransform().recursiveFuseTransform(node) 
 
         # Delete the temporary file again because we do not need it anymore
         if os.path.exists(output_file):
