@@ -1,21 +1,5 @@
 #!/usr/bin/env python3
 
-# suppress some nasty warnings we don't want. Note that this is really generic. For developing purposes re-enable this to see errors/deprecations
-import logging
-for key in logging.Logger.manager.loggerDict:
-    print(key)
-logging.getLogger().setLevel(logging.CRITICAL)
-#for name, logger in logging.root.manager.loggerDict.items():
-#    logger.disabled=True
-#import warnings
-#warnings.filterwarnings("ignore", category=DeprecationWarning)
-#warnings.filterwarnings('always', category=DeprecationWarning)
-#with warnings.catch_warnings():
-#    warnings.simplefilter("ignore", category=DeprecationWarning)
-#def noop(*args, **kargs): pass
-#warnings.warn = noop
-#logging.captureWarnings(True)
-
 import sys
 import os
 from lxml import etree
