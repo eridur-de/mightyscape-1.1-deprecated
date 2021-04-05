@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+import logging
+logger = logging.getLogger()
+logger.setLevel(level=logging.ERROR) #we set this to error before importing vpype to ignore the nasty output "WARNING:root:!!! `vpype.Length` is deprecated, use `vpype.LengthType` instead."
+
 import sys
 import os
 from lxml import etree
@@ -14,6 +18,11 @@ import vpype_viewer
 from vpype_viewer import ViewMode
 from vpype_cli import execute
 
+logger = logging.getLogger()
+logger.setLevel(level=logging.WARNING) #after importing vpype we enabled logging again
+
+import warnings # we import this to suppress moderngl warnings from vpype_viewer
+    
 from shapely.geometry import LineString, Point
 
 """
@@ -32,24 +41,19 @@ vpypetools is based on
  - Aaron Spike's "Flatten Bezier" extension, licensed by GPL v2
  - Mark Riedesel's "Apply Transform" extension (https://github.com/Klowner/inkscape-applytransforms), licensed by GPL v2
  - a lot of other extensions to rip off the required code pieces ;-)
-
-Used (tested) version of vpype: commit id https://github.com/abey79/vpype/commit/0b0dc8dd7e32998dbef639f9db578c3bff02690b (29.03.2021)
-Used (tested) version of vpype occult: commit id https://github.com/LoicGoulefert/occult/commit/2d04ca57d69078755c340066c226fd6cd927d41e (04.02.2021)
+ - used (tested) version of vpype: commit id https://github.com/abey79/vpype/commit/0b0dc8dd7e32998dbef639f9db578c3bff02690b (29.03.2021)
+ - used (tested) version of vpype occult: commit id https://github.com/LoicGoulefert/occult/commit/2d04ca57d69078755c340066c226fd6cd927d41e (04.02.2021)
 
 CLI / API docs:
 - https://vpype.readthedocs.io/en/stable/api/vpype_cli.html#module-vpype_cli
 - https://vpype.readthedocs.io/en/stable/api/vpype.html#module-vpype
 
-vpype commands could be performed differently: 
- - 1. Work with current selection (line-wise): we could get the selected nodes/groups and check if those nodes are paths. If yes we could convert them to polylines and put it into vpype using doc.add(LineCollection, Layer)
- - 2. We could execute vpype on the complete document only (svg file handling, possible as one layer or multiple layers)
-      working line of code (example:) doc = vpype.read_multilayer_svg(self.options.input_file, quantization=0.1, crop=False, simplify=False, parallel=False)
-
 Todo's
 - allow to change pen width / opacity in vpype viewer: https://github.com/abey79/vpype/issues/243
 - command chain is really slow on Windows (takes ~5 times longer than Linux)
-- add some debugging options to remove deprecation warnings of vpype/vpype_viewer
 - allow to select other units than mm for tolerance, trimming, ... At the moment vpype uses millimeters regardless of the document units/display units in namedview
+- handle styles of layers
+- allow to select single layers instead of whole canvas (4th mode)
 """
 
 class vpypetools (inkex.EffectExtension):
@@ -65,6 +69,10 @@ class vpypetools (inkex.EffectExtension):
         self.arg_parser.add_argument("--linemerge", type=inkex.Boolean, default=False)
         self.arg_parser.add_argument("--linemerge_tolerance", type=float, default=0.500, help="Maximum distance between two line endings that should be merged (default 0.500 mm)")
         self.arg_parser.add_argument("--linemerge_no_flip", type=inkex.Boolean, default=False, help="Disable reversing stroke direction for merging")
+  
+        # Line Simplification
+        self.arg_parser.add_argument("--linesimplify", type=inkex.Boolean, default=False)
+        self.arg_parser.add_argument("--linesimplify_tolerance", type=float, default=0.050, help="The resulting geometries' points will be at a maximum distance from the original controlled by the (default 0.05 mm)")  
         
         # Trimming
         self.arg_parser.add_argument("--trim", type=inkex.Boolean, default=False)
@@ -89,6 +97,9 @@ class vpypetools (inkex.EffectExtension):
         self.arg_parser.add_argument("--filter_max_length_enabled", type=inkex.Boolean, default=False, help="filter by max length") 
         self.arg_parser.add_argument("--filter_max_length", type=float, default=0.000, help="Keep lines whose length isn't greater than value") 
  
+        # Split All
+        self.arg_parser.add_argument("--splitall", type=inkex.Boolean, default=False)
+ 
         # Plugin Occult
         self.arg_parser.add_argument("--plugin_occult", type=inkex.Boolean, default=False)
         self.arg_parser.add_argument("--plugin_occult_tolerance", type=float, default=0.01, help="Max distance between start and end point to consider a path closed (default 0.01 mm)")
@@ -106,10 +117,12 @@ class vpypetools (inkex.EffectExtension):
         self.arg_parser.add_argument("--freemode_cmd4_enabled", type=inkex.Boolean, default=False)
         self.arg_parser.add_argument("--freemode_cmd5")
         self.arg_parser.add_argument("--freemode_cmd5_enabled", type=inkex.Boolean, default=False)
+        self.arg_parser.add_argument("--freemode_show_cmd", type=inkex.Boolean, default=False)
  
         # General Settings
-        self.arg_parser.add_argument("--flattenbezier", type=inkex.Boolean, default=False, help="Flatten bezier curves to polylines")        
-        self.arg_parser.add_argument("--flatness", type=float, default=0.1, help="Minimum flatness = 0.1. The smaller the value the more fine segments you will get.")    
+        self.arg_parser.add_argument("--input_handling", default="paths", help="Input handling")
+        self.arg_parser.add_argument("--flattenbezier", type=inkex.Boolean, default=False, help="Flatten bezier curves to polylines")
+        self.arg_parser.add_argument("--flatness", type=float, default=0.1, help="Minimum flatness = 0.1. The smaller the value the more fine segments you will get.")
         self.arg_parser.add_argument("--apply_transformations", type=inkex.Boolean, default=False, help="Run 'Apply Transformations' extension before running vpype. Helps avoiding geometry shifting")
         self.arg_parser.add_argument("--output_show", type=inkex.Boolean, default=False, help="This will open a new matplotlib window showing modified SVG data")
         self.arg_parser.add_argument("--output_stats", type=inkex.Boolean, default=False, help="Show output statistics before/after conversion")
@@ -122,8 +135,8 @@ class vpypetools (inkex.EffectExtension):
  
     def effect(self):  
         lc = vpype.LineCollection() # create a new array of LineStrings consisting of Points. We convert selected paths to polylines and grab their points
-        nodesToConvert = [] # we make an array of all collected nodes to get the boundingbox of that array. We need it to place the vpype converted stuff to the correct XY coordinates
-        
+        nodesToWork = [] # we make an array of all collected nodes to get the boundingbox of that array. We need it to place the vpype converted stuff to the correct XY coordinates
+          
         applyTransformAvailable = False
         
         # at first we apply external extension
@@ -151,7 +164,7 @@ class vpypetools (inkex.EffectExtension):
 
         def convertPath(node):
             if node.tag == inkex.addNS('path','svg'):
-                nodesToConvert.append(node)
+                nodesToWork.append(node)
                 if self.options.flattenbezier is True:
                     flatten(node)
                 d = node.get('d')
@@ -166,35 +179,41 @@ class vpypetools (inkex.EffectExtension):
                 for child in children:
                     convertPath(child)
 
-        # check if ApplyTransform Extension is available. If yes we use it
-        if self.options.apply_transformations is True and applyTransformAvailable is True:
-            applytransform.ApplyTransform().recursiveFuseTransform(self.document.getroot())
-
-        # getting the bounding box of the current selection. We use to calculate the offset XY from top-left corner of the canvas. This helps us placing back the elements
-        input_bbox = None
-        if len(self.svg.selected) == 0:
-            convertPath(self.document.getroot())
-            for element in nodesToConvert:
-                input_bbox += element.bounding_box()      
-        else:
-            for id, item in self.svg.selected.items():
-                convertPath(item)
-            input_bbox = inkex.elements._selected.ElementList.bounding_box(self.svg.selected) # get BoundingBox for selection
-
-        if len(lc) == 0:
-            inkex.errormsg('Selection appears to be empty or does not contain any valid svg:path nodes. Try to cast your objects to paths using CTRL + SHIFT + C or strokes to paths using CTRL + ALT+ C')
-            return
-
-        # find the first object in selection which has a style attribute (skips groups and other things which have no style)
-        firstElementStyle = None
-        for node in nodesToConvert:
-            if node.get('style') != None:
-                firstElementStyle = node.get('style')
-
-        doc = vpype.Document(page_size=(input_bbox.width + input_bbox.left, input_bbox.height + input_bbox.top)) #create new vpype document
+        doc = None #create a vpype document
         
-        # we add the lineCollection (converted selection) to the vpype document
-        doc.add(lc, layer_id=None)
+        # if 'paths' we process paths only. Objects like rectangles or strokes like polygon have to be converted before accessing them
+        # if 'layers' we can process all elements.
+        if self.options.input_handling == "paths":
+            # getting the bounding box of the current selection. We use to calculate the offset XY from top-left corner of the canvas. This helps us placing back the elements
+            input_bbox = None
+            if len(self.svg.selected) == 0:
+                if self.options.apply_transformations is True and applyTransformAvailable is True:
+                    applytransform.ApplyTransform().recursiveFuseTransform(self.document.getroot()) 
+                convertPath(self.document.getroot())
+                for element in nodesToWork:
+                    input_bbox += element.bounding_box()      
+            else:
+                for id, item in self.svg.selected.items():
+                    if self.options.apply_transformations is True and applyTransformAvailable is True:
+                        applytransform.ApplyTransform().recursiveFuseTransform(item) 
+                    convertPath(item)
+                input_bbox = inkex.elements._selected.ElementList.bounding_box(self.svg.selected) # get BoundingBox for selection   
+            if len(lc) == 0:
+                inkex.errormsg('Selection appears to be empty or does not contain any valid svg:path nodes. Try to cast your objects to paths using CTRL + SHIFT + C or strokes to paths using CTRL + ALT+ C')
+                return  
+            # find the first object in selection which has a style attribute (skips groups and other things which have no style)
+            firstElementStyle = None
+            for node in nodesToWork:
+                if node.get('style') != None:
+                    firstElementStyle = node.get('style')
+            doc = vpype.Document(page_size=(input_bbox.width + input_bbox.left, input_bbox.height + input_bbox.top)) #create new vpype document     
+            doc.add(lc, layer_id=None) # we add the lineCollection (converted selection) to the vpype document
+            
+        elif self.options.input_handling == "layers":
+            doc = vpype.read_multilayer_svg(self.options.input_file, quantization = 0.1, crop = False, simplify = False, parallel = False, \
+                default_width = self.document.getroot().get('width'), default_height = self.document.getroot().get('height')) 
+            for node in self.document.getroot().getchildren():
+                nodesToWork.append(node)
 
         tooling_length_before = doc.length()
         traveling_length_before = doc.pen_up_length()
@@ -203,7 +222,7 @@ class vpypetools (inkex.EffectExtension):
         # the following code block is not intended to sum up the commands to build a series (pipe) of commands!
         ##########################################
         
-        # Line Sort
+        # Line Sorting
         if self.options.linesort is True:
             command = "linesort "
             if self.options.linesort_no_flip is True:
@@ -214,6 +233,10 @@ class vpypetools (inkex.EffectExtension):
             command = "linemerge --tolerance " + str(self.options.linemerge_tolerance)
             if self.options.linemerge_no_flip is True:
                 command += " --no-flip"
+ 
+        # Line Simplification
+        if self.options.linesimplify is True:     
+            command = "linesimplify --tolerance " + str(self.options.linesimplify_tolerance)
  
         # Trimming
         if self.options.trim is True:     
@@ -249,6 +272,10 @@ class vpypetools (inkex.EffectExtension):
         if self.options.plugin_occult is True:     
             command = "occult --tolerance " + str(self.options.plugin_occult_tolerance)
 
+        # Split All
+        if self.options.splitall is True:     
+            command = " splitall"
+
         # Free Mode
         if self.options.freemode is True:
             command = ""
@@ -270,7 +297,9 @@ class vpypetools (inkex.EffectExtension):
                 inkex.utils.debug("Please enabled at least one set of commands")
                 return
             else:
-                inkex.utils.debug("Your command pipe will be the following: " + command)
+                if self.options.freemode_show_cmd is True:
+                    inkex.utils.debug("Your command pipe will be the following:")
+                    inkex.utils.debug(command)
 
         # inkex.utils.debug(command)
         try:
@@ -305,12 +334,19 @@ class vpypetools (inkex.EffectExtension):
          
         # show the vpype document visually
         if self.options.output_show:
+            warnings.filterwarnings("ignore") # workaround to suppress annoying DeprecationWarning
+            # vpype_viewer.show(doc, view_mode=ViewMode.PREVIEW, show_pen_up=self.options.output_trajectories, show_points=False, pen_width=0.1, pen_opacity=1.0, argv=None)
             vpype_viewer.show(doc, view_mode=ViewMode.PREVIEW, show_pen_up=self.options.output_trajectories, show_points=False, argv=None) # https://vpype.readthedocs.io/en/stable/api/vpype_viewer.ViewMode.html
+            warnings.filterwarnings("default") # reset warning filter
           
         # save the vpype document to new svg file and close it afterwards
         output_file = self.options.input_file + ".vpype.svg"
         output_fileIO = open(output_file, "w", encoding="utf-8")
+        # vpype.write_svg(output_fileIO, doc, page_size=None, center=False, source_string='', layer_label_format='%d', show_pen_up=self.options.output_trajectories, color_mode='layer', no_basic_shapes = True)       
         vpype.write_svg(output_fileIO, doc, page_size=None, center=False, source_string='', layer_label_format='%d', show_pen_up=self.options.output_trajectories, color_mode='layer')       
+        #vpype.write_svg(output_fileIO, doc, page_size=(self.svg.unittouu(self.document.getroot().get('width')), self.svg.unittouu(self.document.getroot().get('height'))), center=False, source_string='', layer_label_format='%d', show_pen_up=self.options.output_trajectories, color_mode='layer')       
+
+
         output_fileIO.close()
         
         # convert vpype polylines/lines/polygons to regular paths again. We need to use "--with-gui" to respond to "WARNING: ignoring verb FileSave - GUI required for this verb."
@@ -319,39 +355,56 @@ class vpypetools (inkex.EffectExtension):
             if len(cli_output) > 0:
                 self.debug(_("Inkscape returned the following output when trying to run the vpype object to path back-conversion:"))
                 self.debug(cli_output)
-        
+               
         # new parse the SVG file and insert it as new group into the current document tree
         # the label id is the number of layer_id=None (will start with 1)
-        lines = etree.parse(output_file).getroot().xpath("//svg:g[@inkscape:label='1']",namespaces=inkex.NSS) 
-        vpypeLinesGroup = self.document.getroot().add(inkex.Group())
-        if self.options.use_style_of_first_element is True and firstElementStyle is not None:
-            vpypeLinesGroup.style = firstElementStyle
-        else:
-            vpypeLinesGroup.set('style', 'stroke:#000000;stroke-width:'+ str(self.options.trajectories_stroke_width) + 'px;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;fill:none')       
-        for item in lines:
-            for child in item.getchildren(): 
-                vpypeLinesGroup.append(child)
-
-        vpypeLinesGroupId = self.svg.get_unique_id('vpypetools-lines-')
-        vpypeLinesGroup.set('id', vpypeLinesGroupId)
-       
-        if self.options.output_trajectories is True:
-            trajectories = etree.parse(output_file).getroot().xpath("//svg:g[@id='pen_up_trajectories']",namespaces=inkex.NSS)
-            vpypeTrajectoriesGroup = self.document.getroot().add(inkex.Group())
-            vpypeTrajectoriesGroup.set('style', 'stroke:#0000ff;stroke-width:'+ str(self.options.trajectories_stroke_width) + 'px;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;fill:none')       
-            for item in trajectories:
-                for child in item.getchildren(): 
-                    vpypeTrajectoriesGroup.append(child)
-            vpypeTrajectoriesId = self.svg.get_unique_id('vpypetools-trajectories-')
-            vpypeTrajectoriesGroup.set('id', vpypeTrajectoriesId)
+        #import_doc = etree.parse(output_file)
+        try:
+            stream = open(output_file, 'r')
+        except FileNotFoundError as e:
+            inkex.utils.debug("There was no SVG output generated by vpype. Cannot continue")
+            exit(1)
+        p = etree.XMLParser(huge_tree=True)
+        import_doc = etree.parse(stream, parser=etree.XMLParser(huge_tree=True))
+        stream.close()
           
+        # handle pen_up trajectories (travel lines)
+        trajectoriesLayer = import_doc.getroot().xpath("//svg:g[@id='pen_up_trajectories']", namespaces=inkex.NSS)
+        if self.options.output_trajectories is True:
+            if len(trajectoriesLayer) > 0:
+                trajectoriesLayer[0].set('style', 'stroke:#0000ff;stroke-width:'+ str(self.options.trajectories_stroke_width) + 'px;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;fill:none')       
+        else:
+            if len(trajectoriesLayer) > 0:
+                trajectoriesLayer[0].getparent().remove(trajectoriesLayer[0])
+   
+        # lineLayers = import_doc.getroot().xpath("//svg:g[@inkscape:label='1']", namespaces=inkex.NSS)
+        lineLayers = import_doc.getroot().xpath("//svg:g[not(@id='pen_up_trajectories')]", namespaces=inkex.NSS) #all layer except the pen_up trajectories layer
+        if self.options.input_handling == "paths" and self.options.use_style_of_first_element is True and firstElementStyle is not None:
+            for lineLayer in lineLayers:
+                lineLayer.set('style', firstElementStyle)
+        else:
+            for lineLayer in lineLayers:
+                lineLayer.set('style', 'stroke:#000000;stroke-width:'+ str(self.options.lines_stroke_width) + 'px;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;fill:none')       
+                
+        import_viewBox = import_doc.getroot().get('viewBox').split(" ")
+        self_viewBox = self.document.getroot().get('viewBox').split(" ")
+        scaleX = self.svg.unittouu(self_viewBox[2]) / self.svg.unittouu(import_viewBox[2])
+        scaleY = self.svg.unittouu(self_viewBox[3]) / self.svg.unittouu(import_viewBox[3])
+
+        # for element in import_doc.getroot().iter("*"): # through all
+        for element in import_doc.getroot().iter("{http://www.w3.org/2000/svg}g"):
+            element.set('transform', 'scale(' + str(scaleX) + ',' + str(scaleY) + ')') #imported groups need to be transformed. Or they have wrong size. Reason: different viewBox sizes/units in namedview definitions
+            self.document.getroot().append(element)
+            if self.options.apply_transformations is True and applyTransformAvailable is True: #we apply the transforms directly after adding them
+                applytransform.ApplyTransform().recursiveFuseTransform(element) 
+
         # Delete the temporary file again because we do not need it anymore
         if os.path.exists(output_file):
             os.remove(output_file)
             
         # Remove selection objects to do a real replace with new objects from vpype document
         if self.options.keep_selection is False:
-            for node in nodesToConvert:
+            for node in nodesToWork:
                 node.getparent().remove(node)
     
 if __name__ == '__main__':

@@ -15,9 +15,15 @@
 		 	<param name="freemode_cmd4" type="string" appearance="multiline" gui-text="Command Set 4">skew 45.0 60.0</param>
 		    <param name="freemode_cmd4_enabled" type="bool" gui-text="Enable Command Set 4">false</param>			 	
 		 	<param name="freemode_cmd5" type="string" appearance="multiline" gui-text="Command Set 5">splitall</param>
-		    <param name="freemode_cmd5_enabled" type="bool" gui-text="Enable Command Set 5">false</param>			 	
+		    <param name="freemode_cmd5_enabled" type="bool" gui-text="Enable Command Set 5">false</param>
+		    <separator/>
+		    <param name="freemode_show_cmd" type="bool" gui-text="Show command" gui-description="Print the full command chain. Helpful for debugging.">false</param>	 		 	
 		</page>
 		<page name="general_settings" gui-text="General Settings">
+			<param name="input_handling" type="optiongroup" appearance="radio" gui-text="Input handling">
+			   <option value="layers">Layers</option>
+			   <option value="paths">Elements with type 'path'</option>
+			</param>
 		    <param name="flattenbezier" type="bool" gui-text="Flatten bezier curves to polylines" gui-description="Converts bezier curves to polylines.">true</param>	
 			<param name="flatness" type="float" min="0.001" max="99999.000" precision="3" gui-text="flatness" gui-description="Minimum flatness = 0.001. The smaller the value the more fine segments you will get.">0.100</param>	
 		    <param name="apply_transformations" type="bool" gui-text="Use 'Apply Transformations' extension" gui-description="Run 'Apply Transformations' extension before running vpype. Helps avoiding geometry shifting">false</param>
@@ -26,9 +32,9 @@
 		 	<param name="output_trajectories" type="bool" gui-text="Import travel trajectories" gui-description="Add paths for the travel trajectories">false</param>
 		 	<param name="keep_selection" type="bool" gui-text="Keep selected paths" gui-description="If false, selected paths (original objects) will be removed">false</param>
 		 	<param name="strokes_to_paths" type="bool" gui-text="Auto-convert low-level strokes to paths" gui-description="Recommended option. Performs 'Path' > 'Stroke to Path' (CTRL + ALT + C) to convert vpype converted lines back to regular path objects">true</param>
-			<param name="use_style_of_first_element" type="bool" gui-text="Use style of first element" gui-description="If enabled the first element in selection is scanned and we apply it's style to all imported vpype lines">true</param>	
-			<param name="lines_stroke_width" type="float" min="0.001" max="99999.000" precision="3" gui-text="stroke width of tooling lines (px)" gui-description="Gets overwritten if 'Use style of first selected element' is enabled">1.000</param>	
-			<param name="trajectories_stroke_width" type="float" min="0.001" max="99999.000" precision="3" gui-text="stroke width of trajectory lines (px)">1.000</param>	
+			<param name="use_style_of_first_element" type="bool" gui-text="Use style of first element" gui-description="If enabled the first element in selection is scanned and we apply it's style to all imported vpype lines (but not for trajectories))">true</param>	
+			<param name="lines_stroke_width" type="float" min="0.001" max="99999.000" precision="3" gui-text="Stroke width of tooling lines (px)" gui-description="Gets overwritten if 'Use style of first selected element' is enabled">1.000</param>	
+			<param name="trajectories_stroke_width" type="float" min="0.001" max="99999.000" precision="3" gui-text="Stroke width of trajectory lines (px)">1.000</param>	
 		</page>
 		<page name="about" gui-text="About">
 		    <label appearance="url">https://fablabchemnitz.de</label>
