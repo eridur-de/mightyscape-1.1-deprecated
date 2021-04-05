@@ -427,29 +427,9 @@ class DXFDWGImport(inkex.EffectExtension):
             doc.set('viewBox','')
             doc.getchildren()[0].set('transform','')
             
-        #adjust viewport and width/height to have the import at the center of the canvas - unstable at the moment.
+        #adjust viewport and width/height to have the import at the center of the canvas
         if self.options.resizetoimport: 
-            elements = []
-            for child in doc.getchildren():
-                #if child.tag == inkex.addNS('g','svg'):
-                elements.append(child)
-
-            #build sum of bounding boxes and ignore errors for faulty elements (sum function often fails for that usecase!)
-            bbox = None
-            try:
-                bbox = elements[0].bounding_box() #init with the first bounding box of the tree (and hope that it is not a faulty one)
-            except Exception as e:
-                #inkex.utils.debug(str(e))
-                pass
-            count = 0
-            for element in elements:
-                if count != 0: #skip the first
-                    try:
-                        bbox += element.bounding_box()
-                    except Exception as e:
-                        #inkex.utils.debug(str(e))
-                        pass
-                count += 1 #some stupid counter
+            bbox = inkex.elements._selected.ElementList.bounding_box(doc.getchildren()[0])
             if bbox is not None:
                 root = self.svg.getElement('//svg:svg');
                 offset = self.svg.unittouu(str(self.options.extraborder) + self.options.extraborder_units)
