@@ -5,6 +5,7 @@
     <param name="separateby" gui-text="Separate by" type="optiongroup" appearance="combo">
        <option value="stroke">Stroke color</option>
        <option value="stroke_width">Stroke width</option>
+       <option value="stroke_hairline">Stroke hairline</option>
        <option value="stroke_opacity">Stroke opacity</option>
        <option value="fill">Fill color</option>
        <option value="fill_opacity">Fill opacity</option>
@@ -15,9 +16,10 @@
        <option value="saturation">Saturation</option>
        <option value="luminance">Luminance</option>
     </param>
-    <param name="subdividethreshold" gui-text="Number of sub layers" gui-description="A min/max range of the selected style type value will be calculated and you retrieve a set of layer (coarse grouping) with sub-layers (fine grouping). If you have less calculated sub layers than this threshold it will be limited automatically." type="int" min="1" max="9999">1</param>
-    <param name="decimals" gui-text="Decimal tolerance" gui-description="The more decimals the more distinct layers you will get. This only applies for the sub layers (threshold > 1)" type="int" min="0" max="10">1</param>
-    <param name="cleanup" gui-text="Cleanup all unused groups (requires separate extension)" type="boolean" gui-description="This will call the extension 'Remove Empty Groups' if available">true</param>
+    <param name="subdividethreshold" type="int" min="1" max="9999" gui-text="Number of sub layers" gui-description="A min/max range of the selected style type value will be calculated and you retrieve a set of layer (coarse grouping) with sub-layers (fine grouping). If you have less calculated sub layers than this threshold it will be limited automatically.">1</param>
+    <param name="decimals" type="int" min="0" max="10" gui-text="Decimal tolerance" gui-description="The more decimals the more distinct layers you will get. This only applies for the sub layers (threshold > 1)">1</param>
+    <param name="apply_transformations" type="bool" gui-text="Apply transformations (requires separate extension)" gui-description="This will call the extension 'Apply Transformations'. Helps avoiding geometry shifting">false</param>
+    <param name="cleanup"  type="bool" gui-text="Cleanup all unused groups/layers (requires separate extension)" gui-description="This will call the extension 'Remove Empty Groups' if available">true</param>
 
     <label>This extension will re-layer your selected items or the whole document according to their style (stroke or fill)</label>
     <label>Tinkered by Mario Voigt / Stadtfabrikanten e.V. (2020)</label>
