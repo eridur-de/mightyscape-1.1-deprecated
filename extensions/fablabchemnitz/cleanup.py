@@ -20,44 +20,70 @@ Based on coloreffect.py by Jos Hirth and Aaron C. Spike
 '''
 
 import inkex
+import re
 
 class Cleanup(inkex.EffectExtension):
     def __init__(self):
         inkex.Effect.__init__(self)
         self.arg_parser.add_argument("--stroke_width", type=float, default=0.1, help="Stroke width")
         self.arg_parser.add_argument("--stroke_units", default="mm", help="Stroke unit")
-        self.arg_parser.add_argument("--remove_styles", type=inkex.Boolean, help="Remove stroke styles")
         self.arg_parser.add_argument("--opacity", type=float, default="100.0", help="Opacity")
+        self.arg_parser.add_argument("--reset_style_attributes", type=inkex.Boolean, help="Remove stroke style attributes like stroke-dasharray, stroke-dashoffset, stroke-linejoin, linecap, stroke-miterlimit")
+        self.arg_parser.add_argument("--reset_fill_attributes", type=inkex.Boolean, help="Sets 'fill:none;' to style attribute")
+        self.arg_parser.add_argument("--apply_hairlines", type=inkex.Boolean, help="Adds 'vector-effect:non-scaling-stroke;' and '-inkscape-stroke:hairline;' Hint: stroke-width is kept in background. All hairlines still have a valued width.")
+        self.arg_parser.add_argument("--apply_black_strokes", type=inkex.Boolean, help="Adds 'stroke:#000000;' to style attribute")
+
 
     def effect(self):
-        if len(self.svg.selected)==0:
+        if len(self.svg.selected) == 0:
             self.getAttribs(self.document.getroot())
         else:
-            for id,node in self.svg.selected.items():
+            for id, node in self.svg.selected.items():
                 self.getAttribs(node)
 
-    def getAttribs(self,node):
+    def getAttribs(self, node):
         self.changeStyle(node)
         for child in node:
             self.getAttribs(child)
 
-    def changeStyle(self,node):
+    #stroke and fill styles can be included in style attribute or they can exist separately (can occure in older SVG files). We do not parse other attributes than style
+    def changeStyle(self, node):
         if node.attrib.has_key('style'):
             style = node.get('style')
-            if style:
+            if style:  
+                #add missing style attributes if required
+                if style.endswith(';') is False:
+                    style += ';'
+                if re.search('(;|^)stroke:(.*?)(;|$)', style) is None: #if "stroke" is None, add one. We need to distinguish because there's also attribute "-inkscape-stroke" that's why we check starting with ^ or ;
+                    style += 'stroke:none;'
+                if "stroke-width:" not in style:
+                    style += 'stroke-width:' + str(self.svg.unittouu(str(self.options.stroke_width) + self.options.stroke_units)) + ';'
+                if "stroke-opacity:" not in style:
+                    style += 'stroke-opacity:' + str(self.options.opacity / 100) + ';'
+
+                if self.options.apply_hairlines is True:
+                    if "vector-effect:non-scaling-stroke" not in style:
+                        style += 'vector-effect:non-scaling-stroke;'
+                    if "-inkscape-stroke:hairline" not in style:
+                        style += '-inkscape-stroke:hairline;'
+                   
+                if re.search('fill:(.*?)(;|$)', style) is None: #if "fill" is None, add one.
+                    style += 'fill:none;'
+                                       
+                #then parse the content and check what we need to adjust   
                 declarations = style.split(';')
-                for i,decl in enumerate(declarations):
+                for i, decl in enumerate(declarations):
                     parts = decl.split(':', 2)
                     if len(parts) == 2:
                         (prop, val) = parts
                         prop = prop.strip().lower()
                         if prop == 'stroke-width':
-                            new_val = self.svg.unittouu(str(self.options.stroke_width)+self.options.stroke_units)
+                            new_val = self.svg.unittouu(str(self.options.stroke_width) + self.options.stroke_units)
                             declarations[i] = prop + ':' + str(new_val)
                         if prop == 'stroke-opacity':
                             new_val = str(self.options.opacity / 100)
                             declarations[i] = prop + ':' + new_val
-                        if self.options.remove_styles == True:
+                        if self.options.reset_style_attributes is True:
                             if prop == 'stroke-dasharray':
                                 declarations[i] = ''
                             if prop == 'stroke-dashoffset':
@@ -68,6 +94,15 @@ class Cleanup(inkex.EffectExtension):
                                 declarations[i] = ''
                             if prop == 'stroke-miterlimit':
                                 declarations[i] = ''
+                        if self.options.apply_black_strokes is True:
+                            if prop == 'stroke':
+                                if val == 'none':
+                                    new_val = '#000000'
+                                    declarations[i] = prop + ':' + new_val
+                        if self.options.reset_fill_attributes is True:
+                            if prop == 'fill':
+                                    new_val = 'none'
+                                    declarations[i] = prop + ':' + new_val
                 node.set('style', ';'.join(declarations))
 
 if __name__ == '__main__':

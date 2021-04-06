@@ -11,7 +11,10 @@
        <option value="mm">mm</option>
     </param>
     <param name="opacity" type="float" precision="1" min="0" max="100" gui-text="Opacity (%)">100.0</param>
-    <param name="remove_styles" type="bool" gui-text="Remove stroke styles">true</param>
+    <param name="reset_style_attributes" type="bool" gui-text="Reset stroke style attributes" gui-description="Remove stroke style attributes like stroke-dasharray, stroke-dashoffset, stroke-linejoin, linecap, stroke-miterlimit">true</param>
+    <param name="reset_fill_attributes" type="bool" gui-text="Reset fill style attributes" gui-description="Sets 'fill:none;' to style attribute">true</param>
+    <param name="apply_hairlines" type="bool" gui-text="Add additional hairline style" gui-description="Adds 'vector-effect:non-scaling-stroke;' and '-inkscape-stroke:hairline;' Hint: stroke-width is kept in background. All hairlines still have a valued width.">true</param>
+    <param name="apply_black_strokes" type="bool" gui-text="Apply black strokes where strokes missing" gui-description="Adds 'stroke:#000000;' to style attribute">true</param>
     <effect needs-live-preview="true">
         <object-type>all</object-type>
         <effects-menu>
