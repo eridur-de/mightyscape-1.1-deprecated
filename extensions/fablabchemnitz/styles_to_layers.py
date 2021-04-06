@@ -105,7 +105,7 @@ class StylesToLayers(inkex.EffectExtension):
                 if style and element.tag != inkex.addNS('stop','svg') and element.tag != inkex.addNS('tspan','svg'): 
                     
                     if self.options.separateby == "stroke":
-                        stroke = re.search('^stroke:(.*?)(;|$)', style) #we use ^ to exlucde "-inkscape-stroke" which can be "hairline" since InkScape 1.1+
+                        stroke = re.search('(;|^)stroke:(.*?)(;|$)', style)
                         if stroke is not None:
                             stroke = stroke[0]
                             stroke_value = stroke.split("stroke:")[1].split(";")[0]
