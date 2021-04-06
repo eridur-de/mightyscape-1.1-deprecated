@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <name>Fix Global Stroke Width / Opacity / Style</name>
+    <name>Cleanup Styles</name>
     <id>fablabchemnitz.de.cleanup</id>
-    <param name="stroke_width" type="float" precision="4" min="0" max="5" gui-text="Stroke width">0.1</param>
+    <param name="stroke_width" type="float" precision="4" min="0.0000" max="5.0000" gui-text="Stroke width">0.1000</param>
     <param name="stroke_units" gui-text="Units" type="optiongroup" appearance="combo">
        <option value="px">px</option>
        <option value="pt">pt</option>
@@ -15,6 +15,7 @@
     <param name="reset_fill_attributes" type="bool" gui-text="Reset fill style attributes" gui-description="Sets 'fill:none;' to style attribute">true</param>
     <param name="apply_hairlines" type="bool" gui-text="Add additional hairline style" gui-description="Adds 'vector-effect:non-scaling-stroke;' and '-inkscape-stroke:hairline;' Hint: stroke-width is kept in background. All hairlines still have a valued width.">true</param>
     <param name="apply_black_strokes" type="bool" gui-text="Apply black strokes where strokes missing" gui-description="Adds 'stroke:#000000;' to style attribute">true</param>
+	<label>This extension works on current selection or for complete document</label>
     <effect needs-live-preview="true">
         <object-type>all</object-type>
         <effects-menu>
