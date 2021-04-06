@@ -9,7 +9,7 @@ import pyclipper
 class ofsplot(inkex.Effect):
     def __init__(self):
         inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("--count", type=int, default=10, help="Number of offset operations")
+        self.arg_parser.add_argument("--count", type=int, default=10, help="Number of offset paths")
         self.arg_parser.add_argument("--offset", type=float, default=2.0, help="Offset amount")
         self.arg_parser.add_argument("--init_offset", type=float, default=2.0, help="Initial Offset Amount")
         self.arg_parser.add_argument("--copy_org", type=inkex.Boolean, default=True, help="copy original path")
@@ -19,9 +19,9 @@ class ofsplot(inkex.Effect):
         self.arg_parser.add_argument("--clipperscale", type=float, default=1024.0, help="Scaling factor")
         
     def effect(self):
-        paths = self.svg.get_selected(inkex.PathElement)
+        paths = self.svg.selection.filter(inkex.PathElement).values()
         count = sum(1 for path in paths)
-        paths = self.svg.get_selected(inkex.PathElement) #we need to call this twice because the sum function consumes the generator
+        paths = self.svg.selection.filter(inkex.PathElement).values() #we need to call this twice because the sum function consumes the generator
         if count == 0:
             inkex.errormsg("No paths selected.")
             exit()
