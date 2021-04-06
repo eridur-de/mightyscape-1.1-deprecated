@@ -372,7 +372,7 @@ class vpypetools (inkex.EffectExtension):
         trajectoriesLayer = import_doc.getroot().xpath("//svg:g[@id='pen_up_trajectories']", namespaces=inkex.NSS)
         if self.options.output_trajectories is True:
             if len(trajectoriesLayer) > 0:
-                trajectoriesLayer[0].set('style', 'stroke:#0000ff;stroke-width:'+ str(self.options.trajectories_stroke_width) + 'px;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;fill:none')       
+                trajectoriesLayer[0].set('style', 'stroke:#0000ff;stroke-width:{:0.2f}px;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;fill:none'.format(self.options.trajectories_stroke_width))
                 trajectoriesLayer[0].attrib.pop('stroke') # remove unneccesary stroke attribute
                 trajectoriesLayer[0].attrib.pop('fill') # remove unneccesary fill attribute
         else:
@@ -390,7 +390,7 @@ class vpypetools (inkex.EffectExtension):
             for lineLayer in lineLayers:          
                 if lineLayer.attrib.has_key('stroke'):
                     color = lineLayer.get('stroke')
-                    lineLayer.set('style', 'stroke:' + color + ';stroke-width:'+ str(self.options.lines_stroke_width) + 'px;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;fill:none')       
+                    lineLayer.set('style', 'stroke:' + color + ';stroke-width:{:0.2f}px;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;fill:none'.format(self.options.lines_stroke_width))
                     lineLayer.attrib.pop('stroke') # remove unneccesary stroke attribute
                     lineLayer.attrib.pop('fill') # remove unneccesary fill attribute
 
