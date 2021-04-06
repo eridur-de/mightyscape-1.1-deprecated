@@ -27,7 +27,7 @@
 		    <param name="flattenbezier" type="bool" gui-text="Quantization (flatten bezier curves to polylines)" gui-description="Converts bezier curves to polylines. Automatically enabled if 'Multilayer/document'">true</param>	
 			<param name="flatness" type="float" min="0.001" max="99999.000" precision="3" gui-text="flatness" gui-description="Minimum flatness = 0.001. The smaller the value the more fine segments you will get.">0.100</param>	
 		    <param name="apply_transformations" type="bool" gui-text="Use 'Apply Transformations' extension" gui-description="Run 'Apply Transformations' extension before running vpype. Helps avoiding geometry shifting">false</param>
-		 	<param name="output_show" type="bool" gui-text="Preview only (debug output)" gui-description="This will open a new matplotlib window showing modified SVG data">false</param>
+		 	<param name="output_show" type="bool" gui-text="Preview only (debug output)" gui-description="This will open a new matplotlib window showing modified SVG data. If enabled output is not applied to InkScape canvas!">false</param>
 		 	<param name="output_stats" type="bool" gui-text="Show conversion statistics" gui-description="Show output statistics before/after conversion">false</param>
 		 	<param name="output_trajectories" type="bool" gui-text="Import travel trajectories" gui-description="Add paths for the travel trajectories">false</param>
 		 	<param name="keep_selection" type="bool" gui-text="Keep selected paths" gui-description="If false, selected paths (original objects) will be removed">false</param>
