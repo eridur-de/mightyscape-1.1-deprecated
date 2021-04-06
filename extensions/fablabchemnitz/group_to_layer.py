@@ -32,8 +32,12 @@ class GroupToLayerEffect(inkex.EffectExtension):
     def effect(self):
         depth = self.options.depth
         self.tag_g = inkex.addNS('g', 'svg')
-        for node in self.svg.selected.values():
-            self.convert_group(node, depth)
+        if len(self.svg.selected) > 0:
+            for node in self.svg.selected.values():
+                self.convert_group(node, depth)
+        else:
+            inkex.errormsg('Please select some objects first.')
+            return
 
     def convert_group(self, node, depth):
         if depth <= 0:
