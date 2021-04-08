@@ -84,6 +84,10 @@ class BezierEnvelope(inkex.EffectExtension):
         letterElement = self.svg.selected[self.options.ids[0]]
         envelopeElement = self.svg.selected[self.options.ids[1]]
 
+        if letterElement.get('inkscape:original-d') or envelopeElement.get('inkscape:original-d'):
+            raise Exception("One or both selected paths have attribute 'inkscape:original-d' which points to Live Path Effects (LPE). Please convert to regular path.")
+            exit()
+            
         if letterElement.tag != inkex.addNS('path','svg') or envelopeElement.tag != inkex.addNS('path','svg'):
             raise Exception("Both letter and envelope must be SVG paths.")
             exit()
