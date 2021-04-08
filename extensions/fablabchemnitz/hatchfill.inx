@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-   <name>_Hatch Fill</name>
+   <name>Hatch Fill</name>
    <id>fablabchemnitz.de.hatchfill</id>
    <param name="tab" type="notebook">
       <page name="splash" gui-text="Hatch Fill">

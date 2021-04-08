@@ -9,11 +9,11 @@ import pyclipper
 class ofsplot(inkex.Effect):
     def __init__(self):
         inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("--count", type=int, default=10, help="Number of offset paths")
-        self.arg_parser.add_argument("--offset", type=float, default=2.0, help="Offset amount")
-        self.arg_parser.add_argument("--init_offset", type=float, default=2.0, help="Initial Offset Amount")
+        self.arg_parser.add_argument("--offset_count", type=int, default=1, help="Number of offset paths")
+        self.arg_parser.add_argument("--offset", type=float, default=1.000, help="Offset amount")
+        self.arg_parser.add_argument("--init_offset", type=float, default=0.000, help="Initial Offset Amount")
         self.arg_parser.add_argument("--copy_org", type=inkex.Boolean, default=True, help="copy original path")
-        self.arg_parser.add_argument("--offset_increase", type=float, default=2.0, help="Offset increase between iterations")
+        self.arg_parser.add_argument("--offset_increase", type=float, default=0.000, help="Offset increase between iterations")
         self.arg_parser.add_argument("--jointype", default="2", help="Join type")
         self.arg_parser.add_argument("--miterlimit", type=float, default=3.0, help="Miter limit")
         self.arg_parser.add_argument("--clipperscale", type=float, default=1024.0, help="Scaling factor")
@@ -53,7 +53,7 @@ class ofsplot(inkex.Effect):
                 # calculate offset paths for different offset amounts
                 offset_list = []
                 offset_list.append(self.options.init_offset)
-                for i in range(0,self.options.count+1):
+                for i in range(0, self.options.offset_count):
                     ofs_inc = +math.pow(float(i)*self.options.offset_increase,2)
                     if self.options.offset_increase <0:
                         ofs_inc = -ofs_inc
