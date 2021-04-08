@@ -2,6 +2,14 @@
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
     <name>Ofsplot (Offset Paths)</name>
     <id>fablabchemnitz.de.ofsplot</id>
+	<param name="unit" type="optiongroup" appearance="combo" gui-text="Unit">
+		<option value="mm">mm</option>
+		<option value="cm">cm</option>
+		<option value="in">in</option>
+		<option value="pt">pt</option>
+		<option value="px">px</option>
+		<option value="pc">pc</option>
+	</param>
     <param name="offset_count" type="int" min="1" max="100000" gui-text="Number of offset paths:">1</param>
     <param name="offset" type="float"  precision="4" min="-1000" max="+1000" gui-text="Offset between two paths:">1.0000</param>
     <param name="init_offset" type="float" precision="4" min="-1000" max="+1000" gui-text="Initial offset from original path:">1.0000</param>

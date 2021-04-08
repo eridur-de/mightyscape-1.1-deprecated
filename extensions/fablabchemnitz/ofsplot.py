@@ -9,6 +9,7 @@ import pyclipper
 class ofsplot(inkex.Effect):
     def __init__(self):
         inkex.Effect.__init__(self)
+        self.arg_parser.add_argument('--unit')
         self.arg_parser.add_argument("--offset_count", type=int, default=1, help="Number of offset paths")
         self.arg_parser.add_argument("--offset", type=float, default=1.000, help="Offset amount")
         self.arg_parser.add_argument("--init_offset", type=float, default=0.000, help="Initial Offset Amount")
@@ -19,6 +20,7 @@ class ofsplot(inkex.Effect):
         self.arg_parser.add_argument("--clipperscale", type=float, default=1024.0, help="Scaling factor")
         
     def effect(self):
+        unit_factor = 1.0 / self.svg.uutounit(1.0,self.options.unit)
         paths = self.svg.selection.filter(inkex.PathElement).values()
         count = sum(1 for path in paths)
         paths = self.svg.selection.filter(inkex.PathElement).values() #we need to call this twice because the sum function consumes the generator
@@ -46,18 +48,18 @@ class ofsplot(inkex.Effect):
                 for sub in p:
                     sub_simple = []
                     for item in sub:
-                        itemx = [float(z)*scale_factor for z in item[1]]
+                        itemx = [float(z) * scale_factor for z in item[1]]
                         sub_simple.append(itemx)
                     pco.AddPath(sub_simple, JT, pyclipper.ET_CLOSEDPOLYGON)
 
                 # calculate offset paths for different offset amounts
                 offset_list = []
-                offset_list.append(self.options.init_offset)
+                offset_list.append(self.options.init_offset * unit_factor)
                 for i in range(0, self.options.offset_count):
-                    ofs_inc = +math.pow(float(i)*self.options.offset_increase,2)
-                    if self.options.offset_increase <0:
-                        ofs_inc = -ofs_inc
-                    offset_list.append(offset_list[0]+float(i)*self.options.offset+ofs_inc)
+                    ofs_increase = +math.pow(float(i) * self.options.offset_increase * unit_factor, 2)
+                    if self.options.offset_increase < 0:
+                        ofs_increase = -ofs_increase
+                    offset_list.append(offset_list[0] + float(i) * self.options.offset * unit_factor + ofs_increase * unit_factor)
 
                 solutions = []
                 for offset in offset_list:
@@ -70,7 +72,7 @@ class ofsplot(inkex.Effect):
                 for solution in solutions:
                     for sol in solution:
                         solx = [[float(s[0]) / scale_factor, float(s[1]) / scale_factor] for s in sol]
-                        sol_p = [[a,a,a] for a in solx]
+                        sol_p = [[a, a, a] for a in solx]
                         sol_p.append(sol_p[0][:])
                         new.append(sol_p)
 
