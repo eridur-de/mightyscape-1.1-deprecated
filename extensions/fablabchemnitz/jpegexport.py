@@ -51,13 +51,21 @@ class JPEGExport(inkex.Effect):
             inkex.errormsg(_('Please indicate a directory other than your system\'s base directory.'))
             exit()
           
-        # Test if the directory exists:
-        if not os.path.exists(os.path.dirname(self.options.path)):
-            inkex.errormsg(_('The directory "%s" does not exist.') % os.path.dirname(self.options.path))
+        # Test if the directory exists and filename is valid:
+        filebase = os.path.dirname(self.options.path)
+        if not os.path.exists(filebase):
+            inkex.errormsg(_('The directory "%s" does not exist.') % filebase)
             exit()
-
-        outfile=self.options.path
-        
+        filename = os.path.splitext(os.path.basename(self.options.path))
+        filename_base = filename[0]
+        filename_ending = filename[1]
+        if self.get_valid_filename(filename_base) != filename_base:
+            inkex.errormsg(_('The file name "%s" is invalid.') % filename_base)
+            return 
+        if filename_ending != 'jpg' or filename_ending != 'jpeg':
+            filename_ending = 'jpg'
+        outfile = os.path.join(filebase, filename_base + '.' + filename_ending)
+   
         shutil.copy(self.options.input_file, self.options.input_file + ".svg") #make a file copy with file ending to suppress import warnings
         curfile = self.options.input_file + ".svg"
         #inkex.utils.debug("curfile:" + curfile)
@@ -162,7 +170,7 @@ class JPEGExport(inkex.Effect):
         #inkex.utils.debug("command:" + command)
         #inkex.utils.debug("Errorcode:" + str(return_code))
 		
-    def tojpeg(self,outfile):
+    def tojpeg(self, outfile):
         tmp = self.getTmpPath()
         if os.name == 'nt':
 	        outfile = outfile.replace("\\","\\\\")
@@ -187,6 +195,10 @@ class JPEGExport(inkex.Effect):
             return os.getenv('TEMP') + '\\'
         else:
             return '/tmp/'
+
+    def get_valid_filename(self, s):
+        s = str(s).strip().replace(" ", "_")
+        return re.sub(r"(?u)[^-\w.]", "", s)
 
 if __name__ == '__main__':
     JPEGExport().run()
