@@ -2,32 +2,49 @@
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
     <name>Trimming</name>
     <id>fablabchemnitz.de.vpype_trimming</id>
-	<label appearance="header">Trimming</label>
-	<label>This command trims the geometries by the provided X and Y margins with respect to the current bounding box.</label>
- 	<param name="trim" type="bool" gui-hidden="true">true</param>	
-	<param name="trim_x_margin" type="float" min="0.000"  max="99999.000" precision="3" gui-text="trim margin - x direction (mm)">0.000</param>
-	<param name="trim_y_margin" type="float" min="0.000"  max="99999.000" precision="3" gui-text="trim margin - y direction (mm)">0.000</param>
-	<spacer/>
-    <label appearance="header">General Settings</label>
-	<param name="input_handling" type="optiongroup" appearance="radio" gui-text="Input/Layer handling">
-	   <option value="layers">Multilayer/document (all layers/complete document)</option>
-	   <option value="paths">Singlelayer/paths (a single layer/paths in selection or all paths in document)</option>
+	<param name="tab" type="notebook">
+		<page name="freemode" gui-text="Free Mode Entries">
+			<label>This command trims the geometries by the provided X and Y margins with respect to the current bounding box.</label>
+			<param name="trim" type="bool" gui-hidden="true">true</param>	
+			<param name="trim_x_margin" type="float" min="0.000"  max="99999.000" precision="3" gui-text="Trim margin - x direction (mm)">0.000</param>
+			<param name="trim_y_margin" type="float" min="0.000"  max="99999.000" precision="3" gui-text="Trim margin - y direction (mm)">0.000</param>
+		</page>
+		<page name="general_settings" gui-text="General Settings">
+			<label appearance="header">Preprocessing</label>
+		    <param name="apply_transformations" type="bool" gui-text="Use 'Apply Transformations' extension" gui-description="Run 'Apply Transformations' extension before running vpype. Helps avoiding geometry shifting. Disabled for 'Multilayer/document'">false</param>
+			<spacer/>
+			<label appearance="header">Input (InkScape to vpype)</label>
+			<param name="input_handling" type="optiongroup" appearance="radio" gui-text="Input/Layer handling">
+			   <option value="layers">Multilayer/document (all layers/complete document)</option>
+			   <option value="paths">Singlelayer/paths (a single layer/paths in selection or all paths in document)</option>
+			</param>
+		    <param name="flattenbezier" type="bool" gui-text="Quantization (flatten bezier curves to polylines)" gui-description="Convert bezier curves to polylines. Automatically enabled if 'Multilayer/document' (quantization parameter)">true</param>	
+			<param name="flatness" type="float" min="0.001" max="99999.000" precision="3" gui-text="flatness (tolerance)" gui-description="Minimum flatness = 0.001. The smaller the value the more fine segments you will get. This value is also used by option 'simplify'">0.100</param>
+			<param name="simplify" type="bool" gui-text="Simplify geometry" gui-description="Reduces significantly the number of segments used to approximate the curve while still guaranteeing an accurate conversion, but may increase the execution time. Does not work for 'Singlelayer/paths'">false</param>
+			<param name="parallel" type="bool" gui-text="Parallelize Simplify geometry" gui-description="Enables multiprocessing for the SVG conversion. This is recommended ONLY when using 'Simplify geometry' on large SVG files with many curved elements. Does not work for 'Singlelayer/paths'">false</param>			
+			<spacer/>
+			<label appearance="header">Validation (vpype pipeline)</label>
+		 	<param name="output_show" type="bool" gui-text="Preview only (debug output)" gui-description="This will open a separate window showing the finished SVG data. If enabled output is not applied to InkScape canvas (only for preview)!">false</param>
+		 	<param name="output_stats" type="bool" gui-text="Show conversion statistics" gui-description="Show output statistics before/after conversion. Helps to find out length savings.">false</param>
+			<spacer/>
+			<label appearance="header">Output (vpype to InkScape)</label>
+		 	<param name="output_trajectories" type="bool" gui-text="Import travel trajectories" gui-description="Add paths for the travel trajectories">false</param>
+		 	<param name="keep_objects" type="bool" gui-text="Keep original objects" gui-description="If false, original (selected) objects will be removed">false</param>
+		 	<param name="strokes_to_paths" type="bool" gui-text="Auto-convert low-level strokes to paths" gui-description="Recommended option. Performs 'Path' > 'Stroke to Path' (CTRL + ALT + C) to convert vpype converted lines back to regular path objects. Warning: increases import time significantly.">true</param>
+			<param name="use_style_of_first_element" type="bool" gui-text="Use style of first element in layer" gui-description="If enabled the first element in selection is scanned and we apply it's style to all imported vpype lines (but not for trajectories). Does not work for 'Multilayer/document'">true</param>	
+			<param name="lines_stroke_width" type="float" min="0.001" max="99999.000" precision="3" gui-text="Stroke width of tooling lines (px)" gui-description="Gets overwritten if 'Use style of first selected element' is enabled">1.000</param>	
+			<param name="trajectories_stroke_width" type="float" min="0.001" max="99999.000" precision="3" gui-text="Stroke width of trajectory lines (px)">1.000</param>
+		</page>
+		<page name="about" gui-text="About">
+			<label appearance="header">vpypetools documentation</label>
+		    <label appearance="url">https://y.stadtfabrikanten.org/vpypetools</label>
+			<label appearance="header">CLI reference (command list)</label>
+		    <label appearance="url">https://vpype.readthedocs.io/en/stable/reference.html</label>
+			<separator/>		
+			<label appearance="url">https://fablabchemnitz.de</label>
+			<label>License: GNU GPL v3</label>
+		</page>
 	</param>
-    <param name="flattenbezier" type="bool" gui-text="Quantization (flatten bezier curves to polylines)" gui-description="Converts bezier curves to polylines.">true</param>	
-	<param name="flatness" type="float" min="0.001" max="99999.000" precision="3" gui-text="flatness" gui-description="Minimum flatness = 0.001. The smaller the value the more fine segments you will get.">0.100</param>	
-    <param name="apply_transformations" type="bool" gui-text="Use 'Apply Transformations' extension" gui-description="Run 'Apply Transformations' extension before running vpype. Helps avoiding geometry shifting">false</param>
- 	<param name="output_show" type="bool" gui-text="Preview only (debug output)" gui-description="This will open a new matplotlib window showing modified SVG data. If enabled output is not applied to InkScape canvas!">false</param>
- 	<param name="output_stats" type="bool" gui-text="Show conversion statistics" gui-description="Show output statistics before/after conversion">false</param>
- 	<param name="output_trajectories" type="bool" gui-text="Import travel trajectories" gui-description="Add paths for the travel trajectories">false</param>
- 	<param name="keep_selection" type="bool" gui-text="Keep selected paths" gui-description="If false, selected paths (original objects) will be removed">false</param>
- 	<param name="strokes_to_paths" type="bool" gui-text="Auto-convert low-level strokes to paths" gui-description="Recommended option. Performs 'Path' > 'Stroke to Path' (CTRL + ALT + C) to convert vpype converted lines back to regular path objects">true</param>
-	<param name="use_style_of_first_element" type="bool" gui-text="Use style of first element in layer" gui-description="If enabled the first element in selection is scanned and we apply it's style to all imported vpype lines (but not for trajectories). Does not work for 'Multilayer/document'">true</param>	
-	<param name="lines_stroke_width" type="float" min="0.001" max="99999.000" precision="3" gui-text="Stroke width of tooling lines (px)" gui-description="Gets overwritten if 'Use style of first selected element' is enabled">1.000</param>	
-	<param name="trajectories_stroke_width" type="float" min="0.001" max="99999.000" precision="3" gui-text="Stroke width of trajectory lines (px)">1.000</param>
-    <label appearance="header">About</label>
-    <separator/>
-    <label appearance="url">https://fablabchemnitz.de</label>
-    <label>License: GNU GPL v3</label>
     <effect needs-live-preview="true">
 		<effects-menu>
          <submenu name="FabLab Chemnitz">

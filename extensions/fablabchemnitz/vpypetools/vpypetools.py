@@ -30,7 +30,7 @@ Extension for InkScape 1.X
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 02.04.2021
-Last patch: 06.04.2021
+Last patch: 08.04.2021
 License: GNU GPL v3
 
 This piece of spaghetti-code, called "vpypetools", is a wrapper to pass (pipe) line elements from InkScape selection (or complete canvas) to vpype. 
@@ -67,10 +67,6 @@ class vpypetools (inkex.EffectExtension):
         self.arg_parser.add_argument("--linemerge_tolerance", type=float, default=0.500, help="Maximum distance between two line endings that should be merged (default 0.500 mm)")
         self.arg_parser.add_argument("--linemerge_no_flip", type=inkex.Boolean, default=False, help="Disable reversing stroke direction for merging")
   
-        # Line Simplification
-        self.arg_parser.add_argument("--linesimplify", type=inkex.Boolean, default=False)
-        self.arg_parser.add_argument("--linesimplify_tolerance", type=float, default=0.050, help="The resulting geometries' points will be at a maximum distance from the original controlled by the (default 0.05 mm)")  
-        
         # Trimming
         self.arg_parser.add_argument("--trim", type=inkex.Boolean, default=False)
         self.arg_parser.add_argument("--trim_x_margin", type=float, default=0.000, help="trim margin - x direction (mm)") # keep default at 0.000 to keep clean bbox
@@ -120,13 +116,15 @@ class vpypetools (inkex.EffectExtension):
         self.arg_parser.add_argument("--input_handling", default="paths", help="Input handling")
         self.arg_parser.add_argument("--flattenbezier", type=inkex.Boolean, default=False, help="Flatten bezier curves to polylines")
         self.arg_parser.add_argument("--flatness", type=float, default=0.1, help="Minimum flatness = 0.1. The smaller the value the more fine segments you will get (quantization).")
+        self.arg_parser.add_argument("--simplify", type=inkex.Boolean, default=False, help="Reduces significantly the number of segments used to approximate the curve while still guaranteeing an accurate conversion, but may increase the execution time. Does not work for 'Singlelayer/paths'")
+        self.arg_parser.add_argument("--parallel", type=inkex.Boolean, default=False, help="Enables multiprocessing for the SVG conversion. This is recommended ONLY when using 'Simplify geometry' on large SVG files with many curved elements. Does not work for 'Singlelayer/paths'")
         self.arg_parser.add_argument("--apply_transformations", type=inkex.Boolean, default=False, help="Run 'Apply Transformations' extension before running vpype. Helps avoiding geometry shifting")
         self.arg_parser.add_argument("--output_show", type=inkex.Boolean, default=False, help="This will open a new matplotlib window showing modified SVG data")
         self.arg_parser.add_argument("--output_stats", type=inkex.Boolean, default=False, help="Show output statistics before/after conversion")
         self.arg_parser.add_argument("--output_trajectories", type=inkex.Boolean, default=False, help="Add paths for the travel trajectories")
-        self.arg_parser.add_argument("--keep_selection", type=inkex.Boolean, default=False, help="If false, selected paths will be removed")
+        self.arg_parser.add_argument("--keep_objects", type=inkex.Boolean, default=False, help="If false, selected paths will be removed")
         self.arg_parser.add_argument("--strokes_to_paths", type=inkex.Boolean, default=True, help="Recommended option. Performs 'Path' > 'Stroke to Path' (CTRL + ALT + C) to convert vpype converted lines back to regular path objects")
-        self.arg_parser.add_argument("--use_style_of_first_element", type=inkex.Boolean, default=True, help="If enabled the first element in selection is scanned and we apply it's style to all imported vpype lines")
+        self.arg_parser.add_argument("--use_style_of_first_element", type=inkex.Boolean, default=True, help="If enabled the first element in selection is scanned and we apply it's style to all imported vpype lines (but not for trajectories). Does not work for 'Multilayer/document'")
         self.arg_parser.add_argument("--lines_stroke_width", type=float, default=1.0, help="Stroke width of tooling lines (px). Gets overwritten if 'Use style of first selected element' is enabled")
         self.arg_parser.add_argument("--trajectories_stroke_width", type=float, default=1.0, help="Stroke width of trajectory lines (px). Gets overwritten if 'Use style of first selected element' is enabled")
  
@@ -213,8 +211,7 @@ class vpypetools (inkex.EffectExtension):
             doc.add(lc, layer_id=None) # we add the lineCollection (converted selection) to the vpype document
             
         elif self.options.input_handling == "layers":
-            doc = vpype.read_multilayer_svg(self.options.input_file, quantization = self.options.flatness, crop = False, simplify = False, parallel = False, \
-                default_width = self.document.getroot().get('width'), default_height = self.document.getroot().get('height'))
+            doc = vpype.read_multilayer_svg(self.options.input_file, quantization = self.options.flatness, crop = False, simplify = self.options.simplify, parallel = self.options.parallel, default_width = self.document.getroot().get('width'), default_height = self.document.getroot().get('height'))
 
             for node in self.document.getroot().xpath("//svg:g", namespaces=inkex.NSS): #all groups/layers
                 nodesToWork.append(node)
@@ -237,10 +234,6 @@ class vpypetools (inkex.EffectExtension):
             command = "linemerge --tolerance " + str(self.options.linemerge_tolerance)
             if self.options.linemerge_no_flip is True:
                 command += " --no-flip"
- 
-        # Line Simplification
-        if self.options.linesimplify is True:     
-            command = "linesimplify --tolerance " + str(self.options.linesimplify_tolerance)
  
         # Trimming
         if self.options.trim is True:     
@@ -411,7 +404,7 @@ class vpypetools (inkex.EffectExtension):
             os.remove(output_file)
             
         # Remove selection objects to do a real replace with new objects from vpype document
-        if self.options.keep_selection is False:
+        if self.options.keep_objects is False:
             for node in nodesToWork:
                 node.getparent().remove(node)
     
