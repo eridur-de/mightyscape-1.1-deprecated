@@ -104,11 +104,6 @@ def getPathData(obj):
 
     return data
 
-
-def stockErrorMsg(bygtrac):
-    inkex.errormsg("Please select exactly two circles and try again! %s" % bygtrac)
-    exit()
-
 class Tangent(inkex.Effect):
     def __init__(self):
         inkex.Effect.__init__(self)
@@ -117,13 +112,11 @@ class Tangent(inkex.Effect):
 		
     def effect(self):
         if len(self.options.ids) != 2:
-            stockErrorMsg("1")
+            inkex.errormsg("Please select exactly two circles and try again!")
+            return
             
         c1object = self.svg.selected[self.options.ids[0]]
         c2object = self.svg.selected[self.options.ids[1]]
-
-        #if c1object.get(inkex.addNS("type", "sodipodi")) != "arc" or c2object.get(inkex.addNS("type", "sodipodi")) != "arc":
-        #    stockErrorMsg("2")#PROBLEM HERE!
 
         c1 = getPathData(c1object)
         c2 = getPathData(c2object)
@@ -150,12 +143,21 @@ class Tangent(inkex.Effect):
 
         # Test whether the circles are actually circles!
         if c1['rx'] != c1['ry'] or c2['rx'] != c2['ry']:
-            stockErrorMsg("One or both objects may be elliptical. Ensure you have circles!")
+            inkex.errormsg("One or both objects may be elliptical. Ensure you have circles!")
+            return
 
         # Hypotenus of the triangle - Euclidean distance between c1 x, y and c2 x, y.
         h = deuclid(c1['x'], c1['y'], c2['x'], c2['y'])
         b = c3r
-        B = getAngle(b, h)
+        B = None
+        try:
+            B = getAngle(b, h)
+        except ValueError as e:
+            if self.options.position == "inner":
+                inkex.errormsg("Error calculating angle. Maybe your circles are overlapping each other")
+            else:
+                inkex.errormsg("Error calculating angle.")
+            return
         a = aLength(b, h)
         # Angle of hypotenuse to x-axis
         E = getAngle(max(c1['y'], c2['y']) - min(c1['y'], c2['y']), h)
