@@ -116,6 +116,7 @@ class vpypetools (inkex.EffectExtension):
         self.arg_parser.add_argument("--input_handling", default="paths", help="Input handling")
         self.arg_parser.add_argument("--flattenbezier", type=inkex.Boolean, default=False, help="Flatten bezier curves to polylines")
         self.arg_parser.add_argument("--flatness", type=float, default=0.1, help="Minimum flatness = 0.1. The smaller the value the more fine segments you will get (quantization).")
+        self.arg_parser.add_argument("--decimals", type=int, default=3, help="Accuracy for imported lines' coordinates into vpype. Does not work for 'Multilayer/document'")
         self.arg_parser.add_argument("--simplify", type=inkex.Boolean, default=False, help="Reduces significantly the number of segments used to approximate the curve while still guaranteeing an accurate conversion, but may increase the execution time. Does not work for 'Singlelayer/paths'")
         self.arg_parser.add_argument("--parallel", type=inkex.Boolean, default=False, help="Enables multiprocessing for the SVG conversion. This is recommended ONLY when using 'Simplify geometry' on large SVG files with many curved elements. Does not work for 'Singlelayer/paths'")
         self.arg_parser.add_argument("--apply_transformations", type=inkex.Boolean, default=False, help="Run 'Apply Transformations' extension before running vpype. Helps avoiding geometry shifting")
@@ -167,7 +168,7 @@ class vpypetools (inkex.EffectExtension):
                 points = []
                 for subpath in p:
                     for csp in subpath:
-                        points.append(Point(csp[1][0], csp[1][1]))
+                        points.append(Point(round(csp[1][0], self.options.decimals), round(csp[1][1], self.options.decimals)))
                 lc.append(LineString(points))        
             children = node.getchildren()
             if children is not None: 
@@ -254,9 +255,9 @@ class vpypetools (inkex.EffectExtension):
                 command += " --min-length " + str(self.options.filter_min_length)
             if self.options.filter_max_length_enabled is True:
                 command += " --max-length " + str(self.options.filter_max_length)
-            if self.options.filter_closed is True:
+            if self.options.filter_closed is True and self.options.filter_not_closed is False:
                 command += " --closed"
-            if self.options.filter_not_closed is True:
+            if self.options.filter_not_closed is True and self.options.filter_closed is False:
                 command += " --not-closed"
             if self.options.filter_closed is False and \
                 self.options.filter_not_closed is False and \

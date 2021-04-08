@@ -29,7 +29,8 @@
 			   <option value="paths">Singlelayer/paths (a single layer/paths in selection or all paths in document)</option>
 			</param>
 		    <param name="flattenbezier" type="bool" gui-text="Quantization (flatten bezier curves to polylines)" gui-description="Convert bezier curves to polylines. Automatically enabled if 'Multilayer/document' (quantization parameter)">true</param>	
-			<param name="flatness" type="float" min="0.001" max="99999.000" precision="3" gui-text="flatness (tolerance)" gui-description="Minimum flatness = 0.001. The smaller the value the more fine segments you will get. This value is also used by option 'simplify'">0.100</param>
+			<param name="flatness" type="float" min="0.001" max="99999.000" precision="3" gui-text="Flatness (tolerance)" gui-description="Minimum flatness = 0.001. The smaller the value the more fine segments you will get. This value is also used by option 'simplify'">0.100</param>
+			<param name="decimals" type="float" min="0" max="16" gui-text="Decimals" gui-description="Accuracy for imported lines' coordinates into vpype. Does not work for 'Multilayer/document'">3</param>
 			<param name="simplify" type="bool" gui-text="Simplify geometry" gui-description="Reduces significantly the number of segments used to approximate the curve while still guaranteeing an accurate conversion, but may increase the execution time. Does not work for 'Singlelayer/paths'">false</param>
 			<param name="parallel" type="bool" gui-text="Parallelize Simplify geometry" gui-description="Enables multiprocessing for the SVG conversion. This is recommended ONLY when using 'Simplify geometry' on large SVG files with many curved elements. Does not work for 'Singlelayer/paths'">false</param>			
 			<spacer/>
