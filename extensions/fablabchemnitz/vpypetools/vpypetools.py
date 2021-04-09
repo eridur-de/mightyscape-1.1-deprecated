@@ -119,7 +119,8 @@ class vpypetools (inkex.EffectExtension):
         self.arg_parser.add_argument("--simplify", type=inkex.Boolean, default=False, help="Reduces significantly the number of segments used to approximate the curve while still guaranteeing an accurate conversion, but may increase the execution time. Does not work for 'Singlelayer/paths'")
         self.arg_parser.add_argument("--parallel", type=inkex.Boolean, default=False, help="Enables multiprocessing for the SVG conversion. This is recommended ONLY when using 'Simplify geometry' on large SVG files with many curved elements. Does not work for 'Singlelayer/paths'")
         self.arg_parser.add_argument("--apply_transformations", type=inkex.Boolean, default=False, help="Run 'Apply Transformations' extension before running vpype. Helps avoiding geometry shifting")
-        self.arg_parser.add_argument("--output_show", type=inkex.Boolean, default=False, help="This will open a new matplotlib window showing modified SVG data")
+        self.arg_parser.add_argument("--output_show", type=inkex.Boolean, default=False, help="This will open a separate window showing the finished SVG data. If enabled, output is not applied to InkScape canvas (only for preview)!")
+        self.arg_parser.add_argument("--output_show_points", type=inkex.Boolean, default=False, help="Enable point display in viewer")
         self.arg_parser.add_argument("--output_stats", type=inkex.Boolean, default=False, help="Show output statistics before/after conversion")
         self.arg_parser.add_argument("--output_trajectories", type=inkex.Boolean, default=False, help="Add paths for the travel trajectories")
         self.arg_parser.add_argument("--keep_objects", type=inkex.Boolean, default=False, help="If false, selected paths will be removed")
@@ -331,8 +332,8 @@ class vpypetools (inkex.EffectExtension):
         # show the vpype document visually
         if self.options.output_show:
             warnings.filterwarnings("ignore") # workaround to suppress annoying DeprecationWarning
-            # vpype_viewer.show(doc, view_mode=ViewMode.PREVIEW, show_pen_up=self.options.output_trajectories, show_points=False, pen_width=0.1, pen_opacity=1.0, argv=None)
-            vpype_viewer.show(doc, view_mode=ViewMode.PREVIEW, show_pen_up=self.options.output_trajectories, show_points=False, argv=None) # https://vpype.readthedocs.io/en/stable/api/vpype_viewer.ViewMode.html
+            # vpype_viewer.show(doc, view_mode=ViewMode.PREVIEW, show_pen_up=self.options.output_trajectories, show_points=self.options.output_show_points, pen_width=0.1, pen_opacity=1.0, argv=None)
+            vpype_viewer.show(doc, view_mode=ViewMode.PREVIEW, show_pen_up=self.options.output_trajectories, show_points=self.options.output_show_points, argv=None) # https://vpype.readthedocs.io/en/stable/api/vpype_viewer.ViewMode.html
             warnings.filterwarnings("default") # reset warning filter
             exit(0) #we leave the code loop because we only want to preview. We don't want to import the geometry
           
