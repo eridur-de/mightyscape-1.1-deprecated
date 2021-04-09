@@ -11,8 +11,7 @@
                         <option value="cross">Cross</option>
                         <option value="square">Square</option>
                         <option value="triangle">Triangle</option></param>
-            <label> </label>
-            <label> </label>
+            <spacer/>
             <label>v1.1.0</label>
         </page>
         <page name="corners" gui-text="Corners">
