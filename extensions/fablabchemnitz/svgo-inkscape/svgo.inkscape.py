@@ -58,7 +58,8 @@ class SvgoInkscape (inkex.Effect):
         return " --"+ name + " " + str(option).lower()
 
     def effect(self):
-        command = "node.exe svgo.js --file=" + self.options.input_file
+        # "node.exe" or "node" on Windows or just "node" on Linux
+        command = "node svgo.js --file=" + self.options.input_file
 
         optionsDict = self.options.__dict__
 
