@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+	<_name>Export selection as SVG</_name>
+	<id>fablabchemnitz.de.export_selection_as_svg</id>
+	<param name="wrap_transform" type="boolean" _gui-text="Wrap final document in transform">false</param>
+	<param name="export_dir" type="path" mode="folder" gui-text="Location to save exported documents">./inkscape_export/</param>
+	<effect needs-document="true" needs-live-preview="false">
+		<object-type>all</object-type>
+		<menu-tip>Export selection to separate SVG file.</menu-tip>
+		<effects-menu>
+            <submenu name="FabLab Chemnitz">
+				<submenu name="Import/Export/Transfer"/>
+			</submenu>
+		</effects-menu>
+	</effect>
+	<script>
+		<command reldir="inx" interpreter="python">export_selection.py</command>
+	</script>
+</inkscape-extension>
