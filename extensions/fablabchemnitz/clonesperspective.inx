@@ -8,7 +8,7 @@
       <object-type>all</object-type>
       <effects-menu>
          <submenu name="FabLab Chemnitz">
-            <submenu name="Shape/Pattern from existing Path(s)" />
+            <submenu name="Shape/Pattern from existing Object(s)" />
          </submenu>
       </effects-menu>
    </effect>
