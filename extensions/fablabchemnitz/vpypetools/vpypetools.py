@@ -340,8 +340,8 @@ class vpypetools (inkex.EffectExtension):
         # save the vpype document to new svg file and close it afterwards
         output_file = self.options.input_file + ".vpype.svg"
         output_fileIO = open(output_file, "w", encoding="utf-8")
-        vpype.write_svg(output_fileIO, doc, page_size=None, center=False, source_string='', layer_label_format='%d', show_pen_up=self.options.output_trajectories, color_mode='layer', single_path = True)       
-        #vpype.write_svg(output_fileIO, doc, page_size=None, center=False, source_string='', layer_label_format='%d', show_pen_up=self.options.output_trajectories, color_mode='layer')       
+        #vpype.write_svg(output_fileIO, doc, page_size=None, center=False, source_string='', layer_label_format='%d', show_pen_up=self.options.output_trajectories, color_mode='layer', single_path = True)       
+        vpype.write_svg(output_fileIO, doc, page_size=None, center=False, source_string='', layer_label_format='%d', show_pen_up=self.options.output_trajectories, color_mode='layer')       
         #vpype.write_svg(output_fileIO, doc, page_size=(self.svg.unittouu(self.document.getroot().get('width')), self.svg.unittouu(self.document.getroot().get('height'))), center=False, source_string='', layer_label_format='%d', show_pen_up=self.options.output_trajectories, color_mode='layer')       
         output_fileIO.close()
         
