@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <name>Create Links (Breakaway Connectors)</name>
+    <id>fablabchemnitz.de.create_links</id>
+    <param name="main_tabs" type="notebook">
+        <page name="settings" gui-text="Settings">		
+            <label appearance="header">Link Parameters</label>
+			<param name="length_link" type="float" min="0.000" max="9999.000" precision="3" gui-text="Link length">1.000</param>
+			<param name="length_stroke" type="float" min="0.000" max="9999.000" precision="3" gui-text="Stroke length">0.000</param>
+			<param name="length_between_strokes" type="float" min="0.000" max="9999.000" precision="3" gui-text="Length between strokes">0.000</param>
+            <spacer/>
+            <label appearance="header">Automatic Placement</label>
+            <param name="length_filter" type="bool" gui-text="Enable path length filtering">false</param>			
+			<param name="length_filter_value" type="float" min="0.000" max="9999.000" precision="3" gui-text="Paths with length more than">0.000</param>
+			<param name="link_count" type="int" min="0" max="9999" gui-text="Link count">1</param>
+			<param name="length_between_links" type="float" min="0.000" max="9999.000" precision="3" gui-text="Length between links">100.000</param>
+            <separator/>
+			<param name="link_offset" type="float" min="0.000" max="9999.000" precision="3" gui-text="Link offset">0.000</param>			
+            <param name="keep_selected" type="bool" gui-text="Keep selected elements">false</param>			
+			<param name="unit" type="optiongroup" appearance="combo" gui-text="Units">
+				<option value="mm">mm</option>
+				<option value="cm">cm</option>
+				<option value="in">in</option>
+				<option value="pt">pt</option>
+				<option value="px">px</option>
+				<option value="pc">pc</option>
+				<option value="percent">%</option>
+			</param>	
+        </page>
+        <page name="about" gui-text="About">
+            <label appearance="header">Create Links</label>
+			<label>Stadtfabrikanten e.V. (2021)</label>
+			<spacer/>
+            <label>This piece of software is part of the MightyScape for InkScape 1.0/1.1dev Extension Collection</label>
+            <label>you found a bug or got some fresh code? Just report to mario.voigt@stadtfabrikanten.org. Thanks!</label>
+            <label appearance="url">https://fablabchemnitz.de</label>
+            <label>License: GNU GPL v3</label>
+        </page>
+	</param>
+    <effect>
+        <object-type>path</object-type>
+        <effects-menu>
+        <submenu name="FabLab Chemnitz">
+            <submenu name="Modify existing Path(s)"/>
+        </submenu>
+        </effects-menu>
+    </effect>
+    <script>
+        <command location="inx" interpreter="python">create_links.py</command>
+    </script>
+</inkscape-extension>
