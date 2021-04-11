@@ -22,8 +22,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 '''
 
 import inkex
-from inkex import bezier
-from inkex.paths import Path, CubicSuperPath
+
+from inkex import bezier, Path, CubicSuperPath, PathElement
 
 class PasteLengthEffect(inkex.Effect):
 
@@ -32,8 +32,10 @@ class PasteLengthEffect(inkex.Effect):
         self.arg_parser.add_argument('--scale', type = float, default = '1', help = 'Additionally scale the length by')
         self.arg_parser.add_argument('--scaleFrom', default = 'center', help = 'Scale Path From')
         self.arg_parser.add_argument('--precision', type = int, default = '5', help = 'Number of significant digits')
-        self.arg_parser.add_argument("--tab", default="sampling", help="Tab") 
-
+        self.arg_parser.add_argument("--override_selection", type = inkex.Boolean, default = False, help = "Use a custom length instead using the length of the first object in selection") 
+        self.arg_parser.add_argument("--custom_length", type = float, default = 100.000, help = "Custom length") 
+        self.arg_parser.add_argument("--unit", default = "mm", help = "Units")
+        
     def scaleCubicSuper(self, cspath, scaleFactor, scaleFrom):
         bbox = Path(cspath).bounding_box()
 
@@ -86,27 +88,39 @@ class PasteLengthEffect(inkex.Effect):
         scaleFrom = self.options.scaleFrom
         tolerance = 10 ** (-1 * self.options.precision)
         selections = self.svg.selected
-        pathNodes = self.document.xpath('//svg:path',namespaces=inkex.NSS)
-        outStrs = [str(len(pathNodes))]
+        pathNodes = self.svg.selection.filter(PathElement).values()
 
         paths = [(pathNode.get('id'), CubicSuperPath(pathNode.get('d'))) for pathNode in pathNodes]
 
-        if(len(paths) > 1):
-            srcPath = paths[-1][1]
-            srclen = self.getLength(srcPath, tolerance)
-            paths = paths[:len(paths)-1]
-            for key, cspath in paths:
-                curveLen = self.getLength(cspath, tolerance)
-                
-                self.scaleCubicSuper(cspath, scaleFactor = scale * (srclen / curveLen), scaleFrom = scaleFrom)
-                try: #we wrap this in try-except because if the elements are within groups it will cause errors
-                    selections[key].set('d', CubicSuperPath(cspath))
-                except:
-                    pass
+        if self.options.override_selection is False:
+            if(len(paths) > 1):
+                srcPath = paths[-1][1]
+                srclen = self.getLength(srcPath, tolerance)
+                paths = paths[:len(paths)-1]
+                for key, cspath in paths:
+                    curveLen = self.getLength(cspath, tolerance)
+                    
+                    self.scaleCubicSuper(cspath, scaleFactor = scale * (srclen / curveLen), scaleFrom = scaleFrom)
+                    try: #we wrap this in try-except because if the elements are within groups it will cause errors
+                        selections[key].set('d', CubicSuperPath(cspath))
+                    except:
+                        pass
+            else:
+                inkex.errormsg("Please select at least two paths, with the path whose \
+                length is to be copied at the top. You may have to convert the shape \
+                to path with path->Object to Path.")
         else:
-            inkex.errormsg("Please select at least two paths, with the path whose \
-            length is to be copied at the top. You may have to convert the shape \
-            to path with path->Object to Path.")
-
+            if(len(paths) > 0):
+                srclen = self.svg.unittouu(str(self.options.custom_length) + self.options.unit) 
+                for key, cspath in paths:
+                    curveLen = self.getLength(cspath, tolerance)
+                    
+                    self.scaleCubicSuper(cspath, scaleFactor = scale * (srclen / curveLen), scaleFrom = scaleFrom)
+                    try: #we wrap this in try-except because if the elements are within groups it will cause errors
+                        selections[key].set('d', CubicSuperPath(cspath))
+                    except:
+                        pass
+            else:
+                inkex.errormsg("Please select at least one path. You may have to convert the shape to path with path->Object to Path.")
 if __name__ == '__main__':
     PasteLengthEffect().run()
