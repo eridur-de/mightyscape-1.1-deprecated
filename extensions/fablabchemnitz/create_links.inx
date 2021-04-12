@@ -3,20 +3,7 @@
     <name>Create Links (Breakaway Connectors)</name>
     <id>fablabchemnitz.de.create_links</id>
     <param name="main_tabs" type="notebook">
-        <page name="settings" gui-text="Settings">		
-            <label appearance="header">Link Parameters</label>
-			<param name="length_link" type="float" min="0.000" max="9999.000" precision="3" gui-text="Link length">1.000</param>
-			<param name="length_stroke" type="float" min="0.000" max="9999.000" precision="3" gui-text="Stroke length">0.000</param>
-			<param name="length_between_strokes" type="float" min="0.000" max="9999.000" precision="3" gui-text="Length between strokes">0.000</param>
-            <spacer/>
-            <label appearance="header">Automatic Placement</label>
-            <param name="length_filter" type="bool" gui-text="Enable path length filtering">false</param>			
-			<param name="length_filter_value" type="float" min="0.000" max="9999.000" precision="3" gui-text="Paths with length more than">0.000</param>
-			<param name="link_count" type="int" min="0" max="9999" gui-text="Link count">1</param>
-			<param name="length_between_links" type="float" min="0.000" max="9999.000" precision="3" gui-text="Length between links">100.000</param>
-            <separator/>
-			<param name="link_offset" type="float" min="0.000" max="9999.000" precision="3" gui-text="Link offset">0.000</param>			
-            <param name="keep_selected" type="bool" gui-text="Keep selected elements">false</param>			
+        <page name="settings" gui-text="Settings">
 			<param name="unit" type="optiongroup" appearance="combo" gui-text="Units">
 				<option value="mm">mm</option>
 				<option value="cm">cm</option>
@@ -25,14 +12,25 @@
 				<option value="px">px</option>
 				<option value="pc">pc</option>
 				<option value="percent">%</option>
-			</param>	
+			</param>
+			<param name="link_count" type="int" min="1" max="9999" gui-text="Link count">1</param>
+			<param name="link_multiplicator (experimental)" type="int" min="0" max="9999" gui-text="Link multiplicator" gui-description="If se, we create a set of multiple gaps of same size next to the main gap">0</param>
+			<param name="length_link" type="float" min="0.000" max="9999.000" precision="3" gui-text="Link length (the length of the gap)">1.000</param>
+			<param name="link_offset" type="float" min="-9999.000.000" max="9999.000" precision="3" gui-text="Link offset (+/-)">0.000</param>
+            <param name="length_filter" type="bool" gui-text="Enable path length filtering">false</param>
+			<param name="length_filter_value" type="float" min="0.000" max="9999.000" precision="3" gui-text="Paths with length more than">0.000</param>
+            <param name="custom_dasharray" type="bool" gui-text="Enable custom dash pattern">false</param>
+			<param name="custom_dasharray_value" type="string" gui-text="Dash pattern" gui-description="A list of separated lengths that specify the lengths of alternating dashes and gaps. Input only accepts numbers. It ignores percentages or other characters.">10 5</param>
+            <param name="keep_selected" type="bool" gui-text="Keep selected elements">false</param>
+            <param name="breakapart" type="bool" gui-text="Break apart" gui-description="Performs CTRL + SHIFT + K to break a combined path into it's parts">false</param>
+            <param name="show_info" type="bool" gui-text="Print some length and pattern information" gui-description="Warning: might freeze InkScape forever if you have a lot of nodes because we create too much print output. Use for debugging only!">false</param>
         </page>
         <page name="about" gui-text="About">
             <label appearance="header">Create Links</label>
 			<label>Stadtfabrikanten e.V. (2021)</label>
 			<spacer/>
-            <label>This piece of software is part of the MightyScape for InkScape 1.0/1.1dev Extension Collection</label>
-            <label>you found a bug or got some fresh code? Just report to mario.voigt@stadtfabrikanten.org. Thanks!</label>
+            <label>This piece of software is part of the MightyScape for InkScape 1.0/1.1dev Extension Collection.</label>
+            <label>You found a bug or got some fresh code? Just report to mario.voigt@stadtfabrikanten.org. Thanks!</label>
             <label appearance="url">https://fablabchemnitz.de</label>
             <label>License: GNU GPL v3</label>
         </page>
