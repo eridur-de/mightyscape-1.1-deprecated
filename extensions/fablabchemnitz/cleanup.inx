@@ -2,20 +2,43 @@
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
     <name>Cleanup Styles</name>
     <id>fablabchemnitz.de.cleanup</id>
-    <param name="stroke_width" type="float" precision="4" min="0.0000" max="5.0000" gui-text="Stroke width">0.1000</param>
-    <param name="stroke_units" gui-text="Units" type="optiongroup" appearance="combo">
-       <option value="px">px</option>
-       <option value="pt">pt</option>
-       <option value="in">in</option>
-       <option value="cm">cm</option>
-       <option value="mm">mm</option>
+    <param name="main_tabs" type="notebook">
+        <page name="tab_active" gui-text="Cleanup Styles">
+			<param name="dedicated_style_attributes" gui-text="Handling of dedicated style attributes" gui-description="We delete dedicated attributes like 'fill' or 'stroke'. Please choose an option what should happen with those properties." type="optiongroup" appearance="combo">
+			   <option value="prefer_composed">Catch dedicated, but prefer composed (master) style</option>
+			   <option value="prefer_dedicated">Catch dedicated and prefer over composed (master) style</option>
+			   <option value="ignore">Ignore dedicated</option>
+			</param>
+			<param name="stroke_width_override" type="bool" gui-text="Override stroke width">false</param>
+			<param name="stroke_width" type="float" precision="3" min="0.0000" max="5.000" gui-text="Stroke width">0.100</param>
+			<param name="stroke_width_units" gui-text="Units" type="optiongroup" appearance="combo">
+			   <option value="px">px</option>
+			   <option value="pt">pt</option>
+			   <option value="in">in</option>
+			   <option value="cm">cm</option>
+			   <option value="mm">mm</option>
+			</param>
+			<param name="stroke_opacity_override" type="bool" gui-text="Override stroke opacity">false</param>
+			<param name="stroke_opacity" type="float" precision="1" min="0.0" max="100.0" gui-text="Stroke opacity (%)">100.0</param>
+			<param name="reset_stroke_attributes" type="bool" gui-text="Reset stroke style attributes" gui-description="Remove stroke style attributes 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linejoin', 'stroke-linecap', 'stroke-miterlimit'">true</param>
+			<param name="reset_fill_attributes" type="bool" gui-text="Reset fill style attributes" gui-description="Sets 'fill:none;fill-opacity:1;' to style attribute">true</param>
+			<param name="apply_hairlines" type="bool" gui-text="Add additional hairline style" gui-description="Adds 'vector-effect:non-scaling-stroke;' and '-inkscape-stroke:hairline;' Hint: stroke-width is kept in background. All hairlines still have a valued width.">true</param>
+			<param name="apply_black_strokes" type="bool" gui-text="Apply black strokes where strokes missing" gui-description="Adds 'stroke:#000000;' to style attribute">true</param>
+			<param name="remove_group_styles" type="bool" gui-text="Remove styles from groups" gui-description="Remove style attributes from parent groups. So we have styles directly at the level of visivle nodes!">false</param>
+			<label>This extension works on current selection or for complete document</label>
+        </page>
+        <page name="tab_about" gui-text="About">
+            <label appearance="header">About</label>
+            <separator />
+            <label>Cleanup Styles by Mario Voigt / Stadtfabrikanten e.V. (2021)</label>
+            <label>This piece of software is part of the MightyScape for InkScape 1.0/1.1dev Extension Collection.</label>
+            <label>You found a bug or got some fresh code? Just report to mario.voigt@stadtfabrikanten.org. Thanks!</label>
+            <label appearance="url">https://fablabchemnitz.de</label>
+            <label>License: GNU GPL v3</label>
+            <separator />
+            <label>This extension generates inventory stickers for thermo printers (we use Brother QL-720NW) from our Teedy instance. Teedy is an open source software document management system (DMS). You can find the complete documentation at the Wiki space of https://fablabchemnitz.de</label>
+        </page>
     </param>
-    <param name="opacity" type="float" precision="1" min="0" max="100" gui-text="Opacity (%)">100.0</param>
-    <param name="reset_style_attributes" type="bool" gui-text="Reset stroke style attributes" gui-description="Remove stroke style attributes like stroke-dasharray, stroke-dashoffset, stroke-linejoin, linecap, stroke-miterlimit">true</param>
-    <param name="reset_fill_attributes" type="bool" gui-text="Reset fill style attributes" gui-description="Sets 'fill:none;' to style attribute">true</param>
-    <param name="apply_hairlines" type="bool" gui-text="Add additional hairline style" gui-description="Adds 'vector-effect:non-scaling-stroke;' and '-inkscape-stroke:hairline;' Hint: stroke-width is kept in background. All hairlines still have a valued width.">true</param>
-    <param name="apply_black_strokes" type="bool" gui-text="Apply black strokes where strokes missing" gui-description="Adds 'stroke:#000000;' to style attribute">true</param>
-	<label>This extension works on current selection or for complete document</label>
     <effect needs-live-preview="true">
         <object-type>all</object-type>
         <effects-menu>

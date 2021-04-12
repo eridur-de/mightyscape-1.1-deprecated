@@ -206,7 +206,7 @@ class PathOps(inkex.Effect):
     def get_selected_ids(self):
         """Return a list of valid ids for inkscape path operations."""
         id_list = []
-        if not len(self.svg.selected):
+        if len(self.svg.selected) == 0:
             pass
         else:
             # level = 0: unlimited recursion into groups
@@ -346,14 +346,14 @@ class PathOps(inkex.Effect):
         defs = get_defs(self.document.getroot())
         inkscape_tagrefs = defs.findall(
             "inkscape:tag/inkscape:tagref", namespaces=inkex.NSS)
-        return True if len(inkscape_tagrefs) else False
+        return len(inkscape_tagrefs) > 0
 
     def update_tagrefs(self, mode='purge'):
         """Check tagrefs for deleted objects."""
         defs = get_defs(self.document.getroot())
         inkscape_tagrefs = defs.findall(
             "inkscape:tag/inkscape:tagref", namespaces=inkex.NSS)
-        if len(inkscape_tagrefs):
+        if len(inkscape_tagrefs) > 0:
             for tagref in inkscape_tagrefs:
                 href = tagref.get(inkex.addNS('href', 'xlink'))[1:]
                 if self.svg.getElementById(href) is None:

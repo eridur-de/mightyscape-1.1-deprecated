@@ -4,8 +4,10 @@
 # Copyright Mark "Klowner" Riedesel
 # https://github.com/Klowner/inkscape-applytransforms
 #
-import inkex
+import copy
 import math
+from lxml import etree
+import inkex
 from inkex.paths import CubicSuperPath, Path
 from inkex.transforms import Transform
 from inkex.styles import Style
@@ -57,7 +59,7 @@ class ApplyTransform(inkex.EffectExtension):
 
     def recursiveFuseTransform(self, node, transf=[[1.0, 0.0, 0.0], [0.0, 1.0, 0.0]]):
 
-        transf = Transform(transf) * Transform(node.get("transform", None))
+        transf = Transform(transf) * Transform(node.get("transform", None)) #a, b, c, d = linear transformations / e, f = translations
 
         if 'transform' in node.attrib:
             del node.attrib['transform']
@@ -139,10 +141,56 @@ class ApplyTransform(inkex.EffectExtension):
             else:
                 node.set("r", edgex / 2)
 
+        elif node.tag == inkex.addNS("use", "svg"):    
+            href = None
+            old_href_key = '{http://www.w3.org/1999/xlink}href'
+            new_href_key = 'href'
+            if node.attrib.has_key(old_href_key) is True: # {http://www.w3.org/1999/xlink}href (which gets displayed as 'xlink:href') attribute is deprecated. the newer attribute is just 'href'
+                href = node.attrib.get(old_href_key)
+                #node.attrib.pop(old_href_key)
+            if node.attrib.has_key(new_href_key) is True:
+                href = node.attrib.get(new_href_key) #we might overwrite the previous deprecated xlink:href but it's okay
+                #node.attrib.pop(new_href_key)
+
+            #get the linked object from href attribute
+            linkedObject = self.document.getroot().xpath("//*[@id = '%s']" % href.lstrip('#')) #we must remove hashtag symbol
+            linkedObjectCopy = copy.copy(linkedObject[0])
+            objectType = linkedObject[0].tag
+            
+            if objectType == inkex.addNS("image", "svg"):
+                mask = None #image might have an alpha channel
+                new_mask_id = self.svg.get_unique_id("mask")
+                newMask = None
+                if node.attrib.has_key('mask') is True:
+                    mask = node.attrib.get('mask')
+                    #node.attrib.pop('mask')
+
+                #get the linked mask from mask attribute. We remove the old and create a new
+                if mask is not None:
+                    linkedMask = self.document.getroot().xpath("//*[@id = '%s']" % mask.lstrip('url(#').rstrip(')')) #we must remove hashtag symbol
+                    linkedMask[0].getparent().remove(linkedMask[0])
+                    maskAttributes = {'id': new_mask_id}
+                    newMask = etree.SubElement(self.document.getroot(), inkex.addNS('mask', 'svg'), maskAttributes)
+            
+                width = float(linkedObjectCopy.get('width')) * transf.a
+                height = float(linkedObjectCopy.get('height')) * transf.d
+                linkedObjectCopy.set('width', '{:1.6f}'.format(width))
+                linkedObjectCopy.set('height', '{:1.6f}'.format(height))
+                linkedObjectCopy.set('x', '{:1.6f}'.format(transf.e))
+                linkedObjectCopy.set('y', '{:1.6f}'.format(transf.f))
+                if newMask is not None:
+                    linkedObjectCopy.set('mask', 'url(#' + new_mask_id + ')')
+                    maskRectAttributes = {'x': '{:1.6f}'.format(transf.e), 'y': '{:1.6f}'.format(transf.f), 'width': '{:1.6f}'.format(width), 'height': '{:1.6f}'.format(height), 'style':'fill:#ffffff;'}
+                    maskRect = etree.SubElement(newMask, inkex.addNS('rect', 'svg'), maskRectAttributes)
+            else:
+                self.recursiveFuseTransform(linkedObjectCopy, transf)
+
+            self.document.getroot().append(linkedObjectCopy) #for each svg:use we append a copy to the document root
+            node.getparent().remove(node) #then we remove the use object
+
         elif node.tag in [inkex.addNS('rect', 'svg'),
                           inkex.addNS('text', 'svg'),
-                          inkex.addNS('image', 'svg'),
-                          inkex.addNS('use', 'svg')]:
+                          inkex.addNS('image', 'svg')]:
             inkex.utils.errormsg(
                 "Shape %s (%s) not yet supported, try Object to path first"
                 % (node.TAG, node.get("id"))

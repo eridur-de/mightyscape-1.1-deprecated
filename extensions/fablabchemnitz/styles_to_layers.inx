@@ -20,8 +20,11 @@
     <param name="decimals" type="int" min="0" max="10" gui-text="Decimal tolerance" gui-description="The more decimals the more distinct layers you will get. This only applies for the sub layers (threshold > 1)">1</param>
     <param name="apply_transformations" type="bool" gui-text="Apply transformations (requires separate extension)" gui-description="This will call the extension 'Apply Transformations'. Helps avoiding geometry shifting">false</param>
     <param name="cleanup"  type="bool" gui-text="Cleanup all unused groups/layers (requires separate extension)" gui-description="This will call the extension 'Remove Empty Groups' if available">true</param>
-
-    <label>This extension will re-layer your selected items or the whole document according to their style (stroke or fill)</label>
+    <param name="put_unfiltered"  type="bool" gui-text="Put unfiltered elements to a separate layer">false</param>
+    <param name="show_info"  type="bool" gui-text="Show elements which have no style attributes to filter">false</param>
+	<spacer/>
+    <label>This extension will re-layer your selected items or the whole document according to their style values (stroke or fill).</label>
+    <label>The filtering applies only to style attribute of the elements. It does not filter for stroke or fill if they are set separately. You can use the separate 'Cleanup Styles' extension to migrate these separated attributes into style attribute.</label>
     <label>Tinkered by Mario Voigt / Stadtfabrikanten e.V. (2020)</label>
     <label appearance="url">https://fablabchemnitz.de</label>
     <effect>

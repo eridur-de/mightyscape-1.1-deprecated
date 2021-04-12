@@ -25,7 +25,7 @@
             <label appearance="header">About</label>
             <separator />
             <label>Inventory Stickers by Mario Voigt / Stadtfabrikanten e.V. (2021)</label>
-            <label>This piece of software is part of the MightyScape for InkScape 1.0/1.1dev Extension Collection</label>
+            <label>This piece of software is part of the MightyScape for InkScape 1.0/1.1dev Extension Collection.</label>
             <label>you found a bug or got some fresh code? Just report to mario.voigt@stadtfabrikanten.org. Thanks!</label>
             <label appearance="url">https://fablabchemnitz.de</label>
             <label>License: GNU GPL v3</label>
