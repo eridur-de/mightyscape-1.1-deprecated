@@ -39,17 +39,26 @@
         <separator/>
         <vbox>
             <label appearance="header">Objects / Misc</label>
-            <!--<param name="svg" type="bool" gui-text="svg">true</param>-->
-            <!--<param name="sodipodi" type="bool" gui-text="sodipodi">true</param>-->
-            <param name="clipPath" type="bool" gui-text="clipPath">true</param>
-            <param name="defs" type="bool" gui-text="defs">true</param>
-            <param name="image" type="bool" gui-text="image">true</param>
-            <param name="marker" type="bool" gui-text="marker">true</param>
-            <param name="metadata" type="bool" gui-text="metadata">true</param>
-            <param name="pattern" type="bool" gui-text="pattern">true</param>
-            <param name="script" type="bool" gui-text="script">true</param>
-            <param name="symbol" type="bool" gui-text="symbol">true</param>
-            <param name="use" type="bool" gui-text="use">true</param>
+			<hbox>
+				<vbox>
+					<!--<param name="svg" type="bool" gui-text="svg">true</param>-->
+					<!--<param name="sodipodi" type="bool" gui-text="sodipodi">true</param>-->
+					<param name="clipPath" type="bool" gui-text="clipPath">true</param>
+					<param name="defs" type="bool" gui-text="defs">true</param>
+					<param name="image" type="bool" gui-text="image">true</param>
+					<param name="mask" type="bool" gui-text="mask">true</param>
+					<param name="marker" type="bool" gui-text="marker">true</param>
+					<param name="metadata" type="bool" gui-text="metadata">true</param>
+				</vbox>
+			<spacer/>
+				<vbox>
+					<param name="pattern" type="bool" gui-text="pattern">true</param>
+					<param name="script" type="bool" gui-text="script">true</param>
+					<param name="switch" type="bool" gui-text="switch">true</param>
+					<param name="symbol" type="bool" gui-text="symbol">true</param>
+					<param name="use" type="bool" gui-text="use">true</param>
+				</vbox>
+			</hbox>
         </vbox>
     </hbox>
     <separator/>

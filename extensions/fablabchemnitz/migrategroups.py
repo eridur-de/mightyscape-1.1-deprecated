@@ -47,6 +47,7 @@ class MigrateGroups(inkex.Effect):
         self.arg_parser.add_argument("--tspan",          type=inkex.Boolean, default=True)
         self.arg_parser.add_argument("--linearGradient", type=inkex.Boolean, default=True)
         self.arg_parser.add_argument("--radialGradient", type=inkex.Boolean, default=True)
+        self.arg_parser.add_argument("--mask",           type=inkex.Boolean, default=True)
         self.arg_parser.add_argument("--meshGradient",   type=inkex.Boolean, default=True)
         self.arg_parser.add_argument("--meshRow",        type=inkex.Boolean, default=True)
         self.arg_parser.add_argument("--meshPatch",      type=inkex.Boolean, default=True)
@@ -54,6 +55,7 @@ class MigrateGroups(inkex.Effect):
         self.arg_parser.add_argument("--script",         type=inkex.Boolean, default=True)
         self.arg_parser.add_argument("--symbol",         type=inkex.Boolean, default=True)
         self.arg_parser.add_argument("--stop",           type=inkex.Boolean, default=True)
+        self.arg_parser.add_argument("--switch",         type=inkex.Boolean, default=True)
         self.arg_parser.add_argument("--use",            type=inkex.Boolean, default=True)
         self.arg_parser.add_argument("--flowRoot",       type=inkex.Boolean, default=True)
         self.arg_parser.add_argument("--flowRegion",     type=inkex.Boolean, default=True)
@@ -85,8 +87,10 @@ class MigrateGroups(inkex.Effect):
         namespace.append("{http://www.w3.org/2000/svg}meshPatch")      if self.options.meshPatch      else ""
         namespace.append("{http://www.w3.org/2000/svg}script")         if self.options.script         else ""
         namespace.append("{http://www.w3.org/2000/svg}symbol")         if self.options.symbol         else ""
+        namespace.append("{http://www.w3.org/2000/svg}mask")           if self.options.mask           else ""
         namespace.append("{http://www.w3.org/2000/svg}metadata")       if self.options.metadata       else ""
         namespace.append("{http://www.w3.org/2000/svg}stop")           if self.options.stop           else ""
+        namespace.append("{http://www.w3.org/2000/svg}switch")         if self.options.switch         else ""
         namespace.append("{http://www.w3.org/2000/svg}use")            if self.options.use            else ""
         namespace.append("{http://www.w3.org/2000/svg}flowRoot")       if self.options.flowRoot       else ""
         namespace.append("{http://www.w3.org/2000/svg}flowRegion")     if self.options.flowRegion     else ""
