@@ -22,6 +22,13 @@
         <option value="1">Round</option>
         <option value="2">Miter</option>
     </param>
+    <param name="endtype" appearance="combo" type="optiongroup" default="3" gui-text="End type">
+        <option value="0">Closed Polygon</option>
+        <option value="1">Closed Line</option>
+        <option value="2">Open Butt</option>
+        <option value="3">Open Square</option>
+        <option value="4">Open Round</option>
+    </param>
     <param name="settingsHelp" type="description">Python library pyclipper needs to be installed. Use Flatten Bezier plugin in advance of this plugin.</param>
     <effect>
         <object-type>all</object-type>

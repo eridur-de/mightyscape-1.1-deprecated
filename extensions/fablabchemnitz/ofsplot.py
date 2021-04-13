@@ -16,6 +16,7 @@ class ofsplot(inkex.Effect):
         self.arg_parser.add_argument("--copy_org", type=inkex.Boolean, default=True, help="copy original path")
         self.arg_parser.add_argument("--offset_increase", type=float, default=0.000, help="Offset increase between iterations")
         self.arg_parser.add_argument("--jointype", default="2", help="Join type")
+        self.arg_parser.add_argument("--endtype", default="3", help="End type")
         self.arg_parser.add_argument("--miterlimit", type=float, default=3.0, help="Miter limit")
         self.arg_parser.add_argument("--clipperscale", type=float, default=1024.0, help="Scaling factor")
         
@@ -35,13 +36,26 @@ class ofsplot(inkex.Effect):
 
                 pco = pyclipper.PyclipperOffset(self.options.miterlimit)
                 
-                JT = pyclipper.JT_MITER
+                JT = None
                 if self.options.jointype == "0":
                     JT = pyclipper.JT_SQUARE
                 elif self.options.jointype == "1":
                     JT = pyclipper.JT_ROUND
                 elif self.options.jointype == "2":
-                    JT = pyclipper.JT_MITER     
+                    JT = pyclipper.JT_MITER
+                    
+                ET = None
+                if self.options.endtype == "0":
+                    ET = pyclipper.ET_CLOSEDPOLYGON
+                elif self.options.endtype == "1":
+                    ET = pyclipper.ET_CLOSEDLINE
+                elif self.options.endtype == "2":
+                    ET = pyclipper.ET_OPENBUTT
+                elif self.options.endtype == "3":
+                    ET = pyclipper.ET_OPENSQUARE
+                elif self.options.endtype == "4":                 
+                    ET = pyclipper.ET_OPENROUND
+                
                 new = []
 
                 # load in initial paths
@@ -50,7 +64,7 @@ class ofsplot(inkex.Effect):
                     for item in sub:
                         itemx = [float(z) * scale_factor for z in item[1]]
                         sub_simple.append(itemx)
-                    pco.AddPath(sub_simple, JT, pyclipper.ET_CLOSEDPOLYGON)
+                    pco.AddPath(sub_simple, JT, ET)
 
                 # calculate offset paths for different offset amounts
                 offset_list = []
