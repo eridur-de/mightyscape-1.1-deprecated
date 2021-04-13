@@ -34,7 +34,7 @@ import copy
 import re
 
 import inkex
-from inkex import bezier, Path, CubicSuperPath, Group, PathElement
+from inkex import bezier, CubicSuperPath, Group, PathElement
 from inkex.bezier import csplength
 
 
@@ -62,7 +62,7 @@ class LinksCreator(inkex.EffectExtension):
         parent = node.getparent()
         idx = parent.index(node)
         idSuffix = 0    
-        raw = Path(node.get("d")).to_arrays()
+        raw = node.path.to_arrays()
         subPaths, prev = [], 0
         for i in range(len(raw)): # Breaks compound paths into simple paths
             if raw[i][0] == 'M' and i != 0:
