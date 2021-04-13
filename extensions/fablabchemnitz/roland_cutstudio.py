@@ -454,7 +454,7 @@ else: #check if we have access to "wine"
             "Please open that with CutStudio manually. \n\n" + \
             "Tip: On Linux, you can use 'wine' to install CutStudio 3.10. Then, the file will be directly opened with CutStudio. \n" + \
             " Diagnostic information: \n" + str(exc))
-        #os.popen("/usr/bin/xdg-open " + filename)
+        #os.popen("/usr/bin/xdg-open " + filename) #os.popen is deprecated. Use subprocess.Popen
         #Popen(["inkscape", filename+".filtered.svg"], stderr=DEVNULL)
         #Popen(["inkscape", filename+".cutstudio.eps"])
 #os.unlink(filename+".filtered.svg")

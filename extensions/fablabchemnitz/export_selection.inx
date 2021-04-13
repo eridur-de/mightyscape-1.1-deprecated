@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-	<_name>Export selection as SVG</_name>
-	<id>fablabchemnitz.de.export_selection_as_svg</id>
+	<_name>Export selection as SVG/DXF</_name>
+	<id>fablabchemnitz.de.export_selection_as_svg_dxf</id>
 	<param name="wrap_transform" type="boolean" _gui-text="Wrap final document in transform">false</param>
 	<param name="export_dir" type="path" mode="folder" gui-text="Location to save exported documents">./inkscape_export/</param>
+    <param name="opendir" type="bool" gui-text="Open containing output directory after export">false</param>
+	<param name="dxf_exporter_path" type="path" mode="file" filetypes="py" gui-text="Location of dxf_outlines.py">/usr/share/inkscape/extensions/dxf_outlines.py</param>
+    <param name="export_dxf" type="bool" gui-text="Export as DXF R14 file (mm units)">false</param>
+    <param name="newwindow" type="bool" gui-text="Open file in new blocking Inkscape window">false</param>
+
 	<effect needs-document="true" needs-live-preview="false">
 		<object-type>all</object-type>
 		<menu-tip>Export selection to separate SVG file.</menu-tip>

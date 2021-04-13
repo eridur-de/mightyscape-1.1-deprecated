@@ -121,10 +121,11 @@ class DXFDWGImport(inkex.EffectExtension):
         self.arg_parser.add_argument("--XLINE",         type=inkex.Boolean, default=True)
         
     def openExplorer(self, temp_output_dir):
+        DETACHED_PROCESS = 0x00000008
         if os.name == 'nt':
-            subprocess.Popen(["explorer",temp_output_dir], close_fds=True)
+            subprocess.Popen(["explorer", temp_output_dir], close_fds=True, creationflags=DETACHED_PROCESS).wait()
         else:
-            subprocess.Popen(["xdg-open",temp_output_dir], close_fds=True)
+            subprocess.Popen(["xdg-open", temp_output_dir], close_fds=True, start_new_session=True).wait()
         
     def effect(self):
         #get input file and copy it to some new temporary directory
