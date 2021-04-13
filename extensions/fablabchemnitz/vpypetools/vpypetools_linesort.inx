@@ -3,7 +3,7 @@
     <name>Line Sorting</name>
     <id>fablabchemnitz.de.vpype_linesorting</id>
 	<param name="tab" type="notebook">
-		<page name="freemode" gui-text="Free Mode Entries">
+		<page name="freemode" gui-text="Line Sorting">
 		<label>Sort lines to minimize travel distances.</label>
 		<param name="linesort" type="bool" gui-hidden="true">true</param>
 		<param name="linesort_no_flip" type="bool" gui-text="Disable flipping" gui-description="Disable reversing stroke direction for optimization '--no-flip'">false</param>

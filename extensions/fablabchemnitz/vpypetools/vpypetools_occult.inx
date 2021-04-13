@@ -3,7 +3,7 @@
     <name>Occult Plugin (HLR)</name>
     <id>fablabchemnitz.de.vpype_plugin_occult</id>
 	<param name="tab" type="notebook">
-		<page name="freemode" gui-text="Free Mode Entries">
+		<page name="freemode" gui-text="Occult Plugin (HLR)">
 		<label>This plugin command removes duplicated lines. It acts like a trimmer to receive a clean set of visible paths only. You need to install occult plugin for vpype. See vpypetools documentation.</label>
 		<param name="plugin_occult" type="bool" gui-hidden="true">true</param>
 		<param name="plugin_occult_tolerance" type="float" min="0.000"  max="99999.000" precision="3" gui-text="tolerance (mm)" gui-description="Max distance between start and end point to consider a path closed (default 0.01 mm)">0.01</param>  

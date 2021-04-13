@@ -3,7 +3,7 @@
     <name>Filter</name>
     <id>fablabchemnitz.de.vpype_filter</id>
 	<param name="tab" type="notebook">
-		<page name="freemode" gui-text="Free Mode Entries">
+		<page name="freemode" gui-text="Filter">
 			<label>Filter paths according to specified criterion. When an option is provided the corresponding criterion is applied and paths which do not respect the criterion are rejected.</label>
 			<param name="filter" type="bool" gui-hidden="true">true</param>
 			<param name="filter_tolerance" type="float" min="0.000" max="99999.000" precision="3" gui-text="tolerance (mm)" gui-description="Tolerance used to determined if a line is closed or not (default 0.050 mm)">0.050</param>   
