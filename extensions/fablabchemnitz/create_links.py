@@ -43,15 +43,15 @@ class LinksCreator(inkex.EffectExtension):
         super(LinksCreator, self).__init__()
         self.arg_parser.add_argument("--main_tabs")
         self.arg_parser.add_argument("--path_types", default="closed_paths", help="Apply for closed paths, open paths or both")
+        self.arg_parser.add_argument("--creationtype", default="entered_values", help="Creation")
         self.arg_parser.add_argument("--unit", default="mm", help="Units")
         self.arg_parser.add_argument("--link_count", type=int, default=1, help="Link count")
         self.arg_parser.add_argument("--length_link", type=float, default=1.000, help="Link length")
         self.arg_parser.add_argument("--link_multiplicator", type=int, default=1, help="If set, we create a set of multiple gaps of same size next to the main gap")
-        self.arg_parser.add_argument("--link_offset", type=float, default=0.000, help="Link offset (+/-). Does not properly work the intended way if link count is more than 1.")       
+        self.arg_parser.add_argument("--link_offset", type=float, default=0.000, help="Link offset (+/-).")       
+        self.arg_parser.add_argument("--custom_dasharray_value", default="", help="A list of separated lengths that specify the lengths of alternating dashes and gaps. Input only accepts numbers. It ignores percentages or other characters.")
         self.arg_parser.add_argument("--length_filter", type=inkex.Boolean, default=False, help="Enable path length filtering")
         self.arg_parser.add_argument("--length_filter_value", type=float, default=0.000, help="Paths with length more than")
-        self.arg_parser.add_argument("--custom_dasharray", type=inkex.Boolean, default=False, help="Enable custom dash pattern")
-        self.arg_parser.add_argument("--custom_dasharray_value", default="", help="A list of separated lengths that specify the lengths of alternating dashes and gaps. Input only accepts numbers. It ignores percentages or other characters.")
         self.arg_parser.add_argument("--keep_selected", type=inkex.Boolean, default=False, help="Keep selected elements")
         self.arg_parser.add_argument("--breakapart", type=inkex.Boolean, default=False, help="Performs CTRL + SHIFT + K to break the new output path into it's parts")
         self.arg_parser.add_argument("--show_info", type=inkex.Boolean, default=False, help="Print some length and pattern information")
@@ -141,7 +141,7 @@ class LinksCreator(inkex.EffectExtension):
                 dashes.append(length_link) #stroke (=gap)
                 dashes.append(length_link) #gap
                            
-            if self.options.custom_dasharray is True:
+            if self.options.creationtype == "custom_dasharray":
                 try:
                     floats = [float(dash) for dash in re.findall(r"[-+]?\d*\.\d+|\d+", self.options.custom_dasharray_value)]
                     if len(floats) > 0:
@@ -152,18 +152,24 @@ class LinksCreator(inkex.EffectExtension):
                     inkex.errormsg("Error in custom dasharray string (might be empty or does not contain any numbers). Using regular input instead ...")
                                    
             stroke_dasharray = ' '.join(format(dash, "1.3f") for dash in dashes)
-            stroke_dashoffset = self.svg.unittouu(str(self.options.link_offset) + self.options.unit)
+            
+            if self.options.unit == "percent":
+                stroke_dashoffset = self.options.link_offset / 100.0
+            else:         
+                stroke_dashoffset = self.svg.unittouu(str(self.options.link_offset) + self.options.unit)
 
             if self.options.show_info is True:
                 inkex.utils.debug("node " + node.get('id'))
                 if self.options.unit == "percent":
                     inkex.utils.debug("total path length = {:1.3f} {}".format(stotal, self.svg.unit)) #show length, converted in selected unit
+                    inkex.utils.debug("(calculated) offset: {:1.3f} %".format(stroke_dashoffset))
+                    inkex.utils.debug("(calculated) gap length: {:1.3f} %".format(length_link))
                 else:
                     inkex.utils.debug("total path length = {:1.3f} {} ({:1.3f} {})".format(self.svg.uutounit(stotal, self.options.unit), self.options.unit, stotal, self.svg.unit)) #show length, converted in selected unit
+                    inkex.utils.debug("(calculated) offset: {:1.3f} {}".format(self.svg.uutounit(stroke_dashoffset, self.options.unit), self.options.unit))
+                    inkex.utils.debug("(calculated) gap length: {:1.3f} {}".format(length_link, self.options.unit))
                 inkex.utils.debug("total gaps = {}".format(self.options.link_count))
-                inkex.utils.debug("(calculated) gap length: {:1.3f} {}".format(length_link, self.options.unit))
                 inkex.utils.debug("(calculated) dash/gap pattern: {} ({})".format(stroke_dasharray, self.svg.unit))
-                inkex.utils.debug("(calculated) dash offset: {:1.3f} {}".format(self.svg.uutounit(stroke_dashoffset, self.options.unit), self.options.unit))
                 inkex.utils.debug("--------------------------------------------------------------------------------------------------")
 
             # check if the node has a style attribute. If not we create a blank one with a black stroke and without fill
@@ -242,14 +248,18 @@ class LinksCreator(inkex.EffectExtension):
                     #self.svg.selection.set(replacedNode.get('id')) #update selection to split paths segments (does not work, so commented out)
                 
         if len(self.svg.selected) > 0:
-            for node in self.svg.selection.filter(PathElement).values():
-                #at first we need to break down combined nodes to single path, otherwise dasharray cannot properly be applied
-                breakInputNodes = self.breakContours(node)
-                for breakInputNode in breakInputNodes:
-                    createLinks(breakInputNode)
-
+            pathNodes = self.svg.selection.filter(PathElement).values()
+            if len(pathNodes) > 0:
+                for node in pathNodes:
+                    #at first we need to break down combined nodes to single path, otherwise dasharray cannot properly be applied
+                    breakInputNodes = self.breakContours(node)
+                    for breakInputNode in breakInputNodes:
+                        createLinks(breakInputNode)
+            else:
+                inkex.errormsg('Selection does not contain any paths to work with. Maybe you need to convert objects to paths before.')
+                return
         else:
-            inkex.errormsg('Please select some objects first.')
+            inkex.errormsg('Please select some paths first.')
             return
         
 if __name__ == '__main__':
