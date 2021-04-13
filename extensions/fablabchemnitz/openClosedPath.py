@@ -30,8 +30,14 @@ class OpenClosedPath(inkex.EffectExtension):
     def effect(self):
         elements = self.svg.selection.filter(PathElement).values()
         for elem in elements:
-            pp=elem.path.to_absolute() #remove transformation matrix
+            pp = elem.path.to_absolute() #remove transformation matrix
             elem.path = re.sub(r"Z","",str(pp))
+           
+            sp = elem.path.to_superpath()
+            if sp[0] == sp[-1]:  #if first is last point the path is also closed. The "Z" command is not required
+                raw = elem.path.to_arrays()
+                del raw[-1] #delete last point in path
+                elem.path = raw
                 
 if __name__ == '__main__':
     OpenClosedPath().run()
