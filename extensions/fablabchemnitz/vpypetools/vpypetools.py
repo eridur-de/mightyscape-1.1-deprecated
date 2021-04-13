@@ -158,22 +158,33 @@ class vpypetools (inkex.EffectExtension):
                     newpath.append([cmd, [csp[1][0], csp[1][1]]])
             node.path = newpath
 
-        def convertPath(node):
+        # flatten the node's path to linearize, split up the path to it's subpaths (break apart) and add all points to the vpype lines collection
+        def convertPath(node, nodes = None):
+            if nodes is None:
+                nodes = []
             if node.tag == inkex.addNS('path','svg'):
-                nodesToWork.append(node)
+                nodes.append(node)
                 if self.options.flattenbezier is True:
                     flatten(node)
-                d = node.get('d')
-                p = CubicSuperPath(d)
-                points = []
-                for subpath in p:
-                    for csp in subpath:
+
+                raw = node.path.to_arrays()
+                subPaths, prev = [], 0
+                for i in range(len(raw)): # Breaks compound paths into simple paths
+                    if raw[i][0] == 'M' and i != 0:
+                        subPaths.append(raw[prev:i])
+                        prev = i
+                subPaths.append(raw[prev:])
+                for subPath in subPaths:
+                    points = []
+                    for csp in subPath:
                         points.append(Point(round(csp[1][0], self.options.decimals), round(csp[1][1], self.options.decimals)))
-                lc.append(LineString(points))        
+                    lc.append(LineString(points))
+                      
             children = node.getchildren()
             if children is not None: 
                 for child in children:
-                    convertPath(child)
+                    convertPath(child, nodes)
+            return nodes
 
         doc = None #create a vpype document
         
@@ -192,12 +203,12 @@ class vpypetools (inkex.EffectExtension):
                 '''
                 applytransform.ApplyTransform().recursiveFuseTransform(self.document.getroot())
             if len(self.svg.selected) == 0:
-                convertPath(self.document.getroot())
+                nodesToWork = convertPath(self.document.getroot())
                 for element in nodesToWork:
                     input_bbox += element.bounding_box()      
             else:
                 for id, item in self.svg.selected.items():
-                    convertPath(item)
+                    nodesToWork = convertPath(item)
                 #input_bbox = inkex.elements._selected.ElementList.bounding_box(self.svg.selected) # get BoundingBox for selection
                 input_bbox = self.svg.selection.bounding_box() # get BoundingBox for selection
             if len(lc) == 0:
