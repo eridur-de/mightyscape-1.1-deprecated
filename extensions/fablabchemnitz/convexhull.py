@@ -76,9 +76,10 @@ class ConvexHull(inkex.EffectExtension):
         etree.SubElement(g, inkex.addNS('path', 'svg' ), line_attribs) 
 
     def effect(self):
-        global output_nodes, points
-        #Loop through all the selected items in Inkscape
-        for node in self.svg.selected.values():
+    
+        if len(self.svg.selected) > 0:
+            global output_nodes, points
+            
             #create numpy array of nodes
             n_array = []
                     
@@ -98,22 +99,26 @@ class ConvexHull(inkex.EffectExtension):
                             n_array.append(csp[1][0])
                             n_array.append(csp[1][1])
 
-        k = n.asarray(n_array)
-        length = int(len(k)/2)
-        c = k.reshape(length,2)
-        hull_pts = qhull(c)
-        
-        pdata = ''
-        for vertex in hull_pts:
-            if pdata == '':
-                pdata = 'M%f,%f' % (vertex[0], vertex[1] )
-            else:
-                pdata += 'L %f,%f' %  (vertex[0], vertex[1] )
-        pdata += ' Z'        
-        path = 'polygon'
-        makeGroup = False
-        paths_clone_transform = None
-        self.joinWithNode(path, pdata, makeGroup, paths_clone_transform )
-    
+            k = n.asarray(n_array)
+            length = int(len(k)/2)
+            c = k.reshape(length,2)
+            hull_pts = qhull(c)
+            
+            pdata = ''
+            for vertex in hull_pts:
+                if pdata == '':
+                    pdata = 'M%f,%f' % (vertex[0], vertex[1] )
+                else:
+                    pdata += 'L %f,%f' %  (vertex[0], vertex[1] )
+            pdata += ' Z'        
+            path = 'polygon'
+            makeGroup = False
+            paths_clone_transform = None
+            self.joinWithNode(path, pdata, makeGroup, paths_clone_transform)
+            
+        else:
+            inkex.errormsg('Please select some paths first.')
+            return
+            
 if __name__ == '__main__':
     ConvexHull().run()
