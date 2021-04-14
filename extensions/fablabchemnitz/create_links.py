@@ -118,8 +118,7 @@ class LinksCreator(inkex.EffectExtension):
            
             if self.options.length_filter is True:
                 if stotal < self.svg.unittouu(str(self.options.length_filter_value) + self.options.length_filter_unit):
-                    if self.options.show_info is True:
-                        inkex.errormsg("node " + node.get('id') + " is shorter than minimum allowed length of {:1.3f} {}. Path length is {:1.3f} {}".format(self.options.length_filter_value, self.options.length_filter_unit, stotal, self.options.creationunit))
+                    if self.options.show_info is True: inkex.errormsg("node " + node.get('id') + " is shorter than minimum allowed length of {:1.3f} {}. Path length is {:1.3f} {}".format(self.options.length_filter_value, self.options.length_filter_unit, stotal, self.options.creationunit))
                     return #skip this loop iteration
 
             if self.options.creationunit == "percent":
@@ -130,14 +129,14 @@ class LinksCreator(inkex.EffectExtension):
             dashes = [] #central dashes array
             
             if self.options.creationtype == "entered_values":     
-                dashes.append(((stotal - length_link * self.options.link_count) / self.options.link_count) - 2 * length_link * (self.options.link_multiplicator))
+                dashes.append(((stotal - length_link * self.options.link_count) / self.options.link_count) - 2 * length_link * self.options.link_multiplicator)
                 dashes.append(length_link)           
                 for i in range(0, self.options.link_multiplicator):
                     dashes.append(length_link) #stroke (=gap)
                     dashes.append(length_link) #gap
                 #validate dashes. May not be negative. Otherwise Inkscape will freeze forever. Reason: rendering issue
-                if any(dash < 0 for dash in dashes) == True: 
-                    inkex.errormsg("node " + node.get('id') + ": Error! Dash array may not contain negative numbers: " + ' '.join(format(dash, "1.3f") for dash in dashes) + ". Path skipped. Maybe it's too short. Adjust your link count, multiplicator and length accordingly, or set to unit '%'") if self.options.show_info is True else None
+                if any(dash <= 0.0 for dash in dashes) == True: 
+                    if self.options.show_info is True: inkex.errormsg("node " + node.get('id') + ": Error! Dash array may not contain negative numbers: " + ' '.join(format(dash, "1.3f") for dash in dashes) + ". Path skipped. Maybe it's too short. Adjust your link count, multiplicator and length accordingly, or set to unit '%'")
                     return False if self.options.skip_errors is True else exit(1)
                
                 if self.options.creationunit == "percent":
@@ -147,7 +146,7 @@ class LinksCreator(inkex.EffectExtension):
 
             if self.options.creationtype == "use_existing":
                 if self.options.no_convert is True:
-                    inkex.errormsg("node " + node.get('id') + ": Nothing to do. Please select another creation method or disable cosmetic style output paths.") if self.options.show_info is True else None
+                    if self.options.show_info is True: inkex.errormsg("node " + node.get('id') + ": Nothing to do. Please select another creation method or disable cosmetic style output paths.")
                     return False if self.options.skip_errors is True else exit(1)
                 stroke_dashoffset = 0
                 style = node.style
@@ -160,7 +159,7 @@ class LinksCreator(inkex.EffectExtension):
                     else:
                         raise ValueError
                 except:
-                    inkex.errormsg("node " + node.get('id') + ": No dash style to continue with.") if self.options.show_info is True else None
+                    if self.options.show_info is True: inkex.errormsg("node " + node.get('id') + ": No dash style to continue with.")
                     return False if self.options.skip_errors is True else exit(1)
                            
             if self.options.creationtype == "custom_dashpattern":
@@ -172,7 +171,7 @@ class LinksCreator(inkex.EffectExtension):
                     else:
                         raise ValueError
                 except:
-                    inkex.errormsg("node " + node.get('id') + ": Error in custom dasharray string (might be empty or does not contain any numbers).") if self.options.show_info is True else None
+                    if self.options.show_info is True: inkex.errormsg("node " + node.get('id') + ": Error in custom dasharray string (might be empty or does not contain any numbers).")
                     return False if self.options.skip_errors is True else exit(1)
 
             #assign stroke dasharray from entered values, existing style or custom dashpattern
@@ -180,6 +179,7 @@ class LinksCreator(inkex.EffectExtension):
 
             # check if the node has a style attribute. If not we create a blank one with a black stroke and without fill
             style = None
+            default_fill = 'none'
             default_stroke_width = '1px'
             default_stroke = '#000000'
             if node.attrib.has_key('style'):
@@ -187,23 +187,29 @@ class LinksCreator(inkex.EffectExtension):
                 if style.endswith(';') is False:
                     style += ';'
                     
-                # if has style attribute an dasharray and/or dashoffset are present we modify it accordingly
+                # if has style attribute and dasharray and/or dashoffset are present we modify it accordingly
                 declarations = style.split(';')  # parse the style content and check what we need to adjust
                 for i, decl in enumerate(declarations):
                     parts = decl.split(':', 2)
                     if len(parts) == 2:
                         (prop, val) = parts
                         prop = prop.strip().lower()
+                        if prop == 'fill':
+                            declarations[i] = prop + ':{}'.format(default_fill) 
+                        if prop == 'stroke':
+                            declarations[i] = prop + ':{}'.format(default_stroke)
+                        if prop == 'stroke-width':
+                            declarations[i] = prop + ':{}'.format(default_stroke_width)
                         if prop == 'stroke-dasharray': #comma separated list of one or more float values
-                            declarations[i] = prop + ':{};'.format(stroke_dasharray)
+                            declarations[i] = prop + ':{}'.format(stroke_dasharray)
                         if prop == 'stroke-dashoffset':
-                            declarations[i] = prop + ':{};'.format(stroke_dashoffset)
+                            declarations[i] = prop + ':{}'.format(stroke_dashoffset)
                 node.set('style', ';'.join(declarations)) #apply new style to node
                     
-                #if has style attribute but the style attribute does not contain stroke, stroke-dasharray or stroke-dashoffset yet
+                #if has style attribute but the style attribute does not contain fill, stroke, stroke-width, stroke-dasharray or stroke-dashoffset yet
                 style = node.style
                 if re.search('fill:(.*?)(;|$)', str(style)) is None:
-                    style += 'fill:none;'
+                    style += 'fill:{};'.format(default_fill)
                 if re.search('(;|^)stroke:(.*?)(;|$)', str(style)) is None: #if "stroke" is None, add one. We need to distinguish because there's also attribute "-inkscape-stroke" that's why we check starting with ^ or ;
                     style += 'stroke:{};'.format(default_stroke)
                 if not 'stroke-width' in style:
@@ -214,7 +220,7 @@ class LinksCreator(inkex.EffectExtension):
                     style += 'stroke-dashoffset:{};'.format(stroke_dashoffset)
                 node.set('style', style)
             else:
-                style = 'fill:none;stroke:{};stroke-width:{};stroke-dasharray:{};stroke-dashoffset:{};'.format(default_stroke, default_stroke_width, stroke_dasharray, stroke_dashoffset)
+                style = 'fill:{};stroke:{};stroke-width:{};stroke-dasharray:{};stroke-dashoffset:{};'.format(default_fill, default_stroke, default_stroke_width, stroke_dasharray, stroke_dashoffset)
                 node.set('style', style)
 
             # Print some info about values
