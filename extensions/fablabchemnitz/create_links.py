@@ -46,10 +46,11 @@ class LinksCreator(inkex.EffectExtension):
         self.arg_parser.add_argument("--creationunit", default="mm", help="Creation Units")
         self.arg_parser.add_argument("--creationtype", default="entered_values", help="Creation")
         self.arg_parser.add_argument("--link_count", type=int, default=1, help="Link count")
-        self.arg_parser.add_argument("--length_link", type=float, default=1.000, help="Link length")
         self.arg_parser.add_argument("--link_multiplicator", type=int, default=1, help="If set, we create a set of multiple gaps of same size next to the main gap")
-        self.arg_parser.add_argument("--link_offset", type=float, default=0.000, help="Link offset (+/-).")       
+        self.arg_parser.add_argument("--length_link", type=float, default=1.000, help="Link length")
+        self.arg_parser.add_argument("--link_offset", type=float, default=0.000, help="Link offset (+/-)")       
         self.arg_parser.add_argument("--custom_dasharray_value", default="", help="A list of separated lengths that specify the lengths of alternating dashes and gaps. Input only accepts numbers. It ignores percentages or other characters.")
+        self.arg_parser.add_argument("--custom_dashoffset_value", type=float, default=0.000, help="Link offset (+/-)")       
         self.arg_parser.add_argument("--length_filter", type=inkex.Boolean, default=False, help="Enable path length filtering")
         self.arg_parser.add_argument("--length_filter_value", type=float, default=0.000, help="Paths with length more than")
         self.arg_parser.add_argument("--length_filter_unit", default="mm", help="Length filter unit")
@@ -130,7 +131,13 @@ class LinksCreator(inkex.EffectExtension):
             if self.options.creationtype == "use_existing" and self.options.no_convert is True:
                     inkex.errormsg("Nothing to do. Please select another creation method or disable cosmetic style output paths.")
                     return
-                  
+                    
+            if self.options.creationtype == "entered_values":      
+                if self.options.creationunit == "percent":
+                    stroke_dashoffset = self.options.link_offset / 100.0
+                else:         
+                    stroke_dashoffset = self.svg.unittouu(str(self.options.link_offset) + self.options.creationunit)
+
             if self.options.creationtype == "use_existing":
                 stroke_dashoffset = 0
                 style = node.style
@@ -146,7 +153,8 @@ class LinksCreator(inkex.EffectExtension):
                     inkex.errormsg("no dash style to continue with.")
                     return
                            
-            if self.options.creationtype == "custom_dasharray":
+            if self.options.creationtype == "custom_dashpattern":
+                stroke_dashoffset = self.options.custom_dashoffset_value
                 try:
                     floats = [float(dash) for dash in re.findall(r"[-+]?\d*\.\d+|\d+", self.options.custom_dasharray_value)]
                     if len(floats) > 0:
@@ -159,11 +167,6 @@ class LinksCreator(inkex.EffectExtension):
                                             
             stroke_dasharray = ' '.join(format(dash, "1.3f") for dash in dashes)
             
-            if self.options.creationunit == "percent":
-                stroke_dashoffset = self.options.link_offset / 100.0
-            else:         
-                stroke_dashoffset = self.svg.unittouu(str(self.options.link_offset) + self.options.creationunit)
-
             # check if the node has a style attribute. If not we create a blank one with a black stroke and without fill
             style = None
             if node.attrib.has_key('style'):
