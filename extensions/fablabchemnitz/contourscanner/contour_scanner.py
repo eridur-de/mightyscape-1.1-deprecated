@@ -17,19 +17,22 @@ Last patch: 05.09.2020
 License: GNU GPL v3
 """
 
+import sys
 from math import *
-import inkex
-from inkex.paths import Path, CubicSuperPath
-from inkex import Style, Color, Circle
 from lxml import etree
 import poly_point_isect
 import copy
+import inkex
+from inkex.paths import Path, CubicSuperPath
+from inkex import Style, Color, Circle
 
 class ContourScanner(inkex.Effect):
 
     def __init__(self):
         inkex.Effect.__init__(self)
+        self.arg_parser.add_argument("--main_tabs")
         self.arg_parser.add_argument("--breakapart", type=inkex.Boolean, default=False, help="Break apart selection into single contours")
+        self.arg_parser.add_argument("--apply_transformations", type=inkex.Boolean, default=False, help="Run 'Apply Transformations' extension before running to avoid IndexErrors in calculation.")
         self.arg_parser.add_argument("--removefillsetstroke", type=inkex.Boolean, default=False, help="Remove fill and define stroke")
         self.arg_parser.add_argument("--strokewidth", type=float, default=1.0, help="Stroke width (px)")
         self.arg_parser.add_argument("--highlight_opened", type=inkex.Boolean, default=True, help="Highlight opened contours")
@@ -46,8 +49,8 @@ class ContourScanner(inkex.Effect):
         self.arg_parser.add_argument("--remove_opened", type=inkex.Boolean, default=False, help="Remove opened contours")
         self.arg_parser.add_argument("--remove_closed", type=inkex.Boolean, default=False, help="Remove closed contours")
         self.arg_parser.add_argument("--remove_selfintersecting", type=inkex.Boolean, default=False, help="Remove self-intersecting contours")
-        self.arg_parser.add_argument("--main_tabs")
-  
+        self.arg_parser.add_argument("--show_debug", type=inkex.Boolean, default=False, help="Show debug info")
+
     #function to refine the style of the lines  
     def adjustStyle(self, node):
         if node.attrib.has_key('style'):
@@ -241,8 +244,13 @@ class ContourScanner(inkex.Effect):
                         #    polySegsNode.attrib['style'] = closingLineStyle
 
                     except AssertionError as e: # we skip AssertionError
-                        #inkex.utils.debug("Error: " + str(e))
+                        if self.options.show_debug is True:
+                            inkex.utils.debug("AssertionError at " + node.get('id'))
                         continue
+                    except IndexError as i: # we skip IndexError
+                        if self.options.show_debug is True:
+                            inkex.utils.debug("IndexError at " + node.get('id'))
+                        continue 
                 #if the intersectionGroup was created but nothing attached we delete it again to prevent messing the SVG XML tree
                 if len(intersectionGroup.getchildren()) == 0:
                     intersectionGroupParent = intersectionGroup.getparent()
@@ -257,6 +265,25 @@ class ContourScanner(inkex.Effect):
                 self.scanContours(child) 
  
     def effect(self):
+    
+        applyTransformAvailable = False
+        # at first we apply external extension
+        try:
+            sys.path.append("..") # add parent directory to path to allow importing applytransform (vpype extension is encapsulated in sub directory)
+            import applytransform
+            applyTransformAvailable = True
+        except Exception as e:
+            #inkex.utils.debug(e)
+            inkex.utils.debug("Calling 'Apply Transformations' extension failed. Maybe the extension is not installed. You can download it from official InkScape Gallery. Skipping this step")
+    
+        '''
+        we need to apply transfoms to the complete document even if there are only some single paths selected. 
+        If we apply it to selected nodes only the parent groups still might contain transforms. 
+        This messes with the coordinates and creates hardly controllable behaviour
+        '''
+        if self.options.apply_transformations is True and applyTransformAvailable is True:
+            applytransform.ApplyTransform().recursiveFuseTransform(self.document.getroot())
+    
         if self.options.breakapart:    
             if len(self.svg.selected) == 0:
                  self.breakContours(self.document.getroot())
