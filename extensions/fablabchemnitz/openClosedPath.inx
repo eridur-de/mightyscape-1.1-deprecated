@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-	<name>Open closed Path</name>
+	<name>Open Closed Path</name>
 	<id>fablabchemnitz.de.openClosedPath</id>
 	<effect>
 		<effects-menu>
