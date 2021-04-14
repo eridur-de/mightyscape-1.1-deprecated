@@ -66,10 +66,10 @@ def flevobezier(points, z):
         v = window[-3] - window[-2]
         w = window[-1] - window[-2]
         try:
-            v_w = dist(v) / dist(w)
+            dist(v) / dist(w)
         except ZeroDivisionError as e:
             pout("Division by zero. Check if your path contains duplicate handles.")
-        if dotp(v, w) / v_w >= 0.5: # 60 degrees or less, over by angle
+        if dotp(v, w) / dist(v) / dist(w) >= 0.5: # 60 degrees or less, over by angle
             if maybeover: # backup
                 newcurve = stress(points[prevtrail:lead])[0]
                 res[-3:] = newcurve[1:] # replace the last three nodes in res with those of newcurve
