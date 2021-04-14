@@ -14,9 +14,10 @@
 				<option value="custom_dasharray">Custom dash pattern</option>
 				<option value="entered_values">Render by unit and link settings</option>
 			</param>
-			<param name="unit" type="optiongroup" appearance="combo" gui-text="Units">
+			<param name="creationunit" type="optiongroup" appearance="combo" gui-text="Creation Units">
 				<option value="mm">mm</option>
 				<option value="cm">cm</option>
+				<option value="m">m</option>
 				<option value="in">in</option>
 				<option value="pt">pt</option>
 				<option value="px">px</option>
@@ -26,20 +27,30 @@
 			<label appearance="header">Creation: Link Settings</label>
 			<param name="link_count" type="int" min="1" max="9999" gui-text="Link count">1</param>
 			<param name="length_link" type="float" min="0.000" max="9999.000" precision="3" gui-text="Link length (the length of the gap)">1.000</param>
-			<param name="link_multiplicator" type="int" min="0" max="9999" gui-text="Link multiplicator (experimental)" gui-description="If set, we create a set of multiple gaps of same size next to the main gap">0</param>
+			<param name="link_multiplicator" type="int" min="0" max="9999" gui-text="Link multiplicator" gui-description="If set, we create a set of multiple gaps of same size next to the main gap">0</param>
 			<param name="link_offset" type="float" min="-9999.000.000" max="9999.000" precision="3" gui-text="Link offset (+/-)">0.000</param>
 			<label appearance="header">Creation: Custom Dash Pattern Settings</label>
-			<param name="custom_dasharray_value" type="string" gui-text="Dash pattern" gui-description="A list of separated lengths that specify the lengths of alternating dashes and gaps. Input only accepts numbers. It ignores percentages or other characters.">10 5</param>
+			<param name="custom_dasharray_value" type="string" gui-text="Dash pattern" gui-description="A list of separated lengths that specify the lengths of alternating dashes and gaps. Input only accepts numbers. It ignores percentages or other characters.">10 5.5 2.0 2.0</param>
 			<label appearance="header">Other Settings</label>
-            <param name="length_filter" type="bool" gui-text="Enable path length filtering (uses always document's unit)">false</param>
+            <param name="length_filter" type="bool" gui-text="Enable path length filtering">false</param>
 			<param name="length_filter_value" type="float" min="0.000" max="9999.000" precision="3" gui-text="Paths with length more than">0.000</param>
+			<param name="length_filter_unit" type="optiongroup" appearance="combo" gui-text="Length filter unit">
+				<option value="mm">mm</option>
+				<option value="cm">cm</option>
+				<option value="m">m</option>
+				<option value="in">in</option>
+				<option value="pt">pt</option>
+				<option value="px">px</option>
+				<option value="pc">pc</option>
+			</param>
             <param name="keep_selected" type="bool" gui-text="Keep selected elements">false</param>
-            <param name="breakapart" type="bool" gui-text="Break apart output paths" gui-description="Performs CTRL + SHIFT + K to break the new output path into it's parts">false</param>
-            <param name="show_info" type="bool" gui-text="Print some length and pattern information" gui-description="Warning: might freeze InkScape forever if you have a lot of nodes because we create too much print output. Use for debugging only!">false</param>
+            <param name="no_convert" type="bool" gui-text="Do not create output path(s) (cosmetic style only)">false</param>
+            <param name="breakapart" type="bool" gui-text="Break apart output path(s) into segments" gui-description="Performs CTRL + SHIFT + K to break the new output path into it's parts">false</param>
+            <param name="show_info" type="bool" gui-text="Print some length, pattern and filtering information" gui-description="Warning: might freeze InkScape forever if you have a lot of nodes because we create too much print output. Use for debugging only!">false</param>
         </page>
         <page name="about" gui-text="About">
             <label appearance="header">Create Links</label>
-			<label>Stadtfabrikanten e.V. (2021)</label>
+			<label>by Mario Voigt / Stadtfabrikanten e.V. (2021)</label>
 			<spacer/>
             <label>This piece of software is part of the MightyScape for InkScape 1.0/1.1dev Extension Collection.</label>
             <label>You found a bug or got some fresh code? Just report to mario.voigt@stadtfabrikanten.org. Thanks!</label>
