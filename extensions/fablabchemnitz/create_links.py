@@ -24,10 +24,12 @@ It is a modification of the file addnodes.py
 It is a modification of the file convert2dash.py
 Extension to convert paths into dash-array line
 
-ToDo:
-- better handling of dasharray patterns (fix experimental stuff with multiplicator)
-- dash offset does not behave the exspected way
-- break apart before calculating
+Extension for InkScape 1.X
+Author: Mario Voigt / FabLab Chemnitz
+Mail: mario.voigt@stadtfabrikanten.org
+Date: 09.04.2021
+Last patch: 14.04.2021
+License: GNU GPL v3
 """
 
 import copy
@@ -98,7 +100,8 @@ class LinksCreator(inkex.EffectExtension):
                 return #skip this loop iteration
             elif self.options.path_types == 'both':
                 pass
-                            
+                         
+            # if keeping is enabled we make of copy of the current node and insert it while modifying the original ones. We could also delete the original and modify a copy...
             if self.options.keep_selected is True:
                 parent = node.getparent()
                 idx = parent.index(node)
