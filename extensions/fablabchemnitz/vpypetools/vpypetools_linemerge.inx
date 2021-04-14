@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <name>Line Merging</name>
+    <name>Line Merging (Combine Paths)</name>
     <id>fablabchemnitz.de.vpype_linemerging</id>
 	<param name="tab" type="notebook">
-		<page name="freemode" gui-text="Free Mode Entries">
+		<page name="freemode" gui-text="Line Merging (Combine Paths)">
 			<label>Merge lines whose endings and starts overlap or are very close.</label>
 			<param name="linemerge" type="bool" gui-hidden="true">true</param>
 			<param name="linemerge_tolerance" type="float" min="0.000"  max="99999.000" precision="3" gui-text="tolerance (mm)" gui-description="Maximum distance between two line endings that should be merged (default 0.500 mm)">0.500</param>           
