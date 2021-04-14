@@ -168,6 +168,7 @@ class OptimizePaths(inkex.GenerateExtension):
         self.arg_parser.add_argument("-t", "--tolerance", type=float, default=0.1, help="the distance below which 2 nodes will be merged")
         self.arg_parser.add_argument("-l", "--enableLog", type=inkex.Boolean, default=False, help="Enable logging")
         self.arg_parser.add_argument("-o", "--overwriteRule", type=int, default=1, help="Options to control edge overwrite rules")
+        self.arg_parser.add_argument("-k", "--keepSelected", type=inkex.Boolean, default=False, help="Keep selected elements")
 
     def parseSVG(self):
         vertices = []
@@ -194,6 +195,12 @@ class OptimizePaths(inkex.GenerateExtension):
                     vertices.extend(newVertices)
             else:
                 self.log("This extension only works with paths and currently doesn't support groups")
+
+            if self.options.keepSelected is False:
+                for object in objects:
+                    if object.getparent() is not None:
+                        #inkex.utils.debug(object.get('id'))
+                        object.getparent().remove(object)
 
         return (vertices, edges)
 
