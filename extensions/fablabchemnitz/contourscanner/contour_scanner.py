@@ -13,7 +13,7 @@ Features
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 09.08.2020
-Last patch: 05.09.2020
+Last patch: 14.04.2021
 License: GNU GPL v3
 """
 
