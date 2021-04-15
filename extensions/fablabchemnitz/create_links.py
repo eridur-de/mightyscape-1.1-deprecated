@@ -41,26 +41,26 @@ from inkex.bezier import csplength
 
 
 class LinksCreator(inkex.EffectExtension):
-    def __init__(self):
-        super(LinksCreator, self).__init__()
-        self.arg_parser.add_argument("--main_tabs")
-        self.arg_parser.add_argument("--path_types", default="closed_paths", help="Apply for closed paths, open paths or both")
-        self.arg_parser.add_argument("--creationunit", default="mm", help="Creation Units")
-        self.arg_parser.add_argument("--creationtype", default="entered_values", help="Creation")
-        self.arg_parser.add_argument("--link_count", type=int, default=1, help="Link count")
-        self.arg_parser.add_argument("--link_multiplicator", type=int, default=1, help="If set, we create a set of multiple gaps of same size next to the main gap")
-        self.arg_parser.add_argument("--length_link", type=float, default=1.000, help="Link length")
-        self.arg_parser.add_argument("--link_offset", type=float, default=0.000, help="Link offset (+/-)")       
-        self.arg_parser.add_argument("--custom_dasharray_value", default="", help="A list of separated lengths that specify the lengths of alternating dashes and gaps. Input only accepts numbers. It ignores percentages or other characters.")
-        self.arg_parser.add_argument("--custom_dashoffset_value", type=float, default=0.000, help="Link offset (+/-)")       
-        self.arg_parser.add_argument("--length_filter", type=inkex.Boolean, default=False, help="Enable path length filtering")
-        self.arg_parser.add_argument("--length_filter_value", type=float, default=0.000, help="Paths with length more than")
-        self.arg_parser.add_argument("--length_filter_unit", default="mm", help="Length filter unit")
-        self.arg_parser.add_argument("--keep_selected", type=inkex.Boolean, default=False, help="Keep selected elements")
-        self.arg_parser.add_argument("--no_convert", type=inkex.Boolean, default=False, help="Do not create segments (cosmetic gaps only)")
-        self.arg_parser.add_argument("--breakapart", type=inkex.Boolean, default=False, help="Performs CTRL + SHIFT + K to break the new output path into it's parts")
-        self.arg_parser.add_argument("--show_info", type=inkex.Boolean, default=False, help="Print some length and pattern information")
-        self.arg_parser.add_argument("--skip_errors", type=inkex.Boolean, default=False, help="Skip errors")
+    
+    def add_arguments(self, pars):
+        pars.add_argument("--main_tabs")
+        pars.add_argument("--path_types", default="closed_paths", help="Apply for closed paths, open paths or both")
+        pars.add_argument("--creationunit", default="mm", help="Creation Units")
+        pars.add_argument("--creationtype", default="entered_values", help="Creation")
+        pars.add_argument("--link_count", type=int, default=1, help="Link count")
+        pars.add_argument("--link_multiplicator", type=int, default=1, help="If set, we create a set of multiple gaps of same size next to the main gap")
+        pars.add_argument("--length_link", type=float, default=1.000, help="Link length")
+        pars.add_argument("--link_offset", type=float, default=0.000, help="Link offset (+/-)")       
+        pars.add_argument("--custom_dasharray_value", default="", help="A list of separated lengths that specify the lengths of alternating dashes and gaps. Input only accepts numbers. It ignores percentages or other characters.")
+        pars.add_argument("--custom_dashoffset_value", type=float, default=0.000, help="Link offset (+/-)")       
+        pars.add_argument("--length_filter", type=inkex.Boolean, default=False, help="Enable path length filtering")
+        pars.add_argument("--length_filter_value", type=float, default=0.000, help="Paths with length more than")
+        pars.add_argument("--length_filter_unit", default="mm", help="Length filter unit")
+        pars.add_argument("--keep_selected", type=inkex.Boolean, default=False, help="Keep selected elements")
+        pars.add_argument("--no_convert", type=inkex.Boolean, default=False, help="Do not create segments (cosmetic gaps only)")
+        pars.add_argument("--breakapart", type=inkex.Boolean, default=False, help="Performs CTRL + SHIFT + K to break the new output path into it's parts")
+        pars.add_argument("--show_info", type=inkex.Boolean, default=False, help="Print some length and pattern information")
+        pars.add_argument("--skip_errors", type=inkex.Boolean, default=False, help="Skip errors")
 
     def breakContours(self, node, breakNodes = None): #this does the same as "CTRL + SHIFT + K"
         if breakNodes == None:

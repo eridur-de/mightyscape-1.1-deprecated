@@ -35,21 +35,21 @@ import re
 class Cleanup(inkex.EffectExtension):
 
     groups = []
-       
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("--main_tabs")
-        self.arg_parser.add_argument("--dedicated_style_attributes", default="ignore", help="Handling of dedicated style attributes")
-        self.arg_parser.add_argument("--stroke_width_override", type=inkex.Boolean, default=False, help="Override stroke width")
-        self.arg_parser.add_argument("--stroke_width", type=float, default=0.100, help="Stroke width")
-        self.arg_parser.add_argument("--stroke_width_units", default="mm", help="Stroke width unit")
-        self.arg_parser.add_argument("--stroke_opacity_override", type=inkex.Boolean, default=False, help="Override stroke opacity")
-        self.arg_parser.add_argument("--stroke_opacity", type=float, default="100.0", help="Stroke opacity (%)")
-        self.arg_parser.add_argument("--reset_stroke_attributes", type=inkex.Boolean, help="Remove stroke style attributes 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linejoin', 'stroke-linecap', 'stroke-miterlimit'")
-        self.arg_parser.add_argument("--reset_fill_attributes", type=inkex.Boolean, help="Sets 'fill:none;fill-opacity:1;' to style attribute")
-        self.arg_parser.add_argument("--apply_hairlines", type=inkex.Boolean, help="Adds 'vector-effect:non-scaling-stroke;' and '-inkscape-stroke:hairline;' Hint: stroke-width is kept in background. All hairlines still have a valued width.")
-        self.arg_parser.add_argument("--apply_black_strokes", type=inkex.Boolean, help="Adds 'stroke:#000000;' to style attribute")
-        self.arg_parser.add_argument("--remove_group_styles", type=inkex.Boolean, help="Remove styles from groups")
+    
+    def add_arguments(self, pars):
+        pars.add_argument("--main_tabs")
+        pars.add_argument("--mode", default="Lines", help="Join paths with lines or polygons")
+        pars.add_argument("--dedicated_style_attributes", default="ignore", help="Handling of dedicated style attributes")
+        pars.add_argument("--stroke_width_override", type=inkex.Boolean, default=False, help="Override stroke width")
+        pars.add_argument("--stroke_width", type=float, default=0.100, help="Stroke width")
+        pars.add_argument("--stroke_width_units", default="mm", help="Stroke width unit")
+        pars.add_argument("--stroke_opacity_override", type=inkex.Boolean, default=False, help="Override stroke opacity")
+        pars.add_argument("--stroke_opacity", type=float, default="100.0", help="Stroke opacity (%)")
+        pars.add_argument("--reset_stroke_attributes", type=inkex.Boolean, help="Remove stroke style attributes 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linejoin', 'stroke-linecap', 'stroke-miterlimit'")
+        pars.add_argument("--reset_fill_attributes", type=inkex.Boolean, help="Sets 'fill:none;fill-opacity:1;' to style attribute")
+        pars.add_argument("--apply_hairlines", type=inkex.Boolean, help="Adds 'vector-effect:non-scaling-stroke;' and '-inkscape-stroke:hairline;' Hint: stroke-width is kept in background. All hairlines still have a valued width.")
+        pars.add_argument("--apply_black_strokes", type=inkex.Boolean, help="Adds 'stroke:#000000;' to style attribute")
+        pars.add_argument("--remove_group_styles", type=inkex.Boolean, help="Remove styles from groups")
         
     def effect(self):
         if len(self.svg.selected) == 0:

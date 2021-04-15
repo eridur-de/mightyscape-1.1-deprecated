@@ -90,19 +90,18 @@ def colorFromKey(keyNumber):
     """
     return keys_color[keyNumber%12]
     
-class SVGPianoScale (inkex.Effect):
+class SVGPianoScale (inkex.EffectExtension):
     marker_radius_factor = 0.42   # position marker in X on piano key
     marker_y_offset_factor = 0.92 # position marker in Y
 
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("--firstNote", default="C1")
-        self.arg_parser.add_argument("--lastNote", default="B2")
-        self.arg_parser.add_argument("--tab")
-        self.arg_parser.add_argument("--intervals")
-        self.arg_parser.add_argument("--keynote")
-        self.arg_parser.add_argument("--scale", type=int)
-        self.arg_parser.add_argument("--helpSheet", type=int)
+    def add_arguments(self, pars):
+        pars.add_argument("--firstNote", default="C1")
+        pars.add_argument("--lastNote", default="B2")
+        pars.add_argument("--tab")
+        pars.add_argument("--intervals")
+        pars.add_argument("--keynote")
+        pars.add_argument("--scale", type=int)
+        pars.add_argument("--helpSheet", type=int)
 
     def calculate_size_and_positions(self):
         " Determine page size and define key dimensions "

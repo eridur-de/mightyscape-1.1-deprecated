@@ -16,9 +16,6 @@ License: GNU GPL v3
 
 class CleanGroups(inkex.EffectExtension):
      
-    def __init__(self):
-        inkex.Effect.__init__(self)
-
     def effect(self):
         while True: 
             groups = self.document.xpath('//svg:g',namespaces=inkex.NSS)

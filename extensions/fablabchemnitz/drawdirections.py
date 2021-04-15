@@ -11,9 +11,8 @@ class StartEndPoints(inkex.EffectExtension):
         startCircle = group.add(Circle(cx=str(point[0]), cy=str(point[1]), r=str(self.svg.unittouu(str(self.options.dotsize/2) + "px"))))
         startCircle.style = style
 
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("--dotsize", type=int, default=10, help="Dot size (px) for self-intersecting points")
+    def add_arguments(self, pars):
+        pars.add_argument("--dotsize", type=int, default=10, help="Dot size (px) for self-intersecting points")
    
     def effect(self):
         dot_group = self.svg.add(inkex.Group())

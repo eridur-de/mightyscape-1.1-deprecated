@@ -53,9 +53,7 @@ class FixedRadiusSearch():
             return p
         return result
 
-class RemoveRedundant(inkex.Effect):
-    def __init__(self):
-        inkex.Effect.__init__(self)
+class RemoveRedundant(inkex.EffectExtension):
 
     def effect(self):
         seenSegments = set()

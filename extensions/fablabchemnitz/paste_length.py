@@ -25,16 +25,15 @@ import inkex
 
 from inkex import bezier, Path, CubicSuperPath, PathElement
 
-class PasteLengthEffect(inkex.Effect):
+class PasteLengthEffect(inkex.EffectExtension):
 
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument('--scale', type = float, default = '1', help = 'Additionally scale the length by')
-        self.arg_parser.add_argument('--scaleFrom', default = 'center', help = 'Scale Path From')
-        self.arg_parser.add_argument('--precision', type = int, default = '5', help = 'Number of significant digits')
-        self.arg_parser.add_argument("--override_selection", type = inkex.Boolean, default = False, help = "Use a custom length instead using the length of the first object in selection") 
-        self.arg_parser.add_argument("--custom_length", type = float, default = 100.000, help = "Custom length") 
-        self.arg_parser.add_argument("--unit", default = "mm", help = "Units")
+    def add_arguments(self, pars):
+        pars.add_argument('--scale', type = float, default = '1', help = 'Additionally scale the length by')
+        pars.add_argument('--scaleFrom', default = 'center', help = 'Scale Path From')
+        pars.add_argument('--precision', type = int, default = '5', help = 'Number of significant digits')
+        pars.add_argument("--override_selection", type = inkex.Boolean, default = False, help = "Use a custom length instead using the length of the first object in selection") 
+        pars.add_argument("--custom_length", type = float, default = 100.000, help = "Custom length") 
+        pars.add_argument("--unit", default = "mm", help = "Units")
         
     def scaleCubicSuper(self, cspath, scaleFactor, scaleFrom):
         bbox = Path(cspath).bounding_box()

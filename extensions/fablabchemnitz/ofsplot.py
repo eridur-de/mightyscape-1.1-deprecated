@@ -6,19 +6,19 @@ from inkex.paths import CubicSuperPath
 import re
 import pyclipper
 
-class ofsplot(inkex.Effect):
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument('--unit')
-        self.arg_parser.add_argument("--offset_count", type=int, default=1, help="Number of offset paths")
-        self.arg_parser.add_argument("--offset", type=float, default=1.000, help="Offset amount")
-        self.arg_parser.add_argument("--init_offset", type=float, default=0.000, help="Initial Offset Amount")
-        self.arg_parser.add_argument("--copy_org", type=inkex.Boolean, default=True, help="copy original path")
-        self.arg_parser.add_argument("--offset_increase", type=float, default=0.000, help="Offset increase between iterations")
-        self.arg_parser.add_argument("--jointype", default="2", help="Join type")
-        self.arg_parser.add_argument("--endtype", default="3", help="End type")
-        self.arg_parser.add_argument("--miterlimit", type=float, default=3.0, help="Miter limit")
-        self.arg_parser.add_argument("--clipperscale", type=float, default=1024.0, help="Scaling factor")
+class ofsplot(inkex.EffectExtension):
+    
+    def add_arguments(self, pars):
+        pars.add_argument('--unit')
+        pars.add_argument("--offset_count", type=int, default=1, help="Number of offset paths")
+        pars.add_argument("--offset", type=float, default=1.000, help="Offset amount")
+        pars.add_argument("--init_offset", type=float, default=0.000, help="Initial Offset Amount")
+        pars.add_argument("--copy_org", type=inkex.Boolean, default=True, help="copy original path")
+        pars.add_argument("--offset_increase", type=float, default=0.000, help="Offset increase between iterations")
+        pars.add_argument("--jointype", default="2", help="Join type")
+        pars.add_argument("--endtype", default="3", help="End type")
+        pars.add_argument("--miterlimit", type=float, default=3.0, help="Miter limit")
+        pars.add_argument("--clipperscale", type=float, default=1024.0, help="Scaling factor")
         
     def effect(self):
         unit_factor = 1.0 / self.svg.uutounit(1.0,self.options.unit)

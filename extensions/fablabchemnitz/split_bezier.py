@@ -64,15 +64,14 @@ def floatCmpWithMargin(float1, float2, margin = DEF_ERR_MARGIN):
     return abs(float1 - float2) < margin 
         
 
-class SubdividePathEffect(inkex.Effect):
+class SubdividePathEffect(inkex.EffectExtension):
 
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument('--maxLength', type = float, default = '10', help = 'Maximum Length of New Segments')
-        self.arg_parser.add_argument('--unit', default = 'mm', help = 'Unit of Measurement')
-        self.arg_parser.add_argument('--precision', type = int, default = '5', help = 'Number of significant digits')
-        self.arg_parser.add_argument("--tab", default="sampling", help="Tab") 
-        self.arg_parser.add_argument("--separateSegs", type=inkex.Boolean, default=True)
+    def add_arguments(self, pars):
+        pars.add_argument('--maxLength', type = float, default = '10', help = 'Maximum Length of New Segments')
+        pars.add_argument('--unit', default = 'mm', help = 'Unit of Measurement')
+        pars.add_argument('--precision', type = int, default = '5', help = 'Number of significant digits')
+        pars.add_argument("--tab", default="sampling", help="Tab") 
+        pars.add_argument("--separateSegs", type=inkex.Boolean, default=True)
 
     def effect(self):
         

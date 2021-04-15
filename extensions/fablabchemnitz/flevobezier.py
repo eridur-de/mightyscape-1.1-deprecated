@@ -13,8 +13,6 @@ import sys
 def pout(t): sys.exit((gettext.gettext(t)))
 
 class root(inkex.EffectExtension):
-    def __init__(self):
-        inkex.Effect.__init__(self)
 
     def effect(self):
         if len(self.svg.selected) == 0: pout("Please select at least one path.")

@@ -104,12 +104,11 @@ def getArrangedIds(pathMap, startPathId):
         nextPathId = closestId
     return orderPathIds
     
-class JoinPathsOptimEffect(inkex.Effect):
+class JoinPathsOptimEffect(inkex.EffectExtension):
 
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("--optimized", type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--tab", default="sampling", help="Tab") 
+    def add_arguments(self, pars):
+        pars.add_argument("--optimized", type=inkex.Boolean, default=True)
+        pars.add_argument("--tab", default="sampling", help="Tab") 
           
     def effect(self):
         selections = self.svg.selected        

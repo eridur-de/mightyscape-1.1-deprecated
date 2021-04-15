@@ -48,54 +48,50 @@ import math
 import inkex
 from lxml import etree
 
-class ScaleGen(inkex.Effect):
+class ScaleGen(inkex.EffectExtension):
 
-    def __init__(self):
-
-        # Call the base class constructor.
-        inkex.Effect.__init__(self)
-
+    def add_arguments(self, pars):
         # Define string option "--what" with "-w" shortcut and default value "World".
-        self.arg_parser.add_argument('-f', '--scalefrom', type = int, default = '0', help = 'Number from...')
-        self.arg_parser.add_argument('-t', '--scaleto', type = int,default = '20', help = 'Number to...')
-        self.arg_parser.add_argument('--mathexpression', default = '', help = 'Math expression')
-        self.arg_parser.add_argument('-c', '--reverse', default = 'false', help = 'Reverse order:')
-        self.arg_parser.add_argument('-p', '--type', default = 'false', help = 'Type:')
-        self.arg_parser.add_argument('--radius', type = float, default = '100', help = 'Radius')
-        self.arg_parser.add_argument('--scaleradcount', type = float, default = '90', help = 'Circular count')
-        self.arg_parser.add_argument('--scaleradbegin', type = float, default = '0', help = 'Circular begin')
-        self.arg_parser.add_argument('--radmark', default = 'True', help = 'Mark origin')
-        self.arg_parser.add_argument('--insidetf', type = inkex.Boolean, default = 'False', help = 'Swap inside out')
-        self.arg_parser.add_argument('--ishorizontal',  default = 'False', help = 'Horizontal labels')
-        self.arg_parser.add_argument('--rotate', default = '0', help = 'Rotate:')
-        self.arg_parser.add_argument('-b', '--units_per_line', type = float, default = '100', help = 'Units per line')
-        self.arg_parser.add_argument('-g', '--labellinelength', type = float, default = '100', help = 'Label line - Length')
-        self.arg_parser.add_argument('-s', '--fontsize', type = float, default = '3', help = 'Font Size:')
-        self.arg_parser.add_argument('-i', '--suffix', default = '', help = 'Suffix:')
-        self.arg_parser.add_argument('--drawalllabels', type = inkex.Boolean, default = 'True', help = 'Draw all labels')
-        self.arg_parser.add_argument('--fliplabel', type = inkex.Boolean, default = 'False', help = 'Flip orientation')
-        self.arg_parser.add_argument('--labellinestrokewidth', type = float, default = '0.4', help = 'Label line - Stroke width')
-        self.arg_parser.add_argument('--longlinestrokewidth', type = float, default = '0.2', help = 'Long line - Stroke width')
-        self.arg_parser.add_argument('--shortlinestrokewidth', type = float, default = '0.2', help = 'Short line - Stroke width')
-        self.arg_parser.add_argument('--perplinestrokewidth', type = float, default = '0.2', help = 'Perpendicular line - Stroke width')
+        pars.add_argument('-f', '--scalefrom', type = int, default = '0', help = 'Number from...')
+        pars.add_argument('-t', '--scaleto', type = int,default = '20', help = 'Number to...')
+        pars.add_argument('--mathexpression', default = '', help = 'Math expression')
+        pars.add_argument('-c', '--reverse', default = 'false', help = 'Reverse order:')
+        pars.add_argument('-p', '--type', default = 'false', help = 'Type:')
+        pars.add_argument('--radius', type = float, default = '100', help = 'Radius')
+        pars.add_argument('--scaleradcount', type = float, default = '90', help = 'Circular count')
+        pars.add_argument('--scaleradbegin', type = float, default = '0', help = 'Circular begin')
+        pars.add_argument('--radmark', default = 'True', help = 'Mark origin')
+        pars.add_argument('--insidetf', type = inkex.Boolean, default = 'False', help = 'Swap inside out')
+        pars.add_argument('--ishorizontal',  default = 'False', help = 'Horizontal labels')
+        pars.add_argument('--rotate', default = '0', help = 'Rotate:')
+        pars.add_argument('-b', '--units_per_line', type = float, default = '100', help = 'Units per line')
+        pars.add_argument('-g', '--labellinelength', type = float, default = '100', help = 'Label line - Length')
+        pars.add_argument('-s', '--fontsize', type = float, default = '3', help = 'Font Size:')
+        pars.add_argument('-i', '--suffix', default = '', help = 'Suffix:')
+        pars.add_argument('--drawalllabels', type = inkex.Boolean, default = 'True', help = 'Draw all labels')
+        pars.add_argument('--fliplabel', type = inkex.Boolean, default = 'False', help = 'Flip orientation')
+        pars.add_argument('--labellinestrokewidth', type = float, default = '0.4', help = 'Label line - Stroke width')
+        pars.add_argument('--longlinestrokewidth', type = float, default = '0.2', help = 'Long line - Stroke width')
+        pars.add_argument('--shortlinestrokewidth', type = float, default = '0.2', help = 'Short line - Stroke width')
+        pars.add_argument('--perplinestrokewidth', type = float, default = '0.2', help = 'Perpendicular line - Stroke width')
         
         # label offset
-        self.arg_parser.add_argument('-x', '--labeloffseth', type = float, default = '0', help = 'Label offset h:')
-        self.arg_parser.add_argument('-y', '--labeloffsetv', type = float, default = '-3.5', help = 'Label offset v:')
+        pars.add_argument('-x', '--labeloffseth', type = float, default = '0', help = 'Label offset h:')
+        pars.add_argument('-y', '--labeloffsetv', type = float, default = '-3.5', help = 'Label offset v:')
         
         # line spacing
-        self.arg_parser.add_argument('-m', '--mark0', type = int, default = '10', help = 'Label line - Draw every x lines:')
-        self.arg_parser.add_argument('-n', '--mark1', type = int, default = '5', help = 'Long line - Draw every x lines')
-        self.arg_parser.add_argument('-o', '--mark2', type = int, default = '1', help = 'Short line - Draw every x lines')
+        pars.add_argument('-m', '--mark0', type = int, default = '10', help = 'Label line - Draw every x lines:')
+        pars.add_argument('-n', '--mark1', type = int, default = '5', help = 'Long line - Draw every x lines')
+        pars.add_argument('-o', '--mark2', type = int, default = '1', help = 'Short line - Draw every x lines')
         
         # line length
-        self.arg_parser.add_argument('-w', '--mark1wid', type = int, default = '75', help = 'Long line: - Length (units): (\%):')
-        self.arg_parser.add_argument('-v', '--mark2wid', type = int, help = 'Short line: - Length (units): (\%):')
-        self.arg_parser.add_argument('-u', '--unit', default = 'mm', help = 'Unit:')
-        self.arg_parser.add_argument('--useref', type = inkex.Boolean, default = False, help = 'Reference is bounding box center')
-        self.arg_parser.add_argument('--tab', default = 'global', help = '')
-        self.arg_parser.add_argument("--perpline", type=inkex.Boolean, default=True, help="Perpendicular line")
-        self.arg_parser.add_argument('--perplineoffset', type = float, default = '0', help = 'Offset')
+        pars.add_argument('-w', '--mark1wid', type = int, default = '75', help = 'Long line: - Length (units): (\%):')
+        pars.add_argument('-v', '--mark2wid', type = int, help = 'Short line: - Length (units): (\%):')
+        pars.add_argument('-u', '--unit', default = 'mm', help = 'Unit:')
+        pars.add_argument('--useref', type = inkex.Boolean, default = False, help = 'Reference is bounding box center')
+        pars.add_argument('--tab', default = 'global', help = '')
+        pars.add_argument("--perpline", type=inkex.Boolean, default=True, help="Perpendicular line")
+        pars.add_argument('--perplineoffset', type = float, default = '0', help = 'Offset')
 
     def addLabel(self, n, x, y, group, fontsize, phi = 0.0):
         mathexpression = self.options.mathexpression

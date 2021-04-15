@@ -29,28 +29,27 @@ import math
 import inkex
 from lxml import etree
 
-class Printing_Marks (inkex.Effect):
+class Printing_Marks (inkex.EffectExtension):
 
     # Default parameters
     stroke_width = 0.25
 
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("--where_to_crop", default=True, help="Apply crop marks to...")
-        self.arg_parser.add_argument("--crop_marks",  type=inkex.Boolean, default=True, help="Draw crop Marks?")          
-        self.arg_parser.add_argument("--dotted_crop_marks", type=inkex.Boolean, default=True, help="Draw dotted crop Marks?")   
-        self.arg_parser.add_argument("--bleed_marks", type=inkex.Boolean, default=False, help="Draw Bleed Marks?")         
-        self.arg_parser.add_argument("--registration_marks", type=inkex.Boolean, default=False, help="Draw Registration Marks?")  
-        self.arg_parser.add_argument("--star_target", type=inkex.Boolean, default=False, help="Draw Star Target?")         
-        self.arg_parser.add_argument("--colour_bars",  type=inkex.Boolean, default=False, help="Draw Colour Bars?")         
-        self.arg_parser.add_argument("--page_info", type=inkex.Boolean, default=False, help="Draw Page Information?")    
-        self.arg_parser.add_argument("--unit",default="px", help="Draw measurment")
-        self.arg_parser.add_argument("--crop_offset", type=float, default=0, help="Offset")
-        self.arg_parser.add_argument("--bleed_top", type=float, default=0, help="Bleed Top Size")
-        self.arg_parser.add_argument("--bleed_bottom", type=float, default=0, help="Bleed Bottom Size")
-        self.arg_parser.add_argument("--bleed_left", type=float, default=0, help="Bleed Left Size")
-        self.arg_parser.add_argument("--bleed_right",type=float, default=0, help="Bleed Right Size")
-        self.arg_parser.add_argument("--tab", help="The selected UI-tab when OK was pressed")
+    def add_arguments(self, pars):
+        pars.add_argument("--where_to_crop", default=True, help="Apply crop marks to...")
+        pars.add_argument("--crop_marks",  type=inkex.Boolean, default=True, help="Draw crop Marks?")          
+        pars.add_argument("--dotted_crop_marks", type=inkex.Boolean, default=True, help="Draw dotted crop Marks?")   
+        pars.add_argument("--bleed_marks", type=inkex.Boolean, default=False, help="Draw Bleed Marks?")         
+        pars.add_argument("--registration_marks", type=inkex.Boolean, default=False, help="Draw Registration Marks?")  
+        pars.add_argument("--star_target", type=inkex.Boolean, default=False, help="Draw Star Target?")         
+        pars.add_argument("--colour_bars",  type=inkex.Boolean, default=False, help="Draw Colour Bars?")         
+        pars.add_argument("--page_info", type=inkex.Boolean, default=False, help="Draw Page Information?")    
+        pars.add_argument("--unit",default="px", help="Draw measurment")
+        pars.add_argument("--crop_offset", type=float, default=0, help="Offset")
+        pars.add_argument("--bleed_top", type=float, default=0, help="Bleed Top Size")
+        pars.add_argument("--bleed_bottom", type=float, default=0, help="Bleed Bottom Size")
+        pars.add_argument("--bleed_left", type=float, default=0, help="Bleed Left Size")
+        pars.add_argument("--bleed_right",type=float, default=0, help="Bleed Right Size")
+        pars.add_argument("--tab", help="The selected UI-tab when OK was pressed")
 
     def addMarker(self):
         svg = self.document.getroot()

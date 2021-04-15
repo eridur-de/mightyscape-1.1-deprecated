@@ -44,12 +44,11 @@ class BouwkampCodeExtension(inkex.EffectExtension):
     Bouwkamp codes and table codes.
     """
 
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument('--tab')
-        self.arg_parser.add_argument('--bouwkamp_code', default='21, 112, 112, [50, 35, 27], [8, 19], [15, 17, 11], [6, 24], [29, 25, 9, 2], [7, 18], [16], [42], [4, 37], [33]', help='The Bouwkamp code.'
+    def add_arguments(self, pars):
+        pars.add_argument('--tab')
+        pars.add_argument('--bouwkamp_code', default='21, 112, 112, [50, 35, 27], [8, 19], [15, 17, 11], [6, 24], [29, 25, 9, 2], [7, 18], [16], [42], [4, 37], [33]', help='The Bouwkamp code.'
         )
-        self.arg_parser.add_argument('--wrap_in_group', type=inkex.Boolean,  default=True, help='Should the generated items be wrapped inside a group.'
+        pars.add_argument('--wrap_in_group', type=inkex.Boolean,  default=True, help='Should the generated items be wrapped inside a group.'
         )
 
     def effect(self):

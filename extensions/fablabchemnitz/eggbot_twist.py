@@ -90,11 +90,9 @@ def distanceSquared(p1, p2):
 
 class Twist(inkex.EffectExtension):
 
-    def __init__(self):
-
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("--nSteps", type=int,  default=8, help="Number of iterations to take")
-        self.arg_parser.add_argument("--fRatio", type=float, default=0.2, help="Some ratio")
+    def add_arguments(self, pars):
+        pars.add_argument("--nSteps", type=int,  default=8, help="Number of iterations to take")
+        pars.add_argument("--fRatio", type=float, default=0.2, help="Some ratio")
 
         """
         Store each path in an associative array (dictionary) indexed

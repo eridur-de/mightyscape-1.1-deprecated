@@ -49,20 +49,19 @@ def hex_to_int_color(v):
     assert(len(v) == 6)
     return int(v[:2], 16), int(v[2:4], 16), int(v[4:6], 16)
 
-class Pixel2SVG(inkex.Effect):
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        # pixel2svg options
-        self.arg_parser.add_argument("-s", "--squaresize", type=int, default="5", help="Width and height of vector squares in pixels")
-        self.arg_parser.add_argument("--transparency", type=inkex.Boolean, default=True, help="Convert transparency to 'fill-opacity'")
-        self.arg_parser.add_argument("--overlap", type=inkex.Boolean, default=False, help="Overlap vector squares by 1px")
-        self.arg_parser.add_argument("--offset_image", type=inkex.Boolean, default=True, help="Offset traced image")
-        self.arg_parser.add_argument("--delete_image", type=inkex.Boolean, default=False, help="Delete bitmap image")
-        self.arg_parser.add_argument("--maxsize", type=int, default="256", help="Max. image size (width or height)")
-        self.arg_parser.add_argument("--verbose", type=inkex.Boolean, default=False)
-        self.arg_parser.add_argument("--color_mode", default="all", help="Which colors to trace.")
-        self.arg_parser.add_argument("--color", default="FFFFFF", help="Special color")
-        self.arg_parser.add_argument("--tab")
+class Pixel2SVG(inkex.EffectExtension):
+    
+    def add_arguments(self, pars):
+        pars.add_argument("-s", "--squaresize", type=int, default="5", help="Width and height of vector squares in pixels")
+        pars.add_argument("--transparency", type=inkex.Boolean, default=True, help="Convert transparency to 'fill-opacity'")
+        pars.add_argument("--overlap", type=inkex.Boolean, default=False, help="Overlap vector squares by 1px")
+        pars.add_argument("--offset_image", type=inkex.Boolean, default=True, help="Offset traced image")
+        pars.add_argument("--delete_image", type=inkex.Boolean, default=False, help="Delete bitmap image")
+        pars.add_argument("--maxsize", type=int, default="256", help="Max. image size (width or height)")
+        pars.add_argument("--verbose", type=inkex.Boolean, default=False)
+        pars.add_argument("--color_mode", default="all", help="Which colors to trace.")
+        pars.add_argument("--color", default="FFFFFF", help="Special color")
+        pars.add_argument("--tab")
 
     def checkImagePath(self, node):
         """Embed the data of the selected Image Tag element"""

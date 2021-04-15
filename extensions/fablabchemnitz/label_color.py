@@ -26,9 +26,7 @@ import inkex
 from inkex.paths import CubicSuperPath, Path
 from lxml import etree
 
-class LabelColour(inkex.Effect):
-    def __init__(self):
-        inkex.Effect.__init__(self)
+class LabelColour(inkex.EffectExtension):
 
     def effect(self):
         if len(self.svg.selected) > 0:

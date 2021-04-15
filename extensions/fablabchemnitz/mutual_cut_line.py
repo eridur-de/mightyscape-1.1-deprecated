@@ -15,10 +15,7 @@ def error(message):
     inkex.errormsg(message)
     exit()
 
-class MultiCutEffect(inkex.Effect):
-
-    def __init__(self):
-        inkex.Effect.__init__(self)
+class MultiCutEffect(inkex.EffectExtension):
 
     def effect(self):
         if len(self.svg.selected.items()) != 2:

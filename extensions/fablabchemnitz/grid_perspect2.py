@@ -50,18 +50,18 @@ def colorString(pickerColor):
     return '#' + format(longcolor >> 8, '06X')
 	
 class Grid_Perspective(inkex.EffectExtension):
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("--size_unit", default="", help="Units for geometry")
-        self.arg_parser.add_argument("--width", type=int, default=500, help="Width of grid window")
-        self.arg_parser.add_argument("--height", type=int, default=300, help="Height of grid window")
-        self.arg_parser.add_argument("--p_divs", type=int,  default=10, help="Number of divisions in perspective angle")
-        self.arg_parser.add_argument("--horizon", type=float, default=150, help="Y coordinate of horizon")
-        self.arg_parser.add_argument("--left_x", type=float, default=-250, help="X coordinate of left perspective point")
-        self.arg_parser.add_argument("--right_x", type=float, default=750, help="X coordinate of right perspective point")
-        self.arg_parser.add_argument("--div_th", type=float, default=2, help="Grid division line thickness")
-        self.arg_parser.add_argument("--div_color", type=int, help="Grid division line color")
-        self.arg_parser.add_argument("--border_th", type=float, default=3, help="Border Line thickness")
+    
+    def add_arguments(self, pars):
+        pars.add_argument("--size_unit", default="", help="Units for geometry")
+        pars.add_argument("--width", type=int, default=500, help="Width of grid window")
+        pars.add_argument("--height", type=int, default=300, help="Height of grid window")
+        pars.add_argument("--p_divs", type=int,  default=10, help="Number of divisions in perspective angle")
+        pars.add_argument("--horizon", type=float, default=150, help="Y coordinate of horizon")
+        pars.add_argument("--left_x", type=float, default=-250, help="X coordinate of left perspective point")
+        pars.add_argument("--right_x", type=float, default=750, help="X coordinate of right perspective point")
+        pars.add_argument("--div_th", type=float, default=2, help="Grid division line thickness")
+        pars.add_argument("--div_color", type=int, help="Grid division line color")
+        pars.add_argument("--border_th", type=float, default=3, help="Border Line thickness")
 
     def EdgePoints(self,x0, y0, theta):
         #  find the intersection points of the line with the extended

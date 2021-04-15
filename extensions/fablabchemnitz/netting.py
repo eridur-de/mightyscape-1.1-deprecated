@@ -28,11 +28,11 @@ import cubicsuperpath
 from lxml import etree
 from inkex.paths import Path, CubicSuperPath
 
-class RadiusRandomize(inkex.Effect):
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("--s_width", type=float, default=1.0, help="stroke width")
-        self.arg_parser.add_argument("--title")
+class Netting(inkex.EffectExtension):
+    
+    def add_arguments(self, pars):
+        pars.add_argument("--s_width", type=float, default=1.0, help="stroke width")
+        pars.add_argument("--title")
 
     def effect(self):
         path_strings = []
@@ -57,4 +57,4 @@ class RadiusRandomize(inkex.Effect):
                 self.svg.get_current_layer().append( my_path )
                     
 if __name__ == '__main__':
-    RadiusRandomize().run()
+    Netting().run()

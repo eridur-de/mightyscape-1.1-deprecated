@@ -73,34 +73,34 @@ class BezierEnvelope(inkex.EffectExtension):
 
     segmentTypes = ["move","line","quad","cubic","close"]
 
-    def __init__(self):
-            inkex.Effect.__init__(self)
-
     def effect(self):
         if len(self.options.ids) < 2:
-            raise Exception("Two paths must be selected. The 1st is the letter, the 2nd is the envelope and must have 4 sides.")
+            inkex.errormsg("Two paths must be selected. The 1st is the letter, the 2nd is the envelope and must have 4 sides.")
             exit()
 
         letterElement = self.svg.selected[self.options.ids[0]]
         envelopeElement = self.svg.selected[self.options.ids[1]]
 
         if letterElement.get('inkscape:original-d') or envelopeElement.get('inkscape:original-d'):
-            raise Exception("One or both selected paths have attribute 'inkscape:original-d' which points to Live Path Effects (LPE). Please convert to regular path.")
+            inkex.errormsg("One or both selected paths have attribute 'inkscape:original-d' which points to Live Path Effects (LPE). Please convert to regular path.")
             exit()
             
         if letterElement.tag != inkex.addNS('path','svg') or envelopeElement.tag != inkex.addNS('path','svg'):
-            raise Exception("Both letter and envelope must be SVG paths.")
+            inkex.errormsg("Both letter and envelope must be SVG paths.")
             exit()
 
-        axes = extractMorphAxes( Path( envelopeElement.get('d') ).to_arrays() )
+        axes = extractMorphAxes(Path( envelopeElement.get('d') ).to_arrays())
         if axes is None:
-            raise Exception("No axes found on envelope.")
+            inkex.errormsg("No axes found on envelope.")
+            exit()
         axisCount = len(axes)
         if axisCount < 4:
-            raise Exception("The envelope path has less than 4 segments.")
+            inkex.errormsg("The envelope path has less than 4 segments.")
+            exit()
         for i in range( 0, 4 ):
             if axes[i] is None:
-                raise Exception("axes[%i] is None" % i)
+                inkex.errormsg("axis[%i] is None" % i)
+                exit() 
         # morph the enveloped element according to the axes
         morph_element( letterElement, envelopeElement, axes );
 
@@ -112,7 +112,7 @@ def morph_element( letterElement, envelopeElement, axes ):
 
 
 # Morphs a path into a new path, according to cubic curved bounding axes.
-def morphPath( path, axes ):
+def morphPath(path, axes):
     bounds = [y for x in list(Path(path).bounding_box()) for y in list(x)]
     assert len(bounds) == 4
     new_path = []

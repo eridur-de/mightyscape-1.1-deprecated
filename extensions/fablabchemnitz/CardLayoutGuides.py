@@ -433,16 +433,15 @@ class LineGeneratorForHorizontalCards(LineGeneratorBase):
 		return lines
 
 class FoldedCardLayoutGuidesEffect(inkex.EffectExtension):
-	def __init__(self):
-		inkex.Effect.__init__(self)
-
-		self.arg_parser.add_argument('-l', '--layout')
-		self.arg_parser.add_argument('-w', '--card_width', type = float)
-		self.arg_parser.add_argument('-d', '--card_height', type = float)
-		self.arg_parser.add_argument('-o', '--orientation')
-		self.arg_parser.add_argument('-c', '--card_margin', type = float)
-		self.arg_parser.add_argument('-b', '--bleed_margin', type = float)
-		self.arg_parser.add_argument('-p', '--page_margin', type = float)
+	
+	def add_arguments(self, pars):
+		pars.add_argument('-l', '--layout')
+		pars.add_argument('-w', '--card_width', type = float)
+		pars.add_argument('-d', '--card_height', type = float)
+		pars.add_argument('-o', '--orientation')
+		pars.add_argument('-c', '--card_margin', type = float)
+		pars.add_argument('-b', '--bleed_margin', type = float)
+		pars.add_argument('-p', '--page_margin', type = float)
 
 	def effect(self):
 		# find dimensions of page

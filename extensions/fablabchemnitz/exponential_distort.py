@@ -7,11 +7,11 @@ import inkex
 from inkex.paths import CubicSuperPath
 
 class TransformExponential(inkex.EffectExtension):
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        #self.arg_parser.add_argument('-a', '--axis', default='x', help='distortion axis. Valid values are "x", "y", or "xy". Default is "x"')
-        self.arg_parser.add_argument('-x', '--exponent', type=float, default=1.3, help='distortion factor. 1=no distortion, default 1.3')
-        self.arg_parser.add_argument('-p', '--padding_perc', type=float, default=0, help='pad at origin. Padding 100% runs the exponential curve through [0.5 .. 1.0] -- default 0% runs through [0.0 .. 1.0]')
+    
+    def add_arguments(self, pars):
+        #pars.add_argument('-a', '--axis', default='x', help='distortion axis. Valid values are "x", "y", or "xy". Default is "x"')
+        pars.add_argument('-x', '--exponent', type=float, default=1.3, help='distortion factor. 1=no distortion, default 1.3')
+        pars.add_argument('-p', '--padding_perc', type=float, default=0, help='pad at origin. Padding 100% runs the exponential curve through [0.5 .. 1.0] -- default 0% runs through [0.0 .. 1.0]')
 
     def x_exp(self, bbox, x):
         """ reference implementation ignoring padding. unused. """

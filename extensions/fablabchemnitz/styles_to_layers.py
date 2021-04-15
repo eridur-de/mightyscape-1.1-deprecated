@@ -39,16 +39,15 @@ class StylesToLayers(inkex.EffectExtension):
         layer.set(inkex.addNS('groupmode', 'inkscape'), 'layer')
         return layer
         
-    def __init__(self):
-        inkex.EffectExtension.__init__(self)
-        self.arg_parser.add_argument("--apply_transformations", type=inkex.Boolean, default=False, help="Run 'Apply Transformations' extension before running vpype. Helps avoiding geometry shifting")
-        self.arg_parser.add_argument("--separateby", default = "stroke", help = "Separate by")
-        self.arg_parser.add_argument("--parsecolors",default = "hexval", help = "Sort colors by")
-        self.arg_parser.add_argument("--subdividethreshold", type=int, default = 1, help = "Threshold for splitting into sub layers")
-        self.arg_parser.add_argument("--decimals", type=int, default = 1, help = "Decimal tolerance")
-        self.arg_parser.add_argument("--cleanup", type=inkex.Boolean, default = True, help = "Decimal tolerance")
-        self.arg_parser.add_argument("--put_unfiltered", type=inkex.Boolean, default = False, help = "Put unfiltered elements to a separate layer")  
-        self.arg_parser.add_argument("--show_info", type=inkex.Boolean, default = False, help = "Show elements which have no style attributes to filter")
+    def add_arguments(self, pars):
+        pars.add_argument("--apply_transformations", type=inkex.Boolean, default=False, help="Run 'Apply Transformations' extension before running vpype. Helps avoiding geometry shifting")
+        pars.add_argument("--separateby", default = "stroke", help = "Separate by")
+        pars.add_argument("--parsecolors",default = "hexval", help = "Sort colors by")
+        pars.add_argument("--subdividethreshold", type=int, default = 1, help = "Threshold for splitting into sub layers")
+        pars.add_argument("--decimals", type=int, default = 1, help = "Decimal tolerance")
+        pars.add_argument("--cleanup", type=inkex.Boolean, default = True, help = "Decimal tolerance")
+        pars.add_argument("--put_unfiltered", type=inkex.Boolean, default = False, help = "Put unfiltered elements to a separate layer")  
+        pars.add_argument("--show_info", type=inkex.Boolean, default = False, help = "Show elements which have no style attributes to filter")
 
     def effect(self):
     

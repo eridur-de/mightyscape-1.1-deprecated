@@ -13,13 +13,13 @@ from inkex.styles import Style
 
 # This extension can scale any object or path on X, Y or both axes. This addon is kind of obsolete because you can do the same from transforms menu
 
-class ScaleToSize(inkex.Effect):
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument('--unit')
-        self.arg_parser.add_argument("--expected_size", type=float, default=1.0, help="The expected size of the object")
-        self.arg_parser.add_argument("--scale_type", default="Horizontal", help="Scale type (Uniform, Horizontal, Vertical)")
-        self.arg_parser.add_argument("--description")
+class ScaleToSize(inkex.EffectExtension):
+    
+    def add_arguments(self, pars):
+        pars.add_argument('--unit')
+        pars.add_argument("--expected_size", type=float, default=1.0, help="The expected size of the object")
+        pars.add_argument("--scale_type", default="Horizontal", help="Scale type (Uniform, Horizontal, Vertical)")
+        pars.add_argument("--description")
 
     def effect(self):
         unit_factor = 1.0 / self.svg.uutounit(1.0,self.options.unit)

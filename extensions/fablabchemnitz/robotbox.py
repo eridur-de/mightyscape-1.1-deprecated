@@ -29,19 +29,18 @@ from inkex.styles import Style
 def dirtyFormat(path):
     return str(path).replace('[','').replace(']','').replace(',','').replace('\'','')
 		
-class RobotBox(inkex.Effect):
+class RobotBox(inkex.EffectExtension):
 
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("-x", "--width", type=float, default=62.0, help="The Box Width - in the X dimension")
-        self.arg_parser.add_argument("-y", "--height", type=float, default=38.0, help="The Box Height - in the Y dimension")
-        self.arg_parser.add_argument("-z", "--depth", type=float, default=23.0,  help="The Box Depth - in the Z dimension")
-        self.arg_parser.add_argument("-p", "--thickness", type=float, default=1.0, help="Paper thickness - important for thick carton")
-        self.arg_parser.add_argument("-c", "--crampheight", type=float, default=1.0, help="Cramp ear height - render cramping ears and slots on the left and right walls (0 for no cramp)")
-        self.arg_parser.add_argument("-d", "--dashwidth", type=float, default=5.0, help="Bend line dash width")
-        self.arg_parser.add_argument("-s", "--dashstep", type=float, default=5.0, help="Bend line dash step")
-        self.arg_parser.add_argument("-b", "--bendsurface", default="inner", help="Bend line surface (innder or outer) - depends on the way you will make actual bends")
-        self.arg_parser.add_argument("-u", "--unit", default="mm", help="The unit of dimensions")
+    def add_arguments(self, pars):
+        pars.add_argument("-x", "--width", type=float, default=62.0, help="The Box Width - in the X dimension")
+        pars.add_argument("-y", "--height", type=float, default=38.0, help="The Box Height - in the Y dimension")
+        pars.add_argument("-z", "--depth", type=float, default=23.0,  help="The Box Depth - in the Z dimension")
+        pars.add_argument("-p", "--thickness", type=float, default=1.0, help="Paper thickness - important for thick carton")
+        pars.add_argument("-c", "--crampheight", type=float, default=1.0, help="Cramp ear height - render cramping ears and slots on the left and right walls (0 for no cramp)")
+        pars.add_argument("-d", "--dashwidth", type=float, default=5.0, help="Bend line dash width")
+        pars.add_argument("-s", "--dashstep", type=float, default=5.0, help="Bend line dash step")
+        pars.add_argument("-b", "--bendsurface", default="inner", help="Bend line surface (innder or outer) - depends on the way you will make actual bends")
+        pars.add_argument("-u", "--unit", default="mm", help="The unit of dimensions")
                         
     def effect(self):
         width  = self.svg.unittouu( str(self.options.width) + self.options.unit )

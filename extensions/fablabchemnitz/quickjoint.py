@@ -53,7 +53,8 @@ def to_complex(point):
             exit(1)
     
 
-class QuickJoint(inkex.Effect):
+class QuickJoint(inkex.EffectExtension):
+    
     def add_arguments(self, pars):
         pars.add_argument('-s', '--side', type=int, default=0, help='Object face to tabify')
         pars.add_argument('-n', '--numtabs', type=int, default=1, help='Number of tabs to add')

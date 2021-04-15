@@ -25,9 +25,9 @@
 import inkex
 
 class GroupToLayerEffect(inkex.EffectExtension):
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument('-d', '--depth', type = int, default = 1, help = 'Convert nested group up to DEPTH layers deep')
+    
+    def add_arguments(self, pars):
+        pars.add_argument('-d', '--depth', type = int, default = 1, help = 'Convert nested group up to DEPTH layers deep')
 
     def effect(self):
         depth = self.options.depth

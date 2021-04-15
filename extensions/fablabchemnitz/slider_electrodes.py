@@ -3,11 +3,11 @@ from io import StringIO
 import inkex
 from lxml import etree
 
-class SliderElectrodes(inkex.Effect):
-	def __init__(self):
-		inkex.Effect.__init__(self)
-		self.arg_parser.add_argument("-c", "--count", type=int, default=5, help="Number of electrodes")
-		self.arg_parser.add_argument("-s", "--spikes", type=int, default=5, help="Number of spikes")
+class SliderElectrodes(inkex.EffectExtension):
+	
+	def add_arguments(self, pars):
+		pars.add_argument("-c", "--count", type=int, default=5, help="Number of electrodes")
+		pars.add_argument("-s", "--spikes", type=int, default=5, help="Number of spikes")
 
 	def genPathString(self, bounds, spikeWidth, first=False, last=False):
 		s = StringIO()

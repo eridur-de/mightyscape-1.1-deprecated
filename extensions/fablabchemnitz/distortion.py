@@ -5,9 +5,9 @@ from inkex import bezier
 from inkex.paths import Path, CubicSuperPath
 
 class DistortionExtension(inkex.EffectExtension):
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("--lambda_coef", type=float, default=-5.0, help="command line help")
+    
+    def add_arguments(self, pars):
+        pars.add_argument("--lambda_coef", type=float, default=-5.0, help="command line help")
 
     def distort_coordinates(self, x, y):
         """Method applies barrel distorsion to given points with distorsion center in center of image, selected to 
@@ -28,8 +28,6 @@ class DistortionExtension(inkex.EffectExtension):
         x_d += self.x_c
         y_d += self.y_c
         return x_d, y_d
-
-
 
     def split_into_nodes(self, nodes_number=1000):
         for id, node in self.svg.selected.items():
@@ -61,6 +59,9 @@ class DistortionExtension(inkex.EffectExtension):
             )
         self.split_into_nodes()
         self.q = self.options.lambda_coef
+        if self.q == 0.0:
+            inkex.errormsg("Invalid lambda coefficient. May not be exactly zero.")
+            return
         nodes = []
         for id, node in self.svg.selected.items():
             if node.tag == inkex.addNS('path', 'svg'):

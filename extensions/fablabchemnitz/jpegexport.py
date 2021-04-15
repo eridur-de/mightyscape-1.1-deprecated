@@ -26,17 +26,15 @@ import shutil
 
 inkex.localization.localize
 
-class JPEGExport(inkex.Effect):
+class JPEGExport(inkex.EffectExtension):
 
-    def __init__(self):
-        inkex.Effect.__init__(self)
-
-        self.arg_parser.add_argument("--path", default="")
-        self.arg_parser.add_argument("--bgcol", default="#ffffff")
-        self.arg_parser.add_argument("--quality",type=int, default="90")
-        self.arg_parser.add_argument("--density", type=int, default="90")
-        self.arg_parser.add_argument("--page", type=inkex.Boolean, default=False)
-        self.arg_parser.add_argument("--fast", type=inkex.Boolean, default=True)
+    def add_arguments(self, pars):
+        pars.add_argument("--path", default="")
+        pars.add_argument("--bgcol", default="#ffffff")
+        pars.add_argument("--quality",type=int, default="90")
+        pars.add_argument("--density", type=int, default="90")
+        pars.add_argument("--page", type=inkex.Boolean, default=False)
+        pars.add_argument("--fast", type=inkex.Boolean, default=True)
 
     def effect(self):
         """get selected item coords and call command line command to export as a png"""

@@ -4,25 +4,24 @@ rr = random.randint(1,10)
 import inkex
 from lxml import etree
 
-class StreaksEffect(inkex.Effect):
-    def __init__(self):
-        # Call the base class constructor.
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument('--blur', type = int, default = 2)
-        self.arg_parser.add_argument('--linno', type = int, default = 50)
-        self.arg_parser.add_argument('--xrand', type = inkex.Boolean, default = True)
-        self.arg_parser.add_argument('--pagep', type = inkex.Boolean, default = True)
-        self.arg_parser.add_argument('--cusx', type = int, default = 500)
-        self.arg_parser.add_argument('--cusy', type = int, default = 500)
-        self.arg_parser.add_argument('--segLen', type = int, default = 8)
-        self.arg_parser.add_argument('--yrand', type = inkex.Boolean, default = True)
-        self.arg_parser.add_argument('--dashp', type = inkex.Boolean, default = True)
-        self.arg_parser.add_argument('--blankp', type = inkex.Boolean, default = True)
-        self.arg_parser.add_argument('--dotp', type = inkex.Boolean, default = True)
-        self.arg_parser.add_argument('--dots', type = int, default = 100)
-        self.arg_parser.add_argument('--strokeColour', default = 255)
-        self.arg_parser.add_argument('--strokeWidth', type = int, default = 2)
-        self.arg_parser.add_argument("--Nmain", default='title')
+class StreaksEffect(inkex.EffectExtension):
+    
+    def add_arguments(self, pars):
+        pars.add_argument('--blur', type = int, default = 2)
+        pars.add_argument('--linno', type = int, default = 50)
+        pars.add_argument('--xrand', type = inkex.Boolean, default = True)
+        pars.add_argument('--pagep', type = inkex.Boolean, default = True)
+        pars.add_argument('--cusx', type = int, default = 500)
+        pars.add_argument('--cusy', type = int, default = 500)
+        pars.add_argument('--segLen', type = int, default = 8)
+        pars.add_argument('--yrand', type = inkex.Boolean, default = True)
+        pars.add_argument('--dashp', type = inkex.Boolean, default = True)
+        pars.add_argument('--blankp', type = inkex.Boolean, default = True)
+        pars.add_argument('--dotp', type = inkex.Boolean, default = True)
+        pars.add_argument('--dots', type = int, default = 100)
+        pars.add_argument('--strokeColour', default = 255)
+        pars.add_argument('--strokeWidth', type = int, default = 2)
+        pars.add_argument("--Nmain", default='title')
 
     def effect(self):
         blur = int(self.options.blur)

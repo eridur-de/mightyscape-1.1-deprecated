@@ -24,11 +24,11 @@ import inkex
 
 inkex.NSS[u'cs'] = u'http://www.razorfoss.org/tuckboxextension/'
 
-class InsertPaperTemplateEffect(inkex.Effect):
-	def __init__(self):
-		inkex.Effect.__init__(self)
-		self.arg_parser.add_argument('-p', '--papertype')
-		self.arg_parser.add_argument('-s', '--show_type')
+class InsertPaperTemplateEffect(inkex.EffectExtension):
+	
+	def add_arguments(self, pars):
+		pars.add_argument('-p', '--papertype')
+		pars.add_argument('-s', '--show_type')
 
 		### colour ###
 		self.StrokeWidthMM = 0.25

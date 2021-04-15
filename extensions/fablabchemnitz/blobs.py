@@ -15,17 +15,16 @@ The expected degree of the polygon is sqrt(n).  The corners
 are blunted by the blunt parameter.  0 means sharp. 1 will
 result in loopy splines.
     """
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("--pgsizep", type=inkex.Boolean, default=True, help="Default rectangle to page size?")	
-        self.arg_parser.add_argument('--num',  type = int, default = 25, help = 'Number of random points to start with')
-        self.arg_parser.add_argument('--blunt',  type = float,  default = 0.3, help = 'Bluntness of corners. Should be < 1')
-        self.arg_parser.add_argument('--cave',  type = float, default = 0.0, help = 'Concavity. Less blobby and more splatty')
-        self.arg_parser.add_argument('--rx',  type = int,  default = 1000, help = 'Size of work area x')
-        self.arg_parser.add_argument('--ry',  type = int, default = 1000, help = 'Size of work area y')
-        self.arg_parser.add_argument('--sz',  type = float, default = 50., help = 'Size of a blob')
-        self.arg_parser.add_argument('--nb',  type = int, default = 10, help = 'Total number of blobs')
-        self.arg_parser.add_argument("--Nmain", default='top', help="Active tab.")
+    def add_arguments(self, pars):
+        pars.add_argument("--pgsizep", type=inkex.Boolean, default=True, help="Default rectangle to page size?")	
+        pars.add_argument('--num',  type = int, default = 25, help = 'Number of random points to start with')
+        pars.add_argument('--blunt',  type = float,  default = 0.3, help = 'Bluntness of corners. Should be < 1')
+        pars.add_argument('--cave',  type = float, default = 0.0, help = 'Concavity. Less blobby and more splatty')
+        pars.add_argument('--rx',  type = int,  default = 1000, help = 'Size of work area x')
+        pars.add_argument('--ry',  type = int, default = 1000, help = 'Size of work area y')
+        pars.add_argument('--sz',  type = float, default = 50., help = 'Size of a blob')
+        pars.add_argument('--nb',  type = int, default = 10, help = 'Total number of blobs')
+        pars.add_argument("--Nmain", default='top', help="Active tab.")
 
     def effect(self):
         global cave

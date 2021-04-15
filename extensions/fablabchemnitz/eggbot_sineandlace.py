@@ -253,21 +253,19 @@ class SpiroSine(inkex.EffectExtension):
     nsURI = 'http://sample.com/ns'
     nsPrefix = 'doof'
 
-    def __init__(self):
-
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("--tab", help="The active tab when Apply was pressed")
-        self.arg_parser.add_argument('--fCycles', type=float, default=10.0, help='Number of cycles (periods)')
-        self.arg_parser.add_argument('--nrN', type=int, default=0, help='Start x at 2 * pi * n / m')
-        self.arg_parser.add_argument('--nrM', type=int, default=0,  help='Start x at 2 * pi * n / m')
-        self.arg_parser.add_argument('--fRecess', type=float, default=2.0, help='Recede from envelope by factor')
-        self.arg_parser.add_argument("--nSamples", type=int, default=50.0, help="Number of points to sample")
-        self.arg_parser.add_argument("--nWidth", type=int, default=3200, help="Width in pixels")
-        self.arg_parser.add_argument("--nHeight", type=int, default=100, help="Height in pixels")
-        self.arg_parser.add_argument("--nOffsetX", type=int, default=0, help="Starting x coordinate (pixels)")
-        self.arg_parser.add_argument("--nOffsetY", type=int, default=400, help="Starting y coordinate (pixels)")
-        self.arg_parser.add_argument('--bLace', type=inkex.Boolean, default=False, help='Lace')
-        self.arg_parser.add_argument('--bSpline', type=inkex.Boolean, default=True, help='Spline')
+    def add_arguments(self, pars):
+        pars.add_argument("--tab", help="The active tab when Apply was pressed")
+        pars.add_argument('--fCycles', type=float, default=10.0, help='Number of cycles (periods)')
+        pars.add_argument('--nrN', type=int, default=0, help='Start x at 2 * pi * n / m')
+        pars.add_argument('--nrM', type=int, default=0,  help='Start x at 2 * pi * n / m')
+        pars.add_argument('--fRecess', type=float, default=2.0, help='Recede from envelope by factor')
+        pars.add_argument("--nSamples", type=int, default=50.0, help="Number of points to sample")
+        pars.add_argument("--nWidth", type=int, default=3200, help="Width in pixels")
+        pars.add_argument("--nHeight", type=int, default=100, help="Height in pixels")
+        pars.add_argument("--nOffsetX", type=int, default=0, help="Starting x coordinate (pixels)")
+        pars.add_argument("--nOffsetY", type=int, default=400, help="Starting y coordinate (pixels)")
+        pars.add_argument('--bLace', type=inkex.Boolean, default=False, help='Lace')
+        pars.add_argument('--bSpline', type=inkex.Boolean, default=True, help='Spline')
 
         self.recess = 0.95
 

@@ -33,18 +33,18 @@ from lxml import etree
 # - add ruler into current layer
 # - add magnification e.g. 2:1 for small drawings
 
-class Realscale(inkex.Effect):
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument('--tab')
-        self.arg_parser.add_argument('--length', type=float, default=100.0, help='Length of scaling path in real-world units')
-        self.arg_parser.add_argument('--unit', default='cm', help='Real-world unit')
-        self.arg_parser.add_argument('--showscale', default='false',  help='Show Scale Ruler')
-        self.arg_parser.add_argument('--choosescale', default='all',  help='Choose Scale')
-        self.arg_parser.add_argument('--metric', default='1', help='Common metric scales')
-        self.arg_parser.add_argument('--imperial',default='1', help='Common imperial scales')
-        self.arg_parser.add_argument('--custom_scale', type=float, default=45, help='Custom scale')
-        self.arg_parser.add_argument('--unitlength', type=int, default='1', help='Length of scale ruler')
+class Realscale(inkex.EffectExtension):
+    
+    def add_arguments(self, pars):
+        pars.add_argument('--tab')
+        pars.add_argument('--length', type=float, default=100.0, help='Length of scaling path in real-world units')
+        pars.add_argument('--unit', default='cm', help='Real-world unit')
+        pars.add_argument('--showscale', default='false',  help='Show Scale Ruler')
+        pars.add_argument('--choosescale', default='all',  help='Choose Scale')
+        pars.add_argument('--metric', default='1', help='Common metric scales')
+        pars.add_argument('--imperial',default='1', help='Common imperial scales')
+        pars.add_argument('--custom_scale', type=float, default=45, help='Custom scale')
+        pars.add_argument('--unitlength', type=int, default='1', help='Length of scale ruler')
 
     def calc_scale_center(self, p1x, p1y, p2x, p2y):
         """ Use straight line as scaling center.

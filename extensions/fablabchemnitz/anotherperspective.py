@@ -241,19 +241,18 @@ def complex2tulpe(complexNb):
 '''
 class AnotherPerspective(inkex.EffectExtension):
 
-    def __init__(self):
-        inkex.Effect.__init__(self)
-
-    def envelope2coords(self,path_envelope):
+    def envelope2coords(self, path_envelope):
         pp_envelope = CubicSuperPath(path_envelope)
-        # inkex.debug(pp_envelope)
+        if len(pp_envelope[0]) < 4:
+            inkex.errormsg("The selected envelope (your second path) does not contain enough nodes. Check to have at least 4 nodes.")
+            exit()
 
         c0 = pp_envelope[0][0][0]
         c1 = pp_envelope[0][1][0]
         c2 = pp_envelope[0][2][0]
         c3 = pp_envelope[0][3][0]
         # inkex.debug(str(c0)+" "+str(c1)+" "+str(c2)+" "+str(c3))
-        return [c0,c1,c2,c3]
+        return [c0, c1, c2, c3]
 
     def effect(self):
         if len(self.options.ids) < 2:

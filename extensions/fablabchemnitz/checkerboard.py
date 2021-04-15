@@ -62,15 +62,15 @@ def draw_grid(x, y, rows, cols, size, color1, color2, parent):
             draw_square(x + col * size, y + row * size, size, size, color, group, id_)
 	
 class Checkerboard(inkex.EffectExtension):
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("--tab")
-        self.arg_parser.add_argument("--color1", type=Color, default=4286282751)
-        self.arg_parser.add_argument("--color2", type=Color, default=8092671)
-        self.arg_parser.add_argument("--size")
-        self.arg_parser.add_argument("--rows", type=int)
-        self.arg_parser.add_argument("--cols", type=int)
-        self.arg_parser.add_argument("--layer", type=inkex.Boolean)
+    
+    def add_arguments(self, pars):
+        pars.add_argument("--tab")
+        pars.add_argument("--color1", type=Color, default=4286282751)
+        pars.add_argument("--color2", type=Color, default=8092671)
+        pars.add_argument("--size")
+        pars.add_argument("--rows", type=int)
+        pars.add_argument("--cols", type=int)
+        pars.add_argument("--layer", type=inkex.Boolean)
 
     def effect(self):
         if self.svg.get_current_layer() is not None:

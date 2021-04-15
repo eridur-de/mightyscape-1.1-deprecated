@@ -5,17 +5,17 @@ from inkex import TextElement, TextPath, Tspan
 from inkex.bezier import csparea, cspcofm, csplength
 from inkex.colors import Color
 
-class IdsToText(inkex.Effect):
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument('--fontsize', type = int, default = '10', help = 'Font Size')
-        self.arg_parser.add_argument('--color', type=Color, default = 255, help = 'Color')
-        self.arg_parser.add_argument('--font', default = 'Roboto', help = 'Font Family')
-        self.arg_parser.add_argument('--fontweight', default = 'bold', help = 'Font Weight')
-        self.arg_parser.add_argument('--replaced', default = '', help = 'Text to replace')
-        self.arg_parser.add_argument('--replacewith', default = '', help = 'Replace with this text')
-        self.arg_parser.add_argument('--angle', type = float, dest = 'angle', default = 0, help = 'Rotation angle')
-        self.arg_parser.add_argument('--capitals', type = inkex.Boolean, default = False, help = 'Capitalize')
+class IdsToText(inkex.EffectExtension):
+    
+    def add_arguments(self, pars):
+        pars.add_argument('--fontsize', type = int, default = '10', help = 'Font Size')
+        pars.add_argument('--color', type=Color, default = 255, help = 'Color')
+        pars.add_argument('--font', default = 'Roboto', help = 'Font Family')
+        pars.add_argument('--fontweight', default = 'bold', help = 'Font Weight')
+        pars.add_argument('--replaced', default = '', help = 'Text to replace')
+        pars.add_argument('--replacewith', default = '', help = 'Replace with this text')
+        pars.add_argument('--angle', type = float, dest = 'angle', default = 0, help = 'Rotation angle')
+        pars.add_argument('--capitals', type = inkex.Boolean, default = False, help = 'Capitalize')
 
     def effect(self):
         if len(self.svg.selected) == 0:

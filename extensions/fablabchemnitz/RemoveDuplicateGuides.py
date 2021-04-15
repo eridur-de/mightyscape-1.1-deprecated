@@ -105,9 +105,7 @@ class GuideDefiniton():
 		#return "{} - p1:({}, {}) p2:({}, {}) - {}, {}, {}".format(self.id, self.p1.x, self.p1.y, self.p2.x, self.p2.y, self.slope, self.xIntercept, self.yIntercept)
 		return "{} - {}".format(self.id, self.interceptSerial())
 
-class RemoveDuplicateGuidesEffect(inkex.Effect):
-	def __init__(self):
-		inkex.Effect.__init__(self)
+class RemoveDuplicateGuidesEffect(inkex.EffectExtension):
 
 	def effect(self):
 		# enumerate all guides

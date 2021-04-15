@@ -56,15 +56,14 @@ class SheetMetalConus(inkex.Effect):
                      'marker-start'  : 'url(#ArrowDIN-start)',
                      'marker-end'    : 'url(#ArrowDIN-end)'    }
 
-    def __init__(self):
-        inkex.Effect.__init__(self) # Call the base class constructor.
-        self.arg_parser.add_argument('-b', '--diaBase', type = float, dest = 'diaBase', default = 300.0, help = 'The diameter of the cones base.')
-        self.arg_parser.add_argument('-c', '--diaCut',  type = float, default = 100.0, help = 'The diameter of cones cut (0.0 if cone is not cut.')
-        self.arg_parser.add_argument('-l', '--heightCone',  type = float, default = 200.0, help = 'The height of the (cut) cone.')
-        self.arg_parser.add_argument('-u', '--units', default = 'mm', help = 'The units in which the cone values are given. mm or in for real objects')
-        self.arg_parser.add_argument('-w', '--strokeWidth', type = float, default = 0.3, help = 'The line thickness in given unit. For laser cutting it should be rather small.')
-        self.arg_parser.add_argument('-f', '--strokeColour', type=Color, default = 255, help = 'The line colour.')
-        self.arg_parser.add_argument('-d', '--verbose', type = inkex.Boolean, default = False, help = 'Enable verbose output of calculated parameters. Used for debugging or is someone needs the calculated values.')
+    def add_arguments(self, pars):
+        pars.add_argument('-b', '--diaBase', type = float, dest = 'diaBase', default = 300.0, help = 'The diameter of the cones base.')
+        pars.add_argument('-c', '--diaCut',  type = float, default = 100.0, help = 'The diameter of cones cut (0.0 if cone is not cut.')
+        pars.add_argument('-l', '--heightCone',  type = float, default = 200.0, help = 'The height of the (cut) cone.')
+        pars.add_argument('-u', '--units', default = 'mm', help = 'The units in which the cone values are given. mm or in for real objects')
+        pars.add_argument('-w', '--strokeWidth', type = float, default = 0.3, help = 'The line thickness in given unit. For laser cutting it should be rather small.')
+        pars.add_argument('-f', '--strokeColour', type=Color, default = 255, help = 'The line colour.')
+        pars.add_argument('-d', '--verbose', type = inkex.Boolean, default = False, help = 'Enable verbose output of calculated parameters. Used for debugging or is someone needs the calculated values.')
 
     # Marker arrows
     def makeMarkerstyle(self, name, rotate):

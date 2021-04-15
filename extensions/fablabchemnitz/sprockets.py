@@ -56,11 +56,11 @@ def SVG_curve2(p1, c11, c12, p2, c21, c22, t):
 def SVG_close():
     return 'Z\n'
 
-class Sprockets(inkex.Effect):
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("-t", "--teeth", type=int, default=24, help="Number of teeth")
-        self.arg_parser.add_argument("-s", "--size", default="ANSI #40", help="Chain size (common values ANSI #35, ANSI #40, ANSI #60)")
+class Sprockets(inkex.EffectExtension):
+    
+    def add_arguments(self, pars):
+        pars.add_argument("-t", "--teeth", type=int, default=24, help="Number of teeth")
+        pars.add_argument("-s", "--size", default="ANSI #40", help="Chain size (common values ANSI #35, ANSI #40, ANSI #60)")
 
     def get_pitch(self, size):
         return self.svg.unittouu({

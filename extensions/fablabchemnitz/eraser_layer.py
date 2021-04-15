@@ -33,8 +33,6 @@ import sys
 from lxml import etree
 
 class EraserLayer(inkex.EffectExtension):
-    def __init__(self):
-        inkex.Effect.__init__(self) 
 
     #inserta el flltro que pasa a negro la mascara
     def insertFilter(self, svg):

@@ -45,17 +45,16 @@ def draw_SVG_circle(parent, r, cx, cy, name, style):
                     inkex.addNS('label','inkscape'): name}
     circle = etree.SubElement(parent, inkex.addNS('circle','svg'), circ_attribs )
 
-class Ratchet(inkex.Effect):
+class Ratchet(inkex.EffectExtension):
 
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("--centre_hole", type=inkex.Boolean, default=True, help="Show or not")
-        self.arg_parser.add_argument("--teeth", type=int, default=12, help="Number of teeth around outside")
-        self.arg_parser.add_argument("--centre_hole_diam", type=float, default=1, help="Dia of central hole")
-        self.arg_parser.add_argument("--diam_in", type=float, default=28, help="Inner diamter of the Ratchet")
-        self.arg_parser.add_argument("--diam_out", type=float, default=30, help="Outer diamter of the Ratchet")
-        self.arg_parser.add_argument('--vtooth_shape', default='straight', help="Shape of tooth")
-        self.arg_parser.add_argument('--htooth_shape', default='curve', help="Shape of tooth")
+    def add_arguments(self, pars):
+        pars.add_argument("--centre_hole", type=inkex.Boolean, default=True, help="Show or not")
+        pars.add_argument("--teeth", type=int, default=12, help="Number of teeth around outside")
+        pars.add_argument("--centre_hole_diam", type=float, default=1, help="Dia of central hole")
+        pars.add_argument("--diam_in", type=float, default=28, help="Inner diamter of the Ratchet")
+        pars.add_argument("--diam_out", type=float, default=30, help="Outer diamter of the Ratchet")
+        pars.add_argument('--vtooth_shape', default='straight', help="Shape of tooth")
+        pars.add_argument('--htooth_shape', default='curve', help="Shape of tooth")
 
     def effect(self):
         Line_style = {'stroke':'#000000','stroke-width':self.svg.unittouu(str(0.1) + "mm"),'fill':'none'}

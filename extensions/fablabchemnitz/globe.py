@@ -109,13 +109,14 @@ def draw_ellipse_segment_rotated(cx,cy,rx,ry, width, fill, name, parent, rotatio
 
 
 class Globe(inkex.EffectExtension):
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("--longitudeLineCount", type=int, default=15, help="Number of longitude lines")
-        self.arg_parser.add_argument("--latitudeLineCount", type=int, default=15, help="Number of latitude lines")
-        self.arg_parser.add_argument("--rotationXDegrees", type=float, default=45, help="Rotation around X axis (degrees)")
-        self.arg_parser.add_argument("--rotationYDegrees", type=float, default=-45, help="Rotation around Y axis (degrees)")
-        self.arg_parser.add_argument("--isSeeThrough", type=inkex.Boolean, default=False, help="Is the globe see-through")
+
+    def add_arguments(self, pars):
+        pars.add_argument("--longitudeLineCount", type=int, default=15, help="Number of longitude lines")
+        pars.add_argument("--latitudeLineCount", type=int, default=15, help="Number of latitude lines")
+        pars.add_argument("--rotationXDegrees", type=float, default=45, help="Rotation around X axis (degrees)")
+        pars.add_argument("--rotationYDegrees", type=float, default=-45, help="Rotation around Y axis (degrees)")
+        pars.add_argument("--isSeeThrough", type=inkex.Boolean, default=False, help="Is the globe see-through")
+        
     def effect(self):
 
         name = 'globe'

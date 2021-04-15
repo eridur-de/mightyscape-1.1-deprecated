@@ -165,11 +165,11 @@ def stripline(bone,linewidth,logname):
         fp.close()
         return outVertexArray
 
-class StripLineEffect(inkex.Effect):
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("--linewidth", type=int, default="10", help="Line thickness")
-        self.arg_parser.add_argument("--logfilename", default="10", help="Log file name")
+class StripLineEffect(inkex.EffectExtension):
+    
+    def add_arguments(self, pars):
+        pars.add_argument("--linewidth", type=int, default="10", help="Line thickness")
+        pars.add_argument("--logfilename", default="10", help="Log file name")
         
     def effect(self):
         linewidth=self.options.linewidth

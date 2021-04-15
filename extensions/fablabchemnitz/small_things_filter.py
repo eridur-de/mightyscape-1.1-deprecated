@@ -7,12 +7,12 @@ def isclosedac(p):
     return abs(p.start-p.end) < 1e-6
 
 
-class Sieve(inkex.Effect):
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument('--unit')
-        self.arg_parser.add_argument('--threshold', type=float, help='Remove paths with an threshold smaller than this value')
-        self.arg_parser.add_argument('--measure', default="length")
+class SmallThingsFilter(inkex.EffectExtension):
+    
+    def add_arguments(self, pars):
+        pars.add_argument('--unit')
+        pars.add_argument('--threshold', type=float, help='Remove paths with an threshold smaller than this value')
+        pars.add_argument('--measure', default="length")
 		
     def effect(self):
         self.options.threshold = self.svg.unittouu(str(self.options.threshold) + self.svg.unit)
@@ -43,4 +43,4 @@ class Sieve(inkex.Effect):
                 pass
 
 if __name__ == '__main__':
-    Sieve().run()
+    SmallThingsFilter().run()

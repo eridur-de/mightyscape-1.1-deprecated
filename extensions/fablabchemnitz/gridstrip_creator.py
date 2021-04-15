@@ -30,23 +30,22 @@ def printDebug(string):
 	inkex.errormsg(string)
 	
 class GridStrip_Creator(inkex.EffectExtension):
-	def __init__(self):
-		inkex.Effect.__init__(self)
-
-		self.arg_parser.add_argument('--length', type = float, default = 230.0, help = 'Length of strip')
-		self.arg_parser.add_argument('--width', type = float, default = 20.0, help = 'Width of strip')
-		self.arg_parser.add_argument('--cellheight', type = float, default = 12.5, help = 'height of cell')
-		self.arg_parser.add_argument('--cellwidth', type = float, default = 12.5, help = 'Width of cell')
-		self.arg_parser.add_argument('--scalecells', type = inkex.Boolean, default = False, help = 'Scale cells over length')
-		self.arg_parser.add_argument('--cellnumx', type = int, default = 11, help = 'Number of cells x')
-		self.arg_parser.add_argument('--cellnumy', type = int, default = 10, help = 'Number of cells y')
-		self.arg_parser.add_argument('--notchdepth', type = float, default = 1.0, help = 'Depth of notch')
-		self.arg_parser.add_argument('--notchwidth', type = float, default = 10.0, help = 'Width of notch')
-		self.arg_parser.add_argument('--notchhorizontal', type = inkex.Boolean, default = False, help = 'Make notches on horizontal strip')
-		self.arg_parser.add_argument('--notchvertical', type = inkex.Boolean, default = False, help = 'Make notches on vertical strip')
-		self.arg_parser.add_argument('--notch2width', type = float, default = 3.0, help = 'Width of notch')
-		self.arg_parser.add_argument('--notchxcorner', type = inkex.Boolean, default = False, help = 'Make notches on corner of horizontal strip')
-		self.arg_parser.add_argument('--notchycorner', type = inkex.Boolean, default = False, help = 'Make notches on corner of vertical strip')
+	
+	def add_arguments(self, pars):
+		pars.add_argument('--length', type = float, default = 230.0, help = 'Length of strip')
+		pars.add_argument('--width', type = float, default = 20.0, help = 'Width of strip')
+		pars.add_argument('--cellheight', type = float, default = 12.5, help = 'height of cell')
+		pars.add_argument('--cellwidth', type = float, default = 12.5, help = 'Width of cell')
+		pars.add_argument('--scalecells', type = inkex.Boolean, default = False, help = 'Scale cells over length')
+		pars.add_argument('--cellnumx', type = int, default = 11, help = 'Number of cells x')
+		pars.add_argument('--cellnumy', type = int, default = 10, help = 'Number of cells y')
+		pars.add_argument('--notchdepth', type = float, default = 1.0, help = 'Depth of notch')
+		pars.add_argument('--notchwidth', type = float, default = 10.0, help = 'Width of notch')
+		pars.add_argument('--notchhorizontal', type = inkex.Boolean, default = False, help = 'Make notches on horizontal strip')
+		pars.add_argument('--notchvertical', type = inkex.Boolean, default = False, help = 'Make notches on vertical strip')
+		pars.add_argument('--notch2width', type = float, default = 3.0, help = 'Width of notch')
+		pars.add_argument('--notchxcorner', type = inkex.Boolean, default = False, help = 'Make notches on corner of horizontal strip')
+		pars.add_argument('--notchycorner', type = inkex.Boolean, default = False, help = 'Make notches on corner of vertical strip')
 
 	def effect(self):
 		# Get access to main SVG document element and get its dimensions.

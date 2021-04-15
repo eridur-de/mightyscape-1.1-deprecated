@@ -33,7 +33,6 @@ class DelaunayTriangulation(inkex.EffectExtension):
     'Overlay selected objects with triangles.'
 
     def add_arguments(self, pars):
-        'Parse the arguments passed to us from an Inkscape dialog box.'
         pars.add_argument('--tab', help='The selected UI tab when OK was pressed')
         pars.add_argument('--joggling', type=inkex.Boolean, default=False,  help='Use joggled input instead of merged facets')
         pars.add_argument('--furthest', type=inkex.Boolean, default=False, help='Furthest-site Delaunay triangulation')

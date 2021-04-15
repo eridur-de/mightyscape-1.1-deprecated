@@ -55,17 +55,17 @@ def roughBBox(path):
                    tn=(yMax-ymin)/(xMax-xmin)
     return tn
 
-class Length(inkex.Effect):
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("-s", "--selection", default=True, help="select path with length or slant")
-        self.arg_parser.add_argument("-1", "--len1", type=float, default=12)
-        self.arg_parser.add_argument("-2", "--len2", type=float, default=25)
-        self.arg_parser.add_argument("-3", "--len3", type=float, default=40)
-        self.arg_parser.add_argument("-4", "--len4", type=float, default=60)
-        self.arg_parser.add_argument("-5", "--len5", type=float, default=60)
-        self.arg_parser.add_argument("-6", "--hor", type=float, default=0.2)
-        self.arg_parser.add_argument("-7", "--ver", type=float, default=10)
+class Length(inkex.EffectExtension):
+    
+    def add_arguments(self, pars):
+        pars.add_argument("-s", "--selection", default=True, help="select path with length or slant")
+        pars.add_argument("-1", "--len1", type=float, default=12)
+        pars.add_argument("-2", "--len2", type=float, default=25)
+        pars.add_argument("-3", "--len3", type=float, default=40)
+        pars.add_argument("-4", "--len4", type=float, default=60)
+        pars.add_argument("-5", "--len5", type=float, default=60)
+        pars.add_argument("-6", "--hor", type=float, default=0.2)
+        pars.add_argument("-7", "--ver", type=float, default=10)
   
     def effect(self):
         # loop over all selected paths

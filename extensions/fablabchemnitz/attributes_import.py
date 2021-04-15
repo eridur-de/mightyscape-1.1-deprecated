@@ -3,9 +3,8 @@
 import inkex
 
 class AttribImport(inkex.EffectExtension):
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("--data", default="", help="data file")
+    def add_arguments(self, pars):
+        pars.add_argument("--data", default="", help="data file")
 
     def effect(self):
         with open(self.options.data, 'r') as f:

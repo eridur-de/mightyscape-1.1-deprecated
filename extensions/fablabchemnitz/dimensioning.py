@@ -41,21 +41,21 @@ def rotate(tangentvec, point):
 
 
 class Dimensioning(inkex.EffectExtension):
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        # the options given in the dialouge
-        self.arg_parser.add_argument("--orientation",  default='horizontal', help="The type of orientation of the dimensioning (horizontal, vertical or parallel)")
-        self.arg_parser.add_argument("--arrow_orientation", default='auto',  help="The type of orientation of the arrows")
-        self.arg_parser.add_argument("--line_scale", type=float, default=1.0,  help="Scale factor for the line thickness")
-        self.arg_parser.add_argument("--overlap", type=float, default=1.0, help="Overlap of the helpline over the dimensioning line")
-        self.arg_parser.add_argument("--distance", type=float, default=1.0, help="Distance of the helpline to the object")
-        self.arg_parser.add_argument("--position", type=float, default=1.0, help="position of the dimensioning line")
-        self.arg_parser.add_argument("--flip",  type=inkex.Boolean, default=False, help="flip side")
-        self.arg_parser.add_argument("--scale_factor", type=float, default=1.0, help="scale factor for the dimensioning text")
-        self.arg_parser.add_argument("--unit", default='px', help="The unit that should be used for the dimensioning")
-        self.arg_parser.add_argument("--rotate", type=inkex.Boolean,  default=True, help="Rotate the annotation?")
-        self.arg_parser.add_argument("--digit", type=int, default=0, help="number of digits after the point")
-        self.arg_parser.add_argument("--tab", default="sampling", help="The selected UI-tab when OK was pressed")
+    
+    def add_arguments(self, pars):
+        pars.add_argument("--orientation",  default='horizontal', help="The type of orientation of the dimensioning (horizontal, vertical or parallel)")
+        pars.add_argument("--arrow_orientation", default='auto',  help="The type of orientation of the arrows")
+        pars.add_argument("--line_scale", type=float, default=1.0,  help="Scale factor for the line thickness")
+        pars.add_argument("--overlap", type=float, default=1.0, help="Overlap of the helpline over the dimensioning line")
+        pars.add_argument("--distance", type=float, default=1.0, help="Distance of the helpline to the object")
+        pars.add_argument("--position", type=float, default=1.0, help="position of the dimensioning line")
+        pars.add_argument("--flip",  type=inkex.Boolean, default=False, help="flip side")
+        pars.add_argument("--scale_factor", type=float, default=1.0, help="scale factor for the dimensioning text")
+        pars.add_argument("--unit", default='px', help="The unit that should be used for the dimensioning")
+        pars.add_argument("--rotate", type=inkex.Boolean,  default=True, help="Rotate the annotation?")
+        pars.add_argument("--digit", type=int, default=0, help="number of digits after the point")
+        pars.add_argument("--tab", default="sampling", help="The selected UI-tab when OK was pressed")
+        
     def create_linestyles(self):
         '''
         Create the line styles for the drawings.

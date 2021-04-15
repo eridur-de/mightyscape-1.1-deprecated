@@ -159,12 +159,12 @@ def d_str(self, useSandT=False, use_closed_attrib=False, rel=False):
     return s if not rel else s.lower()
         
 class FilletChamfer(inkex.EffectExtension):
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("-t", "--fillet_type", default="fillet", help="Selects whether using fillet or chamfer")
-        self.arg_parser.add_argument("-R", "--radius", type=float, default=60.0, help="The radius")
-        self.arg_parser.add_argument('--unit', default='px', help='units of measurement')
-        self.arg_parser.add_argument("--remove", type=inkex.Boolean, default=False, help="If True, control object will be removed")
+    
+    def add_arguments(self, pars):
+        pars.add_argument("-t", "--fillet_type", default="fillet", help="Selects whether using fillet or chamfer")
+        pars.add_argument("-R", "--radius", type=float, default=60.0, help="The radius")
+        pars.add_argument('--unit', default='px', help='units of measurement')
+        pars.add_argument("--remove", type=inkex.Boolean, default=False, help="If True, control object will be removed")
         
     def addEle(self, ele, parent, props):
         # https://inkscape.org/~pacogarcia/%E2%98%85new-version-of-shapes-extension

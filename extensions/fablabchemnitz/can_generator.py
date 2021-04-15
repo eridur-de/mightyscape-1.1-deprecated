@@ -35,15 +35,15 @@ def punkte_erstellen(punkte, x, y):
     punkte.append((x, y))
 
 class Dose(inkex.EffectExtension): 
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("--height", type=int, default = 50, help="Höhe der Dose")
-        self.arg_parser.add_argument("--overhang", type=int, default = 40, help="Überstand des Deckels")
-        self.arg_parser.add_argument("--diameter", type=int, default = 40, help="diameter der Dose")
-        self.arg_parser.add_argument("--angle", type=float, default = 22.5, help="angle der segments")
-        self.arg_parser.add_argument("--material", type=float, default = 3.6, help="Materialstärke")
-        self.arg_parser.add_argument("--bottom", type=inkex.Boolean, default = False, help="Deckel und bottom?")
-        self.arg_parser.add_argument("--active-tab", default='title', help="Active tab.")
+
+    def add_arguments(self, pars):
+        pars.add_argument("--height", type=int, default = 50, help="Höhe der Dose")
+        pars.add_argument("--overhang", type=int, default = 40, help="Überstand des Deckels")
+        pars.add_argument("--diameter", type=int, default = 40, help="diameter der Dose")
+        pars.add_argument("--angle", type=float, default = 22.5, help="angle der segments")
+        pars.add_argument("--material", type=float, default = 3.6, help="Materialstärke")
+        pars.add_argument("--bottom", type=inkex.Boolean, default = False, help="Deckel und bottom?")
+        pars.add_argument("--active-tab", default='title', help="Active tab.")
         
         self.deckel_punkte = []
         self.deckel_pfad = []

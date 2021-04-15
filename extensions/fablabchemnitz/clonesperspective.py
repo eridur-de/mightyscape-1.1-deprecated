@@ -5,10 +5,10 @@ import inkex
 from lxml import etree
 
 class clonesPerspectiveEffect(inkex.EffectExtension):
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument('--num', type = int, default = 5, help = 'Drag out center of rotation before calling')
-        self.arg_parser.add_argument('--ratio', type = float, default = 0.9, help = 'Ratio of size of nearest neighbor to first.  Must be < 1')
+    
+    def add_arguments(self, pars):
+        pars.add_argument('--num', type = int, default = 5, help = 'Drag out center of rotation before calling')
+        pars.add_argument('--ratio', type = float, default = 0.9, help = 'Ratio of size of nearest neighbor to first.  Must be < 1')
 
     def effect(self):
         if len(self.svg.selected) != 1:

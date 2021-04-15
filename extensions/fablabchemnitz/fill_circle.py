@@ -37,11 +37,11 @@ def toFloat(l):
     return l
 
 class Circle(inkex.EffectExtension):
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument('--radius', type = float, default = 3.0, help = 'Radius to enter')
-        self.arg_parser.add_argument('--margin', type = float, default = 10.0, help = 'Margin between the edge of the rectangles and the circles')
-        self.arg_parser.add_argument('--space', type = float, default = 30.0, help = 'Spacing between circles')
+    
+    def add_arguments(self, pars):
+        pars.add_argument('--radius', type = float, default = 3.0, help = 'Radius to enter')
+        pars.add_argument('--margin', type = float, default = 10.0, help = 'Margin between the edge of the rectangles and the circles')
+        pars.add_argument('--space', type = float, default = 30.0, help = 'Spacing between circles')
 
     def effect(self):
         # svg = self.svg.document.getroot()

@@ -33,10 +33,10 @@ import re
 from lxml import etree
 
 class ReplaceColorAlpha(inkex.EffectExtension):
-  def __init__(self):
-    inkex.Effect.__init__(self)
-    self.arg_parser.add_argument("--from_color", default="000000", help="Replace color")
-    self.arg_parser.add_argument("--to_color", default="000000", help="By color + Alpha")
+    
+  def add_arguments(self, pars):
+    pars.add_argument("--from_color", default="000000", help="Replace color")
+    pars.add_argument("--to_color", default="000000", help="By color + Alpha")
     
   def effect(self):
     saveout = sys.stdout

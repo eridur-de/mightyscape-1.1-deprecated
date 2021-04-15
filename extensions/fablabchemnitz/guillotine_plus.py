@@ -41,6 +41,7 @@ import inkex
 from inkex.command import inkscape
 
 class Guillotine(inkex.EffectExtension):
+    
     """Exports slices made using guides"""
     def add_arguments(self, pars):
         pars.add_argument("--directory")

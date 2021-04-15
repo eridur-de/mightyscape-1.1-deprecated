@@ -29,8 +29,7 @@ import re
 from inkex.paths import Path
 			
 class CloseCurves(inkex.EffectExtension):
-	def __init__(self):
-		inkex.Effect.__init__(self)
+
 	def effect(self):
 		for id, node in self.svg.selected.items():
 			if node.tag == inkex.addNS('path','svg'):

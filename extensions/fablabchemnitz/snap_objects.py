@@ -25,15 +25,14 @@ import inkex
 from inkex.paths import Arc, Curve, Horz, Line, Move, Quadratic, Smooth, TepidQuadratic, Vert, ZoneClose
 
 
-class SnapObjects(inkex.Effect):
+class SnapObjects(inkex.EffectExtension):
     "Snap the points on multiple paths towards each other."
 
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument('--max_dist', type=float, default=25.0, help='Maximum distance to be considered a "nearby" point')
-        self.arg_parser.add_argument('--controls', type=inkex.Boolean, default=True, help='Snap control points')
-        self.arg_parser.add_argument('--ends', type=inkex.Boolean, default=True, help='Snap endpoints')
-        self.arg_parser.add_argument('--first_only', type=inkex.Boolean, default=True, help='Modify only the first selected path')
+    def add_arguments(self, pars):
+        pars.add_argument('--max_dist', type=float, default=25.0, help='Maximum distance to be considered a "nearby" point')
+        pars.add_argument('--controls', type=inkex.Boolean, default=True, help='Snap control points')
+        pars.add_argument('--ends', type=inkex.Boolean, default=True, help='Snap endpoints')
+        pars.add_argument('--first_only', type=inkex.Boolean, default=True, help='Modify only the first selected path')
 
     def _bin_points(self):
         "Associate each path ID with a list of control points and a list of endpoints."

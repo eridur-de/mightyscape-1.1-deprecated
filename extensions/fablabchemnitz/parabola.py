@@ -30,6 +30,7 @@ import inkex
 from inkex import turtle as pturtle
 
 class parabola(inkex.GenerateExtension):
+    
     container_label = 'Parabola'
     def add_arguments(self, pars):
         pars.add_argument("--height", type=int, default=300, help="Shape Height")

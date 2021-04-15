@@ -22,9 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 import inkex
 from inkex.localization import inkex_gettext as _
 
-class Mirror(inkex.Effect):
-    def __init__(self):
-            inkex.Effect.__init__(self)
+class Mirror(inkex.EffectExtension):
 
     def effect(self):
         if len(self.options.ids) < 2:

@@ -23,9 +23,6 @@ from inkex import transforms
 
 class ExportXY(inkex.EffectExtension):
     
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        
     def effect(self):
         if len(self.svg.selected) > 0:
             output_all = output_nodes = ""

@@ -23,34 +23,34 @@ import inkex
 from lxml import etree
 from math import *
 
-class Knob_Scale(inkex.Effect):
-    def __init__(self):
-        inkex.Effect.__init__(self)
+class Knob_Scale(inkex.EffectExtension):
+    
+    def add_arguments(self, pars):
         # General settings
-        self.arg_parser.add_argument("--x", type=float, default=0.0, help="Center X")
-        self.arg_parser.add_argument("--y", type=float, default=0.0, help="Center Y")
-        self.arg_parser.add_argument("--radius", type=float, default=100.0, help="Knob radius")
-        self.arg_parser.add_argument("--linewidth", type=float, default=1)
-        self.arg_parser.add_argument("--angle", type=float, default=260.0, help="Angle of the knob scale in degrees")
-        self.arg_parser.add_argument("--draw_arc", type=inkex.Boolean, default='True')
-        self.arg_parser.add_argument("--draw_centering_circle", type=inkex.Boolean, default='False')
-        self.arg_parser.add_argument("-u", "--units", default="px", help="units to measure size of knob")
+        pars.add_argument("--x", type=float, default=0.0, help="Center X")
+        pars.add_argument("--y", type=float, default=0.0, help="Center Y")
+        pars.add_argument("--radius", type=float, default=100.0, help="Knob radius")
+        pars.add_argument("--linewidth", type=float, default=1)
+        pars.add_argument("--angle", type=float, default=260.0, help="Angle of the knob scale in degrees")
+        pars.add_argument("--draw_arc", type=inkex.Boolean, default='True')
+        pars.add_argument("--draw_centering_circle", type=inkex.Boolean, default='False')
+        pars.add_argument("-u", "--units", default="px", help="units to measure size of knob")
         # Tick settings
-        self.arg_parser.add_argument("--n_ticks", type=int, default=5)
-        self.arg_parser.add_argument("--ticksize", type=float, default=10)
-        self.arg_parser.add_argument("--n_subticks", type=int, default=10)
-        self.arg_parser.add_argument("--subticksize", type=float, default=5)
-        self.arg_parser.add_argument("--style", default='marks_outwards', help="Style of marks")
+        pars.add_argument("--n_ticks", type=int, default=5)
+        pars.add_argument("--ticksize", type=float, default=10)
+        pars.add_argument("--n_subticks", type=int, default=10)
+        pars.add_argument("--subticksize", type=float, default=5)
+        pars.add_argument("--style", default='marks_outwards', help="Style of marks")
         
         # Label settings
-        self.arg_parser.add_argument("--labels_enabled", type=inkex.Boolean, default='False')
-        self.arg_parser.add_argument("--rounding_level", type=int, default=0)
-        self.arg_parser.add_argument("--text_size", type=float, default=1)
-        self.arg_parser.add_argument("--text_offset", type=float, default=20)
-        self.arg_parser.add_argument("--start_value", type=float, default=0)
-        self.arg_parser.add_argument("--stop_value", type=float, default=10)
+        pars.add_argument("--labels_enabled", type=inkex.Boolean, default='False')
+        pars.add_argument("--rounding_level", type=int, default=0)
+        pars.add_argument("--text_size", type=float, default=1)
+        pars.add_argument("--text_offset", type=float, default=20)
+        pars.add_argument("--start_value", type=float, default=0)
+        pars.add_argument("--stop_value", type=float, default=10)
         # Dummy
-        self.arg_parser.add_argument("--tab")
+        pars.add_argument("--tab")
 
     def draw_text(self, textvalue, radius, angular_position, text_size, parent):
         # Create text element

@@ -23,6 +23,7 @@ GROUP_ID = 'export_selection_transform'
 
 
 class ExportObject(inkex.EffectExtension):
+	
 	def add_arguments(self, pars):
 		pars.add_argument("--wrap_transform", type=inkex.Boolean, default=False, help="Wrap final document in transform")
 		pars.add_argument("--export_dir", default="~/inkscape_export/",	help="Location to save exported documents")

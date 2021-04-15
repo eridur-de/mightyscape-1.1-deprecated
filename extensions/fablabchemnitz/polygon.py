@@ -52,31 +52,30 @@ def svg_from_points(points,offset):
     s+='Z'
     return s
   
-class Polygon(inkex.Effect):
+class Polygon(inkex.EffecExtension):
 
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument('--page')
-        self.arg_parser.add_argument('--unit', default='mm', help='Measure Units')
-        self.arg_parser.add_argument('--o_type', type=int, default=1, help='Outer type')
-        self.arg_parser.add_argument('--o_radius',type=float, default=100, help='Outer Radius')
-        self.arg_parser.add_argument('--o_edges', type=int, default=1, help='Outer edges')
-        self.arg_parser.add_argument('--o_r_type', type=int, default=1, help='Outer radius type')
-        self.arg_parser.add_argument('--o_offset',type=float, default=100, help='Outer Radius')
-        self.arg_parser.add_argument('--i_type', type=int, default=1, help='Inner type')
-        self.arg_parser.add_argument('--i_radius',type=float, default=100, help='Inner Radius')
-        self.arg_parser.add_argument('--i_edges', type=int, default=1, help='Inner edges')
-        self.arg_parser.add_argument('--i_r_type', type=int, default=1, help='Inner radius type')
-        self.arg_parser.add_argument('--i_offset',type=float, default=100, help='Outer Radius')
-        self.arg_parser.add_argument('--kerf',type=float, default=0.5, help='Kerf (width) of cut')
-        self.arg_parser.add_argument('--spacing',type=float, default=0.5)
-        self.arg_parser.add_argument('--color1', type=Color, default='1923076095')
-        self.arg_parser.add_argument('--color2', type=Color, default='4012452351')
-        self.arg_parser.add_argument('--intensity', type=int, default=1)
-        self.arg_parser.add_argument('--speed', type=int, default=1)
-        self.arg_parser.add_argument('--pass_offset', type=int, default=1)
-        self.arg_parser.add_argument('--displaylasertag', type=inkex.Boolean, default=False) 
-        self.arg_parser.add_argument('--lasertag', default="=pass%n:%s:%i:%c=") 
+    def add_arguments(self, pars):
+        pars.add_argument('--page')
+        pars.add_argument('--unit', default='mm', help='Measure Units')
+        pars.add_argument('--o_type', type=int, default=1, help='Outer type')
+        pars.add_argument('--o_radius',type=float, default=100, help='Outer Radius')
+        pars.add_argument('--o_edges', type=int, default=1, help='Outer edges')
+        pars.add_argument('--o_r_type', type=int, default=1, help='Outer radius type')
+        pars.add_argument('--o_offset',type=float, default=100, help='Outer Radius')
+        pars.add_argument('--i_type', type=int, default=1, help='Inner type')
+        pars.add_argument('--i_radius',type=float, default=100, help='Inner Radius')
+        pars.add_argument('--i_edges', type=int, default=1, help='Inner edges')
+        pars.add_argument('--i_r_type', type=int, default=1, help='Inner radius type')
+        pars.add_argument('--i_offset',type=float, default=100, help='Outer Radius')
+        pars.add_argument('--kerf',type=float, default=0.5, help='Kerf (width) of cut')
+        pars.add_argument('--spacing',type=float, default=0.5)
+        pars.add_argument('--color1', type=Color, default='1923076095')
+        pars.add_argument('--color2', type=Color, default='4012452351')
+        pars.add_argument('--intensity', type=int, default=1)
+        pars.add_argument('--speed', type=int, default=1)
+        pars.add_argument('--pass_offset', type=int, default=1)
+        pars.add_argument('--displaylasertag', type=inkex.Boolean, default=False) 
+        pars.add_argument('--lasertag', default="=pass%n:%s:%i:%c=") 
       
     def effect(self):
         global parent,nomTab,equalTabs,thickness,kerf,correction

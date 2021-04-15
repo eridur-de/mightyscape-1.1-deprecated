@@ -32,15 +32,15 @@ import re
 from lxml import etree
 
 class StrokeColorAsFill(inkex.EffectExtension):
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("--tab", help="The selected UI-tab")
-        self.arg_parser.add_argument("--fill_stroke_mode", default="fillstroke", help="Exchange mode fill, stroke")
-        self.arg_parser.add_argument("--fill_stroke_copy_alpha", type=inkex.Boolean, default=True, help="Copy alpha")
-        self.arg_parser.add_argument("--fill_stroke_copy_none", type=inkex.Boolean, default=True, help="Copy 'None' property")
-        self.arg_parser.add_argument("--fill_stroke_copy_unset", type=inkex.Boolean, default=True, help="Copy 'Unset' property")
-        self.arg_parser.add_argument("--fill_stroke_convert_unset",  type=inkex.Boolean, default=True, help="Convert 'Unset' property")
-        self.arg_parser.add_argument("--nodash", type=inkex.Boolean, default="false", help="Fix dash-stroke to alow no line only markers")
+    
+    def add_arguments(self, pars):
+        pars.add_argument("--tab", help="The selected UI-tab")
+        pars.add_argument("--fill_stroke_mode", default="fillstroke", help="Exchange mode fill, stroke")
+        pars.add_argument("--fill_stroke_copy_alpha", type=inkex.Boolean, default=True, help="Copy alpha")
+        pars.add_argument("--fill_stroke_copy_none", type=inkex.Boolean, default=True, help="Copy 'None' property")
+        pars.add_argument("--fill_stroke_copy_unset", type=inkex.Boolean, default=True, help="Copy 'Unset' property")
+        pars.add_argument("--fill_stroke_convert_unset",  type=inkex.Boolean, default=True, help="Convert 'Unset' property")
+        pars.add_argument("--nodash", type=inkex.Boolean, default="false", help="Fix dash-stroke to alow no line only markers")
 
     def color_swapper(self, element):
         if element.tag == inkex.addNS('g', 'svg'):

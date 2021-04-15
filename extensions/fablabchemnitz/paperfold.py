@@ -516,19 +516,19 @@ def writeSVG(self, unfolding, size, printNumbers):
                 tspan.text = str(glueNumber[edge.idx()])       
     return paperfoldPageGroup
                 
-class Unfold(inkex.Effect):
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("--inputfile")
-        self.arg_parser.add_argument("--printNumbers", type=inkex.Boolean, default=False, help="Print numbers on the cut edges")
-        self.arg_parser.add_argument("--scalefactor", type=float, default=1.0, help="Manual scale factor")
-        self.arg_parser.add_argument("--resizetoimport", type=inkex.Boolean, default=True, help="Resize the canvas to the imported drawing's bounding box") 
-        self.arg_parser.add_argument("--extraborder", type=float, default=0.0)
-        self.arg_parser.add_argument("--extraborder_units")         
-        self.arg_parser.add_argument("--color_valley_cut", type=Color, default='255', help="Color for valley cuts")
-        self.arg_parser.add_argument("--color_mountain_cut", type=Color, default='1968208895', help="Color for mountain cuts")
-        self.arg_parser.add_argument("--color_valley_perforate", type=Color, default='3422552319', help="Color for valley perforations")
-        self.arg_parser.add_argument("--color_mountain_perforate", type=Color, default='879076607', help="Color for mountain perforations")
+class Unfold(inkex.EffectExtension):
+    
+    def add_arguments(self, pars):
+        pars.add_argument("--inputfile")
+        pars.add_argument("--printNumbers", type=inkex.Boolean, default=False, help="Print numbers on the cut edges")
+        pars.add_argument("--scalefactor", type=float, default=1.0, help="Manual scale factor")
+        pars.add_argument("--resizetoimport", type=inkex.Boolean, default=True, help="Resize the canvas to the imported drawing's bounding box") 
+        pars.add_argument("--extraborder", type=float, default=0.0)
+        pars.add_argument("--extraborder_units")         
+        pars.add_argument("--color_valley_cut", type=Color, default='255', help="Color for valley cuts")
+        pars.add_argument("--color_mountain_cut", type=Color, default='1968208895', help="Color for mountain cuts")
+        pars.add_argument("--color_valley_perforate", type=Color, default='3422552319', help="Color for valley perforations")
+        pars.add_argument("--color_mountain_perforate", type=Color, default='879076607', help="Color for mountain perforations")
                                 
     def effect(self):
         mesh = om.read_trimesh(self.options.inputfile)

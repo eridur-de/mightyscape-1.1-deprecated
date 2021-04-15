@@ -26,14 +26,14 @@ def BoundingBoxArea(node):
 	bb = node.bounding_box()
 	return bb.width * bb.height
 
-class InsetAlignmentCreateEffect(inkex.Effect):
-	def __init__(self):
-		inkex.Effect.__init__(self)
-		self.arg_parser.add_argument('-a', '--anchor_node')
-		self.arg_parser.add_argument('-v', '--relative_to_v')
-		self.arg_parser.add_argument('-t', '--relative_to_h')
-		self.arg_parser.add_argument('-x', '--inset_x', type = float)
-		self.arg_parser.add_argument('-y', '--inset_y', type = float)
+class InsetAlignmentCreateEffect(inkex.EffectExtension):
+	
+	def add_arguments(self, pars):
+		pars.add_argument('-a', '--anchor_node')
+		pars.add_argument('-v', '--relative_to_v')
+		pars.add_argument('-t', '--relative_to_h')
+		pars.add_argument('-x', '--inset_x', type = float)
+		pars.add_argument('-y', '--inset_y', type = float)
 
 	def GetPaths(self):
 		paths = []

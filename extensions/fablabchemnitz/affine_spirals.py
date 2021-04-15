@@ -42,14 +42,13 @@ def pts2curve(cplxs):
         
 class AffineSpirals(inkex.EffectExtension):
     
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("--num_lines", type=int, default=3)    
-        self.arg_parser.add_argument("--num_petals", type=int, default=3)   
-        self.arg_parser.add_argument("--shrink_ratio", type=float, default=3)
-        #self.arg_parser.add_argument("--mk_filled", type=inkex.Boolean, default=False)
-        self.arg_parser.add_argument("--mk_full", type=inkex.Boolean, default=False)
-        self.arg_parser.add_argument("--active-tab", default='title')
+    def add_arguments(self, pars):
+        pars.add_argument("--num_lines", type=int, default=3)    
+        pars.add_argument("--num_petals", type=int, default=3)   
+        pars.add_argument("--shrink_ratio", type=float, default=3)
+        #pars.add_argument("--mk_filled", type=inkex.Boolean, default=False)
+        pars.add_argument("--mk_full", type=inkex.Boolean, default=False)
+        pars.add_argument("--active-tab", default='title')
              
     def calc_unit_factor(self):
         unit_factor = self.svg.unittouu(str(1.0) + self.options.units)

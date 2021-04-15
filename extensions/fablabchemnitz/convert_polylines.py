@@ -17,9 +17,6 @@ from inkex.paths import Path
 
 class ConvertToPolylines(inkex.EffectExtension):
 
-    def __init__(self):
-        inkex.Effect.__init__(self)
-
     #convert a path (curve) to a polyline and remove dangling/duplicate/useless overlapping handles (points)
     def convertPath(self, node):
         if node.tag == inkex.addNS('path','svg'):

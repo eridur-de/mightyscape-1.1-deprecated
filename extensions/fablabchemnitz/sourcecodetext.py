@@ -6,13 +6,13 @@ import random
 import inkex
 from lxml import etree
 
-class SourceCodeText(inkex.Effect):
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("--directory", default='~/', help="Default directory")
-        self.arg_parser.add_argument("--pattern", default='py', help="File extension pattern")
-        self.arg_parser.add_argument("--wordsperpara", type=int, default=0, help="Maximum words per paragraph")
-        self.arg_parser.add_argument("--numparas", type=int, default=1, help="Number of paragraphs")
+class SourceCodeText(inkex.EffectExtension):
+    
+    def add_arguments(self, pars):
+        pars.add_argument("--directory", default='~/', help="Default directory")
+        pars.add_argument("--pattern", default='py', help="File extension pattern")
+        pars.add_argument("--wordsperpara", type=int, default=0, help="Maximum words per paragraph")
+        pars.add_argument("--numparas", type=int, default=1, help="Number of paragraphs")
 
     def text_generation(self):
         #Get all the matching files. Then yield words one at a time. This can take a while if there are a lot of files, but shouldn't be too bad.

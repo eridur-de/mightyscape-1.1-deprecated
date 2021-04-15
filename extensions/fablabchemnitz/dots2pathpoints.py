@@ -25,11 +25,11 @@ Foundation, Inc., 51 Fraanklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import inkex 
 
 class Pathpoints2Dots(inkex.EffectExtension):
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("--tab")
-        self.arg_parser.add_argument("--endpoints", type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--controlpoints", type=inkex.Boolean, default=False)
+    
+    def add_arguments(self, pars):
+        pars.add_argument("--tab")
+        pars.add_argument("--endpoints", type=inkex.Boolean, default=True)
+        pars.add_argument("--controlpoints", type=inkex.Boolean, default=False)
     
     def effect(self):
         if len(self.svg.selected) != 2:

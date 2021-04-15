@@ -33,9 +33,8 @@ import re
 
 class FilterAndLiveEffectsLayer(inkex.EffectExtension):
 
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument('--type', default = 'Add', help = 'Add or remove filters to current layer')
+    def add_arguments(self, pars):
+        pars.add_argument('--type', default = 'Add', help = 'Add or remove filters to current layer')
     
     def selectTop(self):
         selected = []

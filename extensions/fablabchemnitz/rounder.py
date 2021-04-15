@@ -26,20 +26,20 @@ import inkex
 from inkex.paths import Path, CubicSuperPath
 import re
 
-class svgRounder(inkex.Effect):
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("--precision", type=int, default=3, help="Precision")
-        self.arg_parser.add_argument("--ctrl", type=inkex.Boolean, default = False, help="Round node handles")
-        self.arg_parser.add_argument("--along", type=inkex.Boolean, default = True, help="Move handles following node movement")
-        self.arg_parser.add_argument("--half", type=inkex.Boolean, default = False, help="Allow round to half if nearest")
-        self.arg_parser.add_argument("--paths", type=inkex.Boolean, default = True, help="Affect to paths")
-        self.arg_parser.add_argument("--widthheight", type=inkex.Boolean, default = False, help="Affect to width and height of objects")
-        self.arg_parser.add_argument("--position", type=inkex.Boolean,  default = False, help="Affect to position of objects")
-        self.arg_parser.add_argument("--strokewidth", type=inkex.Boolean,  default = False, help="Affect to stroke width of objects")
-        self.arg_parser.add_argument("--opacity", type=inkex.Boolean, default = False, help="Affect to global opacity of objects")
-        self.arg_parser.add_argument("--strokeopacity", type=inkex.Boolean,  default = False, help="Affect to stroke opcacity of objects")
-        self.arg_parser.add_argument("--fillopacity", type=inkex.Boolean, default = False, help="Affect to fill opcacity of objects")
+class svgRounder(inkex.EffectExtension):
+    
+    def add_arguments(self, pars):
+        pars.add_argument("--precision", type=int, default=3, help="Precision")
+        pars.add_argument("--ctrl", type=inkex.Boolean, default = False, help="Round node handles")
+        pars.add_argument("--along", type=inkex.Boolean, default = True, help="Move handles following node movement")
+        pars.add_argument("--half", type=inkex.Boolean, default = False, help="Allow round to half if nearest")
+        pars.add_argument("--paths", type=inkex.Boolean, default = True, help="Affect to paths")
+        pars.add_argument("--widthheight", type=inkex.Boolean, default = False, help="Affect to width and height of objects")
+        pars.add_argument("--position", type=inkex.Boolean,  default = False, help="Affect to position of objects")
+        pars.add_argument("--strokewidth", type=inkex.Boolean,  default = False, help="Affect to stroke width of objects")
+        pars.add_argument("--opacity", type=inkex.Boolean, default = False, help="Affect to global opacity of objects")
+        pars.add_argument("--strokeopacity", type=inkex.Boolean,  default = False, help="Affect to stroke opcacity of objects")
+        pars.add_argument("--fillopacity", type=inkex.Boolean, default = False, help="Affect to fill opcacity of objects")
 
     def roundFloat(self, n):
         if self.options.half:

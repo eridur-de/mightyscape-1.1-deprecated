@@ -18,14 +18,14 @@ from lxml import etree
 from math import cos, sin, pi, log, sqrt
 
 class Archimedes(inkex.EffectExtension):
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument('--r', type = int, default = '50')
-        self.arg_parser.add_argument('--a', type = float, default = '3')
-        self.arg_parser.add_argument('--step', type = int, default = '50')
-        self.arg_parser.add_argument('--trl', default = '1')
-        self.arg_parser.add_argument('--turns', type = float, default = '5')
-        self.arg_parser.add_argument('--length', type = float, default = '500')
+    
+    def add_arguments(self, pars):
+        pars.add_argument('--r', type = int, default = '50')
+        pars.add_argument('--a', type = float, default = '3')
+        pars.add_argument('--step', type = int, default = '50')
+        pars.add_argument('--trl', default = '1')
+        pars.add_argument('--turns', type = float, default = '5')
+        pars.add_argument('--length', type = float, default = '500')
 		
     def effect(self):
         th = pi / 3

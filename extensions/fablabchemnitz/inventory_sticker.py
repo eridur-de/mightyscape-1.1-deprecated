@@ -357,22 +357,21 @@ def splitAt(string, length):
 
 class InventorySticker(inkex.Effect):
     
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("--main_tabs")
-        self.arg_parser.add_argument("--server_address", default="https://the.domain.de/items.csv")
-        self.arg_parser.add_argument("--htuser", default="user")
-        self.arg_parser.add_argument("--htpassword", default="password")
-        self.arg_parser.add_argument("--sticker_ids", default="*")
-        self.arg_parser.add_argument("--target_url", default="qwa.es")
-        self.arg_parser.add_argument("--target_owner", default="Stadtfabrikanten e.V.")
-        self.arg_parser.add_argument("--export_dir", default="/home/")
-        self.arg_parser.add_argument("--flat_export", type=inkex.Boolean, default=False)
-        self.arg_parser.add_argument("--preview", type=inkex.Boolean, default=False)
-        self.arg_parser.add_argument("--export_svg", type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--export_png", type=inkex.Boolean, default=False)
-        self.arg_parser.add_argument("--print_png", type=int, default=0)     
-        self.arg_parser.add_argument("--print_device", default="04f9:2044")     
+    def add_arguments(self, pars):
+        pars.add_argument("--main_tabs")
+        pars.add_argument("--server_address", default="https://the.domain.de/items.csv")
+        pars.add_argument("--htuser", default="user")
+        pars.add_argument("--htpassword", default="password")
+        pars.add_argument("--sticker_ids", default="*")
+        pars.add_argument("--target_url", default="qwa.es")
+        pars.add_argument("--target_owner", default="Stadtfabrikanten e.V.")
+        pars.add_argument("--export_dir", default="/home/")
+        pars.add_argument("--flat_export", type=inkex.Boolean, default=False)
+        pars.add_argument("--preview", type=inkex.Boolean, default=False)
+        pars.add_argument("--export_svg", type=inkex.Boolean, default=True)
+        pars.add_argument("--export_png", type=inkex.Boolean, default=False)
+        pars.add_argument("--print_png", type=int, default=0)     
+        pars.add_argument("--print_device", default="04f9:2044")     
         
     def effect(self):
         # Adjust the document view for the desired sticker size

@@ -11,15 +11,14 @@ def addPathCommand(a, cmd):
     for x in cmd:
         a.append(str(x))
 
-class SheriffStarEffect(inkex.Effect):
+class SheriffStarEffect(inkex.EffectExtension):
 
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument('--tab')
-        self.arg_parser.add_argument('--points', type=int, default=5, help='Number of points (or sides)')
-        self.arg_parser.add_argument('--star_tip_ratio', type=float, default=10, help='Star tip circle % (star tip circle radius as a percentage of the outer radius)')
-        self.arg_parser.add_argument('--inner_ratio', type=float, default=58, help='Inner circle % (inner radius as a percentage of the outer radius)')
-        self.arg_parser.add_argument('--show_inner_circle', type=inkex.Boolean, default=False, help='Show inner circle')
+    def add_arguments(self, pars):
+        pars.add_argument('--tab')
+        pars.add_argument('--points', type=int, default=5, help='Number of points (or sides)')
+        pars.add_argument('--star_tip_ratio', type=float, default=10, help='Star tip circle % (star tip circle radius as a percentage of the outer radius)')
+        pars.add_argument('--inner_ratio', type=float, default=58, help='Inner circle % (inner radius as a percentage of the outer radius)')
+        pars.add_argument('--show_inner_circle', type=inkex.Boolean, default=False, help='Show inner circle')
 
     def effect(self):
         layer = self.svg.get_current_layer();
