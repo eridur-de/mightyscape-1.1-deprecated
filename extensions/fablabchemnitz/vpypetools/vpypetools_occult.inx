@@ -7,6 +7,7 @@
 		<label>This plugin command removes lines hidden by polygons. It acts like a trimmer to receive a clean set of visible paths only. It does not remove common lines between opened paths, but for closed polygons. You need to install occult plugin for vpype. See vpypetools documentation.</label>
 		<param name="plugin_occult" type="bool" gui-hidden="true">true</param>
 		<param name="plugin_occult_tolerance" type="float" min="0.000"  max="99999.000" precision="3" gui-text="tolerance (mm)" gui-description="Max distance between start and end point to consider a path closed (default 0.01 mm)">0.01</param>  
+		<param name="plugin_occult_keepseparatelayer" gui-text="Put occulted lines to separate layer" type="bool">false</param>
 		</page>
 		<page name="general_settings" gui-text="General Settings">
 			<label appearance="header">Preprocessing</label>

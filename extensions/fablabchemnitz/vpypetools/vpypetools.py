@@ -95,6 +95,7 @@ class vpypetools (inkex.EffectExtension):
         # Plugin Occult
         self.arg_parser.add_argument("--plugin_occult", type=inkex.Boolean, default=False)
         self.arg_parser.add_argument("--plugin_occult_tolerance", type=float, default=0.01, help="Max distance between start and end point to consider a path closed (default 0.01 mm)")
+        self.arg_parser.add_argument("--plugin_occult_keepseparatelayer", type=inkex.Boolean, default=False, help="Put occulted lines to separate layer")
 
         # Free Mode
         self.arg_parser.add_argument("--tab")
@@ -280,6 +281,8 @@ class vpypetools (inkex.EffectExtension):
         # Plugin Occult
         if self.options.plugin_occult is True:     
             command = "occult --tolerance " + str(self.options.plugin_occult_tolerance)
+            if self.options.plugin_occult_keepseparatelayer is True:
+                command += " --keep-occulted"
 
         # Split All
         if self.options.splitall is True:     
