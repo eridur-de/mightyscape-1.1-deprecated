@@ -68,7 +68,11 @@ class RemoveRedundant(inkex.Effect):
                 newPath = []
                 start = prev = None
                 pathclosed = True
-                for command, coords in path:
+                
+                for i in range(0, len(path)):
+                    command = path[i][0]
+                    coords = path[i][1]
+
                     newCoords = []
                     for x, y in zip(*[iter(coords)]*2):
                         newCoords.extend(list(coordsCache.get_or_add((x, y))))
@@ -76,6 +80,10 @@ class RemoveRedundant(inkex.Effect):
                     tcoords = tuple(coords)
 
                     if command == 'M':
+                        #remove this M command and it's point, if the next dataset conaints an M command too. 
+                        # Like "M 49.8584,109.276 M ..." which creates just a single point but not a valid path
+                        if i+1 != len(path) and path[i][0] == path[i+1][0]: 
+                            continue 
                         newPath.append([command, coords])
                         start = prev = tcoords
                         pathclosed = True
