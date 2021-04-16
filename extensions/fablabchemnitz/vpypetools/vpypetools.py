@@ -54,81 +54,80 @@ Todo's
 
 class vpypetools (inkex.EffectExtension):
 
-    def __init__(self):
-        inkex.Effect.__init__(self)
+    def add_arguments(self, pars):
         
         # Line Sorting
-        self.arg_parser.add_argument("--linesort", type=inkex.Boolean, default=False)
-        self.arg_parser.add_argument("--linesort_no_flip", type=inkex.Boolean, default=False, help="Disable reversing stroke direction for optimization")
+        pars.add_argument("--linesort", type=inkex.Boolean, default=False)
+        pars.add_argument("--linesort_no_flip", type=inkex.Boolean, default=False, help="Disable reversing stroke direction for optimization")
         
         # Line Merging
-        self.arg_parser.add_argument("--linemerge", type=inkex.Boolean, default=False)
-        self.arg_parser.add_argument("--linemerge_tolerance", type=float, default=0.500, help="Maximum distance between two line endings that should be merged (default 0.500 mm)")
-        self.arg_parser.add_argument("--linemerge_no_flip", type=inkex.Boolean, default=False, help="Disable reversing stroke direction for merging")
+        pars.add_argument("--linemerge", type=inkex.Boolean, default=False)
+        pars.add_argument("--linemerge_tolerance", type=float, default=0.500, help="Maximum distance between two line endings that should be merged (default 0.500 mm)")
+        pars.add_argument("--linemerge_no_flip", type=inkex.Boolean, default=False, help="Disable reversing stroke direction for merging")
   
         # Trimming
-        self.arg_parser.add_argument("--trim", type=inkex.Boolean, default=False)
-        self.arg_parser.add_argument("--trim_x_margin", type=float, default=0.000, help="trim margin - x direction (mm)") # keep default at 0.000 to keep clean bbox
-        self.arg_parser.add_argument("--trim_y_margin", type=float, default=0.000, help="trim margin - y direction (mm)") # keep default at 0.000 to keep clean bbox
+        pars.add_argument("--trim", type=inkex.Boolean, default=False)
+        pars.add_argument("--trim_x_margin", type=float, default=0.000, help="trim margin - x direction (mm)") # keep default at 0.000 to keep clean bbox
+        pars.add_argument("--trim_y_margin", type=float, default=0.000, help="trim margin - y direction (mm)") # keep default at 0.000 to keep clean bbox
     
         # Relooping
-        self.arg_parser.add_argument("--reloop", type=inkex.Boolean, default=False)
-        self.arg_parser.add_argument("--reloop_tolerance", type=float, default=0.500, help="Controls how close the path beginning and end must be to consider it closed (default 0.500 mm)")
+        pars.add_argument("--reloop", type=inkex.Boolean, default=False)
+        pars.add_argument("--reloop_tolerance", type=float, default=0.500, help="Controls how close the path beginning and end must be to consider it closed (default 0.500 mm)")
  
         # Multipass
-        self.arg_parser.add_argument("--multipass", type=inkex.Boolean, default=False)
-        self.arg_parser.add_argument("--multipass_count", type=int, default=2, help="How many passes for each line (default 2)")
+        pars.add_argument("--multipass", type=inkex.Boolean, default=False)
+        pars.add_argument("--multipass_count", type=int, default=2, help="How many passes for each line (default 2)")
  
         # Filter
-        self.arg_parser.add_argument("--filter", type=inkex.Boolean, default=False)
-        self.arg_parser.add_argument("--filter_tolerance", type=float, default=0.050, help="Tolerance used to determined if a line is closed or not (default 0.050 mm)")
-        self.arg_parser.add_argument("--filter_closed", type=inkex.Boolean, default=False, help="Keep closed lines")
-        self.arg_parser.add_argument("--filter_not_closed", type=inkex.Boolean, default=False, help="Keep open lines")
-        self.arg_parser.add_argument("--filter_min_length_enabled", type=inkex.Boolean, default=False, help="filter by min length")
-        self.arg_parser.add_argument("--filter_min_length", type=float, default=0.000, help="Keep lines whose length isn't shorter than value")
-        self.arg_parser.add_argument("--filter_max_length_enabled", type=inkex.Boolean, default=False, help="filter by max length") 
-        self.arg_parser.add_argument("--filter_max_length", type=float, default=0.000, help="Keep lines whose length isn't greater than value") 
+        pars.add_argument("--filter", type=inkex.Boolean, default=False)
+        pars.add_argument("--filter_tolerance", type=float, default=0.050, help="Tolerance used to determined if a line is closed or not (default 0.050 mm)")
+        pars.add_argument("--filter_closed", type=inkex.Boolean, default=False, help="Keep closed lines")
+        pars.add_argument("--filter_not_closed", type=inkex.Boolean, default=False, help="Keep open lines")
+        pars.add_argument("--filter_min_length_enabled", type=inkex.Boolean, default=False, help="filter by min length")
+        pars.add_argument("--filter_min_length", type=float, default=0.000, help="Keep lines whose length isn't shorter than value")
+        pars.add_argument("--filter_max_length_enabled", type=inkex.Boolean, default=False, help="filter by max length") 
+        pars.add_argument("--filter_max_length", type=float, default=0.000, help="Keep lines whose length isn't greater than value") 
  
         # Split All
-        self.arg_parser.add_argument("--splitall", type=inkex.Boolean, default=False)
+        pars.add_argument("--splitall", type=inkex.Boolean, default=False)
  
         # Plugin Occult
-        self.arg_parser.add_argument("--plugin_occult", type=inkex.Boolean, default=False)
-        self.arg_parser.add_argument("--plugin_occult_tolerance", type=float, default=0.01, help="Max distance between start and end point to consider a path closed (default 0.01 mm)")
-        self.arg_parser.add_argument("--plugin_occult_keepseparatelayer", type=inkex.Boolean, default=False, help="Put occulted lines to separate layer")
+        pars.add_argument("--plugin_occult", type=inkex.Boolean, default=False)
+        pars.add_argument("--plugin_occult_tolerance", type=float, default=0.01, help="Max distance between start and end point to consider a path closed (default 0.01 mm)")
+        pars.add_argument("--plugin_occult_keepseparatelayer", type=inkex.Boolean, default=False, help="Put occulted lines to separate layer")
 
         # Free Mode
-        self.arg_parser.add_argument("--tab")
-        self.arg_parser.add_argument("--freemode", type=inkex.Boolean, default=False)
-        self.arg_parser.add_argument("--freemode_cmd1", default="")
-        self.arg_parser.add_argument("--freemode_cmd1_enabled", type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--freemode_cmd2", default="")
-        self.arg_parser.add_argument("--freemode_cmd2_enabled", type=inkex.Boolean, default=False)
-        self.arg_parser.add_argument("--freemode_cmd3", default="")
-        self.arg_parser.add_argument("--freemode_cmd3_enabled", type=inkex.Boolean, default=False)
-        self.arg_parser.add_argument("--freemode_cmd4", default="")
-        self.arg_parser.add_argument("--freemode_cmd4_enabled", type=inkex.Boolean, default=False)
-        self.arg_parser.add_argument("--freemode_cmd5", default="")
-        self.arg_parser.add_argument("--freemode_cmd5_enabled", type=inkex.Boolean, default=False)
-        self.arg_parser.add_argument("--freemode_show_cmd", type=inkex.Boolean, default=False)
+        pars.add_argument("--tab")
+        pars.add_argument("--freemode", type=inkex.Boolean, default=False)
+        pars.add_argument("--freemode_cmd1", default="")
+        pars.add_argument("--freemode_cmd1_enabled", type=inkex.Boolean, default=True)
+        pars.add_argument("--freemode_cmd2", default="")
+        pars.add_argument("--freemode_cmd2_enabled", type=inkex.Boolean, default=False)
+        pars.add_argument("--freemode_cmd3", default="")
+        pars.add_argument("--freemode_cmd3_enabled", type=inkex.Boolean, default=False)
+        pars.add_argument("--freemode_cmd4", default="")
+        pars.add_argument("--freemode_cmd4_enabled", type=inkex.Boolean, default=False)
+        pars.add_argument("--freemode_cmd5", default="")
+        pars.add_argument("--freemode_cmd5_enabled", type=inkex.Boolean, default=False)
+        pars.add_argument("--freemode_show_cmd", type=inkex.Boolean, default=False)
  
         # General Settings
-        self.arg_parser.add_argument("--input_handling", default="paths", help="Input handling")
-        self.arg_parser.add_argument("--flattenbezier", type=inkex.Boolean, default=False, help="Flatten bezier curves to polylines")
-        self.arg_parser.add_argument("--flatness", type=float, default=0.1, help="Minimum flatness = 0.1. The smaller the value the more fine segments you will get (quantization).")
-        self.arg_parser.add_argument("--decimals", type=int, default=3, help="Accuracy for imported lines' coordinates into vpype. Does not work for 'Multilayer/document'")
-        self.arg_parser.add_argument("--simplify", type=inkex.Boolean, default=False, help="Reduces significantly the number of segments used to approximate the curve while still guaranteeing an accurate conversion, but may increase the execution time. Does not work for 'Singlelayer/paths'")
-        self.arg_parser.add_argument("--parallel", type=inkex.Boolean, default=False, help="Enables multiprocessing for the SVG conversion. This is recommended ONLY when using 'Simplify geometry' on large SVG files with many curved elements. Does not work for 'Singlelayer/paths'")
-        self.arg_parser.add_argument("--apply_transformations", type=inkex.Boolean, default=False, help="Run 'Apply Transformations' extension before running vpype. Helps avoiding geometry shifting")
-        self.arg_parser.add_argument("--output_show", type=inkex.Boolean, default=False, help="This will open a separate window showing the finished SVG data. If enabled, output is not applied to InkScape canvas (only for preview)!")
-        self.arg_parser.add_argument("--output_show_points", type=inkex.Boolean, default=False, help="Enable point display in viewer")
-        self.arg_parser.add_argument("--output_stats", type=inkex.Boolean, default=False, help="Show output statistics before/after conversion")
-        self.arg_parser.add_argument("--output_trajectories", type=inkex.Boolean, default=False, help="Add paths for the travel trajectories")
-        self.arg_parser.add_argument("--keep_objects", type=inkex.Boolean, default=False, help="If false, selected paths will be removed")
-        self.arg_parser.add_argument("--strokes_to_paths", type=inkex.Boolean, default=True, help="Recommended option. Performs 'Path' > 'Stroke to Path' (CTRL + ALT + C) to convert vpype converted lines back to regular path objects")
-        self.arg_parser.add_argument("--use_style_of_first_element", type=inkex.Boolean, default=True, help="If enabled the first element in selection is scanned and we apply it's style to all imported vpype lines (but not for trajectories). Does not work for 'Multilayer/document'")
-        self.arg_parser.add_argument("--lines_stroke_width", type=float, default=1.0, help="Stroke width of tooling lines (px). Gets overwritten if 'Use style of first selected element' is enabled")
-        self.arg_parser.add_argument("--trajectories_stroke_width", type=float, default=1.0, help="Stroke width of trajectory lines (px). Gets overwritten if 'Use style of first selected element' is enabled")
+        pars.add_argument("--input_handling", default="paths", help="Input handling")
+        pars.add_argument("--flattenbezier", type=inkex.Boolean, default=False, help="Flatten bezier curves to polylines")
+        pars.add_argument("--flatness", type=float, default=0.1, help="Minimum flatness = 0.1. The smaller the value the more fine segments you will get (quantization).")
+        pars.add_argument("--decimals", type=int, default=3, help="Accuracy for imported lines' coordinates into vpype. Does not work for 'Multilayer/document'")
+        pars.add_argument("--simplify", type=inkex.Boolean, default=False, help="Reduces significantly the number of segments used to approximate the curve while still guaranteeing an accurate conversion, but may increase the execution time. Does not work for 'Singlelayer/paths'")
+        pars.add_argument("--parallel", type=inkex.Boolean, default=False, help="Enables multiprocessing for the SVG conversion. This is recommended ONLY when using 'Simplify geometry' on large SVG files with many curved elements. Does not work for 'Singlelayer/paths'")
+        pars.add_argument("--apply_transformations", type=inkex.Boolean, default=False, help="Run 'Apply Transformations' extension before running vpype. Helps avoiding geometry shifting")
+        pars.add_argument("--output_show", type=inkex.Boolean, default=False, help="This will open a separate window showing the finished SVG data. If enabled, output is not applied to InkScape canvas (only for preview)!")
+        pars.add_argument("--output_show_points", type=inkex.Boolean, default=False, help="Enable point display in viewer")
+        pars.add_argument("--output_stats", type=inkex.Boolean, default=False, help="Show output statistics before/after conversion")
+        pars.add_argument("--output_trajectories", type=inkex.Boolean, default=False, help="Add paths for the travel trajectories")
+        pars.add_argument("--keep_objects", type=inkex.Boolean, default=False, help="If false, selected paths will be removed")
+        pars.add_argument("--strokes_to_paths", type=inkex.Boolean, default=True, help="Recommended option. Performs 'Path' > 'Stroke to Path' (CTRL + ALT + C) to convert vpype converted lines back to regular path objects")
+        pars.add_argument("--use_style_of_first_element", type=inkex.Boolean, default=True, help="If enabled the first element in selection is scanned and we apply it's style to all imported vpype lines (but not for trajectories). Does not work for 'Multilayer/document'")
+        pars.add_argument("--lines_stroke_width", type=float, default=1.0, help="Stroke width of tooling lines (px). Gets overwritten if 'Use style of first selected element' is enabled")
+        pars.add_argument("--trajectories_stroke_width", type=float, default=1.0, help="Stroke width of trajectory lines (px). Gets overwritten if 'Use style of first selected element' is enabled")
  
     def effect(self):
         lc = vpype.LineCollection() # create a new array of LineStrings consisting of Points. We convert selected paths to polylines and grab their points

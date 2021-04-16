@@ -72,51 +72,49 @@ def draw_circle_marker(x,y, radius, parent):
 
 
 ###
-class Fret_ruler(inkex.Effect):
+class Fret_ruler(inkex.EffectExtension):
 
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        # main tab
-        self.arg_parser.add_argument('--method', default='12th Root of 2', help="Method to calculate scale")
-        self.arg_parser.add_argument('--draw_style', default='Ruler', help="How to draw the Ruler/NEck")
-        self.arg_parser.add_argument("--nth",  type=int,default=12, help="For different number of notes in a scale")
-        self.arg_parser.add_argument('--scala_filename', default='12tet', help="Name of file in scales directory")
-        self.arg_parser.add_argument("--units", default="in", help="The units of entered dimensions")
-        self.arg_parser.add_argument("--length", type=float, default=25.5, help="Length of the Scale (and Ruler)")
-        self.arg_parser.add_argument("--width", type=float, default=1.5, help="Width of the Ruler (= Nut if drawing a neck)")
-        self.arg_parser.add_argument("--frets", type=int, default=18, help="number of frets on the scale")
+    def add_arguments(self, pars):
+        pars.add_argument('--method', default='12th Root of 2', help="Method to calculate scale")
+        pars.add_argument('--draw_style', default='Ruler', help="How to draw the Ruler/NEck")
+        pars.add_argument("--nth",  type=int,default=12, help="For different number of notes in a scale")
+        pars.add_argument('--scala_filename', default='12tet', help="Name of file in scales directory")
+        pars.add_argument("--units", default="in", help="The units of entered dimensions")
+        pars.add_argument("--length", type=float, default=25.5, help="Length of the Scale (and Ruler)")
+        pars.add_argument("--width", type=float, default=1.5, help="Width of the Ruler (= Nut if drawing a neck)")
+        pars.add_argument("--frets", type=int, default=18, help="number of frets on the scale")
         #
-        self.arg_parser.add_argument("--fanned", type=inkex.Boolean, default=False, help="Two scales on either side of the Neck")
-        self.arg_parser.add_argument("--basslength", type=float, default=25.5, help="Length of the Bass side Scale")
-        self.arg_parser.add_argument("--perpendicular", type=int, default=7, help="Fret number which is perpendicular to the Neck")     
+        pars.add_argument("--fanned", type=inkex.Boolean, default=False, help="Two scales on either side of the Neck")
+        pars.add_argument("--basslength", type=float, default=25.5, help="Length of the Bass side Scale")
+        pars.add_argument("--perpendicular", type=int, default=7, help="Fret number which is perpendicular to the Neck")     
         #
-        self.arg_parser.add_argument("--linewidth", type=float, default=0.1, help="Width of drawn lines")
-        self.arg_parser.add_argument("--notch_width", type=float, default=0.125, help="Width of Fret notches on Router template")
-        self.arg_parser.add_argument("--annotate", type=inkex.Boolean,  default=True, help="Annotate with Markers etc")
-        self.arg_parser.add_argument("--centerline",  type=inkex.Boolean, default=True, help="Draw a centerline")
+        pars.add_argument("--linewidth", type=float, default=0.1, help="Width of drawn lines")
+        pars.add_argument("--notch_width", type=float, default=0.125, help="Width of Fret notches on Router template")
+        pars.add_argument("--annotate", type=inkex.Boolean,  default=True, help="Annotate with Markers etc")
+        pars.add_argument("--centerline",  type=inkex.Boolean, default=True, help="Draw a centerline")
         # Neck
-        self.arg_parser.add_argument("--constant_width", type=inkex.Boolean, default=True, help="Use Bridge width as well to make Neck")
-        self.arg_parser.add_argument("--width_bridge", type=float, default=2.0, help="Width at the Bridge (drawing Neck not Ruler)")
-        self.arg_parser.add_argument("--show_markers", type=inkex.Boolean, default=False, help="Show Neck Marker Positions")
-        self.arg_parser.add_argument('--markers', default='3,5,7,10,12,12,15', help="List of frets to draw markers on")
+        pars.add_argument("--constant_width", type=inkex.Boolean, default=True, help="Use Bridge width as well to make Neck")
+        pars.add_argument("--width_bridge", type=float, default=2.0, help="Width at the Bridge (drawing Neck not Ruler)")
+        pars.add_argument("--show_markers", type=inkex.Boolean, default=False, help="Show Neck Marker Positions")
+        pars.add_argument('--markers', default='3,5,7,10,12,12,15', help="List of frets to draw markers on")
         #
-        self.arg_parser.add_argument("--nutcomp", type=inkex.Boolean, default=False, help="Modify Nut position")
-        self.arg_parser.add_argument("--nutcomp_value", default="0.012in (0.30mm)", help="Preset (usual) Nut compensation values")
-        self.arg_parser.add_argument("--nutcomp_manual", type=float, default=0.014, help="Manual distance to move Nut closer to Bridge")
+        pars.add_argument("--nutcomp", type=inkex.Boolean, default=False, help="Modify Nut position")
+        pars.add_argument("--nutcomp_value", default="0.012in (0.30mm)", help="Preset (usual) Nut compensation values")
+        pars.add_argument("--nutcomp_manual", type=float, default=0.014, help="Manual distance to move Nut closer to Bridge")
         #
-        self.arg_parser.add_argument("--show_curves", type=inkex.Boolean, default=False, help="Show a neck curvature ruler")
-        self.arg_parser.add_argument("--neck_radius", type=float, default=2.0, help="Radius of Neck curvature")
-        self.arg_parser.add_argument("--arc_length", type=float, default=2.0, help="Length of Arc")
-        self.arg_parser.add_argument("--block_mode", type=inkex.Boolean, default=False, help="Draw block or finger style")
-        self.arg_parser.add_argument("--arc_height", type=float, default=2.0, help="height of Arc")
-        self.arg_parser.add_argument("--string_spacing", type=float, default=2.0, help="Spacing between strings")
+        pars.add_argument("--show_curves", type=inkex.Boolean, default=False, help="Show a neck curvature ruler")
+        pars.add_argument("--neck_radius", type=float, default=2.0, help="Radius of Neck curvature")
+        pars.add_argument("--arc_length", type=float, default=2.0, help="Length of Arc")
+        pars.add_argument("--block_mode", type=inkex.Boolean, default=False, help="Draw block or finger style")
+        pars.add_argument("--arc_height", type=float, default=2.0, help="height of Arc")
+        pars.add_argument("--string_spacing", type=float, default=2.0, help="Spacing between strings")
         #
-        self.arg_parser.add_argument("--filter_tones", type=inkex.Boolean, default=True, help="Only show Scala files with this many notes in a scale.")
-        self.arg_parser.add_argument("--scale", type=int, default=12, help="number of Notes in the scale")
-        self.arg_parser.add_argument("--filter_label", type=inkex.Boolean, default=True, help="Only show Scala files with this keyword in them.")
-        self.arg_parser.add_argument("--keywords", default="diatonic", help="Keywords to search for")
+        pars.add_argument("--filter_tones", type=inkex.Boolean, default=True, help="Only show Scala files with this many notes in a scale.")
+        pars.add_argument("--scale", type=int, default=12, help="number of Notes in the scale")
+        pars.add_argument("--filter_label", type=inkex.Boolean, default=True, help="Only show Scala files with this keyword in them.")
+        pars.add_argument("--keywords", default="diatonic", help="Keywords to search for")
         # here so we can have tabs
-        self.arg_parser.add_argument("-t", "--active-tab", default='ruler', help="Active tab.")
+        pars.add_argument("-t", "--active-tab", default='ruler', help="Active tab.")
 
     def filter_scala_files(self, parent):
         """ Look in the scale directory for files.

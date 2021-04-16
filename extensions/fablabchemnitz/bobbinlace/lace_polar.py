@@ -25,19 +25,19 @@ __author__ = 'Jo Pol'
 __credits__ = ['Veronika Irvine','Jo Pol','Mark Shafer']
 __license__ = 'GPLv3'
 
-class PolarGrid(inkex.Effect):
-	def __init__(self):
-		inkex.Effect.__init__(self)
-		self.arg_parser.add_argument('-a', '--angle',  type=float, default=45, help='grid angle (degrees)')
-		self.arg_parser.add_argument('-d', '--dots',  type=int, default=180, help='number of dots on a circle')
-		self.arg_parser.add_argument('-o', '--outerDiameter', type=float, default=160, help='outer diameter (mm)')
-		self.arg_parser.add_argument('-i', '--innerDiameter', type=float, default=100, help='minimum inner diameter (mm)')
-		self.arg_parser.add_argument('-f', '--fill',  type=inkex.Color, default='-6711040', help='dot color')
-		self.arg_parser.add_argument('-A', '--alignment', default='outside', help='exact diameter on [inside|outside]')
-		self.arg_parser.add_argument('-s', '--size',  type=float, default=0.5, help='dot diameter (mm)')
-		self.arg_parser.add_argument('-v', '--variant',  default='', help='omit rows to get [|rectangle|hexagon1]')
-		self.arg_parser.add_argument('-cu', '--circleDiameterUnits', default = 'mm', help = 'Circle diameter is measured in these units')
-		self.arg_parser.add_argument('-du', '--dotUnits',  default = 'px', help = 'Dot diameter is measured in these unites')
+class PolarGrid(inkex.EffectExtension):
+	
+	def add_arguments(self, pars):
+		pars.add_argument('-a', '--angle',  type=float, default=45, help='grid angle (degrees)')
+		pars.add_argument('-d', '--dots',  type=int, default=180, help='number of dots on a circle')
+		pars.add_argument('-o', '--outerDiameter', type=float, default=160, help='outer diameter (mm)')
+		pars.add_argument('-i', '--innerDiameter', type=float, default=100, help='minimum inner diameter (mm)')
+		pars.add_argument('-f', '--fill',  type=inkex.Color, default='-6711040', help='dot color')
+		pars.add_argument('-A', '--alignment', default='outside', help='exact diameter on [inside|outside]')
+		pars.add_argument('-s', '--size',  type=float, default=0.5, help='dot diameter (mm)')
+		pars.add_argument('-v', '--variant',  default='', help='omit rows to get [|rectangle|hexagon1]')
+		pars.add_argument('-cu', '--circleDiameterUnits', default = 'mm', help = 'Circle diameter is measured in these units')
+		pars.add_argument('-du', '--dotUnits',  default = 'px', help = 'Dot diameter is measured in these unites')
 
 	def group(self, diameter):
 		"""

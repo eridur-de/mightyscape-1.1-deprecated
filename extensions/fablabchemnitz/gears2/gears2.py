@@ -12,15 +12,15 @@ from lxml import etree
 
 from involute import *
 
-class Gears(inkex.Effect):
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("--tab", default="Options", help="The tab selected when OK was pressed")
-        self.arg_parser.add_argument("-t", "--teeth",  type=int, default=24, help="Number of teeth")
-        self.arg_parser.add_argument("-p", "--pressure_angle", type=float,  default="20", help="Pressure angle")
-        self.arg_parser.add_argument("-y", "--size_type", type=int, default="1", help="Size type (1 = module (mm), 2 = pitch diameter (inches), 3 = diametral pitch (inches)")
-        self.arg_parser.add_argument("-s", "--size",  type=float, default="5", help="Size")
-        self.arg_parser.add_argument("-o", "--orientation", type=int, default="1", help="Gear orientation")
+class Gears(inkex.EffectExtension):
+
+    def add_arguments(self, pars):
+        pars.add_argument("--tab", default="Options", help="The tab selected when OK was pressed")
+        pars.add_argument("-t", "--teeth",  type=int, default=24, help="Number of teeth")
+        pars.add_argument("-p", "--pressure_angle", type=float,  default="20", help="Pressure angle")
+        pars.add_argument("-y", "--size_type", type=int, default="1", help="Size type (1 = module (mm), 2 = pitch diameter (inches), 3 = diametral pitch (inches)")
+        pars.add_argument("-s", "--size",  type=float, default="5", help="Size")
+        pars.add_argument("-o", "--orientation", type=int, default="1", help="Gear orientation")
 
     def effect(self):
         Z = self.options.teeth

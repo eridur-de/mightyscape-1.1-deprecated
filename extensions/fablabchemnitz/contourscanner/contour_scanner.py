@@ -26,30 +26,29 @@ import inkex
 from inkex.paths import Path, CubicSuperPath
 from inkex import Style, Color, Circle
 
-class ContourScanner(inkex.Effect):
+class ContourScanner(inkex.EffectExtension):
 
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("--main_tabs")
-        self.arg_parser.add_argument("--breakapart", type=inkex.Boolean, default=False, help="Break apart selection into single contours")
-        self.arg_parser.add_argument("--apply_transformations", type=inkex.Boolean, default=False, help="Run 'Apply Transformations' extension before running to avoid IndexErrors in calculation.")
-        self.arg_parser.add_argument("--removefillsetstroke", type=inkex.Boolean, default=False, help="Remove fill and define stroke")
-        self.arg_parser.add_argument("--strokewidth", type=float, default=1.0, help="Stroke width (px)")
-        self.arg_parser.add_argument("--highlight_opened", type=inkex.Boolean, default=True, help="Highlight opened contours")
-        self.arg_parser.add_argument("--color_opened", type=Color, default='4012452351', help="Color opened contours")
-        self.arg_parser.add_argument("--highlight_closed", type=inkex.Boolean, default=True, help="Highlight closed contours")
-        self.arg_parser.add_argument("--color_closed", type=Color, default='2330080511', help="Color closed contours")
-        self.arg_parser.add_argument("--highlight_selfintersecting", type=inkex.Boolean, default=True, help="Highlight self-intersecting contours")
-        self.arg_parser.add_argument("--highlight_intersectionpoints", type=inkex.Boolean, default=True, help="Highlight self-intersecting points")
-        self.arg_parser.add_argument("--color_selfintersecting", type=Color, default='1923076095', help="Color closed contours")
-        self.arg_parser.add_argument("--color_intersectionpoints", type=Color, default='4239343359', help="Color closed contours")
-        self.arg_parser.add_argument("--addlines", type=inkex.Boolean, default=True, help="Add closing lines for self-crossing contours")
-        self.arg_parser.add_argument("--polypaths", type=inkex.Boolean, default=True, help="Add polypath outline for self-crossing contours")
-        self.arg_parser.add_argument("--dotsize", type=int, default=10, help="Dot size (px) for self-intersecting points")
-        self.arg_parser.add_argument("--remove_opened", type=inkex.Boolean, default=False, help="Remove opened contours")
-        self.arg_parser.add_argument("--remove_closed", type=inkex.Boolean, default=False, help="Remove closed contours")
-        self.arg_parser.add_argument("--remove_selfintersecting", type=inkex.Boolean, default=False, help="Remove self-intersecting contours")
-        self.arg_parser.add_argument("--show_debug", type=inkex.Boolean, default=False, help="Show debug info")
+    def add_arguments(self, pars):
+        pars.add_argument("--main_tabs")
+        pars.add_argument("--breakapart", type=inkex.Boolean, default=False, help="Break apart selection into single contours")
+        pars.add_argument("--apply_transformations", type=inkex.Boolean, default=False, help="Run 'Apply Transformations' extension before running to avoid IndexErrors in calculation.")
+        pars.add_argument("--removefillsetstroke", type=inkex.Boolean, default=False, help="Remove fill and define stroke")
+        pars.add_argument("--strokewidth", type=float, default=1.0, help="Stroke width (px)")
+        pars.add_argument("--highlight_opened", type=inkex.Boolean, default=True, help="Highlight opened contours")
+        pars.add_argument("--color_opened", type=Color, default='4012452351', help="Color opened contours")
+        pars.add_argument("--highlight_closed", type=inkex.Boolean, default=True, help="Highlight closed contours")
+        pars.add_argument("--color_closed", type=Color, default='2330080511', help="Color closed contours")
+        pars.add_argument("--highlight_selfintersecting", type=inkex.Boolean, default=True, help="Highlight self-intersecting contours")
+        pars.add_argument("--highlight_intersectionpoints", type=inkex.Boolean, default=True, help="Highlight self-intersecting points")
+        pars.add_argument("--color_selfintersecting", type=Color, default='1923076095', help="Color closed contours")
+        pars.add_argument("--color_intersectionpoints", type=Color, default='4239343359', help="Color closed contours")
+        pars.add_argument("--addlines", type=inkex.Boolean, default=True, help="Add closing lines for self-crossing contours")
+        pars.add_argument("--polypaths", type=inkex.Boolean, default=True, help="Add polypath outline for self-crossing contours")
+        pars.add_argument("--dotsize", type=int, default=10, help="Dot size (px) for self-intersecting points")
+        pars.add_argument("--remove_opened", type=inkex.Boolean, default=False, help="Remove opened contours")
+        pars.add_argument("--remove_closed", type=inkex.Boolean, default=False, help="Remove closed contours")
+        pars.add_argument("--remove_selfintersecting", type=inkex.Boolean, default=False, help="Remove self-intersecting contours")
+        pars.add_argument("--show_debug", type=inkex.Boolean, default=False, help="Show debug info")
 
     #function to refine the style of the lines  
     def adjustStyle(self, node):

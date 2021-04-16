@@ -36,25 +36,24 @@ End of Licensing paragraph.
 import math, inkex
 from sewing_patterns import *
 
-class ShirtWaistAllington(inkex.Effect):
-    def __init__(self):
-
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument('--m_unit', default = 'Inches', help = 'Centimeters or Inches?')
-        self.arg_parser.add_argument('--m_front_waist_length', type = float, default = '15.0', help = 'Front Waist Length')
-        self.arg_parser.add_argument('--m_back_waist_length', type = float, default = '15.5', help = 'Back Waist Length')
-        self.arg_parser.add_argument('--m_neck_circumference', type = float, default = '13.5', help = 'Neck Circumference')
-        self.arg_parser.add_argument('--m_bust_circumference', type = float, default = '39.0', help = 'Bust Circumference')
-        self.arg_parser.add_argument('--m_waist_circumference', type = float, default = '25.0', help = 'Waist Circumference')
-        self.arg_parser.add_argument('--m_armscye_circumference', type = float, default = '15.0', help = 'Armscye circumference')
-        self.arg_parser.add_argument('--m_across_back', type = float, default = '13.5', help = 'Across Back')
-        self.arg_parser.add_argument('--m_shoulder', type = float, default = '6.5', help = 'Shoulder')
-        self.arg_parser.add_argument('--m_side', type = float, default = '7.75', help = 'Side')
-        self.arg_parser.add_argument('--m_upper_front_height', type = float, default = '10.75', help = 'Upper Front Height')
-        self.arg_parser.add_argument('--m_overarm_length', type = float, default = '20.00', help = 'Overarm Length')
-        self.arg_parser.add_argument('--m_elbow_height', type = float, default = '9.50', help = 'Elbow Height - from wrist to elbow')
-        self.arg_parser.add_argument('--m_elbow_circumference', type = float, default = '12.50', help = 'Elbow Circumference - arm bent')
-        self.arg_parser.add_argument('--m_hand_circumference', type = float, default = '8.00', help = 'Hand Circumference')
+class ShirtWaistAllington(inkex.EffectExtension):
+    
+    def add_arguments(self, pars):
+        pars.add_argument('--m_unit', default = 'Inches', help = 'Centimeters or Inches?')
+        pars.add_argument('--m_front_waist_length', type = float, default = '15.0', help = 'Front Waist Length')
+        pars.add_argument('--m_back_waist_length', type = float, default = '15.5', help = 'Back Waist Length')
+        pars.add_argument('--m_neck_circumference', type = float, default = '13.5', help = 'Neck Circumference')
+        pars.add_argument('--m_bust_circumference', type = float, default = '39.0', help = 'Bust Circumference')
+        pars.add_argument('--m_waist_circumference', type = float, default = '25.0', help = 'Waist Circumference')
+        pars.add_argument('--m_armscye_circumference', type = float, default = '15.0', help = 'Armscye circumference')
+        pars.add_argument('--m_across_back', type = float, default = '13.5', help = 'Across Back')
+        pars.add_argument('--m_shoulder', type = float, default = '6.5', help = 'Shoulder')
+        pars.add_argument('--m_side', type = float, default = '7.75', help = 'Side')
+        pars.add_argument('--m_upper_front_height', type = float, default = '10.75', help = 'Upper Front Height')
+        pars.add_argument('--m_overarm_length', type = float, default = '20.00', help = 'Overarm Length')
+        pars.add_argument('--m_elbow_height', type = float, default = '9.50', help = 'Elbow Height - from wrist to elbow')
+        pars.add_argument('--m_elbow_circumference', type = float, default = '12.50', help = 'Elbow Circumference - arm bent')
+        pars.add_argument('--m_hand_circumference', type = float, default = '8.00', help = 'Hand Circumference')
 
     def effect(self):
 

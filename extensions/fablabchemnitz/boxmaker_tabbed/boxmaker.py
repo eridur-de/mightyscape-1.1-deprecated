@@ -260,38 +260,36 @@ def side(group,root,startOffset,endOffset,tabVec,length,direction,isTab,isDivide
   return s
 
   
-class BoxMaker(inkex.Effect):
-  def __init__(self):
-      # Call the base class constructor.
-      inkex.Effect.__init__(self)
-      # Define options
-      self.arg_parser.add_argument('--schroff',type=int,default=0,help='Enable Schroff mode')
-      self.arg_parser.add_argument('--rail_height',type=float,default=10.0,help='Height of rail')
-      self.arg_parser.add_argument('--rail_mount_depth',type=float,default=17.4,help='Depth at which to place hole for rail mount bolt')
-      self.arg_parser.add_argument('--rail_mount_centre_offset',type=float, default=0.0,help='How far toward row centreline to offset rail mount bolt (from rail centreline)')
-      self.arg_parser.add_argument('--rows',type=int,default=0,help='Number of Schroff rows')
-      self.arg_parser.add_argument('--hp',type=int,default=0,help='Width (TE/HP units) of Schroff rows')
-      self.arg_parser.add_argument('--row_spacing',type=float,default=10.0,help='Height of rail')
-      self.arg_parser.add_argument('--unit', default='mm',help='Measure Units')
-      self.arg_parser.add_argument('--inside',type=int,default=0,help='Int/Ext Dimension')
-      self.arg_parser.add_argument('--length',type=float,default=100,help='Length of Box')
-      self.arg_parser.add_argument('--width',type=float,default=100,help='Width of Box')
-      self.arg_parser.add_argument('--depth',type=float,default=100,help='Height of Box')
-      self.arg_parser.add_argument('--tab',type=float,default=25,help='Nominal Tab Width')
-      self.arg_parser.add_argument('--equal',type=int,default=0,help='Equal/Prop Tabs')
-      self.arg_parser.add_argument('--tabsymmetry',type=int,default=0,help='Tab style')
-      self.arg_parser.add_argument('--dimpleheight',type=float,default=0,help='Tab Dimple Height')
-      self.arg_parser.add_argument('--dimplelength',type=float,default=0,help='Tab Dimple Tip Length')
-      self.arg_parser.add_argument('--hairline',type=int,default=0,help='Line Thickness')
-      self.arg_parser.add_argument('--thickness',type=float,default=10,help='Thickness of Material')
-      self.arg_parser.add_argument('--kerf',type=float,default=0.5,help='Kerf (width) of cut')
-      self.arg_parser.add_argument('--clearance',type=float,default=0.01,help='Clearance of joints')
-      self.arg_parser.add_argument('--style',type=int,default=25,help='Layout/Style')
-      self.arg_parser.add_argument('--spacing',type=float,default=25,help='Part Spacing')
-      self.arg_parser.add_argument('--boxtype',type=int,default=25,help='Box type')
-      self.arg_parser.add_argument('--div_l',type=int,default=25,help='Dividers (Length axis)')
-      self.arg_parser.add_argument('--div_w',type=int,default=25,help='Dividers (Width axis)')
-      self.arg_parser.add_argument('--keydiv',type=int,default=3,help='Key dividers into walls/floor')
+class BoxMaker(inkex.EffectExtension):
+    
+  def add_arguments(self, pars):
+    pars.add_argument('--schroff',type=int,default=0,help='Enable Schroff mode')
+    pars.add_argument('--rail_height',type=float,default=10.0,help='Height of rail')
+    pars.add_argument('--rail_mount_depth',type=float,default=17.4,help='Depth at which to place hole for rail mount bolt')
+    pars.add_argument('--rail_mount_centre_offset',type=float, default=0.0,help='How far toward row centreline to offset rail mount bolt (from rail centreline)')
+    pars.add_argument('--rows',type=int,default=0,help='Number of Schroff rows')
+    pars.add_argument('--hp',type=int,default=0,help='Width (TE/HP units) of Schroff rows')
+    pars.add_argument('--row_spacing',type=float,default=10.0,help='Height of rail')
+    pars.add_argument('--unit', default='mm',help='Measure Units')
+    pars.add_argument('--inside',type=int,default=0,help='Int/Ext Dimension')
+    pars.add_argument('--length',type=float,default=100,help='Length of Box')
+    pars.add_argument('--width',type=float,default=100,help='Width of Box')
+    pars.add_argument('--depth',type=float,default=100,help='Height of Box')
+    pars.add_argument('--tab',type=float,default=25,help='Nominal Tab Width')
+    pars.add_argument('--equal',type=int,default=0,help='Equal/Prop Tabs')
+    pars.add_argument('--tabsymmetry',type=int,default=0,help='Tab style')
+    pars.add_argument('--dimpleheight',type=float,default=0,help='Tab Dimple Height')
+    pars.add_argument('--dimplelength',type=float,default=0,help='Tab Dimple Tip Length')
+    pars.add_argument('--hairline',type=int,default=0,help='Line Thickness')
+    pars.add_argument('--thickness',type=float,default=10,help='Thickness of Material')
+    pars.add_argument('--kerf',type=float,default=0.5,help='Kerf (width) of cut')
+    pars.add_argument('--clearance',type=float,default=0.01,help='Clearance of joints')
+    pars.add_argument('--style',type=int,default=25,help='Layout/Style')
+    pars.add_argument('--spacing',type=float,default=25,help='Part Spacing')
+    pars.add_argument('--boxtype',type=int,default=25,help='Box type')
+    pars.add_argument('--div_l',type=int,default=25,help='Dividers (Length axis)')
+    pars.add_argument('--div_w',type=int,default=25,help='Dividers (Width axis)')
+    pars.add_argument('--keydiv',type=int,default=3,help='Key dividers into walls/floor')
 
   def effect(self):
     global group,nomTab,equalTabs,tabSymmetry,dimpleHeight,dimpleLength,thickness,correction,divx,divy,hairline,linethickness,keydivwalls,keydivfloor

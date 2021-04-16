@@ -48,25 +48,25 @@ def colorString(pickerColor):
     return '#' + format(longcolor >> 8, '06X')
 
 
-class Grid_Triangular(inkex.Effect):
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("--tabs")
-        self.arg_parser.add_argument("--size_unit", default="mm", help="Unit for grid size")
-        self.arg_parser.add_argument("--y_divs", type=int, default=3, help="Major vertical divisions")
-        self.arg_parser.add_argument("--x_divs", type=int, default=3, help="Major horizontal divisions")
-        self.arg_parser.add_argument("--grid_angle", type=float, default=30.0, help="Angle between X axis and triangular grid lines")
-        self.arg_parser.add_argument("--dm", type=float, default=100.0, help="Major grid division spacing")
-        self.arg_parser.add_argument("--subdivs", type=int, default=5, help="Subdivisions per major grid division")
-        self.arg_parser.add_argument("--subsubdivs", type=int, default=2, help="Subsubdivisions per minor grid subdivision")
-        self.arg_parser.add_argument("--border_th", type=float, default=3.0, help="Border Line thickness")
-        self.arg_parser.add_argument("--border_color", type=int, help="Border line color")
-        self.arg_parser.add_argument("--major_th", type=float, default=2.0, help="Major grid division line thickness")
-        self.arg_parser.add_argument("--major_color", type=int, help="Major grid division line color")
-        self.arg_parser.add_argument("--subdiv_th", type=float, default=1.0, help="Minor grid subdivision line thickness")
-        self.arg_parser.add_argument("--subdiv_color", type=int, help="Minor grid subdivision line color")
-        self.arg_parser.add_argument("--subsubdiv_th", type=float, default=1.0, help="Subminor grid division line thickness")
-        self.arg_parser.add_argument("--subsubdiv_color", type=int, help="Subminor grid division line color")
+class Grid_Triangular(inkex.EffectExtension):
+    
+    def add_arguments(self, pars):
+        pars.add_argument("--tabs")
+        pars.add_argument("--size_unit", default="mm", help="Unit for grid size")
+        pars.add_argument("--y_divs", type=int, default=3, help="Major vertical divisions")
+        pars.add_argument("--x_divs", type=int, default=3, help="Major horizontal divisions")
+        pars.add_argument("--grid_angle", type=float, default=30.0, help="Angle between X axis and triangular grid lines")
+        pars.add_argument("--dm", type=float, default=100.0, help="Major grid division spacing")
+        pars.add_argument("--subdivs", type=int, default=5, help="Subdivisions per major grid division")
+        pars.add_argument("--subsubdivs", type=int, default=2, help="Subsubdivisions per minor grid subdivision")
+        pars.add_argument("--border_th", type=float, default=3.0, help="Border Line thickness")
+        pars.add_argument("--border_color", type=int, help="Border line color")
+        pars.add_argument("--major_th", type=float, default=2.0, help="Major grid division line thickness")
+        pars.add_argument("--major_color", type=int, help="Major grid division line color")
+        pars.add_argument("--subdiv_th", type=float, default=1.0, help="Minor grid subdivision line thickness")
+        pars.add_argument("--subdiv_color", type=int, help="Minor grid subdivision line color")
+        pars.add_argument("--subsubdiv_th", type=float, default=1.0, help="Subminor grid division line thickness")
+        pars.add_argument("--subsubdiv_color", type=int, help="Subminor grid division line color")
 
     def EdgePoints(self,x0, y0, theta):
         #  find the intersection points of the line with the extended

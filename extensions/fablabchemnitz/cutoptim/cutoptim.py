@@ -18,7 +18,7 @@ import sys
 import os
 from lxml import etree
 
-class CutOptimWrapper(inkex.Effect):
+class CutOptimWrapper(inkex.EffectExtension):
     def __init__(self):
         inkex.Effect.__init__(self)
         args = sys.argv[1:] 

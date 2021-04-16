@@ -32,8 +32,10 @@ if debug:
 else:
     stderr = lambda msg: None
 	
-class RotateMinAll(inkex.Effect):
+class RotateMinAll(inkex.EffectExtension):
+    
     def effect(self):
+        
         def duplicateNodes(aList):
             clones={}
             for id,node in aList.items():

@@ -65,7 +65,7 @@ default=1,help="How compound paths are handled")
 
 """
 
-class ReorderEffect(inkex.Effect):
+class ReorderEffect(inkex.EffectExtension):
     """
     Inkscape effect extension.
     Re-order the objects in the SVG document for faster plotting.
@@ -76,11 +76,9 @@ class ReorderEffect(inkex.Effect):
         
     """
     
-    def __init__( self ):
-        inkex.Effect.__init__( self )
-    
-        self.arg_parser.add_argument( "--reordering",type=int, default=1, help="How groups are handled")
-        self.arg_parser.add_argument( "--preview_rendering",type=inkex.Boolean, default=False, help="Preview rendering") # Rendering is available for debug purposes. It only previews pen-up movements that are reordered and typically does not include all possible movement.
+    def add_arguments(self, pars):
+        pars.add_argument( "--reordering",type=int, default=1, help="How groups are handled")
+        pars.add_argument( "--preview_rendering",type=inkex.Boolean, default=False, help="Preview rendering") # Rendering is available for debug purposes. It only previews pen-up movements that are reordered and typically does not include all possible movement.
         self.auto_rotate = True
 
     def effect(self):

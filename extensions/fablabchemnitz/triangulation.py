@@ -34,15 +34,15 @@ from scipy.cluster.vq import kmeans2
 import cv2
 import urllib.request as urllib
 
-class Triangulation(inkex.Effect):
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("-n", "--num_points", type=int, default=100, help="Number of points to be sampled")
-        self.arg_parser.add_argument("-m", "--edge_thresh_min", type=int, default=200, help="Minimum threshold for edge detection")
-        self.arg_parser.add_argument("-M", "--edge_thresh_max", type=int, default=255, help="Maximum threshold for edge detection")
-        self.arg_parser.add_argument("-c", "--add_corners", type=inkex.Boolean, default=0, help="Use corners for triangulation?")
-        self.arg_parser.add_argument("-g", "--gradient_fill", type=inkex.Boolean, default=0, help="Fill triangles with gradient?")
-        self.arg_parser.add_argument("-b", "--tab", default='', help="The tab of the interface")
+class Triangulation(inkex.EffectExtension):
+    
+    def add_arguments(self, pars):
+        pars.add_argument("-n", "--num_points", type=int, default=100, help="Number of points to be sampled")
+        pars.add_argument("-m", "--edge_thresh_min", type=int, default=200, help="Minimum threshold for edge detection")
+        pars.add_argument("-M", "--edge_thresh_max", type=int, default=255, help="Maximum threshold for edge detection")
+        pars.add_argument("-c", "--add_corners", type=inkex.Boolean, default=0, help="Use corners for triangulation?")
+        pars.add_argument("-g", "--gradient_fill", type=inkex.Boolean, default=0, help="Fill triangles with gradient?")
+        pars.add_argument("-b", "--tab", default='', help="The tab of the interface")
 
     def draw_SVG_path(self, points, closed, style, parent):
         pathdesc = "M "

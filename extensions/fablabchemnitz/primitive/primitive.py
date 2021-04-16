@@ -24,7 +24,7 @@ License: GNU GPL v3
 Used version of Primitive: https://github.com/fogleman/primitive/commit/0373c216458be1c4b40655b796a3aefedf8b7d23
 """
 
-class Primitive (inkex.Effect):
+class Primitive (inkex.EffectExtension):
 
     def rgbToHex(self, pickerColor):
         longcolor = int(pickerColor)
@@ -54,20 +54,19 @@ class Primitive (inkex.Effect):
 
         if (os.path.isfile(path)):
             return path
-
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("--keeporiginal", type=inkex.Boolean, default=False, help="Keep original image on canvas")
-        self.arg_parser.add_argument("--cliprect", type=inkex.Boolean, default=True, help="Draw clipping rectangle")
-        self.arg_parser.add_argument("--n", type=int, default=100, help="Number of shapes")
-        self.arg_parser.add_argument("--m", default=1, help="Mode")
-        self.arg_parser.add_argument("--rep", type=int, default=0,help="Extra shapes/iteration")
-        self.arg_parser.add_argument("--r", type=int, default=256, help="Resize to size before processing (px)")
-        self.arg_parser.add_argument("--s", type=int, default=1024, help="Output image size (px)")    
-        self.arg_parser.add_argument("--a", type=int, default=128, help="Color alpha")
-        self.arg_parser.add_argument("--bg_enabled", type=inkex.Boolean, default=True, help="Use average starting background color")
-        self.arg_parser.add_argument("--bg", type=Color, default=255, help="Starting background color")
-        self.arg_parser.add_argument("--j", type=int, default=0, help="Number of parallel workers") 
+  
+    def add_arguments(self, pars):
+        pars.add_argument("--keeporiginal", type=inkex.Boolean, default=False, help="Keep original image on canvas")
+        pars.add_argument("--cliprect", type=inkex.Boolean, default=True, help="Draw clipping rectangle")
+        pars.add_argument("--n", type=int, default=100, help="Number of shapes")
+        pars.add_argument("--m", default=1, help="Mode")
+        pars.add_argument("--rep", type=int, default=0,help="Extra shapes/iteration")
+        pars.add_argument("--r", type=int, default=256, help="Resize to size before processing (px)")
+        pars.add_argument("--s", type=int, default=1024, help="Output image size (px)")    
+        pars.add_argument("--a", type=int, default=128, help="Color alpha")
+        pars.add_argument("--bg_enabled", type=inkex.Boolean, default=True, help="Use average starting background color")
+        pars.add_argument("--bg", type=Color, default=255, help="Starting background color")
+        pars.add_argument("--j", type=int, default=0, help="Number of parallel workers") 
   
     def effect(self):
     

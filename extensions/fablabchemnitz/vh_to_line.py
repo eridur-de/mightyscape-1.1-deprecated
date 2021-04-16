@@ -23,9 +23,7 @@ from math import *
 import inkex
 from inkex.paths import Path, CubicSuperPath
 
-class VHToLine(inkex.Effect):
-    def __init__(self):
-        inkex.Effect.__init__(self)
+class VHToLine(inkex.EffectExtension):
 
     def effect(self):
         if len(self.svg.selected) == 0: exit("Please select at least one path.")

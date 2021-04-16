@@ -27,9 +27,7 @@ import sys
 import inkex
 from inkex import Transform
 
-class SetViewBoxEffect(inkex.Effect):
-    def __init__(self):
-        inkex.Effect.__init__(self)
+class SetViewBoxEffect(inkex.EffectExtension):
 
     def effect(self):
         if len(self.svg.selected) != 1:

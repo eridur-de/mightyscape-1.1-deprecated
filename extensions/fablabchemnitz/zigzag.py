@@ -47,11 +47,12 @@ def randomize(x,y, r):
     y = math.sin(a-math.pi/2)*r       
     return [x, y]
 
-class RadiusRandomize(inkex.Effect):
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("--title")
-        self.arg_parser.add_argument("--radius", type=float,  default=10.0, help="Randomly move control and end points in this radius")
+class RadiusRandomize(inkex.EffectExtension):
+    
+    def add_arguments(self, pars):
+        pars.add_argument("--title")
+        pars.add_argument("--radius", type=float,  default=10.0, help="Randomly move control and end points in this radius")
+        
     def effect(self):
         for id, node in self.svg.selected.items():
             if node.tag == inkex.addNS('path','svg'):

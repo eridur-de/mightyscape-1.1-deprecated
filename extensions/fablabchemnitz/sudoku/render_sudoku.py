@@ -29,22 +29,21 @@ import subprocess
 from lxml import etree
 from inkex import Color
 
-class SVGSudoku (inkex.Effect):
+class SVGSudoku (inkex.EffectExtension):
 
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("--tab")
-        self.arg_parser.add_argument("--difficulty",default="mixed", help='How difficult to make puzzles.')
-        self.arg_parser.add_argument("--rows", type=int, default=1, help='Number of puzzle rows.')
-        self.arg_parser.add_argument("--cols", type=int, default=1, help='Number of puzzle columns.') 
-        self.arg_parser.add_argument("--puzzle_size", type=int, default=6, help='The width & height of each puzzle.')
-        self.arg_parser.add_argument("--puzzle_gap", type=int, default=1, help='The space between puzzles.')
-        self.arg_parser.add_argument("--color_text", type=Color, default=255, help='Color for given numbers.') 
-        self.arg_parser.add_argument("--color_bkgnd", type=Color, default=4243148799, help='Color for the puzzle background.')
-        self.arg_parser.add_argument("--color_puzzle",type=Color, default=2290779647, help='Border color for the puzzles.')
-        self.arg_parser.add_argument("--color_boxes", type=Color, default=3298820351, help='Border color for puzzle boxes.')
-        self.arg_parser.add_argument("--color_cells", type=Color, default=1923076095, help='Border color for the puzzle cells.')
-        self.arg_parser.add_argument("--units", help="The unit of the dimensions")
+    def add_arguments(self, pars):
+        pars.add_argument("--tab")
+        pars.add_argument("--difficulty",default="mixed", help='How difficult to make puzzles.')
+        pars.add_argument("--rows", type=int, default=1, help='Number of puzzle rows.')
+        pars.add_argument("--cols", type=int, default=1, help='Number of puzzle columns.') 
+        pars.add_argument("--puzzle_size", type=int, default=6, help='The width & height of each puzzle.')
+        pars.add_argument("--puzzle_gap", type=int, default=1, help='The space between puzzles.')
+        pars.add_argument("--color_text", type=Color, default=255, help='Color for given numbers.') 
+        pars.add_argument("--color_bkgnd", type=Color, default=4243148799, help='Color for the puzzle background.')
+        pars.add_argument("--color_puzzle",type=Color, default=2290779647, help='Border color for the puzzles.')
+        pars.add_argument("--color_boxes", type=Color, default=3298820351, help='Border color for puzzle boxes.')
+        pars.add_argument("--color_cells", type=Color, default=1923076095, help='Border color for the puzzle cells.')
+        pars.add_argument("--units", help="The unit of the dimensions")
 
     def draw_grid(self, g_puz, x, y):
         bkgnd_style = {'stroke':'none', 'stroke-width':'2', 'fill':self.options.color_bkgnd }      

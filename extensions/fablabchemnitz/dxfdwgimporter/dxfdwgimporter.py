@@ -48,77 +48,77 @@ from ezdxf.addons.drawing.matplotlib import MatplotlibBackend #for recent ezdxf 
 from ezdxf.addons import Importer
 
 class DXFDWGImport(inkex.EffectExtension):
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        
+    
+    def add_arguments(self, pars):
+
         #blank tabs
-        self.arg_parser.add_argument("--tab")
+        pars.add_argument("--tab")
         
         #general
-        self.arg_parser.add_argument("--inputfile")   
-        self.arg_parser.add_argument("--dxf_to_svg_parser",                     default="bjnortier",  help="Choose a DXF to SVG parser")
-        self.arg_parser.add_argument("--resizetoimport",    type=inkex.Boolean, default=True,         help="Resize the canvas to the imported drawing's bounding box") 
-        self.arg_parser.add_argument("--extraborder",       type=float,         default=0.0)
-        self.arg_parser.add_argument("--extraborder_units")      
+        pars.add_argument("--inputfile")   
+        pars.add_argument("--dxf_to_svg_parser",                     default="bjnortier",  help="Choose a DXF to SVG parser")
+        pars.add_argument("--resizetoimport",    type=inkex.Boolean, default=True,         help="Resize the canvas to the imported drawing's bounding box") 
+        pars.add_argument("--extraborder",       type=float,         default=0.0)
+        pars.add_argument("--extraborder_units")      
 
         #ODA File Converter        
-        self.arg_parser.add_argument("--oda_fileconverter", default=r"C:\Program Files\ODA\oda_fileconverter_title 21.6.0\oda_fileconverter.exe", help="Full path to 'oda_fileconverter.exe'")
-        self.arg_parser.add_argument("--oda_hidewindow",        type=inkex.Boolean, default=True,           help="Hide ODA GUI window")
-        self.arg_parser.add_argument("--oda_outputformat",                          default="ACAD2018_DXF", help="ODA AutoCAD Output version")
-        self.arg_parser.add_argument("--oda_keepconverted_dxf", type=inkex.Boolean, default=True,           help="Keep ODA converted DXF file")
-        self.arg_parser.add_argument("--oda_skip_dxf_to_dxf",   type=inkex.Boolean, default=False,          help="Skip conversion from DXF to DXF")
-        self.arg_parser.add_argument("--oda_audit_repair",      type=inkex.Boolean, default=True,           help="Perform audit / autorepair")
+        pars.add_argument("--oda_fileconverter", default=r"C:\Program Files\ODA\oda_fileconverter_title 21.6.0\oda_fileconverter.exe", help="Full path to 'oda_fileconverter.exe'")
+        pars.add_argument("--oda_hidewindow",        type=inkex.Boolean, default=True,           help="Hide ODA GUI window")
+        pars.add_argument("--oda_outputformat",                          default="ACAD2018_DXF", help="ODA AutoCAD Output version")
+        pars.add_argument("--oda_keepconverted_dxf", type=inkex.Boolean, default=True,           help="Keep ODA converted DXF file")
+        pars.add_argument("--oda_skip_dxf_to_dxf",   type=inkex.Boolean, default=False,          help="Skip conversion from DXF to DXF")
+        pars.add_argument("--oda_audit_repair",      type=inkex.Boolean, default=True,           help="Perform audit / autorepair")
 
         #sk1 UniConvertor
-        self.arg_parser.add_argument("--sk1_uniconverter", default=r"C:\Program Files (x86)\sK1 Project\UniConvertor-1.1.6\uniconvertor.cmd", help="Full path to 'uniconvertor.cmd'")
-        self.arg_parser.add_argument("--opendironerror", type=inkex.Boolean, default=True, help="Open containing output directory on conversion errors")
+        pars.add_argument("--sk1_uniconverter", default=r"C:\Program Files (x86)\sK1 Project\UniConvertor-1.1.6\uniconvertor.cmd", help="Full path to 'uniconvertor.cmd'")
+        pars.add_argument("--opendironerror", type=inkex.Boolean, default=True, help="Open containing output directory on conversion errors")
 
         #ezdxf preprocessing
-        self.arg_parser.add_argument("--ezdxf_output_version",                    default="SAME", help="ezdxf output version")  
-        self.arg_parser.add_argument("--ezdfx_keep_preprocessed", type=inkex.Boolean, default=True, help="Keep ezdxf preprocessed DXF file")        
-        self.arg_parser.add_argument("--ezdxf_preprocessing", type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--allentities",         type=inkex.Boolean, default=True)
+        pars.add_argument("--ezdxf_output_version",                    default="SAME", help="ezdxf output version")  
+        pars.add_argument("--ezdfx_keep_preprocessed", type=inkex.Boolean, default=True, help="Keep ezdxf preprocessed DXF file")        
+        pars.add_argument("--ezdxf_preprocessing", type=inkex.Boolean, default=True)
+        pars.add_argument("--allentities",         type=inkex.Boolean, default=True)
         
         #vpype-dxf (dread)
-        self.arg_parser.add_argument("--vpype_quantization",  type=float, default=0.1, help="Maximum length of segments approximating curved elements (default 0.1mm)")
-        self.arg_parser.add_argument("--vpype_simplify", type=inkex.Boolean, default=False, help="Simplify curved elements")
-        self.arg_parser.add_argument("--vpype_parallel", type=inkex.Boolean, default=False, help="Multiprocessing curve conversion")  
+        pars.add_argument("--vpype_quantization",  type=float, default=0.1, help="Maximum length of segments approximating curved elements (default 0.1mm)")
+        pars.add_argument("--vpype_simplify", type=inkex.Boolean, default=False, help="Simplify curved elements")
+        pars.add_argument("--vpype_parallel", type=inkex.Boolean, default=False, help="Multiprocessing curve conversion")  
         
         #sk1 compatible entities
-        self.arg_parser.add_argument("--THREE_DFACE",   type=inkex.Boolean, default=True) #3DFACE
-        self.arg_parser.add_argument("--ARC",           type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--BLOCK",         type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--CIRCLE",        type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--ELLIPSE",       type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--LINE",          type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--LWPOLYLINE",    type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--POINT",         type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--POLYLINE",      type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--POP_TRAFO",     type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--SEQEND",        type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--SOLID",         type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--SPLINE",        type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--TABLE",         type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--VERTEX",        type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--VIEWPORT",      type=inkex.Boolean, default=True)
+        pars.add_argument("--THREE_DFACE",   type=inkex.Boolean, default=True) #3DFACE
+        pars.add_argument("--ARC",           type=inkex.Boolean, default=True)
+        pars.add_argument("--BLOCK",         type=inkex.Boolean, default=True)
+        pars.add_argument("--CIRCLE",        type=inkex.Boolean, default=True)
+        pars.add_argument("--ELLIPSE",       type=inkex.Boolean, default=True)
+        pars.add_argument("--LINE",          type=inkex.Boolean, default=True)
+        pars.add_argument("--LWPOLYLINE",    type=inkex.Boolean, default=True)
+        pars.add_argument("--POINT",         type=inkex.Boolean, default=True)
+        pars.add_argument("--POLYLINE",      type=inkex.Boolean, default=True)
+        pars.add_argument("--POP_TRAFO",     type=inkex.Boolean, default=True)
+        pars.add_argument("--SEQEND",        type=inkex.Boolean, default=True)
+        pars.add_argument("--SOLID",         type=inkex.Boolean, default=True)
+        pars.add_argument("--SPLINE",        type=inkex.Boolean, default=True)
+        pars.add_argument("--TABLE",         type=inkex.Boolean, default=True)
+        pars.add_argument("--VERTEX",        type=inkex.Boolean, default=True)
+        pars.add_argument("--VIEWPORT",      type=inkex.Boolean, default=True)
         
         #other entities
-        self.arg_parser.add_argument("--THREE_DSOLID",  type=inkex.Boolean, default=True) #3DSOLID
-        self.arg_parser.add_argument("--ATTRIB",        type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--BODY",          type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--ARC_DIMENSION", type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--HATCH",         type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--IMAGE",         type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--INSERT",        type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--MESH",          type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--MTEXT",         type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--RAY",           type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--REGION",        type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--SHAPE",         type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--SURFACE",       type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--TRACE",         type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--UNDERLAY",      type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--XLINE",         type=inkex.Boolean, default=True)
+        pars.add_argument("--THREE_DSOLID",  type=inkex.Boolean, default=True) #3DSOLID
+        pars.add_argument("--ATTRIB",        type=inkex.Boolean, default=True)
+        pars.add_argument("--BODY",          type=inkex.Boolean, default=True)
+        pars.add_argument("--ARC_DIMENSION", type=inkex.Boolean, default=True)
+        pars.add_argument("--HATCH",         type=inkex.Boolean, default=True)
+        pars.add_argument("--IMAGE",         type=inkex.Boolean, default=True)
+        pars.add_argument("--INSERT",        type=inkex.Boolean, default=True)
+        pars.add_argument("--MESH",          type=inkex.Boolean, default=True)
+        pars.add_argument("--MTEXT",         type=inkex.Boolean, default=True)
+        pars.add_argument("--RAY",           type=inkex.Boolean, default=True)
+        pars.add_argument("--REGION",        type=inkex.Boolean, default=True)
+        pars.add_argument("--SHAPE",         type=inkex.Boolean, default=True)
+        pars.add_argument("--SURFACE",       type=inkex.Boolean, default=True)
+        pars.add_argument("--TRACE",         type=inkex.Boolean, default=True)
+        pars.add_argument("--UNDERLAY",      type=inkex.Boolean, default=True)
+        pars.add_argument("--XLINE",         type=inkex.Boolean, default=True)
         
     def openExplorer(self, temp_output_dir):
         DETACHED_PROCESS = 0x00000008

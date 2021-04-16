@@ -31,7 +31,8 @@ if debug:
 else:
     stderr = lambda msg: None
 
-class RotateMinWidth(inkex.Effect):
+class RotateMinWidth(inkex.EffectExtension):
+    
     def effect(self):
         for node in self.svg.selected.values():
             min_width_angle = rotate_helper.optimal_rotations(node)[0]

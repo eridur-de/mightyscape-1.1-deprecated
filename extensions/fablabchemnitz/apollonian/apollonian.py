@@ -23,17 +23,13 @@ def draw_SVG_circle(parent, r, cx, cy, name):
 
 class Gasket(inkex.EffectExtension): # choose a better name
     
-    def __init__(self):
-        " define how the options are mapped from the inx file "
-        inkex.Effect.__init__(self) # initialize the super class
-        
-        # list of parameters defined in the .inx file
-        self.arg_parser.add_argument("--depth",type=int, default=3, help="command line help")
-        self.arg_parser.add_argument("--c1", type=float, default=2.0, help="command line help")
-        self.arg_parser.add_argument("--c2", type=float, default=3.0, help="command line help")
-        self.arg_parser.add_argument("--c3", type=float, default=3.0, help="command line help")
-        self.arg_parser.add_argument("--shrink", type=inkex.Boolean, default=True, help="command line help")
-        self.arg_parser.add_argument("--active_tab", default='title', help="Active tab.")
+    def add_arguments(self, pars):
+        pars.add_argument("--depth",type=int, default=3, help="command line help")
+        pars.add_argument("--c1", type=float, default=2.0, help="command line help")
+        pars.add_argument("--c2", type=float, default=3.0, help="command line help")
+        pars.add_argument("--c3", type=float, default=3.0, help="command line help")
+        pars.add_argument("--shrink", type=inkex.Boolean, default=True, help="command line help")
+        pars.add_argument("--active_tab", default='title', help="Active tab.")
               
     def calc_unit_factor(self):
         unit_factor = self.svg.unittouu(str(1.0) + self.options.units)

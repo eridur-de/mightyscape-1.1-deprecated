@@ -33,23 +33,22 @@ def draw_SVG_circle(parent, r, cx, cy, name, style):
 
 Black = '#000000'
 
-class Zoetrope(inkex.Effect): 
+class Zoetrope(inkex.EffectExtension): 
     
-    def __init__(self):
-        inkex.Effect.__init__(self) # initialize the super class
-        self.arg_parser.add_argument("-u", "--units", default='mm', help="Units this dialog is using")
-        self.arg_parser.add_argument("-d", "--diameter", type=float, default=1.0, help="Diameter of disk")
-        self.arg_parser.add_argument("-n", "--divisions", type=int, default=24, help="Number of divisions")
-        self.arg_parser.add_argument("-i", "--height", type=float, default=1.0, help="Image height")
-        self.arg_parser.add_argument("-t", "--trigger", type=inkex.Boolean, default=False, help="Trigger")
-        self.arg_parser.add_argument("-q", "--triggerradius", type=float, default=1.0, help="Height of trigger line")
-        self.arg_parser.add_argument("-e", "--thick", type=float, default=1.0, help="Thickness of trigger line")
-        self.arg_parser.add_argument("-r", "--ratio", type=float, default=0.5, help="Ratio of trigger pulse")
-        self.arg_parser.add_argument("-p", "--phase", type=float, default=0, help="Delay of trigger pulse")
-        self.arg_parser.add_argument("-w", "--stroke_width", type=float, default=0.1, help="Line thickness")
-        self.arg_parser.add_argument("-m", "--template", type=inkex.Boolean,  default=False, help="Show Image Distortion template")
-        self.arg_parser.add_argument("-k", "--dpi", type=int, default=300, help="To calculate useful image size")
-        self.arg_parser.add_argument("--active-tab", default='', help="Active tab. Not used now.")
+    def add_arguments(self, pars):
+        pars.add_argument("-u", "--units", default='mm', help="Units this dialog is using")
+        pars.add_argument("-d", "--diameter", type=float, default=1.0, help="Diameter of disk")
+        pars.add_argument("-n", "--divisions", type=int, default=24, help="Number of divisions")
+        pars.add_argument("-i", "--height", type=float, default=1.0, help="Image height")
+        pars.add_argument("-t", "--trigger", type=inkex.Boolean, default=False, help="Trigger")
+        pars.add_argument("-q", "--triggerradius", type=float, default=1.0, help="Height of trigger line")
+        pars.add_argument("-e", "--thick", type=float, default=1.0, help="Thickness of trigger line")
+        pars.add_argument("-r", "--ratio", type=float, default=0.5, help="Ratio of trigger pulse")
+        pars.add_argument("-p", "--phase", type=float, default=0, help="Delay of trigger pulse")
+        pars.add_argument("-w", "--stroke_width", type=float, default=0.1, help="Line thickness")
+        pars.add_argument("-m", "--template", type=inkex.Boolean,  default=False, help="Show Image Distortion template")
+        pars.add_argument("-k", "--dpi", type=int, default=300, help="To calculate useful image size")
+        pars.add_argument("--active-tab", default='', help="Active tab. Not used now.")
  
     def calc_unit_factor(self):
         """ return the scale factor for all dimension conversions.

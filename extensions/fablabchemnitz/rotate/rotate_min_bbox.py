@@ -31,7 +31,8 @@ if debug:
 else:
     stderr = lambda msg: None
 
-class RotateMinBBox(inkex.Effect):
+class RotateMinBBox(inkex.EffectExtension):
+    
     def effect(self):
         for node in self.svg.selected.values():
             min_bbox_angle = rotate_helper.optimal_rotations(node)[1]

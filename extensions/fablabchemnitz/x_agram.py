@@ -11,17 +11,16 @@ def addPathCommand(a, cmd):
     for x in cmd:
         a.append(str(x))
 
-class XGramEffect(inkex.Effect):
+class XGramEffect(inkex.EffectExtension):
 
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument('--tab')
-        self.arg_parser.add_argument('--points', type=int, default=5, help='Number of points (or sides)')
-        self.arg_parser.add_argument('--skip', type=int, default=2, help='Vertex increment when connecting points')
-        self.arg_parser.add_argument('--rotate', type=float, default=0, help='Rotation angle (clockwise, in degrees)')
-        self.arg_parser.add_argument('--inner_circle', type=inkex.Boolean, default=False, help='Connect points via inner circle')
-        self.arg_parser.add_argument('--show_inner_circle', type=inkex.Boolean, default=True, help='Show inner circle')
-        self.arg_parser.add_argument('--inner_ratio', type=int, default=50, help='Inner radius percentage (inner radius as a percentage of the outer radius)')
+    def add_arguments(self, pars):
+        pars.add_argument('--tab')
+        pars.add_argument('--points', type=int, default=5, help='Number of points (or sides)')
+        pars.add_argument('--skip', type=int, default=2, help='Vertex increment when connecting points')
+        pars.add_argument('--rotate', type=float, default=0, help='Rotation angle (clockwise, in degrees)')
+        pars.add_argument('--inner_circle', type=inkex.Boolean, default=False, help='Connect points via inner circle')
+        pars.add_argument('--show_inner_circle', type=inkex.Boolean, default=True, help='Show inner circle')
+        pars.add_argument('--inner_ratio', type=int, default=50, help='Inner radius percentage (inner radius as a percentage of the outer radius)')
 
     def effect(self):
         layer = self.svg.get_current_layer();

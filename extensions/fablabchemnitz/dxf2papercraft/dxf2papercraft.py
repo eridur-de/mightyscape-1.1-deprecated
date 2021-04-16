@@ -29,22 +29,22 @@ ToDos:
 - maybe add some DXF model preview tool (maybe a useless idea at all)
 """
 
-class PapercraftUnfold(inkex.Effect):
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("--inputfile")
-        self.arg_parser.add_argument("--resizetoimport", type=inkex.Boolean, default=True, help="Resize the canvas to the imported drawing's bounding box") 
-        self.arg_parser.add_argument("--extraborder", type=float, default=0.0)
-        self.arg_parser.add_argument("--extraborder_units")
-        self.arg_parser.add_argument("--scalefactor", type=float, default=1.0, help="Manual scale factor")
-        self.arg_parser.add_argument("--nomerge", type=inkex.Boolean, default=False, help="No merging of faces into single polygon")
-        self.arg_parser.add_argument("--number", type=inkex.Boolean, default=False, help="Print face numbers (labels)")
-        self.arg_parser.add_argument("--divide", type=inkex.Boolean, default=False, help="Draw each face separate")
-        self.arg_parser.add_argument("--overlap", type=inkex.Boolean, default=False, help="Allow overlapping faces in cut-out sheet")
-        self.arg_parser.add_argument("--hide", type=inkex.Boolean, default=False, help="Hide glue tabs")
-        self.arg_parser.add_argument("--force", type=inkex.Boolean, default=False, help="Force glue tabs, even if intersecting faces")
-        self.arg_parser.add_argument("--split", default="", help="Comma separated list of face numbers to disconnect from the rest")
-        self.arg_parser.add_argument("--strategy", default=0, help="Generation strategy")
+class PapercraftUnfold(inkex.EffectExtension):
+    
+    def add_arguments(self, pars):
+        pars.add_argument("--inputfile")
+        pars.add_argument("--resizetoimport", type=inkex.Boolean, default=True, help="Resize the canvas to the imported drawing's bounding box") 
+        pars.add_argument("--extraborder", type=float, default=0.0)
+        pars.add_argument("--extraborder_units")
+        pars.add_argument("--scalefactor", type=float, default=1.0, help="Manual scale factor")
+        pars.add_argument("--nomerge", type=inkex.Boolean, default=False, help="No merging of faces into single polygon")
+        pars.add_argument("--number", type=inkex.Boolean, default=False, help="Print face numbers (labels)")
+        pars.add_argument("--divide", type=inkex.Boolean, default=False, help="Draw each face separate")
+        pars.add_argument("--overlap", type=inkex.Boolean, default=False, help="Allow overlapping faces in cut-out sheet")
+        pars.add_argument("--hide", type=inkex.Boolean, default=False, help="Hide glue tabs")
+        pars.add_argument("--force", type=inkex.Boolean, default=False, help="Force glue tabs, even if intersecting faces")
+        pars.add_argument("--split", default="", help="Comma separated list of face numbers to disconnect from the rest")
+        pars.add_argument("--strategy", default=0, help="Generation strategy")
                    
     def effect(self):
         dxf_input = self.options.inputfile

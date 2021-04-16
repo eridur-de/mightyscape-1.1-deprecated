@@ -31,7 +31,7 @@ __author__ = 'Veronika Irvine'
 __credits__ = ['Ben Connors', 'Veronika Irvine', 'Mark Shafer']
 __license__ = 'Simplified BSD'
 
-class LaceGrid(inkex.Effect):        
+class LaceGrid(inkex.EffectExtension):        
     def circle(self, x, y, r, fill):
         # define the stroke style
         s = {'fill': fill}
@@ -70,17 +70,16 @@ class LaceGrid(inkex.Effect):
                 
             y += vgrid;
 
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument('--angle', type=float)
-        self.arg_parser.add_argument('--distance', type=float)
-        self.arg_parser.add_argument('--pinunits')
-        self.arg_parser.add_argument('--width', type=float)
-        self.arg_parser.add_argument('--patchunits')
-        self.arg_parser.add_argument('--height', type=float)
-        self.arg_parser.add_argument('--dotwidth', type=float)
-        self.arg_parser.add_argument('--dotunits')
-        self.arg_parser.add_argument('--dotcolor', type=inkex.Color)
+    def add_arguments(self, pars):
+        pars.add_argument('--angle', type=float)
+        pars.add_argument('--distance', type=float)
+        pars.add_argument('--pinunits')
+        pars.add_argument('--width', type=float)
+        pars.add_argument('--patchunits')
+        pars.add_argument('--height', type=float)
+        pars.add_argument('--dotwidth', type=float)
+        pars.add_argument('--dotunits')
+        pars.add_argument('--dotcolor', type=inkex.Color)
 
     def effect(self):
         """

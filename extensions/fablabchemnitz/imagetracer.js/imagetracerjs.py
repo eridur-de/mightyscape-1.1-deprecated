@@ -23,7 +23,7 @@ License: GNU GPL v3
 Used version of imagetracerjs: https://github.com/jankovicsandras/imagetracerjs/commit/4d0f429efbb936db1a43db80815007a2cb113b34
 """
 
-class Imagetracerjs (inkex.Effect):
+class Imagetracerjs (inkex.EffectExtension):
 
     def checkImagePath(self, node):
         xlink = node.get('xlink:href')
@@ -48,27 +48,26 @@ class Imagetracerjs (inkex.Effect):
         if (os.path.isfile(path)):
             return path
 
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("--tabs")
-        self.arg_parser.add_argument("--keeporiginal", type=inkex.Boolean, default=False, help="Keep original image on canvas")
-        self.arg_parser.add_argument("--ltres", type=float, default=1.0, help="Error treshold straight lines")
-        self.arg_parser.add_argument("--qtres", type=float, default=1.0, help="Error treshold quadratic splines")
-        self.arg_parser.add_argument("--pathomit", type=int, default=8, help="Noise reduction - discard edge node paths shorter than")         
-        self.arg_parser.add_argument("--rightangleenhance", type=inkex.Boolean, default=True, help="Enhance right angle corners")
-        self.arg_parser.add_argument("--colorsampling", default="2",help="Color sampling")      
-        self.arg_parser.add_argument("--numberofcolors", type=int, default=16, help="Number of colors to use on palette")
-        self.arg_parser.add_argument("--mincolorratio", type=int, default=0, help="Color randomization ratio")
-        self.arg_parser.add_argument("--colorquantcycles", type=int, default=3, help="Color quantization will be repeated this many times")           
-        self.arg_parser.add_argument("--layering", default="0",help="Layering")
-        self.arg_parser.add_argument("--strokewidth", type=float, default=1.0, help="SVG stroke-width")
-        self.arg_parser.add_argument("--linefilter", type=inkex.Boolean, default=False, help="Noise reduction line filter")
-        #self.arg_parser.add_argument("--scale", type=float, default=1.0, help="Coordinate scale factor")
-        self.arg_parser.add_argument("--roundcoords", type=int, default=1, help="Decimal places for rounding")
-        self.arg_parser.add_argument("--viewbox", type=inkex.Boolean, default=False, help="Enable or disable SVG viewBox")
-        self.arg_parser.add_argument("--desc", type=inkex.Boolean, default=False, help="SVG descriptions")
-        self.arg_parser.add_argument("--blurradius", type=int, default=0, help="Selective Gaussian blur preprocessing")
-        self.arg_parser.add_argument("--blurdelta", type=float, default=20.0, help="RGBA delta treshold for selective Gaussian blur preprocessing")
+    def add_arguments(self, pars):
+        pars.add_argument("--tabs")
+        pars.add_argument("--keeporiginal", type=inkex.Boolean, default=False, help="Keep original image on canvas")
+        pars.add_argument("--ltres", type=float, default=1.0, help="Error treshold straight lines")
+        pars.add_argument("--qtres", type=float, default=1.0, help="Error treshold quadratic splines")
+        pars.add_argument("--pathomit", type=int, default=8, help="Noise reduction - discard edge node paths shorter than")         
+        pars.add_argument("--rightangleenhance", type=inkex.Boolean, default=True, help="Enhance right angle corners")
+        pars.add_argument("--colorsampling", default="2",help="Color sampling")      
+        pars.add_argument("--numberofcolors", type=int, default=16, help="Number of colors to use on palette")
+        pars.add_argument("--mincolorratio", type=int, default=0, help="Color randomization ratio")
+        pars.add_argument("--colorquantcycles", type=int, default=3, help="Color quantization will be repeated this many times")           
+        pars.add_argument("--layering", default="0",help="Layering")
+        pars.add_argument("--strokewidth", type=float, default=1.0, help="SVG stroke-width")
+        pars.add_argument("--linefilter", type=inkex.Boolean, default=False, help="Noise reduction line filter")
+        #pars.add_argument("--scale", type=float, default=1.0, help="Coordinate scale factor")
+        pars.add_argument("--roundcoords", type=int, default=1, help="Decimal places for rounding")
+        pars.add_argument("--viewbox", type=inkex.Boolean, default=False, help="Enable or disable SVG viewBox")
+        pars.add_argument("--desc", type=inkex.Boolean, default=False, help="SVG descriptions")
+        pars.add_argument("--blurradius", type=int, default=0, help="Selective Gaussian blur preprocessing")
+        pars.add_argument("--blurdelta", type=float, default=20.0, help="RGBA delta treshold for selective Gaussian blur preprocessing")
   
     def effect(self):
     

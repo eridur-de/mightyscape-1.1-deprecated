@@ -31,7 +31,8 @@ __author__ = 'Veronika Irvine'
 __credits__ = ['Ben Connors', 'Veronika Irvine', 'Mark Shafer']
 __license__ = 'Simplified BSD'
 
-class LaceGround(inkex.Effect):
+class LaceGround(inkex.EffectExtesnsion):
+    
     def loadFile(self):
         # Ensure that file exists and has the proper extension
         if not self.options.file:
@@ -134,18 +135,17 @@ class LaceGround(inkex.Effect):
             repeatY += 1
             y += deltaY * rowCount
         
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument('-f', '--file', help='File containing lace ground description')
-        self.arg_parser.add_argument('--angle', type=float)
-        self.arg_parser.add_argument('--distance', type=float)
-        self.arg_parser.add_argument('--pinunits')
-        self.arg_parser.add_argument('--width',  type=float)
-        self.arg_parser.add_argument('--patchunits')
-        self.arg_parser.add_argument('--height', type=float)
-        self.arg_parser.add_argument('--linewidth', type=float)
-        self.arg_parser.add_argument('--lineunits')
-        self.arg_parser.add_argument('--linecolor', type=inkex.Color)
+    def add_arguments(self, pars):
+        pars.add_argument('-f', '--file', help='File containing lace ground description')
+        pars.add_argument('--angle', type=float)
+        pars.add_argument('--distance', type=float)
+        pars.add_argument('--pinunits')
+        pars.add_argument('--width',  type=float)
+        pars.add_argument('--patchunits')
+        pars.add_argument('--height', type=float)
+        pars.add_argument('--linewidth', type=float)
+        pars.add_argument('--lineunits')
+        pars.add_argument('--linecolor', type=inkex.Color)
 
     def effect(self):
         result = self.loadFile()

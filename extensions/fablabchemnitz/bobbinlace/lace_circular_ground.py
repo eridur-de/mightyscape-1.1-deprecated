@@ -70,7 +70,7 @@ class Vector:
             self.theta = _theta
 
 
-class CircularGround(inkex.Effect):
+class CircularGround(inkex.EffectExtension):
 
     def unitToUu(self,param):
         """ Convert units.
@@ -387,17 +387,16 @@ class CircularGround(inkex.Effect):
                 _pts.append([p[0]-min_x,p[1]-min_y])
             self.line(_pts)
 
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument('--file')
-        self.arg_parser.add_argument('--angle', type=int)
-        self.arg_parser.add_argument('--cols', type=int)
-        self.arg_parser.add_argument('--diameter', type=float)
-        self.arg_parser.add_argument('--diamunits')
-        self.arg_parser.add_argument('--rows', type=int)
-        self.arg_parser.add_argument('--linewidth', type=float)
-        self.arg_parser.add_argument('--lineunits')
-        self.arg_parser.add_argument('--linecolor', type=inkex.Color)
+    def add_arguments(self, pars):
+        pars.add_argument('--file')
+        pars.add_argument('--angle', type=int)
+        pars.add_argument('--cols', type=int)
+        pars.add_argument('--diameter', type=float)
+        pars.add_argument('--diamunits')
+        pars.add_argument('--rows', type=int)
+        pars.add_argument('--linewidth', type=float)
+        pars.add_argument('--lineunits')
+        pars.add_argument('--linecolor', type=inkex.Color)
 
     def effect(self):
         ## Load the file

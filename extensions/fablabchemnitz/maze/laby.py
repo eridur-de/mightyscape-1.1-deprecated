@@ -24,17 +24,14 @@ def points_to_svgd(p, close=False):
     return svgd
 
 
-class Recursive(inkex.Effect):
+class Recursive(inkex.EffectExtension):
 
-    def __init__(self):
-        " define how the options are mapped from the inx file "
-        inkex.Effect.__init__(self) # initialize the super class
-
-        self.arg_parser.add_argument("--verti", type=int, default=20, help="Height")
-        self.arg_parser.add_argument("--horiz", type=int, default=20, help="Length")
-        self.arg_parser.add_argument("--size",  type=float, default=10.0, help="Cell Size")
-        self.arg_parser.add_argument("--algo", default=1, help="Algorithm")
-        self.arg_parser.add_argument("--width", type=float, default=10.0, help="Line width")
+    def add_arguments(self, pars):
+        pars.add_argument("--verti", type=int, default=20, help="Height")
+        pars.add_argument("--horiz", type=int, default=20, help="Length")
+        pars.add_argument("--size",  type=float, default=10.0, help="Cell Size")
+        pars.add_argument("--algo", default=1, help="Algorithm")
+        pars.add_argument("--width", type=float, default=10.0, help="Line width")
 
     def effect(self):
         # basic style

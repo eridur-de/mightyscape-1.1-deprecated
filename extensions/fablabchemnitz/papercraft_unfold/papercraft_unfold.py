@@ -77,30 +77,30 @@ Module licenses
 
 """
 
-class Unfold(inkex.Effect):
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("--tab")
-        self.arg_parser.add_argument("--inputfile")
-        self.arg_parser.add_argument("--generatelabels", type=inkex.Boolean, default=True, help="Generate labels for edges")
-        self.arg_parser.add_argument("--resizetoimport", type=inkex.Boolean, default=True, help="Resize the canvas to the imported drawing's bounding box") 
-        self.arg_parser.add_argument("--extraborder", type=float, default=0.0)
-        self.arg_parser.add_argument("--extraborder_units")              
-        self.arg_parser.add_argument("--show_fstl", type=inkex.Boolean, default=True, help="Show converted (and fixed) STL in fstl Viewer")
-        self.arg_parser.add_argument("--exact", type=inkex.Boolean, default=True, help="Only check for perfectly matched edges")
-        self.arg_parser.add_argument("--nearby", type=inkex.Boolean, default=True, help="Find and connect nearby facets. Correct bad facets")
-        self.arg_parser.add_argument("--tolerance", type=float, default=0.0, help="Initial tolerance to use for nearby check")
-        self.arg_parser.add_argument("--iterations", type=int, default=1, help="Number of iterations for nearby check")
-        self.arg_parser.add_argument("--increment", type=float, default=0.0, help="Amount to increment tolerance after iteration")
-        self.arg_parser.add_argument("--remove_unconnected", type=inkex.Boolean, default=True, help="Remove facets that have 0 neighbors")
-        self.arg_parser.add_argument("--fill_holes", type=inkex.Boolean, default=True, help="Add facets to fill holes")
-        self.arg_parser.add_argument("--normal_directions", type=inkex.Boolean, default=True, help="Check and fix direction of normals (ie cw, ccw)")
-        self.arg_parser.add_argument("--reverse_all", type=inkex.Boolean, default=True, help="Reverse the directions of all facets and normals")
-        self.arg_parser.add_argument("--normal_values", type=inkex.Boolean, default=True, help="Check and fix normal values")
-        self.arg_parser.add_argument("--xy_mirror", type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--yz_mirror", type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--xz_mirror", type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--scale", type=float, default=1.0)
+class Unfold(inkex.EffectExtension):
+    
+    def add_arguments(self, pars):
+        pars.add_argument("--tab")
+        pars.add_argument("--inputfile")
+        pars.add_argument("--generatelabels", type=inkex.Boolean, default=True, help="Generate labels for edges")
+        pars.add_argument("--resizetoimport", type=inkex.Boolean, default=True, help="Resize the canvas to the imported drawing's bounding box") 
+        pars.add_argument("--extraborder", type=float, default=0.0)
+        pars.add_argument("--extraborder_units")              
+        pars.add_argument("--show_fstl", type=inkex.Boolean, default=True, help="Show converted (and fixed) STL in fstl Viewer")
+        pars.add_argument("--exact", type=inkex.Boolean, default=True, help="Only check for perfectly matched edges")
+        pars.add_argument("--nearby", type=inkex.Boolean, default=True, help="Find and connect nearby facets. Correct bad facets")
+        pars.add_argument("--tolerance", type=float, default=0.0, help="Initial tolerance to use for nearby check")
+        pars.add_argument("--iterations", type=int, default=1, help="Number of iterations for nearby check")
+        pars.add_argument("--increment", type=float, default=0.0, help="Amount to increment tolerance after iteration")
+        pars.add_argument("--remove_unconnected", type=inkex.Boolean, default=True, help="Remove facets that have 0 neighbors")
+        pars.add_argument("--fill_holes", type=inkex.Boolean, default=True, help="Add facets to fill holes")
+        pars.add_argument("--normal_directions", type=inkex.Boolean, default=True, help="Check and fix direction of normals (ie cw, ccw)")
+        pars.add_argument("--reverse_all", type=inkex.Boolean, default=True, help="Reverse the directions of all facets and normals")
+        pars.add_argument("--normal_values", type=inkex.Boolean, default=True, help="Check and fix normal values")
+        pars.add_argument("--xy_mirror", type=inkex.Boolean, default=True)
+        pars.add_argument("--yz_mirror", type=inkex.Boolean, default=True)
+        pars.add_argument("--xz_mirror", type=inkex.Boolean, default=True)
+        pars.add_argument("--scale", type=float, default=1.0)
                                  
     def effect(self):
         inputfile = self.options.inputfile

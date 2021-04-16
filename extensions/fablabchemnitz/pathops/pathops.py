@@ -189,19 +189,14 @@ def chunks(alist, max_len):
 
 # ----- PathOps() class, methods
 
-class PathOps(inkex.Effect):
-    """Effect-based class to apply Inkscape path operations."""
-
-    def __init__(self):
-        """Init base class."""
-        inkex.Effect.__init__(self)
-
-        # options
-        self.arg_parser.add_argument("--ink_verb", default="SelectionDiff", help="Inkscape verb for path op")
-        self.arg_parser.add_argument("--max_ops", type=int, default=500, help="Max ops per external run")
-        self.arg_parser.add_argument("--recursive_sel", type=inkex.Boolean, help="Recurse beyond one group level")
-        self.arg_parser.add_argument("--keep_top", type=inkex.Boolean, help="Keep top element when done")
-        self.arg_parser.add_argument("--dry_run", type=inkex.Boolean, default=False, help="Dry-run without exec")
+class PathOps(inkex.EffectExtension):
+    
+    def add_arguments(self, pars):
+        pars.add_argument("--ink_verb", default="SelectionDiff", help="Inkscape verb for path op")
+        pars.add_argument("--max_ops", type=int, default=500, help="Max ops per external run")
+        pars.add_argument("--recursive_sel", type=inkex.Boolean, help="Recurse beyond one group level")
+        pars.add_argument("--keep_top", type=inkex.Boolean, help="Keep top element when done")
+        pars.add_argument("--dry_run", type=inkex.Boolean, default=False, help="Dry-run without exec")
 
     def get_selected_ids(self):
         """Return a list of valid ids for inkscape path operations."""

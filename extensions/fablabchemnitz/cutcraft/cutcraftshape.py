@@ -58,14 +58,14 @@ class CutCraftNode(object):
 
         return self.children[0].insert(part, shape)
 
-class CutCraftShape(inkex.Effect):
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("--active-tab", default="Options", help="The tab selected when OK was pressed")
-        self.arg_parser.add_argument("--unit", default="mm", help="unit of measure for circular pitch and center diameter")
-        self.arg_parser.add_argument("--thickness", type=float, default=20.0, help="Material Thickness")
-        self.arg_parser.add_argument("--kerf", type=float, default=20.0, help="Laser Cutter Kerf")
-        self.arg_parser.add_argument("--linethickness", default="1px", help="Line Thickness")
+class CutCraftShape(inkex.EffectExtension):
+
+    def add_arguments(self, pars):
+        pars.add_argument("--active-tab", default="Options", help="The tab selected when OK was pressed")
+        pars.add_argument("--unit", default="mm", help="unit of measure for circular pitch and center diameter")
+        pars.add_argument("--thickness", type=float, default=20.0, help="Material Thickness")
+        pars.add_argument("--kerf", type=float, default=20.0, help="Laser Cutter Kerf")
+        pars.add_argument("--linethickness", default="1px", help="Line Thickness")
 
     def effect(self):
         self.unit = self.options.unit
