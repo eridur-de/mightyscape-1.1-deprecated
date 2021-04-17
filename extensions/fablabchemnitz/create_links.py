@@ -50,7 +50,8 @@ class LinksCreator(inkex.EffectExtension):
         pars.add_argument("--link_count", type=int, default=1, help="Link count")
         pars.add_argument("--link_multiplicator", type=int, default=1, help="If set, we create a set of multiple gaps of same size next to the main gap")
         pars.add_argument("--length_link", type=float, default=1.000, help="Link length")
-        pars.add_argument("--link_offset", type=float, default=0.000, help="Link offset (+/-)")       
+        pars.add_argument("--link_offset", type=float, default=0.000, help="Link offset (+/-)")
+        pars.add_argument("--switch_pattern", type=inkex.Boolean, default=False, help="If enabled, we use gap length as dash length (switches the dasharray pattern")       
         pars.add_argument("--custom_dasharray_value", default="", help="A list of separated lengths that specify the lengths of alternating dashes and gaps. Input only accepts numbers. It ignores percentages or other characters.")
         pars.add_argument("--custom_dashoffset_value", type=float, default=0.000, help="Link offset (+/-)")       
         pars.add_argument("--length_filter", type=inkex.Boolean, default=False, help="Enable path length filtering")
@@ -128,12 +129,17 @@ class LinksCreator(inkex.EffectExtension):
 
             dashes = [] #central dashes array
             
-            if self.options.creationtype == "entered_values":     
-                dashes.append(((stotal - length_link * self.options.link_count) / self.options.link_count) - 2 * length_link * self.options.link_multiplicator)
-                dashes.append(length_link)           
+            if self.options.creationtype == "entered_values":
+                dash_length = ((stotal - length_link * self.options.link_count) / self.options.link_count) - 2 * length_link * self.options.link_multiplicator
+                dashes.append(dash_length)
+                dashes.append(length_link)                  
                 for i in range(0, self.options.link_multiplicator):
                     dashes.append(length_link) #stroke (=gap)
                     dashes.append(length_link) #gap
+                    
+                if self.options.switch_pattern is True:
+                    dashes = dashes[::-1] #reverse the array
+                    
                 #validate dashes. May not be negative. Otherwise Inkscape will freeze forever. Reason: rendering issue
                 if any(dash <= 0.0 for dash in dashes) == True: 
                     if self.options.show_info is True: inkex.errormsg("node " + node.get('id') + ": Error! Dash array may not contain negative numbers: " + ' '.join(format(dash, "1.3f") for dash in dashes) + ". Path skipped. Maybe it's too short. Adjust your link count, multiplicator and length accordingly, or set to unit '%'")
@@ -143,6 +149,9 @@ class LinksCreator(inkex.EffectExtension):
                     stroke_dashoffset = self.options.link_offset / 100.0
                 else:         
                     stroke_dashoffset = self.svg.unittouu(str(self.options.link_offset) + self.options.creationunit)
+                    
+                if self.options.switch_pattern is True:
+                    stroke_dashoffset = stroke_dashoffset + ((self.options.link_multiplicator * 2) + 1)  * length_link
 
             if self.options.creationtype == "use_existing":
                 if self.options.no_convert is True:
@@ -194,12 +203,12 @@ class LinksCreator(inkex.EffectExtension):
                     if len(parts) == 2:
                         (prop, val) = parts
                         prop = prop.strip().lower()
-                        if prop == 'fill':
-                            declarations[i] = prop + ':{}'.format(default_fill) 
-                        if prop == 'stroke':
-                            declarations[i] = prop + ':{}'.format(default_stroke)
-                        if prop == 'stroke-width':
-                            declarations[i] = prop + ':{}'.format(default_stroke_width)
+                        #if prop == 'fill':
+                        #    declarations[i] = prop + ':{}'.format(default_fill) 
+                        #if prop == 'stroke':
+                        #    declarations[i] = prop + ':{}'.format(default_stroke)
+                        #if prop == 'stroke-width':
+                        #    declarations[i] = prop + ':{}'.format(default_stroke_width)
                         if prop == 'stroke-dasharray': #comma separated list of one or more float values
                             declarations[i] = prop + ':{}'.format(stroke_dasharray)
                         if prop == 'stroke-dashoffset':

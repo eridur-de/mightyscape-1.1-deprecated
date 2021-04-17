@@ -105,9 +105,7 @@ class PasteLengthEffect(inkex.EffectExtension):
                     except:
                         pass
             else:
-                inkex.errormsg("Please select at least two paths, with the path whose \
-                length is to be copied at the top. You may have to convert the shape \
-                to path with path->Object to Path.")
+                inkex.errormsg("Please select at least two paths, with the path whose length is to be copied at the top. You may have to convert the shape to path with path->Object to Path.")
         else:
             if(len(paths) > 0):
                 srclen = self.svg.unittouu(str(self.options.custom_length) + self.options.unit) 

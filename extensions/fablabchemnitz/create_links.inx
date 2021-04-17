@@ -31,6 +31,7 @@
 					<param name="link_multiplicator" type="int" min="0" max="9999" gui-text="Link multiplicator" gui-description="If set, we create a set of multiple gaps of same size next to the main gap">0</param>
 					<param name="length_link" type="float" min="0.000" max="9999.000" precision="3" gui-text="Link length (the length of the gap)">1.000</param>
 					<param name="link_offset" type="float" min="-9999.000.000" max="9999.000" precision="3" gui-text="Link offset (+/-)">0.000</param>
+					<param name="switch_pattern" type="bool" gui-text="Swap links with dashes" gui-description="If enabled, we use gap length as dash length (switches the dasharray pattern">false</param>
 					<label appearance="header">Creation: Custom Dash Pattern Settings</label>
 					<param name="custom_dasharray_value" type="string" gui-text="Dash pattern" gui-description="A list of separated lengths that specify the lengths of alternating dashes and gaps. Input only accepts numbers. It ignores percentages or other characters.">10 5.5 2.0 2.0</param>
 					<param name="custom_dashoffset_value" type="float" min="-9999.000.000" max="9999.000" precision="3" gui-text="Link offset (+/-)">0.000</param>
