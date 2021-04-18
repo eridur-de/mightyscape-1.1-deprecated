@@ -164,7 +164,7 @@ class Imagetracerjs (inkex.EffectExtension):
                     
                     #remove the old image or not                    
                     if self.options.keeporiginal is not True:
-                        node.getparent().remove(node)                    
+                        node.delete()                 
         else:
             inkex.utils.debug("No image found for tracing. Please select an image first.")        
 

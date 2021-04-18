@@ -111,7 +111,7 @@ class ContourScanner(inkex.EffectExtension):
                 parent.insert(idx, replacedNode)
                 idSuffix += 1
                 self.replacedNodes.append(replacedNode)
-            parent.remove(node)
+            node.delete()
         for child in node:
             self.breakContours(child)
     
@@ -158,7 +158,7 @@ class ContourScanner(inkex.EffectExtension):
                          node.attrib['style'] = Style(style).to_str()
                     if self.options.remove_opened:
                         try:
-                            node.getparent().remove(node)
+                            node.delete()
                         except AttributeError:
                             pass #we ignore that parent can be None
                 if closed == True:
@@ -169,7 +169,7 @@ class ContourScanner(inkex.EffectExtension):
                         node.attrib['style'] = Style(style).to_str()
                     if self.options.remove_closed:
                         try:
-                            node.getparent().remove(node)
+                            node.delete()
                         except AttributeError:
                             pass #we ignore that parent can be None
  
@@ -220,7 +220,7 @@ class ContourScanner(inkex.EffectExtension):
                                     node.attrib['style'] = intersectionStyle
                                 if self.options.remove_selfintersecting:
                                     if node.getparent() is not None: #might be already been deleted by previously checked settings so check again
-                                        node.getparent().remove(node)
+                                        node.delete()
                                         
                         #draw intersections segment lines - useless at the moment. We could use this information to cut the original polyline to get a new curve path which included the intersection points
                         #isectSegs = poly_point_isect.isect_polygon_include_segments(points)
@@ -254,7 +254,7 @@ class ContourScanner(inkex.EffectExtension):
                 if len(intersectionGroup.getchildren()) == 0:
                     intersectionGroupParent = intersectionGroup.getparent()
                     if intersectionGroupParent is not None:
-                        intersectionGroup.getparent().remove(intersectionGroup)
+                        intersectionGroup.delete()
                 #put the node into the intersectionGroup to bundle the path with it's error markers. If removal is selected we need to avoid intersectionGroup.insert(), because it will break the removal
                 elif self.options.remove_selfintersecting == False:
                     intersectionGroup.insert(0, node)

@@ -260,7 +260,7 @@ class ChainPaths(inkex.EffectExtension):
       if not len(new):
         # node.clear()
         if node.getparent() is not None:
-            node.getparent().remove(node)
+            node.delete()
             obsoleted += 1
             if debug: inkex.utils.debug("Path node obsoleted: " +str(id))
       else:

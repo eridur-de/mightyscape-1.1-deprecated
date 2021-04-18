@@ -454,7 +454,7 @@ class FoldedCardLayoutGuidesEffect(inkex.EffectExtension):
 
 		### GUIDES
 		# remove all the existing guides
-		[node.getparent().remove(node) for node in self.document.xpath('//sodipodi:guide',namespaces=inkex.NSS)]
+		[node.delete() for node in self.document.xpath('//sodipodi:guide',namespaces=inkex.NSS)]
 
 		# create the generator object
 		gen = LineGeneratorBase.CreateLineGenerator(opt.layout, opt.orientation, opt.card_width, opt.card_height, opt.card_margin, opt.bleed_margin, pageWidth, pageHeight, opt.page_margin, self.svg.unittouu)
@@ -463,7 +463,7 @@ class FoldedCardLayoutGuidesEffect(inkex.EffectExtension):
 
 		### FOLD LINES
 		# remove any existing 'Crop marks' layer
-		[node.getparent().remove(node) for node in self.document.xpath("//svg:g[@inkscape:label='Crop Marks']",namespaces=inkex.NSS)]
+		[node.delete() for node in self.document.xpath("//svg:g[@inkscape:label='Crop Marks']",namespaces=inkex.NSS)]
 
 		svg = self.document.xpath('//svg:svg', namespaces=inkex.NSS)[0]
 		layer = etree.SubElement(svg, inkex.addNS('g',"svg"), {})

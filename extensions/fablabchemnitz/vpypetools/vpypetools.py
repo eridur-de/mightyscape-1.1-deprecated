@@ -384,7 +384,7 @@ class vpypetools (inkex.EffectExtension):
                 trajectoriesLayer[0].attrib.pop('fill') # remove unneccesary fill attribute
         else:
             if len(trajectoriesLayer) > 0:
-                trajectoriesLayer[0].getparent().remove(trajectoriesLayer[0])
+                trajectoriesLayer[0].delete()
    
         lineLayers = import_doc.getroot().xpath("//svg:g[not(@id='pen_up_trajectories')]", namespaces=inkex.NSS) #all layer except the pen_up trajectories layer
         if self.options.use_style_of_first_element is True and self.options.input_handling == "paths" and firstElementStyle is not None:
@@ -420,7 +420,7 @@ class vpypetools (inkex.EffectExtension):
         # Remove selection objects to do a real replace with new objects from vpype document
         if self.options.keep_objects is False:
             for node in nodesToWork:
-                node.getparent().remove(node)
+                node.delete()
     
 if __name__ == '__main__':
     vpypetools().run()

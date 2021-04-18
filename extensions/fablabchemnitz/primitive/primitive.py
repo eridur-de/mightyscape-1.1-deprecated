@@ -151,7 +151,7 @@ class Primitive (inkex.EffectExtension):
                         exit(1)
                     #remove the old image or not                    
                     if self.options.keeporiginal is not True:
-                        node.getparent().remove(node)  
+                        node.delete()
 
                     # create clip path to remove the stuffy surroundings
                     if self.options.cliprect:

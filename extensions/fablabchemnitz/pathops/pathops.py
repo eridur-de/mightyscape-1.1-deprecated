@@ -287,7 +287,7 @@ class PathOps(inkex.EffectExtension):
             if not self.options.keep_top:
                 top_node = self.svg.getElementById(top_path)
                 if top_node is not None:
-                    top_node.getparent().remove(top_node)
+                    top_node.delete()
             # purge missing tagrefs (see below)
             self.update_tagrefs()
             # clean up
@@ -353,7 +353,7 @@ class PathOps(inkex.EffectExtension):
                 href = tagref.get(inkex.addNS('href', 'xlink'))[1:]
                 if self.svg.getElementById(href) is None:
                     if mode == 'purge':
-                        tagref.getparent().remove(tagref)
+                        tagref.delete()
                     elif mode == 'placeholder':
                         temp = etree.Element(inkex.addNS('path', 'svg'))
                         temp.set('id', href)

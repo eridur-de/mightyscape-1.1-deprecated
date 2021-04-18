@@ -287,7 +287,7 @@ class FilletChamfer(inkex.EffectExtension):
                 self.addEle(inkex.addNS('path','svg'), node.getparent(), attrib)
 
         if self.options.remove:
-            node.getparent().remove(node)
+            node.delete()
 				
 if __name__ == '__main__':
     FilletChamfer().run()

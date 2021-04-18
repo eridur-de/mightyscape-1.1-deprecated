@@ -260,7 +260,7 @@ class Shapes(inkex.Effect):
 				if midtype=="pillowrombus":
 					self.pillows(midtype, a, node, l, t, r, b, cX, cY)
 					pnts  = []
-					if deleteorigin: node.getparent().remove(node)
+					if deleteorigin: node.delete()
 
 			if (sub_bb=='chamfer'):
 				if chtype=="chamfer":
@@ -300,7 +300,7 @@ class Shapes(inkex.Effect):
 					self.pillows(chtype, a, node, l, t, r, b, cX, cY)
 					pnts  = []
 					dS = "M %sZ"
-					if deleteorigin: node.getparent().remove(node)
+					if deleteorigin: node.delete()
 				if chtype == "spiralrect":
 					An, Al = (an, al)
 					pnts = [[l,t], [An,0], [0,Al], [-An,0], [0,-Al+a]]
@@ -380,7 +380,7 @@ class Shapes(inkex.Effect):
 								nn = svgCircle(node.getparent(), rad, px, py)
 								self.estilo(nn,node)
 								pnts=[]
-								if deleteorigin: node.getparent().remove(node)
+								if deleteorigin: node.delete()
 		if sh=='nodes':
 			# get verts
 			obj, posh, posv, objS, oY =(sO.obj, int(sO.posh), int(sO.posv), sO.objsize, sO.ordery)
@@ -450,7 +450,7 @@ class Shapes(inkex.Effect):
 					orderY.sort(key=myFunc)
 					for item in orderY:
 						grp.append( item[1])
-			if deleteorigin: node.getparent().remove(node)
+			if deleteorigin: node.delete()
 			# ##############################3
 
 		d = ""
@@ -460,7 +460,7 @@ class Shapes(inkex.Effect):
 				d += "%s%s,%s " % (ss, str(n[0]),str(n[1]))
 			nn = self.addEle('path',pp, {'d':dS % (d)})
 			self.estilo(nn,node)
-			if deleteorigin: node.getparent().remove(node)
+			if deleteorigin: node.delete()
 
 	def makeRel(self,arr):
 		b = arr[:]
@@ -608,7 +608,7 @@ class Shapes(inkex.Effect):
 					# curva1
 					nn = self.addEle('path',pp,{'d':"M %sZ" % (sCurva1),'style':'stroke-width:0.02;fill:#cc0000;stroke:#000000;'})
 					self.estilo(nn,node)
-				if deleteorigin: node.getparent().remove(node)
+				if deleteorigin: node.delete()
 
 	def drawArrow(self, sO, an, al, l, t):
 		arrowType = sO.arrowtype

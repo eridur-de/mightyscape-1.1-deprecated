@@ -27,21 +27,21 @@ class ApplyTransform(inkex.EffectExtension):
             self.recursiveFuseTransform(self.document.getroot())
 
     @staticmethod
-    def objectToPath(node):
-        if node.tag == inkex.addNS('g', 'svg'):
-            return node
+    def objectToPath(element):
+        if element.tag == inkex.addNS('g', 'svg'):
+            return element
 
-        if node.tag == inkex.addNS('path', 'svg') or node.tag == 'path':
-            for attName in node.attrib.keys():
+        if element.tag == inkex.addNS('path', 'svg') or element.tag == 'path':
+            for attName in element.attrib.keys():
                 if ("sodipodi" in attName) or ("inkscape" in attName):
-                    del node.attrib[attName]
-            return node
+                    del element.attrib[attName]
+            return element
 
-        return node
+        return element
 
-    def scaleStrokeWidth(self, node, transf):
-        if 'style' in node.attrib:
-            style = node.attrib.get('style')
+    def scaleStrokeWidth(self, element, transf):
+        if 'style' in element.attrib:
+            style = element.attrib.get('style')
             style = dict(Style.parse_str(style))
             update = False
 
@@ -55,32 +55,32 @@ class ApplyTransform(inkex.EffectExtension):
                     pass
 
             if update:
-                node.attrib['style'] = Style(style).to_str()
+                element.attrib['style'] = Style(style).to_str()
 
-    def recursiveFuseTransform(self, node, transf=[[1.0, 0.0, 0.0], [0.0, 1.0, 0.0]]):
+    def recursiveFuseTransform(self, element, transf=[[1.0, 0.0, 0.0], [0.0, 1.0, 0.0]]):
 
-        transf = Transform(transf) * Transform(node.get("transform", None)) #a, b, c, d = linear transformations / e, f = translations
+        transf = Transform(transf) * Transform(element.get("transform", None)) #a, b, c, d = linear transformations / e, f = translations
 
-        if 'transform' in node.attrib:
-            del node.attrib['transform']
+        if 'transform' in element.attrib:
+            del element.attrib['transform']
 
-        node = ApplyTransform.objectToPath(node)
+        element = ApplyTransform.objectToPath(element)
 
         if transf == NULL_TRANSFORM:
             # Don't do anything if there is effectively no transform applied
-            # reduces alerts for unsupported nodes
+            # reduces alerts for unsupported elements
             pass
-        elif 'd' in node.attrib:
-            d = node.get('d')
+        elif 'd' in element.attrib:
+            d = element.get('d')
             p = CubicSuperPath(d)
             p = Path(p).to_absolute().transform(transf, True)
-            node.set('d', str(Path(CubicSuperPath(p).to_path())))
+            element.set('d', str(Path(CubicSuperPath(p).to_path())))
 
-            self.scaleStrokeWidth(node, transf)
+            self.scaleStrokeWidth(element, transf)
 
-        elif node.tag in [inkex.addNS('polygon', 'svg'),
+        elif element.tag in [inkex.addNS('polygon', 'svg'),
                           inkex.addNS('polyline', 'svg')]:
-            points = node.get('points')
+            points = element.get('points')
             points = points.strip().split(' ')
             for k, p in enumerate(points):
                 if ',' in p:
@@ -91,24 +91,24 @@ class ApplyTransform(inkex.EffectExtension):
                     p = ','.join(p)
                     points[k] = p
             points = ' '.join(points)
-            node.set('points', points)
+            element.set('points', points)
 
-            self.scaleStrokeWidth(node, transf)
+            self.scaleStrokeWidth(element, transf)
 
-        elif node.tag in [inkex.addNS("ellipse", "svg"), inkex.addNS("circle", "svg")]:
+        elif element.tag in [inkex.addNS("ellipse", "svg"), inkex.addNS("circle", "svg")]:
 
             def isequal(a, b):
                 return abs(a - b) <= transf.absolute_tolerance
 
-            if node.TAG == "ellipse":
-                rx = float(node.get("rx"))
-                ry = float(node.get("ry"))
+            if element.TAG == "ellipse":
+                rx = float(element.get("rx"))
+                ry = float(element.get("ry"))
             else:
-                rx = float(node.get("r"))
+                rx = float(element.get("r"))
                 ry = rx
 
-            cx = float(node.get("cx"))
-            cy = float(node.get("cy"))
+            cx = float(element.get("cx"))
+            cy = float(element.get("cy"))
             sqxy1 = (cx - rx, cy - ry)
             sqxy2 = (cx + rx, cy - ry)
             sqxy3 = (cx + rx, cy + ry)
@@ -116,8 +116,8 @@ class ApplyTransform(inkex.EffectExtension):
             newxy2 = transf.apply_to_point(sqxy2)
             newxy3 = transf.apply_to_point(sqxy3)
 
-            node.set("cx", (newxy1[0] + newxy3[0]) / 2)
-            node.set("cy", (newxy1[1] + newxy3[1]) / 2)
+            element.set("cx", (newxy1[0] + newxy3[0]) / 2)
+            element.set("cy", (newxy1[1] + newxy3[1]) / 2)
             edgex = math.sqrt(
                 abs(newxy1[0] - newxy2[0]) ** 2 + abs(newxy1[1] - newxy2[1]) ** 2
             )
@@ -126,31 +126,32 @@ class ApplyTransform(inkex.EffectExtension):
             )
 
             if not isequal(edgex, edgey) and (
-                node.TAG == "circle"
+                element.TAG == "circle"
                 or not isequal(newxy2[0], newxy3[0])
                 or not isequal(newxy1[1], newxy2[1])
             ):
                 inkex.utils.errormsg(
                     "Warning: Shape %s (%s) is approximate only, try Object to path first for better results"
-                    % (node.TAG, node.get("id"))
+                    % (element.TAG, element.get("id"))
                 )
 
-            if node.TAG == "ellipse":
-                node.set("rx", edgex / 2)
-                node.set("ry", edgey / 2)
+            if element.TAG == "ellipse":
+                element.set("rx", edgex / 2)
+                element.set("ry", edgey / 2)
             else:
-                node.set("r", edgex / 2)
+                element.set("r", edgex / 2)
 
-        elif node.tag == inkex.addNS("use", "svg"):    
+        # this is unstable at the moment
+        elif element.tag == inkex.addNS("use", "svg"):
             href = None
             old_href_key = '{http://www.w3.org/1999/xlink}href'
             new_href_key = 'href'
-            if node.attrib.has_key(old_href_key) is True: # {http://www.w3.org/1999/xlink}href (which gets displayed as 'xlink:href') attribute is deprecated. the newer attribute is just 'href'
-                href = node.attrib.get(old_href_key)
-                #node.attrib.pop(old_href_key)
-            if node.attrib.has_key(new_href_key) is True:
-                href = node.attrib.get(new_href_key) #we might overwrite the previous deprecated xlink:href but it's okay
-                #node.attrib.pop(new_href_key)
+            if element.attrib.has_key(old_href_key) is True: # {http://www.w3.org/1999/xlink}href (which gets displayed as 'xlink:href') attribute is deprecated. the newer attribute is just 'href'
+                href = element.attrib.get(old_href_key)
+                #element.attrib.pop(old_href_key)
+            if element.attrib.has_key(new_href_key) is True:
+                href = element.attrib.get(new_href_key) #we might overwrite the previous deprecated xlink:href but it's okay
+                #element.attrib.pop(new_href_key)
 
             #get the linked object from href attribute
             linkedObject = self.document.getroot().xpath("//*[@id = '%s']" % href.lstrip('#')) #we must remove hashtag symbol
@@ -161,14 +162,14 @@ class ApplyTransform(inkex.EffectExtension):
                 mask = None #image might have an alpha channel
                 new_mask_id = self.svg.get_unique_id("mask")
                 newMask = None
-                if node.attrib.has_key('mask') is True:
-                    mask = node.attrib.get('mask')
-                    #node.attrib.pop('mask')
+                if element.attrib.has_key('mask') is True:
+                    mask = element.attrib.get('mask')
+                    #element.attrib.pop('mask')
 
                 #get the linked mask from mask attribute. We remove the old and create a new
                 if mask is not None:
                     linkedMask = self.document.getroot().xpath("//*[@id = '%s']" % mask.lstrip('url(#').rstrip(')')) #we must remove hashtag symbol
-                    linkedMask[0].getparent().remove(linkedMask[0])
+                    linkedMask[0].delete()
                     maskAttributes = {'id': new_mask_id}
                     newMask = etree.SubElement(self.document.getroot(), inkex.addNS('mask', 'svg'), maskAttributes)
             
@@ -182,25 +183,25 @@ class ApplyTransform(inkex.EffectExtension):
                     linkedObjectCopy.set('mask', 'url(#' + new_mask_id + ')')
                     maskRectAttributes = {'x': '{:1.6f}'.format(transf.e), 'y': '{:1.6f}'.format(transf.f), 'width': '{:1.6f}'.format(width), 'height': '{:1.6f}'.format(height), 'style':'fill:#ffffff;'}
                     maskRect = etree.SubElement(newMask, inkex.addNS('rect', 'svg'), maskRectAttributes)
+                self.document.getroot().append(linkedObjectCopy) #for each svg:use we append a copy to the document root
+                element.delete() #then we remove the use object
             else:
-                self.recursiveFuseTransform(linkedObjectCopy, transf)
+                #self.recursiveFuseTransform(linkedObjectCopy, transf)
+                self.recursiveFuseTransform(element.unlink(), transf)
 
-            self.document.getroot().append(linkedObjectCopy) #for each svg:use we append a copy to the document root
-            node.getparent().remove(node) #then we remove the use object
-
-        elif node.tag in [inkex.addNS('rect', 'svg'),
+        elif element.tag in [inkex.addNS('rect', 'svg'),
                           inkex.addNS('text', 'svg'),
                           inkex.addNS('image', 'svg')]:
             inkex.utils.errormsg(
                 "Shape %s (%s) not yet supported, try Object to path first"
-                % (node.TAG, node.get("id"))
+                % (element.TAG, element.get("id"))
             )
 
         else:
             # e.g. <g style="...">
-            self.scaleStrokeWidth(node, transf)
+            self.scaleStrokeWidth(element, transf)
 
-        for child in node.getchildren():
+        for child in element.getchildren():
             self.recursiveFuseTransform(child, transf)
 
 if __name__ == '__main__':

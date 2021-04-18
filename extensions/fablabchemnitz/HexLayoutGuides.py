@@ -435,7 +435,7 @@ class HexLayoutGuidesEffect(inkex.Effect):
 
 		### GUIDES
 		# remove all the existing guides
-		[node.getparent().remove(node) for node in self.document.xpath('//sodipodi:guide',namespaces=inkex.NSS)]
+		[node.delete() for node in self.document.xpath('//sodipodi:guide',namespaces=inkex.NSS)]
 
 		# create the object generator
 		gen = HexGeneratorBase.CreateHexGenerator(opt.HexDiameter, opt.HexMargin, opt.BleedMargin, pageWidth, pageHeight, opt.PageMargin, self.svg.unittouu)
@@ -444,7 +444,7 @@ class HexLayoutGuidesEffect(inkex.Effect):
 
 		### CROP MARKS
 		# remove any existing 'Crop marks' layer
-		[node.getparent().remove(node) for node in self.document.xpath("//svg:g[@inkscape:label='Crop Marks']",namespaces=inkex.NSS)]
+		[node.delete() for node in self.document.xpath("//svg:g[@inkscape:label='Crop Marks']",namespaces=inkex.NSS)]
 
 		svg = self.document.xpath('//svg:svg', namespaces=inkex.NSS)[0]
 		layer = etree.SubElement(svg, inkex.addNS('g',"svg"), {})

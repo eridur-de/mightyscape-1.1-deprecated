@@ -124,7 +124,7 @@ class RemoveDuplicateGuidesEffect(inkex.EffectExtension):
 		# now remove all the excess guides
 		for serial in groups:
 			for guide in groups[serial][1:]: # keep the first member of group
-				guide.node.getparent().remove(guide.node)
+				guide.node.delete()
 
 if __name__ == '__main__':
 	effect = RemoveDuplicateGuidesEffect().run()
