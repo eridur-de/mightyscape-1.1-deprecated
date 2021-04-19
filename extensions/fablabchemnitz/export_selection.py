@@ -26,10 +26,12 @@ class ExportObject(inkex.EffectExtension):
 	
 	def add_arguments(self, pars):
 		pars.add_argument("--wrap_transform", type=inkex.Boolean, default=False, help="Wrap final document in transform")
+		pars.add_argument("--border_offset", type=float, default=1.000, help="Add border offset around selection")
 		pars.add_argument("--export_dir", default="~/inkscape_export/",	help="Location to save exported documents")
 		pars.add_argument("--opendir", type=inkex.Boolean, default=False, help="Open containing output directory after export")
 		pars.add_argument("--dxf_exporter_path", default="/usr/share/inkscape/extensions/dxf_outlines.py", help="Location of dxf_outlines.py")
 		pars.add_argument("--export_dxf", type=inkex.Boolean, default=False, help="Create a dxf file")
+		pars.add_argument("--export_pdf", type=inkex.Boolean, default=False, help="Create a pdf file")
 		pars.add_argument("--newwindow", type=inkex.Boolean, default=False, help="Open file in new Inkscape window")
 		
 
@@ -47,6 +49,8 @@ class ExportObject(inkex.EffectExtension):
 
 		export_dir = Path(self.absolute_href(self.options.export_dir))
 		os.makedirs(export_dir, exist_ok=True)
+
+		offset = self.options.border_offset
 
 		bbox = inkex.BoundingBox()
 
@@ -73,21 +77,20 @@ class ExportObject(inkex.EffectExtension):
 		group.attrib['transform'] = str(inkex.Transform(((1, 0, -bbox.left), (0, 1, -bbox.top))))
 
 		for elem in self.svg.selected.values():
-
 			elem_copy = deepcopy(elem)
 			elem_copy.attrib['transform'] = str(elem.composed_transform())
 			group.append(elem_copy)
 
-			template.attrib['viewBox'] = f'0 0 {bbox.width} {bbox.height}'
-			template.attrib['width'] = f'{bbox.width}' + self.svg.unit
-			template.attrib['height'] = f'{bbox.height}' + self.svg.unit
+			template.attrib['viewBox'] = f'{-offset} {-offset} {bbox.width + offset * 2} {bbox.height + offset * 2}'
+			template.attrib['width'] = f'{bbox.width + offset * 2}' + self.svg.unit
+			template.attrib['height'] = f'{bbox.height + offset * 2}' + self.svg.unit
 
 			if filename is None:
 				filename = elem.attrib.get('id', None)
 				if filename:
 					filename = filename.replace(os.sep, '_') + '.svg'
-		if not filename:
-			filename = 'element.svg'
+		if not filename: #should never be the case. Inkscape might crash if the id attribute is empty or not existent due to invalid SVG
+			filename = self.svg.get_unique_id("selection") + '.svg'
 
 		template.append(group)
 
@@ -112,7 +115,13 @@ class ExportObject(inkex.EffectExtension):
 			proc = Popen(cmd, shell=False, stdout=PIPE, stderr=PIPE)
 			stdout, stderr = proc.communicate()
 			#inkex.utils.debug("%d %s %s" % (proc.returncode, stdout, stderr))
-				   
+			
+		if self.options.export_pdf is True:	
+			cli_output = inkscape(os.path.join(export_dir, filename), actions='export-pdf-version:1.5;export-text-to-path;export-filename:{file_name};export-do;FileClose'.format(file_name=os.path.join(export_dir, filename + '.pdf')))
+			if len(cli_output) > 0:
+				self.msg("Inkscape returned the following output when trying to run the file export; the file export may still have worked:")
+				self.msg(cli_output)
+				
 	def create_document(self):
 		document = self.svg.copy()
 		for child in document.getchildren():
