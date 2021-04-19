@@ -2,8 +2,7 @@
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
     <name>Rounder</name>
     <id>fablabchemnitz.de.rounder</id>
-    <param name="titleMain" type="description">Rounding helpers.</param>
-    <param name="precision" type="int" min="0" max="20" gui-text="Rounding precission">2</param>
+    <param name="precision" type="int" min="0" max="20" gui-text="Rounding precision">2</param>
     <param name="paths" type="bool" gui-text="Round nodes">true</param>
     <param name="ctrl" type="bool" gui-text="Round handles">false</param>
     <param name="along" type="bool" gui-text="Move handles following node movement">true</param>

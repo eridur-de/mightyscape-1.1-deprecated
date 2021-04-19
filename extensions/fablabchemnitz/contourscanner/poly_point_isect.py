@@ -2,6 +2,8 @@
 # BentleyOttmann sweep-line implementation
 # (for finding all intersections in a set of line segments)
 
+from __future__ import annotations
+
 __all__ = (
     "isect_segments",
     "isect_polygon",
@@ -228,8 +230,9 @@ class SweepLine:
         "_before",
     )
 
-    def __init__(self):
+    def __init__(self, queue: EventQueue):
         self.intersections = {}
+        self.queue = queue
 
         self._current_event_point_x = None
         self._events_current_sweep = RBTree(cmp=Event.Compare, cmp_data=self)
@@ -483,7 +486,7 @@ class EventQueue:
         "events_scan",
     )
 
-    def __init__(self, segments, line: SweepLine):
+    def __init__(self, segments):
         self.events_scan = RBTree()
         # segments = [s for s in segments if s[0][0] != s[1][0] and s[0][1] != s[1][1]]
 
@@ -511,8 +514,6 @@ class EventQueue:
 
                 self.offer(s[0], e_start)
                 self.offer(s[1], e_end)
-
-        line.queue = self
 
     def offer(self, p, e: Event):
         """
@@ -545,7 +546,7 @@ class EventQueue:
         return p, events_current
 
 
-def isect_segments_impl(segments, include_segments=False) -> list:
+def isect_segments_impl(segments, *, include_segments=False, validate=True) -> list:
     # order points left -> right
     if Real is float:
         segments = [
@@ -568,8 +569,24 @@ def isect_segments_impl(segments, include_segments=False) -> list:
             )
             for s in segments]
 
-    sweep_line = SweepLine()
-    queue = EventQueue(segments, sweep_line)
+    # Ensure segments don't have duplicates or single points, see: #24.
+    if validate:
+        segments_old = segments
+        segments = []
+        visited = set()
+        for s in segments_old:
+            # Ignore points.
+            if s[0] == s[1]:
+                continue
+            # Ignore duplicates.
+            if s in visited:
+                continue
+            visited.add(s)
+            segments.append(s)
+        del segments_old
+
+    queue = EventQueue(segments)
+    sweep_line = SweepLine(queue)
 
     while len(queue.events_scan) > 0:
         if USE_VERBOSE:
@@ -586,28 +603,29 @@ def isect_segments_impl(segments, include_segments=False) -> list:
         return sweep_line.get_intersections_with_segments()
 
 
-def isect_polygon_impl(points, include_segments=False) -> list:
+def isect_polygon_impl(points, *, include_segments=False, validate=True) -> list:
     n = len(points)
     segments = [
         (tuple(points[i]), tuple(points[(i + 1) % n]))
-        for i in range(n)]
-    return isect_segments_impl(segments, include_segments=include_segments)
+        for i in range(n)
+    ]
+    return isect_segments_impl(segments, include_segments=include_segments, validate=validate)
 
 
-def isect_segments(segments) -> list:
-    return isect_segments_impl(segments, include_segments=False)
+def isect_segments(segments, *, validate=True) -> list:
+    return isect_segments_impl(segments, include_segments=False, validate=validate)
 
 
-def isect_polygon(segments) -> list:
-    return isect_polygon_impl(segments, include_segments=False)
+def isect_polygon(segments, *, validate=True) -> list:
+    return isect_polygon_impl(segments, include_segments=False, validate=validate)
 
 
-def isect_segments_include_segments(segments) -> list:
-    return isect_segments_impl(segments, include_segments=True)
+def isect_segments_include_segments(segments, *, validate=True) -> list:
+    return isect_segments_impl(segments, include_segments=True, validate=validate)
 
 
-def isect_polygon_include_segments(segments) -> list:
-    return isect_polygon_impl(segments, include_segments=True)
+def isect_polygon_include_segments(segments, *, validate=True) -> list:
+    return isect_polygon_impl(segments, include_segments=True, validate=validate)
 
 
 # ----------------------------------------------------------------------------
@@ -780,7 +798,7 @@ _sentinel = object()
 
 
 class _ABCTree(object):
-    def __init__(self, items=None, cmp=None, cmp_data=None):
+    def __init__(self, cmp=None, cmp_data=None):
         """T.__init__(...) initializes T; see T.__class__.__doc__ for signature"""
         self._root = None
         self._count = 0
@@ -794,8 +812,6 @@ class _ABCTree(object):
                     return 0
         self._cmp = cmp
         self._cmp_data = cmp_data
-        if items is not None:
-            self.update(items)
 
     def clear(self):
         """T.clear() -> None.  Remove all items from T."""
@@ -813,7 +829,7 @@ class _ABCTree(object):
         """Get items count."""
         return self._count
 
-    def get_value(self, key):
+    def _get_value_or_sentinel(self, key):
         node = self._root
         while node is not None:
             cmp = self._cmp(self._cmp_data, key, node.key)
@@ -823,7 +839,13 @@ class _ABCTree(object):
                 node = node.left
             else:
                 node = node.right
-        raise KeyError(str(key))
+        return _sentinel
+
+    def get_value(self, key):
+        value = self._get_value_or_sentinel(key)
+        if value is _sentinel:
+            raise KeyError(str(key))
+        return value
 
     def pop_item(self):
         """T.pop_item() -> (k, v), remove and return some (key, value) pair as a
@@ -951,11 +973,7 @@ class _ABCTree(object):
 
     def __contains__(self, key):
         """k in T -> True if T has a key k, else False"""
-        try:
-            self.get_value(key)
-            return True
-        except KeyError:
-            return False
+        return self._get_value_or_sentinel(key) is not _sentinel
 
     def __len__(self):
         """T.__len__() <==> len(x)"""
@@ -967,19 +985,20 @@ class _ABCTree(object):
 
     def set_default(self, key, default=None):
         """T.set_default(k[,d]) -> T.get(k,d), also set T[k]=d if k not in T"""
-        try:
-            return self.get_value(key)
-        except KeyError:
+        value = self._get_value_or_sentinel(key)
+        if value is _sentinel:
             self.insert(key, default)
             return default
+        return value
     setdefault = set_default  # for compatibility to dict()
 
     def get(self, key, default=None):
         """T.get(k[,d]) -> T[k] if k in T, else d.  d defaults to None."""
-        try:
-            return self.get_value(key)
-        except KeyError:
+
+        value = self._get_value_or_sentinel(key)
+        if value is _sentinel:
             return default
+        return value
 
     def pop(self, key, *args):
         """T.pop(k[,d]) -> v, remove specified key and return the corresponding value.
@@ -987,15 +1006,15 @@ class _ABCTree(object):
         """
         if len(args) > 1:
             raise TypeError("pop expected at most 2 arguments, got %d" % (1 + len(args)))
-        try:
-            value = self.get_value(key)
-            self.remove(key)
-            return value
-        except KeyError:
+
+        value = self._get_value_or_sentinel(key)
+        if value is _sentinel:
             if len(args) == 0:
-                raise
-            else:
-                return args[0]
+                raise KeyError(str(key))
+            return args[0]
+
+        self.remove(key)
+        return value
 
     def prev_key(self, key, default=_sentinel):
         """Get predecessor to key, raises KeyError if key is min key
