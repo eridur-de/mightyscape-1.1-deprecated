@@ -3,7 +3,6 @@
   <name>Gears2</name>
   <id>fablabchemnitz.de.gears2</id>
   <param name="tab" type="notebook">
-
     <page name="Options" gui-text="Options">
       <param name="teeth" type="int" min="6" max="500" gui-text="Number of teeth">24</param>
       <param name="pressure_angle" type="float" min="1" max="40" gui-text="Pressure angle">20</param>

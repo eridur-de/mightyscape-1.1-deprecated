@@ -12,17 +12,17 @@ from inkex import Transform
 Extension for InkScape 1.0
 
 Unfold and import DXF into InkScape using dxf2papercraft. This is some kind of wrapper extension utilizing kabeja to convert the dxf output from dxf2papercraft into SVG.
-To make it work you need to install at least java
+To make it work you need to install at least java.
 
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 11.09.2020
-Last patch: 11.09.2020
+Last patch: 18.04.2021
 License: GNU GPL v3
 
 Module licenses
 - dxf2papercraft (dxf2papercraft.sourceforge.net) - GPL v3 License
-- kabeja (http://kabeja.sourceforge.net/) - Apache v2
+- kabeja (http://kabeja.sourceforge.net/) - Apache v2 License
 
 ToDos:
 - in case of errors maybe think about adding ezdxf library to filter unsupported entities (similar like done in dxfdwgimporter extension)
@@ -32,6 +32,7 @@ ToDos:
 class PapercraftUnfold(inkex.EffectExtension):
     
     def add_arguments(self, pars):
+        pars.add_argument("--tab")    
         pars.add_argument("--inputfile")
         pars.add_argument("--resizetoimport", type=inkex.Boolean, default=True, help="Resize the canvas to the imported drawing's bounding box") 
         pars.add_argument("--extraborder", type=float, default=0.0)
