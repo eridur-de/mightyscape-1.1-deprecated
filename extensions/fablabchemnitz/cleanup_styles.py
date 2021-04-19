@@ -55,8 +55,8 @@ class Cleanup(inkex.EffectExtension):
         if len(self.svg.selected) == 0:
             self.getAttribs(self.document.getroot())
         else:
-            for id, node in self.svg.selected.items():
-                self.getAttribs(node)
+            for element in self.svg.selected.values():
+                self.getAttribs(element)
         #finally remove the styles from collected groups (if enabled)
         if self.options.remove_group_styles is True:
             for group in self.groups:

@@ -289,16 +289,16 @@ class ContourScanner(inkex.EffectExtension):
                  self.scanContours(self.document.getroot())  
             else:
                 newContourSet = []
-                for id, item in self.svg.selected.items():
-                    self.breakContours(item)
+                for element in self.svg.selected.items():
+                    self.breakContours(element)
                 for newContours in self.replacedNodes:
                     self.scanContours(newContours) 
         else:
             if len(self.svg.selected) == 0:
                  self.scanContours(self.document.getroot())
             else:
-                for id, item in self.svg.selected.items():
-                    self.scanContours(item)
+                for element in self.svg.selected.values():
+                    self.scanContours(element)
       
 if __name__ == '__main__':
     ContourScanner().run()

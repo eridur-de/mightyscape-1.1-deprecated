@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 '''
-This extension adds or removes filters to current layer
+This extension adds filters to current layer or removes filters from current layer
 
 Copyright (C) 2012 Jabiertxo Arraiza, jabier.arraiza@marker.es
 
@@ -37,15 +37,11 @@ class FilterAndLiveEffectsLayer(inkex.EffectExtension):
         pars.add_argument('--type', default = 'Add', help = 'Add or remove filters to current layer')
     
     def selectTop(self):
-        selected = []
         selectedSorted = None
         if self.svg.selected is not None:
-            for id, node in self.svg.selected.items():
-                selected.append(id)
-            for node in self.document.getroot().iter():
-                idNode = node.get("id")
-                if idNode in selected:
-                    selectedSorted = node
+            for element in self.document.getroot().iter():
+                if element.get("id") in self.svg.selection:
+                    selectedSorted = element
         return selectedSorted
 
     def effect(self):
@@ -56,7 +52,8 @@ class FilterAndLiveEffectsLayer(inkex.EffectExtension):
         idLayer = namedview[0].get('{http://www.inkscape.org/namespaces/inkscape}current-layer');
         xpathStr = '//svg:g[@id="'+idLayer+'"]'
         layer = svg.xpath(xpathStr, namespaces=inkex.NSS)
-        if typeOperation == "Add":
+        
+        if typeOperation == "Add": #Add action
             element = self.selectTop()
             if element is not None:
                 if element.get('style'):
@@ -74,6 +71,7 @@ class FilterAndLiveEffectsLayer(inkex.EffectExtension):
                             layer[0].set('style',filter)
             else:
                 inkex.utils.debug("Nothing selected")
+                
         else: #Remove action
             if layer[0].get('style'):
                 matchObj = re.search( r'filter:url\(#.*?[^\)]\)', layer[0].get('style'), re.M|re.I)

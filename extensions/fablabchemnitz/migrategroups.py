@@ -39,6 +39,7 @@ class MigrateGroups(inkex.EffectExtension):
         pars.add_argument("--defs",           type=inkex.Boolean, default=True)
         pars.add_argument("--ellipse",        type=inkex.Boolean, default=True)
         pars.add_argument("--image",          type=inkex.Boolean, default=True)
+        pars.add_argument("--guide",          type=inkex.Boolean, default=True)
         pars.add_argument("--line",           type=inkex.Boolean, default=True)
         pars.add_argument("--path",           type=inkex.Boolean, default=True)
         pars.add_argument("--polyline",       type=inkex.Boolean, default=True)
@@ -69,35 +70,37 @@ class MigrateGroups(inkex.EffectExtension):
         namespace = [] #a list of selected types we are going to process for filtering (dropping items)
         #namespace.append("{http://www.w3.org/2000/svg}sodipodi")       if self.options.sodipodi       else "" #do not do this. it will crash InkScape
         #namespace.append("{http://www.w3.org/2000/svg}svg")            if self.options.svg            else "" #we handle svg:svg the same type like svg:g
-        namespace.append("{http://www.w3.org/2000/svg}circle")         if self.options.circle         else ""
-        namespace.append("{http://www.w3.org/2000/svg}clipPath")       if self.options.clipPath       else ""
-        namespace.append("{http://www.w3.org/2000/svg}defs")           if self.options.defs           else ""     
-        namespace.append("{http://www.w3.org/2000/svg}ellipse")        if self.options.ellipse        else ""
-        namespace.append("{http://www.w3.org/2000/svg}image")          if self.options.image          else ""
-        namespace.append("{http://www.w3.org/2000/svg}line")           if self.options.line           else ""
-        namespace.append("{http://www.w3.org/2000/svg}polygon")        if self.options.polygon        else ""
-        namespace.append("{http://www.w3.org/2000/svg}path")           if self.options.path           else ""
-        namespace.append("{http://www.w3.org/2000/svg}polyline")       if self.options.polyline       else ""
-        namespace.append("{http://www.w3.org/2000/svg}rect")           if self.options.rect           else ""
-        namespace.append("{http://www.w3.org/2000/svg}text")           if self.options.text           else ""
-        namespace.append("{http://www.w3.org/2000/svg}tspan")          if self.options.tspan          else ""
-        namespace.append("{http://www.w3.org/2000/svg}linearGradient") if self.options.linearGradient else ""
-        namespace.append("{http://www.w3.org/2000/svg}radialGradient") if self.options.radialGradient else ""
-        namespace.append("{http://www.w3.org/2000/svg}meshGradient")   if self.options.meshGradient   else ""
-        namespace.append("{http://www.w3.org/2000/svg}meshRow")        if self.options.meshRow        else ""
-        namespace.append("{http://www.w3.org/2000/svg}meshPatch")      if self.options.meshPatch      else ""
-        namespace.append("{http://www.w3.org/2000/svg}script")         if self.options.script         else ""
-        namespace.append("{http://www.w3.org/2000/svg}symbol")         if self.options.symbol         else ""
-        namespace.append("{http://www.w3.org/2000/svg}mask")           if self.options.mask           else ""
-        namespace.append("{http://www.w3.org/2000/svg}metadata")       if self.options.metadata       else ""
-        namespace.append("{http://www.w3.org/2000/svg}stop")           if self.options.stop           else ""
-        namespace.append("{http://www.w3.org/2000/svg}switch")         if self.options.switch         else ""
-        namespace.append("{http://www.w3.org/2000/svg}use")            if self.options.use            else ""
-        namespace.append("{http://www.w3.org/2000/svg}flowRoot")       if self.options.flowRoot       else ""
-        namespace.append("{http://www.w3.org/2000/svg}flowRegion")     if self.options.flowRegion     else ""
-        namespace.append("{http://www.w3.org/2000/svg}flowPara")       if self.options.flowPara       else ""
-        namespace.append("{http://www.w3.org/2000/svg}marker")         if self.options.marker         else ""
-        namespace.append("{http://www.w3.org/2000/svg}pattern")        if self.options.pattern        else ""
+        namespace.append("{http://www.w3.org/2000/svg}circle")                        if self.options.circle         else ""
+        namespace.append("{http://www.w3.org/2000/svg}clipPath")                      if self.options.clipPath       else ""
+        namespace.append("{http://www.w3.org/2000/svg}defs")                          if self.options.defs           else ""     
+        namespace.append("{http://www.w3.org/2000/svg}ellipse")                       if self.options.ellipse        else ""
+        namespace.append("{http://www.w3.org/2000/svg}image")                         if self.options.image          else ""
+        namespace.append("{http://www.w3.org/2000/svg}line")                          if self.options.line           else ""
+        namespace.append("{http://www.w3.org/2000/svg}polygon")                       if self.options.polygon        else ""
+        namespace.append("{http://www.w3.org/2000/svg}path")                          if self.options.path           else ""
+        namespace.append("{http://www.w3.org/2000/svg}polyline")                      if self.options.polyline       else ""
+        namespace.append("{http://www.w3.org/2000/svg}rect")                          if self.options.rect           else ""
+        namespace.append("{http://www.w3.org/2000/svg}text")                          if self.options.text           else ""
+        namespace.append("{http://www.w3.org/2000/svg}tspan")                         if self.options.tspan          else ""
+        namespace.append("{http://www.w3.org/2000/svg}linearGradient")                if self.options.linearGradient else ""
+        namespace.append("{http://www.w3.org/2000/svg}radialGradient")                if self.options.radialGradient else ""
+        namespace.append("{http://www.w3.org/2000/svg}meshGradient")                  if self.options.meshGradient   else ""
+        namespace.append("{http://www.w3.org/2000/svg}meshRow")                       if self.options.meshRow        else ""
+        namespace.append("{http://www.w3.org/2000/svg}meshPatch")                     if self.options.meshPatch      else ""
+        namespace.append("{http://www.w3.org/2000/svg}script")                        if self.options.script         else ""
+        namespace.append("{http://www.w3.org/2000/svg}symbol")                        if self.options.symbol         else ""
+        namespace.append("{http://www.w3.org/2000/svg}mask")                          if self.options.mask           else ""
+        namespace.append("{http://www.w3.org/2000/svg}metadata")                      if self.options.metadata       else ""
+        namespace.append("{http://www.w3.org/2000/svg}stop")                          if self.options.stop           else ""
+        namespace.append("{http://www.w3.org/2000/svg}switch")                        if self.options.switch         else ""
+        namespace.append("{http://www.w3.org/2000/svg}use")                           if self.options.use            else ""
+        namespace.append("{http://www.w3.org/2000/svg}flowRoot")                      if self.options.flowRoot       else ""
+        namespace.append("{http://www.w3.org/2000/svg}flowRegion")                    if self.options.flowRegion     else ""
+        namespace.append("{http://www.w3.org/2000/svg}flowPara")                      if self.options.flowPara       else ""
+        namespace.append("{http://www.w3.org/2000/svg}marker")                        if self.options.marker         else ""
+        namespace.append("{http://www.w3.org/2000/svg}pattern")                       if self.options.pattern        else ""
+        namespace.append("{http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd}guide") if self.options.guide          else ""
+
         #self.msg(namespace)
 
         #in case the user made a manual selection instead of whole document parsing, we need to collect all required elements first

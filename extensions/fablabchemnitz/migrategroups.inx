@@ -45,12 +45,13 @@
         					<param name="clipPath" type="bool" gui-text="clipPath">true</param>
         					<param name="defs" type="bool" gui-text="defs">true</param>
         					<param name="image" type="bool" gui-text="image">true</param>
+                            <param name="guide" type="bool" gui-text="guide">true</param>
         					<param name="mask" type="bool" gui-text="mask">true</param>
         					<param name="marker" type="bool" gui-text="marker">true</param>
+                        </vbox>
+                    <spacer/>
+                        <vbox>
         					<param name="metadata" type="bool" gui-text="metadata">true</param>
-        				</vbox>
-        			<spacer/>
-        				<vbox>
         					<param name="pattern" type="bool" gui-text="pattern">true</param>
         					<param name="script" type="bool" gui-text="script">true</param>
         					<param name="switch" type="bool" gui-text="switch">true</param>
