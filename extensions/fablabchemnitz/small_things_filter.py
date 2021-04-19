@@ -3,9 +3,6 @@
 import inkex
 from inkex.bezier import csplength, csparea
 
-def isclosedac(p):
-    return abs(p.start-p.end) < 1e-6
-
 class SmallThingsFilter(inkex.EffectExtension):
     
     def add_arguments(self, pars):
@@ -33,7 +30,6 @@ class SmallThingsFilter(inkex.EffectExtension):
                     if stotal < (self.options.threshold * unit_factor):
                         element.delete()
             except Exception as e:
-                #self.msg(e)
                 pass
 
 if __name__ == '__main__':
