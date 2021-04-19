@@ -20,6 +20,7 @@ from math import cos, sin, pi, log, sqrt
 class Archimedes(inkex.EffectExtension):
     
     def add_arguments(self, pars):
+        pars.add_argument('--tab')
         pars.add_argument('--r', type = int, default = '50')
         pars.add_argument('--a', type = float, default = '3')
         pars.add_argument('--step', type = int, default = '50')

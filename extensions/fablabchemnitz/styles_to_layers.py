@@ -40,6 +40,7 @@ class StylesToLayers(inkex.EffectExtension):
         return layer
         
     def add_arguments(self, pars):
+        pars.add_argument("--tab")
         pars.add_argument("--apply_transformations", type=inkex.Boolean, default=False, help="Run 'Apply Transformations' extension before running vpype. Helps avoiding geometry shifting")
         pars.add_argument("--separateby", default = "stroke", help = "Separate by")
         pars.add_argument("--parsecolors",default = "hexval", help = "Sort colors by")

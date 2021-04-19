@@ -519,6 +519,7 @@ def writeSVG(self, unfolding, size, printNumbers):
 class Unfold(inkex.EffectExtension):
     
     def add_arguments(self, pars):
+        pars.add_argument("--tab")
         pars.add_argument("--inputfile")
         pars.add_argument("--printNumbers", type=inkex.Boolean, default=False, help="Print numbers on the cut edges")
         pars.add_argument("--scalefactor", type=float, default=1.0, help="Manual scale factor")

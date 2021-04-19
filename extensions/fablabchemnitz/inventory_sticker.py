@@ -358,7 +358,7 @@ def splitAt(string, length):
 class InventorySticker(inkex.Effect):
     
     def add_arguments(self, pars):
-        pars.add_argument("--main_tabs")
+        pars.add_argument("--tab")
         pars.add_argument("--server_address", default="https://the.domain.de/items.csv")
         pars.add_argument("--htuser", default="user")
         pars.add_argument("--htpassword", default="password")

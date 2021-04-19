@@ -16,52 +16,53 @@ import inkex
 import os
 from lxml import etree
 
-class MigrateGroups(inkex.Effect):
+class MigrateGroups(inkex.EffectExtension):
 
     allElements = [] #list of all (sub)elements to process within selection
     allGroups = [] #list of all groups (svg:g and svg:svg items) to delete for cleanup (for ungrouping)
     allDrops = [] #list of all other elements except svg:g and svg:svg to drop while migrating (for filtering)
     
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("--ignorecustomselection", type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--operationmode", default=False)
-        self.arg_parser.add_argument("--parsechildren", type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--cleanup", type=inkex.Boolean, default = True, help = "Decimal tolerance")
-        self.arg_parser.add_argument("--showdroplist", type=inkex.Boolean, default=False)
-        self.arg_parser.add_argument("--shownewgroupname", type=inkex.Boolean, default=False)
+    def add_arguments(self, pars):
+        pars.add_argument("--tab")
 
-        #self.arg_parser.add_argument("--sodipodi",      type=inkex.Boolean, default=True)
-        #self.arg_parser.add_argument("--svg",           type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--circle",         type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--clipPath",       type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--defs",           type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--ellipse",        type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--image",          type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--line",           type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--path",           type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--polyline",       type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--polygon",        type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--rect",           type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--text",           type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--tspan",          type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--linearGradient", type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--radialGradient", type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--mask",           type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--meshGradient",   type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--meshRow",        type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--meshPatch",      type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--metadata",       type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--script",         type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--symbol",         type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--stop",           type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--switch",         type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--use",            type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--flowRoot",       type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--flowRegion",     type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--flowPara",       type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--marker",         type=inkex.Boolean, default=True)
-        self.arg_parser.add_argument("--pattern",        type=inkex.Boolean, default=True)
+        pars.add_argument("--operationmode", default=False, help="Operation mode")
+        pars.add_argument("--parsechildren", type=inkex.Boolean, default=True, help="Perform operations on children of selection")
+        pars.add_argument("--showdroplist", type=inkex.Boolean, default=False, help="Show list of dropped items")
+        pars.add_argument("--shownewgroupname", type=inkex.Boolean, default=False, help="This helps to better identify the generated output.")
+        pars.add_argument("--apply_transformations", type=inkex.Boolean, default=False, help="Run 'Apply Transformations' extension before running vpype. Helps avoiding geometry shifting")
+        pars.add_argument("--cleanup", type=inkex.Boolean, default = True, help = "This will call the extension 'Remove Empty Groups' if available")
+
+        #pars.add_argument("--sodipodi",      type=inkex.Boolean, default=True)
+        #pars.add_argument("--svg",           type=inkex.Boolean, default=True)
+        pars.add_argument("--circle",         type=inkex.Boolean, default=True)
+        pars.add_argument("--clipPath",       type=inkex.Boolean, default=True)
+        pars.add_argument("--defs",           type=inkex.Boolean, default=True)
+        pars.add_argument("--ellipse",        type=inkex.Boolean, default=True)
+        pars.add_argument("--image",          type=inkex.Boolean, default=True)
+        pars.add_argument("--line",           type=inkex.Boolean, default=True)
+        pars.add_argument("--path",           type=inkex.Boolean, default=True)
+        pars.add_argument("--polyline",       type=inkex.Boolean, default=True)
+        pars.add_argument("--polygon",        type=inkex.Boolean, default=True)
+        pars.add_argument("--rect",           type=inkex.Boolean, default=True)
+        pars.add_argument("--text",           type=inkex.Boolean, default=True)
+        pars.add_argument("--tspan",          type=inkex.Boolean, default=True)
+        pars.add_argument("--linearGradient", type=inkex.Boolean, default=True)
+        pars.add_argument("--radialGradient", type=inkex.Boolean, default=True)
+        pars.add_argument("--mask",           type=inkex.Boolean, default=True)
+        pars.add_argument("--meshGradient",   type=inkex.Boolean, default=True)
+        pars.add_argument("--meshRow",        type=inkex.Boolean, default=True)
+        pars.add_argument("--meshPatch",      type=inkex.Boolean, default=True)
+        pars.add_argument("--metadata",       type=inkex.Boolean, default=True)
+        pars.add_argument("--script",         type=inkex.Boolean, default=True)
+        pars.add_argument("--symbol",         type=inkex.Boolean, default=True)
+        pars.add_argument("--stop",           type=inkex.Boolean, default=True)
+        pars.add_argument("--switch",         type=inkex.Boolean, default=True)
+        pars.add_argument("--use",            type=inkex.Boolean, default=True)
+        pars.add_argument("--flowRoot",       type=inkex.Boolean, default=True)
+        pars.add_argument("--flowRegion",     type=inkex.Boolean, default=True)
+        pars.add_argument("--flowPara",       type=inkex.Boolean, default=True)
+        pars.add_argument("--marker",         type=inkex.Boolean, default=True)
+        pars.add_argument("--pattern",        type=inkex.Boolean, default=True)
 
     
     def effect(self):
@@ -97,7 +98,7 @@ class MigrateGroups(inkex.Effect):
         namespace.append("{http://www.w3.org/2000/svg}flowPara")       if self.options.flowPara       else ""
         namespace.append("{http://www.w3.org/2000/svg}marker")         if self.options.marker         else ""
         namespace.append("{http://www.w3.org/2000/svg}pattern")        if self.options.pattern        else ""
-        #inkex.utils.debug(namespace)
+        #self.msg(namespace)
 
         #in case the user made a manual selection instead of whole document parsing, we need to collect all required elements first
         def parseChildren(element):
@@ -120,12 +121,12 @@ class MigrateGroups(inkex.Effect):
                         self.allElements.append(element)
             #if we dont want to ungroup but filter out elements, or ungroup and filter, we need to divide the elements with respect to the namespace (user selection)
             elif self.options.operationmode == "filter_only" or self.options.operationmode == "ungroup_and_filter":
-                #inkex.utils.debug(element.tag)
+                #self.msg(element.tag)
                 if element.tag in namespace: #if the element is in namespace and no group type we will regroup the item. so we will not remove it
                     if element not in self.allElements:
                         self.allElements.append(element)
                 else: #we add all remaining items (except svg:g and svg:svg) into the list for deletion
-                    #inkex.utils.debug(element.tag)
+                    #self.msg(element.tag)
                     if element.tag != inkex.addNS('g','svg') and element.tag != inkex.addNS('svg','svg') and element.tag != inkex.addNS('namedview','sodipodi'):
                         if element not in self.allDrops:
                             self.allDrops.append(element)
@@ -135,14 +136,26 @@ class MigrateGroups(inkex.Effect):
                     if element not in self.allGroups:
                         self.allGroups.append(element)
 
+        applyTransformAvailable = False # at first we apply external extension
+        try:
+            import applytransform
+            applyTransformAvailable = True
+        except Exception as e:
+            # self.msg(e)
+            self.msg("Calling 'Apply Transformations' extension failed. Maybe the extension is not installed. You can download it from official InkScape Gallery. Skipping ...")
+             
+        if self.options.apply_transformations is True and applyTransformAvailable is True:
+            applytransform.ApplyTransform().recursiveFuseTransform(self.document.getroot()) 
+             
         #check if we have selected elements or if we should parse the whole document instead
         selected = [] #total list of elements to parse
         if len(self.svg.selected) == 0:
             for element in self.document.getroot().iter(tag=etree.Element):
                 if element != self.document.getroot():
+
                     selected.append(element)
         else:
-            for id, element in self.svg.selected.items():
+            for element in self.svg.selected.values():
                 parseChildren(element)
                 
         #get all elements from the selection.
@@ -151,17 +164,17 @@ class MigrateGroups(inkex.Effect):
            
         #some debugging block
         #check output
-        #inkex.utils.debug("--- Selected items (with or without children) ---")
-        #inkex.utils.debug(selected)
-        #inkex.utils.debug("--- All elements (except groups)---")
-        #inkex.utils.debug(len(self.allElements))
-        #inkex.utils.debug(self.allElements)
-        #inkex.utils.debug("--- All groups ---")
-        #inkex.utils.debug(len(self.allGroups))
-        #inkex.utils.debug(self.allGroups)
-        #inkex.utils.debug("--- All dropouts ---")
-        #inkex.utils.debug(len(self.allDrops))
-        #inkex.utils.debug(self.allDrops)
+        #self.msg("--- Selected items (with or without children) ---")
+        #self.msg(selected)
+        #self.msg("--- All elements (except groups)---")
+        #self.msg(len(self.allElements))
+        #self.msg(self.allElements)
+        #self.msg("--- All groups ---")
+        #self.msg(len(self.allGroups))
+        #self.msg(self.allGroups)
+        #self.msg("--- All dropouts ---")
+        #self.msg(len(self.allDrops))
+        #self.msg(self.allDrops)
 
 
         migrate_log = "migrategroups.log"
@@ -171,12 +184,12 @@ class MigrateGroups(inkex.Effect):
             try:
                 os.remove(migrate_log)
             except OSError as e: 
-                inkex.utils.debug("Error while deleting previously generated log file " + migrate_log)
+                self.msg("Error while deleting previously generated log file " + migrate_log)
 
         # show a list with items to delete. For ungroup mode it does not apply because we are not going to remove anything
         if self.options.operationmode == "filter_only" or self.options.operationmode == "ungroup_and_filter":
             if self.options.showdroplist:
-                inkex.utils.debug(str(len(self.allDrops)) + " elements were removed during nodes while migration:")
+                self.msg(str(len(self.allDrops)) + " elements were removed during nodes while migration.")
                 if len(self.allDrops) > 100: #if we print too much to the output stream we will freeze InkScape forever wihtout any visual error message. So we write to file instead
                     migrate_log_file = open('migrategroups.log', 'w')
                 else:
@@ -185,12 +198,12 @@ class MigrateGroups(inkex.Effect):
                     if i.get('id') is not None:
                         migrateString = i.tag.replace("{http://www.w3.org/2000/svg}","svg:") + " id:" + i.get('id')
                         if migrate_log_file is None:
-                            inkex.utils.debug(migrateString)
+                            self.msg(migrateString)
                         else:
                             migrate_log_file.write(migrateString + "\n")
                 if migrate_log_file is not None:
                     migrate_log_file.close()
-                    inkex.utils.debug("Detailed output was dumped into file " + os.path.join(os.getcwd(), migrate_log))
+                    self.msg("Detailed output was dumped into file " + os.path.join(os.getcwd(), migrate_log))
 
         # remove all groups from the selection and form a new single group of it by copying with old IDs.
         if self.options.operationmode == "ungroup_only" or self.options.operationmode == "ungroup_and_filter":
@@ -198,7 +211,7 @@ class MigrateGroups(inkex.Effect):
                 newGroup = self.document.getroot().add(inkex.Group()) #make a new group at root level
                 newGroup.set('id', self.svg.get_unique_id('migrate-')) #generate some known ID with the prefix 'migrate-'
                 if self.options.shownewgroupname == True:
-                        inkex.utils.debug("The migrated elements are now in group with ID " + str(newGroup.get('id')))
+                        self.msg("The migrated elements are now in group with ID " + str(newGroup.get('id')))
                 index = 0
                 for element in self.allElements: #we have a list of elements which does not cotain any other elements like svg:g or svg:svg 
                     newGroup.insert(index, element) #we do not copy any elements. we just rearrange them by moving to another place (group index)
@@ -224,7 +237,7 @@ class MigrateGroups(inkex.Effect):
                 import cleangroups
                 cleangroups.CleanGroups.effect(self)
             except:
-                inkex.utils.debug("Calling 'Remove Empty Groups' extension failed. Maybe the extension is not installed. You can download it from official InkScape Gallery.")
+                self.msg("Calling 'Remove Empty Groups' extension failed. Maybe the extension is not installed. You can download it from official InkScape Gallery.")
          
 if __name__ == '__main__':
     MigrateGroups().run()

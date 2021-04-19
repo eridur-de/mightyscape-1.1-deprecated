@@ -72,9 +72,8 @@ admesh is sensible for moving from one dir to another
 #################################################################
 Module licenses
 - papercraft      - 26307b8        (https://github.com/osresearch/papercraft)            - GPL v2 License
-- model-converter - commit a8d809a (https://github.com/tforgione/model-converter-python) - MIT License
 - admesh          - 0.98.3         (https://github.com/admesh/admesh)                    - GPL License
-
+- fstl            -                (https://github.com/fstl-app/fstl)                    - MIT License
 """
 
 class Unfold(inkex.EffectExtension):

@@ -56,6 +56,7 @@ class Primitive (inkex.EffectExtension):
             return path
   
     def add_arguments(self, pars):
+        pars.add_argument("--tab")
         pars.add_argument("--keeporiginal", type=inkex.Boolean, default=False, help="Keep original image on canvas")
         pars.add_argument("--cliprect", type=inkex.Boolean, default=True, help="Draw clipping rectangle")
         pars.add_argument("--n", type=int, default=100, help="Number of shapes")

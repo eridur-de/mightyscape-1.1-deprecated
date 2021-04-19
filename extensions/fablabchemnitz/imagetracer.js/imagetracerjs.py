@@ -49,7 +49,7 @@ class Imagetracerjs (inkex.EffectExtension):
             return path
 
     def add_arguments(self, pars):
-        pars.add_argument("--tabs")
+        pars.add_argument("--tab")
         pars.add_argument("--keeporiginal", type=inkex.Boolean, default=False, help="Keep original image on canvas")
         pars.add_argument("--ltres", type=float, default=1.0, help="Error treshold straight lines")
         pars.add_argument("--qtres", type=float, default=1.0, help="Error treshold quadratic splines")

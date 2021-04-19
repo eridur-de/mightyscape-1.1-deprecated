@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
     <name>Cleanup Styles</name>
-    <id>fablabchemnitz.de.cleanup</id>
-    <param name="main_tabs" type="notebook">
-        <page name="tab_active" gui-text="Cleanup Styles">
+    <id>fablabchemnitz.de.cleanup_styles</id>
+    <param name="tab" type="notebook">
+        <page name="tab_settings" gui-text="Settings">
 			<param name="dedicated_style_attributes" gui-text="Handling of dedicated style attributes" gui-description="We delete dedicated attributes like 'fill' or 'stroke'. Please choose an option what should happen with those properties." type="optiongroup" appearance="combo">
 			   <option value="prefer_composed">Catch dedicated, but prefer composed (master) style</option>
 			   <option value="prefer_dedicated">Catch dedicated and prefer over composed (master) style</option>
@@ -28,15 +28,30 @@
 			<label>This extension works on current selection or for complete document</label>
         </page>
         <page name="tab_about" gui-text="About">
-            <label appearance="header">About</label>
-            <separator />
-            <label>Cleanup Styles by Mario Voigt / Stadtfabrikanten e.V. (2021)</label>
-            <label>This piece of software is part of the MightyScape for InkScape 1.0/1.1dev Extension Collection.</label>
-            <label>You found a bug or got some fresh code? Just report to mario.voigt@stadtfabrikanten.org. Thanks!</label>
-            <label appearance="url">https://fablabchemnitz.de</label>
-            <label>License: GNU GPL v3</label>
-            <separator />
-            <label>This extension generates inventory stickers for thermo printers (we use Brother QL-720NW) from our Teedy instance. Teedy is an open source software document management system (DMS). You can find the complete documentation at the Wiki space of https://fablabchemnitz.de</label>
+            <label appearance="header">Cleanup Styles</label>
+            <label>This extension is useful for adjusting the stroke width and opacity of large groups. Usually for good laser cutting the line width has to match a maximum width to be recognized as a hairline. Additionally often opacity issues cause that lines are missed by laser cutter.</label>
+            <label>2020 - 2021 / written by Mario Voigt (Stadtfabrikanten e.V. / FabLab Chemnitz)</label>
+            <spacer/>
+            <label appearance="header">Online Documentation</label>
+            <label appearance="url">https://y.stadtfabrikanten.org/cleanupstyles</label>
+            <spacer/>
+            <label appearance="header">Contributing</label>
+            <label appearance="url">https://gitea.fablabchemnitz.de/MarioVoigt/mightyscape-1.X</label>
+            <label appearance="url">mailto:mario.voigt@stadtfabrikanten.org</label>
+            <spacer/>
+            <label appearance="header">MightyScape Extension Collection</label>
+            <label>This piece of software is part of the MightyScape for Inkscape Extension Collection and is licensed under GNU GPL v3</label>
+            <label appearance="url">https://y.stadtfabrikanten.org/mightyscape-overview</label>
+        </page>
+        <page name="tab_donate" gui-text="Donate">
+            <label appearance="header">Coffee + Pizza</label>
+            <label>We are the Stadtfabrikanten, running the FabLab Chemnitz since 2016. A FabLab is an open workshop that gives people access to machines and digital tools like 3D printers, laser cutters and CNC milling machines.</label>
+            <spacer/>           
+            <label>You like our work and want to support us? You can donate to our non-profit organization by different ways:</label>
+            <label appearance="url">https://y.stadtfabrikanten.org/donate</label>
+            <spacer/>
+            <label>Thanks for using our extension and helping us!</label>
+            <image>000_about_fablabchemnitz.svg</image>
         </page>
     </param>
     <effect needs-live-preview="true">
@@ -48,6 +63,6 @@
         </effects-menu>
     </effect>
     <script>
-        <command location="inx" interpreter="python">cleanup.py</command>
+        <command location="inx" interpreter="python">cleanup_styles.py</command>
     </script>
 </inkscape-extension>

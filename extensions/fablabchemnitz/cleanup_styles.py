@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 Based on 
 - coloreffect.py by Jos Hirth and Aaron C. Spike
-- cleanup.py https://github.com/attoparsec/inkscape-extensions by attoparsec
+- cleanup.py (https://github.com/attoparsec/inkscape-extensions) by attoparsec
 
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
@@ -37,7 +37,7 @@ class Cleanup(inkex.EffectExtension):
     groups = []
     
     def add_arguments(self, pars):
-        pars.add_argument("--main_tabs")
+        pars.add_argument("--tab")
         pars.add_argument("--mode", default="Lines", help="Join paths with lines or polygons")
         pars.add_argument("--dedicated_style_attributes", default="ignore", help="Handling of dedicated style attributes")
         pars.add_argument("--stroke_width_override", type=inkex.Boolean, default=False, help="Override stroke width")

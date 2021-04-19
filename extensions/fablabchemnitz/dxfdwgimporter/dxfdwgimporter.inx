@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
     <name>DXF/DWG Importer</name>
-    <id>fablabchemnitz.de.dxfdwgimporter_configure</id>
-    
+    <id>fablabchemnitz.de.dxfdwgimporter</id>
 	<param name="tab" type="notebook">
-		<page name="general" gui-text="Input / General">
+		<page name="tab_general" gui-text="Input / General">
         <label>The parser is the heart of your input-output chain because depending on the selection your result will greatly vary. You might receive no or bad results (e.g. wrong scalings, aborted imports, missing lines, duplicated lines, wrong rotations and other issues. Serious tip: ask the person who gave the input file to you about some measurement which you can compare with the processed file to ensure correct sizes)</label>
             <param name="dxf_to_svg_parser" gui-text="DXF to SVG parser" type="optiongroup" appearance="combo">
                 <option value="bjnortier">bjnortier DXF (good quality, some polygon artifacts)</option>
@@ -25,15 +24,8 @@
             </param>
             <param name="inputfile" type="path" gui-text="Import File (*.dxf, .dwg)" gui-description="Full path to your file, e.g. 'C:\Users\Username\Documents\myimage.jpg'" filetypes="dxf,dwg" mode="file">C:\Users\</param>
             <param name="opendironerror" type="bool" gui-text="Open containing output directory on conversion errors">true</param>
-            <spacer/>
-            <label appearance="header">About</label>
-            <separator/>
-            <label>DXF/DWG File Importer by Mario Voigt / Stadtfabrikanten e.V. (2020)</label>
-            <label>A strange looking ODA File Converter/sk1 UniConverter/ezdxf tool chain. But it works! The most versatile tool to import much hated AutoCAD data for InkScape yet.</label>
-            <label appearance="url">https://fablabchemnitz.de</label>
-            <label>License: GNU GPL v3</label>
             </page>
-		<page name="dwg_dxf" gui-text="DWG to DXF / DXF to DXF">
+		<page name="tab_dwg_dxf" gui-text="DWG to DXF / DXF to DXF">
             <label appearance="header">Open Design Alliance (ODA) File Converter</label>
             <param name="oda_fileconverter" type="path" gui-text="ODAFileConverter executable" gui-description="Full path to 'ODAFileConverter' executable. On Linux this usually should be '/usr/bin/ODAFileConverter' and on Windows it's 'C:\Program Files\ODA\OdaFileConverter_title XX.Y.Z\ODAFileConverter.exe'" filetypes="" mode="file">C:\Program Files\ODA\ODAFileConverter_title 21.6.0\ODAFileConverter.exe</param>
             <param name="oda_keepconverted_dxf" type="bool" gui-text="Keep ODA converted DXF file" gui-description="Will put a copy of the converted DXF into the directory where your input file is located.">true</param>
@@ -75,7 +67,7 @@
             <param name="oda_skip_dxf_to_dxf" type="bool" gui-text="Skip conversion from DXF to DXF (keep input as is)" gui-description="This will skip ODA File Converter execution if input is already DXF file. If your input is DWG this option will not apply. Might save some seconds of time and maybe prevents errors.">false</param>
             <param name="oda_audit_repair" type="bool" gui-text="Perform audit (auto-repair)">true</param>
         </page>
-		<page name="dxf_svg" gui-text="DXF to SVG">
+		<page name="tab_dxf_svg" gui-text="DXF to SVG">
             <label appearance="header">ezdxf DXF to DXF Pre-Processing (Filter)</label>
             <separator/>
             <param name="ezdxf_preprocessing" type="bool" gui-text="Filter entities with ezdxf (recommended if you use sk1 UniConverter)">true</param>
@@ -155,7 +147,40 @@
 			<param name="vpype_quantization" type="float" min="0.001" max="99999.000" precision="3" gui-text="Quantization" gui-description="Maximum length of segments approximating curved elements (default 0.1mm)">0.100</param>	
     		<param name="vpype_simplify" type="bool" gui-text="Simplify curved elements" gui-description="Apply simplification algorithm to curved elements">false</param>
  			<param name="vpype_parallel" type="bool" gui-text="Multiprocessing curve conversion" gui-description="Enable multiprocessing for curve conversion.">false</param>
-
+        </page>
+        <page name="tab_about" gui-text="About">
+            <label appearance="header">DXF/DWG Importer</label>
+            <label>A strange looking ODA File Converter/sk1 UniConverter/ezdxf tool chain. But it works! The most versatile tool to import much hated AutoCAD data for InkScape yet.</label>
+            <label>2020 - 2021 / written by Mario Voigt (Stadtfabrikanten e.V. / FabLab Chemnitz)</label>
+            <spacer/>
+            <label appearance="header">Online Documentation</label>
+            <label appearance="url">https://y.stadtfabrikanten.org/dxfdwgimporter</label>
+            <spacer/>
+            <label appearance="header">Contributing</label>
+            <label appearance="url">https://gitea.fablabchemnitz.de/MarioVoigt/mightyscape-1.X</label>
+            <label appearance="url">mailto:mario.voigt@stadtfabrikanten.org</label>
+            <spacer/>
+            <label appearance="header">Third Party Modules</label>
+            <label appearance="url">https://github.com/mozman/ezdxf</label>
+            <label appearance="url">http://kabeja.sourceforge.net</label>
+            <label appearance="url">https://github.com/bjnortier/dxf</label>
+            <label appearance="url">https://github.com/sk1project/uniconvertor</label>
+            <label appearance="url">https://github.com/abey79/vpype</label>
+            <label appearance="url">https://github.com/tatarize/vpype-dxf</label>
+            <spacer/>
+            <label appearance="header">MightyScape Extension Collection</label>
+            <label>This piece of software is part of the MightyScape for Inkscape Extension Collection and is licensed under GNU GPL v3</label>
+            <label appearance="url">https://y.stadtfabrikanten.org/mightyscape-overview</label>
+        </page>
+        <page name="tab_donate" gui-text="Donate">
+            <label appearance="header">Coffee + Pizza</label>
+            <label>We are the Stadtfabrikanten, running the FabLab Chemnitz since 2016. A FabLab is an open workshop that gives people access to machines and digital tools like 3D printers, laser cutters and CNC milling machines.</label>
+            <spacer/>           
+            <label>You like our work and want to support us? You can donate to our non-profit organization by different ways:</label>
+            <label appearance="url">https://y.stadtfabrikanten.org/donate</label>
+            <spacer/>
+            <label>Thanks for using our extension and helping us!</label>
+            <image>../000_about_fablabchemnitz.svg</image>
         </page>
     </param>
     <effect needs-live-preview="true">

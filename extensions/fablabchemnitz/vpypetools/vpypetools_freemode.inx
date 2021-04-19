@@ -3,7 +3,7 @@
     <name>vpype Free Mode</name>
     <id>fablabchemnitz.de.vpype_free_mode</id>
 	<param name="tab" type="notebook">
-		<page name="freemode" gui-text="Free Mode Entries">
+		<page name="tab_settings_freemode" gui-text="vpypetools Free Mode Entries">
 			<label>Enter your desired command pipes and enable/disable as much fields as you like.</label>
 		 	<param name="freemode" type="bool" gui-hidden="true">true</param>
 		 	<param name="freemode_cmd1" type="string" appearance="multiline" gui-text="Command Set 1">layout 1024x768 translate 150px 50px</param>
@@ -19,7 +19,7 @@
 		    <separator/>
 		    <param name="freemode_show_cmd" type="bool" gui-text="Show command" gui-description="Print the full command chain. Helpful for debugging.">false</param>	 		 	
 		</page>
-		<page name="general_settings" gui-text="General Settings">
+		<page name="tab_settings_general" gui-text="General Settings">
 			<label appearance="header">Preprocessing</label>
 		    <param name="apply_transformations" type="bool" gui-text="Use 'Apply Transformations' extension" gui-description="Run 'Apply Transformations' extension before running vpype. Helps avoiding geometry shifting. Disabled for 'Multilayer/document'">false</param>
 			<spacer/>
@@ -47,17 +47,15 @@
 			<param name="lines_stroke_width" type="float" min="0.001" max="99999.000" precision="3" gui-text="Stroke width of tooling lines (px)" gui-description="Gets overwritten if 'Use style of first selected element' is enabled">1.000</param>	
 			<param name="trajectories_stroke_width" type="float" min="0.001" max="99999.000" precision="3" gui-text="Stroke width of trajectory lines (px)">1.000</param>
 		</page>
-		<page name="about" gui-text="About">
-			<label appearance="header">vpypetools documentation</label>
-		    <label appearance="url">https://y.stadtfabrikanten.org/vpypetools</label>
+		<page name="tab_reference" gui-text="CLI Reference">
 			<label appearance="header">CLI reference (command list)</label>
 		    <label appearance="url">https://vpype.readthedocs.io/en/stable/reference.html</label>
 			<separator/>	
 			<label appearance="header">General:</label>
 			<label xml:space="preserve">    lmove, lcopy, ldelete, show, stat</label>
 			<label appearance="header">Input/Output (*):</label>
-			<label xml:space="preserve">* works but not recommended to use inside InkScape</label>
-			<label xml:space="preserve">    read, write</label>
+			<label xml:space="preserve">* works but not recommended to use inside Inkscape</label>
+			<label xml:space="preserve">    read, write (we use Inkscape's current canvas for this)</label>
 			<label appearance="header">Layout and transforms:</label>
 			<label xml:space="preserve">    layout, scale, translate, skew, rotate, scaleto, snap, crop, trim, pagesize</label>
 			<label appearance="header">Plotting optimization:</label>
@@ -68,16 +66,40 @@
 			<label xml:space="preserve">    begin, end, line, rect, circle, ellipse, arc, text, grid, frame, random</label>
 			<label appearance="header">External:</label>
 			<label xml:space="preserve">    vpype-text, hatched, occult, script, ...</label>
-			<spacer/>
+			<separator/>
 			<label appearance="header">Supported basis units:</label>
 			<label xml:space="preserve">    cm, mm, in, pt, pc, px | not supported: %, m, em, ex, ft</label>
 			<label appearance="header">Supported angle units:</label>
 			<label xml:space="preserve">    deg, grad, rad, turn</label>
-			<separator/>			
-            <label appearance="header">vpypetools for vpype 1.6 (2021-03-10) - by Mario Voigt / Stadtfabrikanten e.V. (2021)</label>
-		    <label appearance="url">https://fablabchemnitz.de</label>
-		    <label>License: GNU GPL v3</label>
 		</page>
+        <page name="tab_about" gui-text="About">
+            <label appearance="header">vpypetools Free Mode</label>
+            <label>2021 / written by Mario Voigt (Stadtfabrikanten e.V. / FabLab Chemnitz)</label>
+            <spacer/>
+            <label appearance="header">Online Documentation</label>
+            <label appearance="url">https://y.stadtfabrikanten.org/vpypetools</label>
+            <spacer/>
+            <label appearance="header">Contributing</label>
+            <label appearance="url">https://gitea.fablabchemnitz.de/MarioVoigt/mightyscape-1.X</label>
+            <label appearance="url">mailto:mario.voigt@stadtfabrikanten.org</label>
+            <spacer/>
+            <label appearance="header">Third Party Modules</label>
+            <label appearance="url">https://github.com/abey79/vpype</label>
+            <spacer/>
+            <label appearance="header">MightyScape Extension Collection</label>
+            <label>This piece of software is part of the MightyScape for Inkscape Extension Collection and is licensed under GNU GPL v3</label>
+            <label appearance="url">https://y.stadtfabrikanten.org/mightyscape-overview</label>
+        </page>
+        <page name="tab_donate" gui-text="Donate">
+            <label appearance="header">Coffee + Pizza</label>
+            <label>We are the Stadtfabrikanten, running the FabLab Chemnitz since 2016. A FabLab is an open workshop that gives people access to machines and digital tools like 3D printers, laser cutters and CNC milling machines.</label>
+            <spacer/>           
+            <label>You like our work and want to support us? You can donate to our non-profit organization by different ways:</label>
+            <label appearance="url">https://y.stadtfabrikanten.org/donate</label>
+            <spacer/>
+            <label>Thanks for using our extension and helping us!</label>
+            <image>../000_about_fablabchemnitz.svg</image>
+        </page>
 	</param>
     <effect needs-live-preview="true">
 		<effects-menu>

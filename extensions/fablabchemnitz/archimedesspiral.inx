@@ -2,26 +2,45 @@
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
    <name>The Spiral Of Archimedes</name>
    <id>fablabchemnitz.de.archimedesspiral</id>
-   <param name="name" appearance="header" type="description">R = r + aθ</param>
-   <param name="r" type="int" min="0" max="1000000" gui-text="r (mm)">50</param>
-   <param name="a" type="float" min="0" max="1000000" gui-text="a">3</param>
-   <param name="step" type="int" min="1" max="300" gui-text="Step">50</param>
-   <param name="trl" type="optiongroup" appearance="combo" gui-text="Turn direction">
-      <option value="0">Left</option>
-      <option value="1">Right</option>
-   </param>
-   <param name="length" type="float" min="0" max="1000000" gui-text="Length (mm)">0</param>
-   <param name="turns" type="int" min="1" max="1000000" gui-text="Turns">5</param>
-   <param name="desc" appearance="header" type="description">Notes</param>
-   <param name="desc_text" type="description">
-The option "turns" only works if you set "length (mm)" to 0.0. 
-Otherwise the length value will be used to calculate the 
-spiral for given length. The higher the "step" value is 
-set the better the accuracy is. If you set the step value 
-really low the resulting length will not be precise and 
-the curve is maybe not drawn at all. You can validate the 
-length by using the extension "Visualize Path> Measure Path"
-   </param>
+    <param name="tab" type="notebook">
+        <page name="tab_settings" gui-text="Settings">
+           <param name="name" appearance="header" type="description">R = r + aθ</param>
+           <param name="r" type="int" min="0" max="1000000" gui-text="r (mm)">50</param>
+           <param name="a" type="float" min="0" max="1000000" gui-text="a">3</param>
+           <param name="step" type="int" min="1" max="300" gui-text="Step" gui-description="The higher the value the better the accuracy. If you set the step value really low the resulting length will not be precise and the curve is maybe not drawn at all">50</param>
+           <param name="trl" type="optiongroup" appearance="combo" gui-text="Turn direction">
+              <option value="0">Left</option>
+              <option value="1">Right</option>
+           </param>
+           <param name="length" type="float" min="0" max="1000000" gui-text="Length (mm)">0</param>
+           <param name="turns" type="int" min="1" max="1000000" gui-text="Turns" gui-description="Works only if you set 'length (mm)' to 0.0">5</param>
+        </page>
+        <page name="tab_about" gui-text="About">
+            <label appearance="header">The Spiral Of Archimedes</label>
+            <label>2020 - 2021 / written by Mario Voigt (Stadtfabrikanten e.V. / FabLab Chemnitz)</label>
+            <spacer/>
+            <label appearance="header">Online Documentation</label>
+            <label appearance="url">https://y.stadtfabrikanten.org/archimedesspiral</label>
+            <spacer/>
+            <label appearance="header">Contributing</label>
+            <label appearance="url">https://gitea.fablabchemnitz.de/MarioVoigt/mightyscape-1.X</label>
+            <label appearance="url">mailto:mario.voigt@stadtfabrikanten.org</label>
+            <spacer/>
+            <label appearance="header">MightyScape Extension Collection</label>
+            <label>This piece of software is part of the MightyScape for Inkscape Extension Collection and is licensed under GNU GPL v3</label>
+            <label appearance="url">https://y.stadtfabrikanten.org/mightyscape-overview</label>
+        </page>
+        <page name="tab_donate" gui-text="Donate">
+            <label appearance="header">Coffee + Pizza</label>
+            <label>We are the Stadtfabrikanten, running the FabLab Chemnitz since 2016. A FabLab is an open workshop that gives people access to machines and digital tools like 3D printers, laser cutters and CNC milling machines.</label>
+            <spacer/>           
+            <label>You like our work and want to support us? You can donate to our non-profit organization by different ways:</label>
+            <label appearance="url">https://y.stadtfabrikanten.org/donate</label>
+            <spacer/>
+            <label>Thanks for using our extension and helping us!</label>
+            <image>000_about_fablabchemnitz.svg</image>
+        </page>
+    </param>
    <effect>
       <object-type>all</object-type>
       <effects-menu>

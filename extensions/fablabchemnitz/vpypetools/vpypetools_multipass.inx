@@ -3,12 +3,12 @@
     <name>Multipass</name>
     <id>fablabchemnitz.de.vpype_multipass</id>
 	<param name="tab" type="notebook">
-		<page name="freemode" gui-text="Multipass">
+		<page name="tab_settings_multipass" gui-text="vpypetools Multipass">
 			<label>Add multiple passes to each line. Each line is extended with a mirrored copy of itself, optionally multiple times. This is useful for pens that need several passes to ensure a good quality.</label>
 			<param name="multipass" type="bool" gui-hidden="true">true</param>	
 			<param name="multipass_count" type="int" min="2" max="9999" gui-text="count" gui-description="How many passes for each line (default 2)">2</param>
 		</page>
-		<page name="general_settings" gui-text="General Settings">
+		<page name="tab_settings_general" gui-text="General Settings">
 			<label appearance="header">Preprocessing</label>
 		    <param name="apply_transformations" type="bool" gui-text="Use 'Apply Transformations' extension" gui-description="Run 'Apply Transformations' extension before running vpype. Helps avoiding geometry shifting. Disabled for 'Multilayer/document'">false</param>
 			<spacer/>
@@ -36,15 +36,34 @@
 			<param name="lines_stroke_width" type="float" min="0.001" max="99999.000" precision="3" gui-text="Stroke width of tooling lines (px)" gui-description="Gets overwritten if 'Use style of first selected element' is enabled">1.000</param>	
 			<param name="trajectories_stroke_width" type="float" min="0.001" max="99999.000" precision="3" gui-text="Stroke width of trajectory lines (px)">1.000</param>
 		</page>
-		<page name="about" gui-text="About">
-			<label appearance="header">vpypetools documentation</label>
-		    <label appearance="url">https://y.stadtfabrikanten.org/vpypetools</label>
-			<label appearance="header">CLI reference (command list)</label>
-		    <label appearance="url">https://vpype.readthedocs.io/en/stable/reference.html</label>
-			<separator/>		
-			<label appearance="url">https://fablabchemnitz.de</label>
-			<label>License: GNU GPL v3</label>
-		</page>
+        <page name="tab_about" gui-text="About">
+            <label appearance="header">vpypetools Multipass</label>
+            <label>2021 / written by Mario Voigt (Stadtfabrikanten e.V. / FabLab Chemnitz)</label>
+            <spacer/>
+            <label appearance="header">Online Documentation</label>
+            <label appearance="url">https://y.stadtfabrikanten.org/vpypetools</label>
+            <spacer/>
+            <label appearance="header">Contributing</label>
+            <label appearance="url">https://gitea.fablabchemnitz.de/MarioVoigt/mightyscape-1.X</label>
+            <label appearance="url">mailto:mario.voigt@stadtfabrikanten.org</label>
+            <spacer/>
+            <label appearance="header">Third Party Modules</label>
+            <label appearance="url">https://github.com/abey79/vpype</label>
+            <spacer/>
+            <label appearance="header">MightyScape Extension Collection</label>
+            <label>This piece of software is part of the MightyScape for Inkscape Extension Collection and is licensed under GNU GPL v3</label>
+            <label appearance="url">https://y.stadtfabrikanten.org/mightyscape-overview</label>
+        </page>
+        <page name="tab_donate" gui-text="Donate">
+            <label appearance="header">Coffee + Pizza</label>
+            <label>We are the Stadtfabrikanten, running the FabLab Chemnitz since 2016. A FabLab is an open workshop that gives people access to machines and digital tools like 3D printers, laser cutters and CNC milling machines.</label>
+            <spacer/>           
+            <label>You like our work and want to support us? You can donate to our non-profit organization by different ways:</label>
+            <label appearance="url">https://y.stadtfabrikanten.org/donate</label>
+            <spacer/>
+            <label>Thanks for using our extension and helping us!</label>
+            <image>../000_about_fablabchemnitz.svg</image>
+        </page>
 	</param>
     <effect needs-live-preview="true">
 		<effects-menu>

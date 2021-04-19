@@ -43,7 +43,7 @@ from inkex.bezier import csplength
 class LinksCreator(inkex.EffectExtension):
     
     def add_arguments(self, pars):
-        pars.add_argument("--main_tabs")
+        pars.add_argument("--tab")
         pars.add_argument("--path_types", default="closed_paths", help="Apply for closed paths, open paths or both")
         pars.add_argument("--creationunit", default="mm", help="Creation Units")
         pars.add_argument("--creationtype", default="entered_values", help="Creation")
@@ -95,10 +95,9 @@ class LinksCreator(inkex.EffectExtension):
             nodeParent = node.getparent()
 
             pathIsClosed = False
-            path = node.path.to_superpath()
-            if path[-1][0] == 'Z' or path[0] == path[-1]:  #if first is last point the path is also closed. The "Z" command is not required
+            path = node.path.to_arrays() #to_arrays() is deprecated. How to make more modern?
+            if path[-1][0] == 'Z' or path[0][1] == path[-1][1]:  #if first is last point the path is also closed. The "Z" command is not required
                 pathIsClosed = True
-
             if self.options.path_types == 'open_paths' and pathIsClosed is True:
                 return #skip this loop iteration
             elif self.options.path_types == 'closed_paths' and pathIsClosed is False:
@@ -119,7 +118,7 @@ class LinksCreator(inkex.EffectExtension):
            
             if self.options.length_filter is True:
                 if stotal < self.svg.unittouu(str(self.options.length_filter_value) + self.options.length_filter_unit):
-                    if self.options.show_info is True: inkex.errormsg("node " + node.get('id') + " is shorter than minimum allowed length of {:1.3f} {}. Path length is {:1.3f} {}".format(self.options.length_filter_value, self.options.length_filter_unit, stotal, self.options.creationunit))
+                    if self.options.show_info is True: self.msg("node " + node.get('id') + " is shorter than minimum allowed length of {:1.3f} {}. Path length is {:1.3f} {}".format(self.options.length_filter_value, self.options.length_filter_unit, stotal, self.options.creationunit))
                     return #skip this loop iteration
 
             if self.options.creationunit == "percent":
@@ -142,7 +141,7 @@ class LinksCreator(inkex.EffectExtension):
                     
                 #validate dashes. May not be negative. Otherwise Inkscape will freeze forever. Reason: rendering issue
                 if any(dash <= 0.0 for dash in dashes) == True: 
-                    if self.options.show_info is True: inkex.errormsg("node " + node.get('id') + ": Error! Dash array may not contain negative numbers: " + ' '.join(format(dash, "1.3f") for dash in dashes) + ". Path skipped. Maybe it's too short. Adjust your link count, multiplicator and length accordingly, or set to unit '%'")
+                    if self.options.show_info is True: self.msg("node " + node.get('id') + ": Error! Dash array may not contain negative numbers: " + ' '.join(format(dash, "1.3f") for dash in dashes) + ". Path skipped. Maybe it's too short. Adjust your link count, multiplicator and length accordingly, or set to unit '%'")
                     return False if self.options.skip_errors is True else exit(1)
                
                 if self.options.creationunit == "percent":
@@ -155,7 +154,7 @@ class LinksCreator(inkex.EffectExtension):
 
             if self.options.creationtype == "use_existing":
                 if self.options.no_convert is True:
-                    if self.options.show_info is True: inkex.errormsg("node " + node.get('id') + ": Nothing to do. Please select another creation method or disable cosmetic style output paths.")
+                    if self.options.show_info is True: self.msg("node " + node.get('id') + ": Nothing to do. Please select another creation method or disable cosmetic style output paths.")
                     return False if self.options.skip_errors is True else exit(1)
                 stroke_dashoffset = 0
                 style = node.style
@@ -168,7 +167,7 @@ class LinksCreator(inkex.EffectExtension):
                     else:
                         raise ValueError
                 except:
-                    if self.options.show_info is True: inkex.errormsg("node " + node.get('id') + ": No dash style to continue with.")
+                    if self.options.show_info is True: self.msg("node " + node.get('id') + ": No dash style to continue with.")
                     return False if self.options.skip_errors is True else exit(1)
                            
             if self.options.creationtype == "custom_dashpattern":
@@ -180,7 +179,7 @@ class LinksCreator(inkex.EffectExtension):
                     else:
                         raise ValueError
                 except:
-                    if self.options.show_info is True: inkex.errormsg("node " + node.get('id') + ": Error in custom dasharray string (might be empty or does not contain any numbers).")
+                    if self.options.show_info is True: self.msg("node " + node.get('id') + ": Error in custom dasharray string (might be empty or does not contain any numbers).")
                     return False if self.options.skip_errors is True else exit(1)
 
             #assign stroke dasharray from entered values, existing style or custom dashpattern
@@ -234,20 +233,20 @@ class LinksCreator(inkex.EffectExtension):
 
             # Print some info about values
             if self.options.show_info is True:
-                inkex.errormsg("node " + node.get('id') + ":")
+                self.msg("node " + node.get('id') + ":")
                 if self.options.creationunit == "percent":
-                    inkex.errormsg(" * total path length = {:1.3f} {}".format(stotal, self.svg.unit)) #show length, converted in selected unit
-                    inkex.errormsg(" * (calculated) offset: {:1.3f} %".format(stroke_dashoffset))
+                    self.msg(" * total path length = {:1.3f} {}".format(stotal, self.svg.unit)) #show length, converted in selected unit
+                    self.msg(" * (calculated) offset: {:1.3f} %".format(stroke_dashoffset))
                     if self.options.creationtype == "entered_values":
-                        inkex.errormsg(" * (calculated) gap length: {:1.3f} %".format(length_link))
+                        self.msg(" * (calculated) gap length: {:1.3f} %".format(length_link))
                 else:
-                    inkex.errormsg(" * total path length = {:1.3f} {} ({:1.3f} {})".format(self.svg.uutounit(stotal, self.options.creationunit), self.options.creationunit, stotal, self.svg.unit)) #show length, converted in selected unit
-                    inkex.errormsg(" * (calculated) offset: {:1.3f} {}".format(self.svg.uutounit(stroke_dashoffset, self.options.creationunit), self.options.creationunit))
+                    self.msg(" * total path length = {:1.3f} {} ({:1.3f} {})".format(self.svg.uutounit(stotal, self.options.creationunit), self.options.creationunit, stotal, self.svg.unit)) #show length, converted in selected unit
+                    self.msg(" * (calculated) offset: {:1.3f} {}".format(self.svg.uutounit(stroke_dashoffset, self.options.creationunit), self.options.creationunit))
                     if self.options.creationtype == "entered_values":
-                        inkex.errormsg(" * (calculated) gap length: {:1.3f} {}".format(length_link, self.options.creationunit))
+                        self.msg(" * (calculated) gap length: {:1.3f} {}".format(length_link, self.options.creationunit))
                 if self.options.creationtype == "entered_values":        
-                    inkex.errormsg(" * total gaps = {}".format(self.options.link_count))
-                inkex.errormsg(" * (calculated) dash/gap pattern: {} ({})".format(stroke_dasharray, self.svg.unit))
+                    self.msg(" * total gaps = {}".format(self.options.link_count))
+                self.msg(" * (calculated) dash/gap pattern: {} ({})".format(stroke_dasharray, self.svg.unit))
      
             # Conversion step (split cosmetic path into real segments)    
             if self.options.no_convert is False:
@@ -293,7 +292,7 @@ class LinksCreator(inkex.EffectExtension):
                     breakApartGroup = nodeParent.add(inkex.Group())
                     for breakOutputNode in breakOutputNodes:
                         breakApartGroup.append(breakOutputNode)
-                        #inkex.errormsg(replacedNode.get('id'))
+                        #self.msg(replacedNode.get('id'))
                         #self.svg.selection.set(replacedNode.get('id')) #update selection to split paths segments (does not work, so commented out)
                 
         if len(self.svg.selected) > 0:
@@ -303,7 +302,7 @@ class LinksCreator(inkex.EffectExtension):
                 for breakInputNode in breakInputNodes:
                     createLinks(breakInputNode)
         else:
-            inkex.errormsg('Please select some paths first.')
+            self.msg('Please select some paths first.')
             return
         
 if __name__ == '__main__':
