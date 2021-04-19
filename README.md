@@ -21,6 +21,12 @@ I think this package is ideal for makers who are travelling around and/or using 
    * If you find bugs or have ideas please push them directly to the corresponding root repository of the developer like i did
    * Credits for creation of this big package: me (Mario Voigt)
 
+# Used software
+   * Gitea for hosting this
+   * GitEye and SourceTree git frontends for commiting
+   * LiClipse and NotePad++ for code
+   * regular Python installation (both Linux and Windows)
+
 # Requirements / Tested environment
 
    * tested with Inkscape
