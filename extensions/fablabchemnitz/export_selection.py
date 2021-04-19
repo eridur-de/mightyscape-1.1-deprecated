@@ -78,11 +78,9 @@ class ExportObject(inkex.EffectExtension):
 			elem_copy.attrib['transform'] = str(elem.composed_transform())
 			group.append(elem_copy)
 
-			width = math.ceil(bbox.width)
-			height = math.ceil(bbox.height)
-			template.attrib['viewBox'] = f'0 0 {width} {height}'
-			template.attrib['width'] = f'{width}' + self.svg.unit
-			template.attrib['height'] = f'{height}' + self.svg.unit
+			template.attrib['viewBox'] = f'0 0 {bbox.width} {bbox.height}'
+			template.attrib['width'] = f'{bbox.width}' + self.svg.unit
+			template.attrib['height'] = f'{bbox.height}' + self.svg.unit
 
 			if filename is None:
 				filename = elem.attrib.get('id', None)
