@@ -31,7 +31,7 @@ __author__ = 'Veronika Irvine'
 __credits__ = ['Ben Connors', 'Veronika Irvine', 'Mark Shafer']
 __license__ = 'Simplified BSD'
 
-class LaceGround(inkex.EffectExtesnsion):
+class LaceGround(inkex.EffectExtension):
     
     def loadFile(self):
         # Ensure that file exists and has the proper extension
