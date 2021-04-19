@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 
 import inkex
-import svgpathtools
+from inkex.bezier import csplength, csparea
 
 def isclosedac(p):
     return abs(p.start-p.end) < 1e-6
-
 
 class SmallThingsFilter(inkex.EffectExtension):
     
@@ -20,26 +19,21 @@ class SmallThingsFilter(inkex.EffectExtension):
         if self.options.threshold == 0:
             return
 
-        for path in self.document.xpath("//svg:path", namespaces=inkex.NSS):
+        for element in self.document.xpath("//svg:path", namespaces=inkex.NSS):
             try:
-                parsed_path = svgpathtools.parse_path(path.attrib["d"])
-                
-                #if not isclosedac(parsed_path):
-                #    continue
-                
-                if self.options.measure == "area":      
-                    calc = parsed_path.area()
-                    #inkex.utils.debug(calc) #print calculated area with document units
-                    #inkex.utils.debug(str(self.options.threshold * (unit_factor * unit_factor))) #print threshold area with selected units
-                    if calc < (self.options.threshold * (unit_factor * unit_factor)):
-                        path.getparent().remove(path)
-                else: #length
-                    calc = parsed_path.length()
-                    #inkex.utils.debug(calc) #print calculated area with document units
-                    #inkex.utils.debug(str(self.options.threshold * (unit_factor * unit_factor))) #print threshold area with selected units
-                    if calc < (self.options.threshold * unit_factor):
-                        path.getparent().remove(path)
-            except:
+                csp = element.path.transform(element.composed_transform()).to_superpath()
+
+                if self.options.measure == "area":
+                    area = -csparea(csp) #is returned as negative value. we need to invert with -
+                    if area < (self.options.threshold * (unit_factor * unit_factor)):
+                        element.delete()
+                        
+                elif self.options.measure == "length":
+                    slengths, stotal = csplength(csp) #get segment lengths and total length of path in document's internal unit
+                    if stotal < (self.options.threshold * unit_factor):
+                        element.delete()
+            except Exception as e:
+                #self.msg(e)
                 pass
 
 if __name__ == '__main__':
