@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+	<_name>Epilog Dashboard BBox Adjust</_name>
+	<id>fablabchemnitz.de.epilog_bbox_adjust</id>
+	<effect needs-document="true" needs-live-preview="false">
+		<menu-tip>Widen the document to send all lines properly to Epilog Dashboard (adds 1.0 doc units of extra offset)</menu-tip>
+		<object-type>all</object-type>
+		<effects-menu>
+            <submenu name="FabLab Chemnitz">
+				<submenu name="Various">
+            </submenu>
+		</effects-menu>
+	</effect>
+	<script>
+		<command reldir="inx" interpreter="python">epilog_bbox_adjust.py</command>
+	</script>
+</inkscape-extension>
