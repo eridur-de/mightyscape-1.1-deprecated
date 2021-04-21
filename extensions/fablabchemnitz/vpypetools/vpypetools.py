@@ -49,7 +49,8 @@ CLI / API docs:
 - https://vpype.readthedocs.io/en/stable/api/vpype.html#module-vpype
 
 Todo's
-- find some python code to auto-convert strokes and objects to paths
+- find some python code to auto-convert strokes and objects to paths (for input and for output again)
+- remove fill property of converted lines (because there is no fill anymore) without crashing Inkscape ...
 """
 
 class vpypetools (inkex.EffectExtension):
@@ -131,7 +132,7 @@ class vpypetools (inkex.EffectExtension):
  
     def effect(self):
         lc = vpype.LineCollection() # create a new array of LineStrings consisting of Points. We convert selected paths to polylines and grab their points
-        nodesToWork = [] # we make an array of all collected nodes to get the boundingbox of that array. We need it to place the vpype converted stuff to the correct XY coordinates
+        elementsToWork = [] # we make an array of all collected nodes to get the boundingbox of that array. We need it to place the vpype converted stuff to the correct XY coordinates
           
         applyTransformAvailable = False
         
@@ -177,7 +178,10 @@ class vpypetools (inkex.EffectExtension):
                 for subPath in subPaths:
                     points = []
                     for csp in subPath:
-                        points.append(Point(round(csp[1][0], self.options.decimals), round(csp[1][1], self.options.decimals)))
+                        if len(csp[1]) > 0: #we need exactly two points per straight line segment
+                            points.append(Point(round(csp[1][0], self.options.decimals), round(csp[1][1], self.options.decimals)))
+                    if  subPath[-1][0] == 'Z' or subPath[0][1] == subPath[-1][1]:  #check if path is closed by Z or first pont == last point
+                        points.append(Point(round(subPath[0][1][0], self.options.decimals), round(subPath[0][1][1], self.options.decimals))) #if closed, we add the first point again
                     lc.append(LineString(points))
                       
             children = node.getchildren()
@@ -203,12 +207,13 @@ class vpypetools (inkex.EffectExtension):
                 '''
                 applytransform.ApplyTransform().recursiveFuseTransform(self.document.getroot())
             if len(self.svg.selected) == 0:
-                nodesToWork = convertPath(self.document.getroot())
-                for element in nodesToWork:
+                elementsToWork = convertPath(self.document.getroot())
+                for element in elementsToWork:
                     input_bbox += element.bounding_box()      
             else:
-                for id, item in self.svg.selected.items():
-                    nodesToWork = convertPath(item)
+                elementsToWork = None
+                for element in self.svg.selected.values():
+                    elementsToWork = convertPath(element, elementsToWork)
                 #input_bbox = inkex.elements._selected.ElementList.bounding_box(self.svg.selected) # get BoundingBox for selection
                 input_bbox = self.svg.selection.bounding_box() # get BoundingBox for selection
             if len(lc) == 0:
@@ -216,17 +221,17 @@ class vpypetools (inkex.EffectExtension):
                 return  
             # find the first object in selection which has a style attribute (skips groups and other things which have no style)
             firstElementStyle = None
-            for node in nodesToWork:
-                if node.attrib.has_key('style'):
-                    firstElementStyle = node.get('style')
+            for element in elementsToWork:
+                if element.attrib.has_key('style'):
+                    firstElementStyle = element.get('style')
             doc = vpype.Document(page_size=(input_bbox.width + input_bbox.left, input_bbox.height + input_bbox.top)) #create new vpype document     
             doc.add(lc, layer_id=None) # we add the lineCollection (converted selection) to the vpype document
             
         elif self.options.input_handling == "layers":
             doc = vpype.read_multilayer_svg(self.options.input_file, quantization = self.options.flatness, crop = False, simplify = self.options.simplify, parallel = self.options.parallel, default_width = self.document.getroot().get('width'), default_height = self.document.getroot().get('height'))
 
-            for node in self.document.getroot().xpath("//svg:g", namespaces=inkex.NSS): #all groups/layers
-                nodesToWork.append(node)
+            for element in self.document.getroot().xpath("//svg:g", namespaces=inkex.NSS): #all groups/layers
+                elementsToWork.append(element)
 
         tooling_length_before = doc.length()
         traveling_length_before = doc.pen_up_length()
@@ -364,6 +369,12 @@ class vpypetools (inkex.EffectExtension):
             if len(cli_output) > 0:
                 self.debug(_("Inkscape returned the following output when trying to run the vpype object to path back-conversion:"))
                 self.debug(cli_output)
+        
+        # this does not work because line, polyline and polygon have no base class to execute replace_with
+        #if self.options.strokes_to_paths is True:
+        #    for lineLayer in lineLayers:
+        #        for element in lineLayer:
+        #                element.replace_with(element.to_path_element())
                
         # parse the SVG file
         try:
@@ -388,7 +399,18 @@ class vpypetools (inkex.EffectExtension):
    
         lineLayers = import_doc.getroot().xpath("//svg:g[not(@id='pen_up_trajectories')]", namespaces=inkex.NSS) #all layer except the pen_up trajectories layer
         if self.options.use_style_of_first_element is True and self.options.input_handling == "paths" and firstElementStyle is not None:
+            
+            # if we remove the fill property and use "Use style of first element in layer" the conversion will just crash with an unknown reason
+            #declarations = firstElementStyle.split(';')
+            #for i, decl in enumerate(declarations):
+            #    parts = decl.split(':', 2)
+            #    if len(parts) == 2:
+            #        (prop, val) = parts
+            #        prop = prop.strip().lower()
+            #        #if prop == 'fill':
+            #        #   declarations[i] = prop + ':none'   
             for lineLayer in lineLayers:
+                #lineLayer.set('style', ';'.join(declarations))
                 lineLayer.set('style', firstElementStyle)
                 lineLayer.attrib.pop('stroke') # remove unneccesary stroke attribute
                 lineLayer.attrib.pop('fill') # remove unneccesary fill attribute
@@ -419,8 +441,8 @@ class vpypetools (inkex.EffectExtension):
             
         # Remove selection objects to do a real replace with new objects from vpype document
         if self.options.keep_objects is False:
-            for node in nodesToWork:
-                node.delete()
+            for element in elementsToWork:
+                element.delete()
     
 if __name__ == '__main__':
     vpypetools().run()
