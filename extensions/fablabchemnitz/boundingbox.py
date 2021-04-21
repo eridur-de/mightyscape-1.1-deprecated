@@ -36,8 +36,8 @@ class DrawBBoxes(inkex.EffectExtension):
     def effect(self):
         if len(self.svg.selected) > 0:
             if self.options.split is False:
-                for id, item in self.svg.selected.items():
-                    self.drawBBox(item.bounding_box())
+                for element in self.svg.selected.values():
+                    self.drawBBox(element.bounding_box())
             else:
                 #self.drawBBox(self.svg.get_selected_bbox()) #works for InkScape (1:1.0+devel+202008292235+eff2292935) @ Linux and for Windows (but with deprecation)
                 self.drawBBox(self.svg.selection.bounding_box()) #works for InkScape 1.1dev (9b1fc87, 2020-08-27)) @ Windows

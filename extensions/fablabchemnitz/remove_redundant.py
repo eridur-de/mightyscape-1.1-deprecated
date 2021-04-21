@@ -59,9 +59,9 @@ class RemoveRedundant(inkex.EffectExtension):
         seenSegments = set()
         coordsCache = FixedRadiusSearch()
 
-        for id, node in self.svg.selected.items():
-            if node.tag == inkex.addNS('path','svg'):
-                d = node.get('d')
+        for element in self.svg.selected.values():
+            if element.tag == inkex.addNS('path','svg'):
+                d = element.get('d')
                 path = paths.CubicSuperPath(d).to_path().to_arrays()
                 newPath = []
                 start = prev = None
@@ -117,7 +117,7 @@ class RemoveRedundant(inkex.EffectExtension):
                         newPath.append([command, coords])
                 while len(newPath) and newPath[-1][0] == 'M':
                     newPath = newPath[:-1]
-                node.set('d',str(paths.Path(newPath)))
+                element.set('d',str(paths.Path(newPath)))
 
 if __name__ == '__main__':
     RemoveRedundant().run()

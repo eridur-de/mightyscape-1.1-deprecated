@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # coding=utf-8
 #
 # Copyright (C) 2005,2007 Aaron Spike, aaron@ekips.org
@@ -76,7 +76,7 @@ class LinksCreator(inkex.EffectExtension):
                 if raw[i][0] == 'M' and i != 0:
                     subPaths.append(raw[prev:i])
                     prev = i
-            subPaths.append(raw[prev:])  
+            subPaths.append(raw[prev:])
             for subpath in subPaths:
                 replacedNode = copy.copy(node)
                 oldId = replacedNode.get('id')
@@ -139,7 +139,7 @@ class LinksCreator(inkex.EffectExtension):
                 if self.options.switch_pattern is True:
                     dashes = dashes[::-1] #reverse the array
                     
-                #validate dashes. May not be negative. Otherwise Inkscape will freeze forever. Reason: rendering issue
+                #validate dashes. May not be negative (dash or gap cannot be longer than the path itself). Otherwise Inkscape will freeze forever. Reason: rendering issue
                 if any(dash <= 0.0 for dash in dashes) == True: 
                     if self.options.show_info is True: self.msg("node " + node.get('id') + ": Error! Dash array may not contain negative numbers: " + ' '.join(format(dash, "1.3f") for dash in dashes) + ". Path skipped. Maybe it's too short. Adjust your link count, multiplicator and length accordingly, or set to unit '%'")
                     return False if self.options.skip_errors is True else exit(1)
@@ -267,11 +267,10 @@ class LinksCreator(inkex.EffectExtension):
                         dash = dash - length
                         length = bezier.cspseglength(new[-1][-1], sub[i])
                         while dash < length:
-                            new[-1][-1], nxt, sub[i] = \
-                                bezier.cspbezsplitatlength(new[-1][-1], sub[i], dash/length)
-                            if idash % 2:           # create a gap
+                            new[-1][-1], nxt, sub[i] = bezier.cspbezsplitatlength(new[-1][-1], sub[i], dash/length)
+                            if idash % 2: # create a gap
                                 new.append([nxt[:]])
-                            else:                   # splice the curve
+                            else:  # splice the curve
                                 new[-1].append(nxt[:])
                             length = length - dash
                             idash = (idash + 1) % len(dashes)
@@ -283,22 +282,44 @@ class LinksCreator(inkex.EffectExtension):
                         i += 1
                 style.pop('stroke-dasharray')
                 node.pop('sodipodi:type')
+                csp = CubicSuperPath(new)
                 node.path = CubicSuperPath(new)
                 node.style = style
                 
                 # break apart the combined path to have multiple elements
                 if self.options.breakapart is True:
-                    breakOutputNodes = self.breakContours(node)
+                    breakOutputNodes = None
+                    breakOutputNodes = self.breakContours(node, breakOutputNodes)
                     breakApartGroup = nodeParent.add(inkex.Group())
                     for breakOutputNode in breakOutputNodes:
                         breakApartGroup.append(breakOutputNode)
                         #self.msg(replacedNode.get('id'))
                         #self.svg.selection.set(replacedNode.get('id')) #update selection to split paths segments (does not work, so commented out)
-                
+
+                        #cleanup useless points
+                        p = breakOutputNode.path
+                        commandsCoords = p.to_arrays()
+                        # "m 45.250809,91.692739" - this path contains onyl one command - a single point
+                        if len(commandsCoords) == 1:
+                            breakOutputNode.delete()
+                        # "m 45.250809,91.692739 z"  - this path contains two commands, but only one coordinate. 
+                        # It's a single point, the path is closed by a Z command
+                        elif len(commandsCoords) == 2 and commandsCoords[0][1] == commandsCoords[1][1]:
+                            breakOutputNode.delete()
+                        # "m 45.250809,91.692739 l 45.250809,91.692739" - this path contains two commands, 
+                        # but the first and second coordinate are the same. It will render als point
+                        elif len(commandsCoords) == 2 and commandsCoords[-1][0] == 'Z':
+                            breakOutputNode.delete()
+                        # "m 45.250809,91.692739 l 45.250809,91.692739 z" - this path contains three commands, 
+                        # but the first and second coordinate are the same. It will render als point, the path is closed by a Z command
+                        elif len(commandsCoords) == 3 and commandsCoords[0][1] == commandsCoords[1][1] and commandsCoords[2][1] == 'Z':
+                            breakOutputNode.delete()
+                        
         if len(self.svg.selected) > 0:
             for node in self.svg.selection.values():
                 #at first we need to break down combined nodes to single path, otherwise dasharray cannot properly be applied
-                breakInputNodes = self.breakContours(node)
+                breakInputNodes = None
+                breakInputNodes = self.breakContours(node, breakInputNodes)
                 for breakInputNode in breakInputNodes:
                     createLinks(breakInputNode)
         else:
