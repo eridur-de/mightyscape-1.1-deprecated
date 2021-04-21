@@ -1,5 +1,17 @@
 #!/usr/bin/env python3
 
+'''
+Extension for InkScape 1.0
+Features
+- Filter paths which are smaller than a given length or area
+
+Author: Mario Voigt / FabLab Chemnitz
+Mail: mario.voigt@stadtfabrikanten.org
+Date: 03.08.2020
+Last patch: 20.04.2021
+License: GNU GPL v3
+'''
+
 import inkex
 from inkex.bezier import csplength, csparea
 
