@@ -7,7 +7,7 @@
             <label appearance="header">Warning!</label>
             <label>Do not use "-inkscape-stroke:hairline" attribute for your paths. It will not render. Your page might be blank!</label>
             <spacer/>
-            <param name="time" type="float" min="0.000" max="9999999.999" precision="3" gui-text="Duration (seconds)">5.0</param>
+            <param name="time" type="float" min="0.000" max="9999999.999" precision="3" gui-text="Duration (frames)">5.0</param>
             <param name="fps" type="int" min="1" max="100" gui-text="Frame per second (fps)">60</param>
             <param name="sequence_type" type="optiongroup" appearance="combo" gui-text="Sequence type">
                 <option value="oneByOne">Line by line (one by one)</option>
@@ -16,7 +16,7 @@
             <param name="reverse" type="bool" gui-text="Reverse order">false</param>
             <param name="browser" type="optiongroup" appearance="combo" gui-text="Browser" gui-description="Select your desired browser (must be installed and must exist in %PATH% variable).">
                 <option value="chromium">Chromium</option>
-                <option value="chrome">Chrome</option>
+                <option value="chrome">Google Chrome</option>
                 <option value="firefox">Firefox</option>
             </param>
         </page>

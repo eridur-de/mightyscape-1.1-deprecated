@@ -32,7 +32,7 @@ class AnimateOrder (inkex.EffectExtension):
 
     def add_arguments(self, pars):
         pars.add_argument("--tab")
-        pars.add_argument("--time", type=float, default = 5.0, help="Duration (seconds)")
+        pars.add_argument("--time", type=float, default = 5.0, help="Duration (frames)")
         pars.add_argument("--fps", type=int, default = 60.0, help="Frames per second (fps)")
         pars.add_argument("--sequence_type", help="Sequence type")
         pars.add_argument("--reverse", type = inkex.Boolean, default = False, help="Reverse order")
