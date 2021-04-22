@@ -4,6 +4,7 @@
     <id>fablabchemnitz.de.vpype_multipass</id>
 	<param name="tab" type="notebook">
 		<page name="tab_settings_multipass" gui-text="vpypetools Multipass">
+            <image>vpype_logo.svg</image>		
 			<label>Add multiple passes to each line. Each line is extended with a mirrored copy of itself, optionally multiple times. This is useful for pens that need several passes to ensure a good quality.</label>
 			<param name="multipass" type="bool" gui-hidden="true">true</param>	
 			<param name="multipass_count" type="int" min="2" max="9999" gui-text="count" gui-description="How many passes for each line (default 2)">2</param>

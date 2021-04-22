@@ -4,9 +4,10 @@
     <id>fablabchemnitz.de.vpype_linesorting</id>
 	<param name="tab" type="notebook">
 		<page name="tab_settings_linesort" gui-text="vpypetools Line Sorting">
-		<label>Sort lines to minimize travel distances.</label>
-		<param name="linesort" type="bool" gui-hidden="true">true</param>
-		<param name="linesort_no_flip" type="bool" gui-text="Disable flipping" gui-description="Disable reversing stroke direction for optimization '--no-flip'">false</param>
+            <image>vpype_logo.svg</image>		
+			<label>Sort lines to minimize travel distances.</label>
+			<param name="linesort" type="bool" gui-hidden="true">true</param>
+			<param name="linesort_no_flip" type="bool" gui-text="Disable flipping" gui-description="Disable reversing stroke direction for optimization '--no-flip'">false</param>
 		</page>
 		<page name="tab_settings_general" gui-text="General Settings">
 			<label appearance="header">Preprocessing</label>

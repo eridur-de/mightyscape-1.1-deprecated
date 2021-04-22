@@ -4,6 +4,7 @@
     <id>fablabchemnitz.de.vpype_relooping</id>
 	<param name="tab" type="notebook">
 		<page name="tab_settings_relooping" gui-text="vpypetools Relooping">
+            <image>vpype_logo.svg</image>		
 			<label>Randomize the seam location of closed paths.</label>
 			<param name="reloop" type="bool" gui-hidden="true">true</param>	
 			<param name="reloop_tolerance" type="float" min="0.000"  max="99999.000" precision="3" gui-text="tolerance (mm)" gui-description="Controls how close the path beginning and end must be to consider it closed (default 0.500 mm)">0.500</param>   

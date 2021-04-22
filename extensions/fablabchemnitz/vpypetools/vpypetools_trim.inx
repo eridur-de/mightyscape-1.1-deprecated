@@ -4,6 +4,7 @@
     <id>fablabchemnitz.de.vpype_trimming</id>
 	<param name="tab" type="notebook">
 		<page name="tab_settings_trimming" gui-text="vpypetools Trimming">
+            <image>vpype_logo.svg</image>
 			<label>This command trims the geometries by the provided X and Y margins with respect to the current bounding box.</label>
 			<param name="trim" type="bool" gui-hidden="true">true</param>	
 			<param name="trim_x_margin" type="float" min="0.000"  max="99999.000" precision="3" gui-text="Trim margin - x direction (mm)">0.000</param>

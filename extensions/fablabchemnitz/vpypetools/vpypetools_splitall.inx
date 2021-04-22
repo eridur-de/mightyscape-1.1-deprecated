@@ -4,6 +4,7 @@
     <id>fablabchemnitz.de.vpype_splitall</id>
 	<param name="tab" type="notebook">
 		<page name="tab_settings_splitall" gui-text="vpypetools Split All (Break Paths)">
+            <image>vpype_logo.svg</image>		
 			<label>Split all paths into their constituent segments. This command may be used together with linemerge for cases such as densely-connected meshes where the latter cannot optimize well enough by itself. This command will filter out segments with identical end-points. Note that since some paths (especially curved ones) can be made of a large number of segments, this command may significantly increase the processing time of the pipeline.</label>
 			<param name="splitall" type="bool" gui-hidden="true">true</param>	
 		</page>

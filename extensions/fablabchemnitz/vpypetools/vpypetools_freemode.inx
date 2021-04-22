@@ -4,6 +4,7 @@
     <id>fablabchemnitz.de.vpype_free_mode</id>
 	<param name="tab" type="notebook">
 		<page name="tab_settings_freemode" gui-text="vpypetools Free Mode Entries">
+            <image>vpype_logo.svg</image>		
 			<label>Enter your desired command pipes and enable/disable as much fields as you like.</label>
 		 	<param name="freemode" type="bool" gui-hidden="true">true</param>
 		 	<param name="freemode_cmd1" type="string" appearance="multiline" gui-text="Command Set 1">layout 1024x768 translate 150px 50px</param>
