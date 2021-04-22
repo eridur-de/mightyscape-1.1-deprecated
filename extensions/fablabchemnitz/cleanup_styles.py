@@ -164,7 +164,14 @@ class Cleanup(inkex.EffectExtension):
                                 declarations[i] = prop + ':' + new_val
                         if prop == 'fill-opacity':
                                 new_val = '1'
-                                declarations[i] = prop + ':' + new_val         
+                                declarations[i] = prop + ':' + new_val
+                    if self.options.apply_hairlines is False:
+                        if prop == '-inkscape-stroke':
+                            if val == 'hairline':
+                                del declarations[i]
+                        if prop == 'vector-effect':
+                            if val == 'non-scaling-stroke':
+                                del declarations[i]
             node.set('style', ';'.join(declarations))
             
         # if element is group we add it to collection to remove it's style after parsing all selected items
