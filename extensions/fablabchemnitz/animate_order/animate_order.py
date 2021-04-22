@@ -25,6 +25,8 @@ Firefox via about:config -> privacy.file_unique_origin = false
 ToDo:
  - adjust width and height (give options)
  - embed config buttons inside html to adjust time/type/... (more flexible than clicking from Inkscape)
+    - we should do it the way like vivus instant -> http://maxwellito.github.io/vivus / https://maxwellito.github.io/vivus-instant
+    - the generated SVGs can be downloaded again and include all animations!
  - calculate the total length of all paths and auto-adjust the speed to have good visibility
 """
 
