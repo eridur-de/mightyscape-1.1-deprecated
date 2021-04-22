@@ -124,13 +124,16 @@ class Imagetracerjs (inkex.EffectExtension):
                     command += " desc "              + str(self.options.desc).lower()
                     command += " blurradius "        + str(self.options.blurradius)   
                     command += " blurdelta "         + str(self.options.blurdelta)  
-                     
-                    #inkex.utils.debug(command)
-                    
+
                     # Create the vector traced SVG file
                     with os.popen(command, "r") as tracerprocess:
                         result = tracerprocess.read()
-                        #inkex.utils.debug(result)
+                        if result != "imagetracerjs.png.svg was saved!\n":
+                            self.msg("Error while processing input: " + result)
+                            self.msg("Check the image file (maybe convert and save as new file) and try again.")
+                            self.msg("\nYour parser command:")
+                            self.msg(command)
+    
 
                     # proceed if traced SVG file was successfully created
                     if os.path.exists(exportfile + ".svg"):
@@ -166,7 +169,7 @@ class Imagetracerjs (inkex.EffectExtension):
                     if self.options.keeporiginal is not True:
                         node.delete()                 
         else:
-            inkex.utils.debug("No image found for tracing. Please select an image first.")        
+            self.msg("No image found for tracing. Please select an image first.")        
 
 if __name__ == '__main__':
     Imagetracerjs().run()
