@@ -1,14 +1,26 @@
 #!/usr/bin/env python3
 
+"""
+Based on 
+- https://github.com/TimeTravel-0/ofsplot
+
+Author: Mario Voigt / FabLab Chemnitz
+Mail: mario.voigt@stadtfabrikanten.org
+Last Patch: 22.04.2021
+License: GNU GPL v3
+
+"""
+
 import inkex
 import math
 from inkex.paths import CubicSuperPath
 import re
 import pyclipper
 
-class ofsplot(inkex.EffectExtension):
+class OffsetPaths(inkex.EffectExtension):
     
     def add_arguments(self, pars):
+        pars.add_argument('--tab')
         pars.add_argument('--unit')
         pars.add_argument("--offset_count", type=int, default=1, help="Number of offset paths")
         pars.add_argument("--offset", type=float, default=1.000, help="Offset amount")
@@ -18,10 +30,10 @@ class ofsplot(inkex.EffectExtension):
         pars.add_argument("--jointype", default="2", help="Join type")
         pars.add_argument("--endtype", default="3", help="End type")
         pars.add_argument("--miterlimit", type=float, default=3.0, help="Miter limit")
-        pars.add_argument("--clipperscale", type=float, default=1024.0, help="Scaling factor")
+        pars.add_argument("--clipperscale", type=int, default=1024, help="Scaling factor. Should be a multiplicator of 2, like 2^4=16 or 2^10=1024. The higher the scale factor the higher the quality.")
         
     def effect(self):
-        unit_factor = 1.0 / self.svg.uutounit(1.0,self.options.unit)
+        unit_factor = 1.0 / self.svg.uutounit(1.0, self.options.unit)
         paths = self.svg.selection.filter(inkex.PathElement).values()
         count = sum(1 for path in paths)
         paths = self.svg.selection.filter(inkex.PathElement).values() #we need to call this twice because the sum function consumes the generator
@@ -95,7 +107,7 @@ class ofsplot(inkex.EffectExtension):
                     for sub in p:
                         new.append(sub)
 
-                path.set('d',CubicSuperPath(new))
+                path.set('d', CubicSuperPath(new))
 
 if __name__ == '__main__':
-    ofsplot().run()
+    OffsetPaths().run()
