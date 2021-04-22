@@ -424,14 +424,18 @@ class vpypetools (inkex.EffectExtension):
                     lineLayer.attrib.pop('fill') # remove unneccesary fill attribute
 
         import_viewBox = import_doc.getroot().get('viewBox').split(" ")
-        self_viewBox = self.document.getroot().get('viewBox').split(" ")
-        scaleX = self.svg.unittouu(self_viewBox[2]) / self.svg.unittouu(import_viewBox[2])
-        scaleY = self.svg.unittouu(self_viewBox[3]) / self.svg.unittouu(import_viewBox[3])
+        self_viewBox = self.document.getroot().get('viewBox')
+        
+        if self_viewBox is not None: #some SVG files do not have this attribute
+            self_viewBoxValues = self_viewBox.split(" ")
+            scaleX = self.svg.unittouu(self_viewBoxValues[2]) / self.svg.unittouu(import_viewBox[2])
+            scaleY = self.svg.unittouu(self_viewBoxValues[3]) / self.svg.unittouu(import_viewBox[3])
 
         for element in import_doc.getroot().iter("{http://www.w3.org/2000/svg}g"):
             self.document.getroot().append(element)
             if self.options.input_handling == "layers":
-                element.set('transform', 'scale(' + str(scaleX) + ',' + str(scaleY) + ')') #imported groups need to be transformed. Or they have wrong size. Reason: different viewBox sizes/units in namedview definitions
+                if self_viewBox is not None:
+                    element.set('transform', 'scale(' + str(scaleX) + ',' + str(scaleY) + ')') #imported groups need to be transformed. Or they have wrong size. Reason: different viewBox sizes/units in namedview definitions
                 if self.options.apply_transformations is True and applyTransformAvailable is True: #we apply the transforms directly after adding them
                     applytransform.ApplyTransform().recursiveFuseTransform(element) 
 
