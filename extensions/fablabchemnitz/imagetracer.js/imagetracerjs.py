@@ -17,16 +17,23 @@ Features
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 18.08.2020
-Last patch: 18.08.2020
+Last patch: 23.04.2021
 License: GNU GPL v3
 
 Used version of imagetracerjs: https://github.com/jankovicsandras/imagetracerjs/commit/4d0f429efbb936db1a43db80815007a2cb113b34
+
+ToDo:
+    - fix resizing if one or all of the following sizes are zero:
+    img_w = image.get('width')
+    img_h = image.get('height')
+    img_x = image.get('x')
+    img_y = image.get('y')
 """
 
 class Imagetracerjs (inkex.EffectExtension):
 
-    def checkImagePath(self, node):
-        xlink = node.get('xlink:href')
+    def checkImagePath(self, element):
+        xlink = element.get('xlink:href')
         if xlink and xlink[:5] == 'data:':
             # No need, data alread embedded
             return
@@ -39,7 +46,7 @@ class Imagetracerjs (inkex.EffectExtension):
 
         # Backup directory where we can find the image
         if not os.path.isfile(path):
-            path = node.get('sodipodi:absref', path)
+            path = element.get('sodipodi:absref', path)
 
         if not os.path.isfile(path):
             inkex.errormsg('File not found "{}". Unable to embed image.').format(path)
@@ -70,32 +77,33 @@ class Imagetracerjs (inkex.EffectExtension):
         pars.add_argument("--blurdelta", type=float, default=20.0, help="RGBA delta treshold for selective Gaussian blur preprocessing")
   
     def effect(self):
-    
+                            
         # internal overwrite for scale:
         self.options.scale = 1.0
     
-        if (self.options.ids):
-            for node in self.svg.selected.values():
-                if node.tag == inkex.addNS('image', 'svg'):
-                    self.path = self.checkImagePath(node)  # This also ensures the file exists
+        if len(self.svg.selected) > 0:
+            images = self.svg.selection.filter(inkex.Image).values()
+            if len(images) > 0:
+                for image in images:
+                    self.path = self.checkImagePath(image)  # This also ensures the file exists
                     if self.path is None:  # check if image is embedded or linked
-                        image_string = node.get('{http://www.w3.org/1999/xlink}href')
+                        image_string = image.get('{http://www.w3.org/1999/xlink}href')
                         # find comma position
                         i = 0
                         while i < 40:
                             if image_string[i] == ',':
                                 break
                             i = i + 1
-                        image = Image.open(BytesIO(base64.b64decode(image_string[i + 1:len(image_string)])))
+                        img = Image.open(BytesIO(base64.b64decode(image_string[i + 1:len(image_string)])))
                     else:
-                        image = Image.open(self.path)
+                        img = Image.open(self.path)
                     
                     # Write the embedded or linked image to temporary directory
                     if os.name == "nt":
                          exportfile = "imagetracerjs.png"
                     else:
                          exportfile ="/tmp/imagetracerjs.png"
-                    image.save(exportfile, "png")
+                    img.save(exportfile, "png")
            
                     nodeclipath = os.path.join("imagetracerjs-master", "nodecli", "nodecli.js")
                     
@@ -124,17 +132,17 @@ class Imagetracerjs (inkex.EffectExtension):
                     command += " desc "              + str(self.options.desc).lower()
                     command += " blurradius "        + str(self.options.blurradius)   
                     command += " blurdelta "         + str(self.options.blurdelta)  
-
+    
                     # Create the vector traced SVG file
                     with os.popen(command, "r") as tracerprocess:
                         result = tracerprocess.read()
-                        if result != "imagetracerjs.png.svg was saved!\n":
+                        if "was saved!" not in result:
                             self.msg("Error while processing input: " + result)
                             self.msg("Check the image file (maybe convert and save as new file) and try again.")
                             self.msg("\nYour parser command:")
                             self.msg(command)
     
-
+    
                     # proceed if traced SVG file was successfully created
                     if os.path.exists(exportfile + ".svg"):
                         # Delete the temporary png file again because we do not need it anymore
@@ -153,23 +161,31 @@ class Imagetracerjs (inkex.EffectExtension):
                             viewBox = doc.get('viewBox') #eg "0 0 700 600"
                             trace_width = viewBox.split(' ')[2]
                             trace_height = viewBox.split(' ')[3]
-                        newGroup.attrib['transform'] = "matrix(" + \
-                            str(float(node.get('width')) / float(trace_width)) + \
-                            ", 0, 0 , " + \
-                            str(float(node.get('height')) / float(trace_height)) + \
-                            "," + node.get('x') + \
-                            "," + node.get('y') + ")"
-                        newGroup.append(doc)
-
+                        
+                        img_w = image.get('width')
+                        img_h = image.get('height')
+                        img_x = image.get('x')
+                        img_y = image.get('y')
+                               
+                        if img_w is not None and img_h is not None and img_x is not None and img_y is not None:
+                            transform = "matrix({:1.6f}, 0, 0, {:1.6f}, {:1.6f}, {:1.6f})"\
+                            .format(float(img_w) / float(trace_width), float(img_h) / float(trace_height), float(img_x), float(img_y))
+                            newGroup.attrib['transform'] = transform
+           
+                        for child in doc.getchildren():
+                            newGroup.append(child)
+    
                         # Delete the temporary svg file
                         if os.path.exists(exportfile + ".svg"):
                             os.remove(exportfile + ".svg")
                     
                     #remove the old image or not                    
                     if self.options.keeporiginal is not True:
-                        node.delete()                 
+                        image.delete()
+            else:
+                self.msg("No images found in selection! Check if you selected a group instead.")      
         else:
-            self.msg("No image found for tracing. Please select an image first.")        
+            self.msg("Selection is empty. Please select one or more images.")  
 
 if __name__ == '__main__':
     Imagetracerjs().run()
