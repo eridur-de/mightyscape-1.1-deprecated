@@ -17,17 +17,11 @@ Features
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 18.08.2020
-Last patch: 23.04.2021
+Last patch: 24.04.2021
 License: GNU GPL v3
 
 Used version of imagetracerjs: https://github.com/jankovicsandras/imagetracerjs/commit/4d0f429efbb936db1a43db80815007a2cb113b34
 
-ToDo:
-    - fix resizing if one or all of the following sizes are zero:
-    img_w = image.get('width')
-    img_h = image.get('height')
-    img_x = image.get('x')
-    img_y = image.get('y')
 """
 
 class Imagetracerjs (inkex.EffectExtension):
@@ -162,12 +156,21 @@ class Imagetracerjs (inkex.EffectExtension):
                             trace_width = viewBox.split(' ')[2]
                             trace_height = viewBox.split(' ')[3]
                         
+                        # add transformation to fit previous XY coordinates and width/height
                         img_w = image.get('width')
                         img_h = image.get('height')
                         img_x = image.get('x')
                         img_y = image.get('y')
-                               
                         if img_w is not None and img_h is not None and img_x is not None and img_y is not None:
+                            transform = "matrix({:1.6f}, 0, 0, {:1.6f}, {:1.6f}, {:1.6f})"\
+                            .format(float(img_w) / float(trace_width), float(img_h) / float(trace_height), float(img_x), float(img_y))
+                            newGroup.attrib['transform'] = transform
+                        else:
+                            t = image.composed_transform()
+                            img_w = t.a
+                            img_h = t.d 
+                            img_x = t.e
+                            img_y = t.f
                             transform = "matrix({:1.6f}, 0, 0, {:1.6f}, {:1.6f}, {:1.6f})"\
                             .format(float(img_w) / float(trace_width), float(img_h) / float(trace_height), float(img_x), float(img_y))
                             newGroup.attrib['transform'] = transform
