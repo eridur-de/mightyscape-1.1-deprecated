@@ -3,12 +3,13 @@ import sys
 import os
 import inkex
 import tempfile
+import shutil
 
 import subprocess
 from subprocess import Popen, PIPE
 from lxml import etree
 
-#specific imports for model-converter-python
+#specific imports for model-converter-python - d3 library to convert obj/off/ply to stl (https://github.com/nabeel3133/file-converter-.obj-to-.ply)
 import functools as fc
 import d3.model.tools as mt
 from d3.model.basemodel import Vector
@@ -16,12 +17,10 @@ from d3.model.basemodel import Vector
 """
 Extension for InkScape 1.0
 
-Import any DWG or DXF file using ODA File Converter, sk1 UniConvertor, ezdxf and more tools.
-
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 08.09.2020
-Last patch: 13.09.2020
+Last patch: 25.04.2021
 License: GNU GPL v3
 
 This tool converts a STL/OFF/PLY/OBJ into binary STL Format. The STL then gets unfolded (flattened) to make a papercraft model.
@@ -110,8 +109,13 @@ class Unfold(inkex.EffectExtension):
         if os.path.exists(converted_inputfile):
               os.remove(converted_inputfile) #remove previously generated conversion file
         up_conversion = None
-        with open(converted_inputfile, 'w') as f:
-            f.write(mt.convert(inputfile, converted_inputfile, up_conversion))
+        
+        try:
+            with open(converted_inputfile, 'w') as f:
+                f.write(mt.convert(inputfile, converted_inputfile, up_conversion))
+        except UnicodeDecodeError as e: #conversion failed. Maybe it was a binary STL. Skipping and regular copy
+            shutil.copy2(inputfile, converted_inputfile)
+
 
         # Run ADMesh mesh fixer to overwrite the STL with fixed output and binary file format for osresearch/papercraft
         if os.name=="nt":
