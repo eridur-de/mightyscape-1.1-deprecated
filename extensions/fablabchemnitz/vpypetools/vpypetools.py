@@ -30,7 +30,7 @@ Extension for InkScape 1.X
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 02.04.2021
-Last patch: 08.04.2021
+Last patch: 24.04.2021
 License: GNU GPL v3
 
 This piece of spaghetti-code, called "vpypetools", is a wrapper to pass (pipe) line elements from InkScape selection (or complete canvas) to vpype. 
@@ -180,7 +180,7 @@ class vpypetools (inkex.EffectExtension):
                     for csp in subPath:
                         if len(csp[1]) > 0: #we need exactly two points per straight line segment
                             points.append(Point(round(csp[1][0], self.options.decimals), round(csp[1][1], self.options.decimals)))
-                    if  subPath[-1][0] == 'Z' or subPath[0][1] == subPath[-1][1]:  #check if path is closed by Z or first pont == last point
+                    if  len(subPath) > 2 and (subPath[-1][0] == 'Z' or subPath[0][1] == subPath[-1][1]):  #check if path has more than 2 points and is closed by Z or first pont == last point
                         points.append(Point(round(subPath[0][1][0], self.options.decimals), round(subPath[0][1][1], self.options.decimals))) #if closed, we add the first point again
                     lc.append(LineString(points))
                       
@@ -365,7 +365,7 @@ class vpypetools (inkex.EffectExtension):
         
         # convert vpype polylines/lines/polygons to regular paths again. We need to use "--with-gui" to respond to "WARNING: ignoring verb FileSave - GUI required for this verb."
         if self.options.strokes_to_paths is True:
-            cli_output = inkscape(output_file, "--with-gui", actions="EditSelectAllInAllLayers;EditUnlinkClone;ObjectToPath;FileSave;FileQuit")
+            cli_output = inkscape(output_file, "--with-gui", actions="EditSelectAllInAllLayers;EditUnlinkClone;ObjectToPath;FileSave;FileQuit") #we do not use StrokeToPath because it will convert svg:line to a svg:path, but as closed path with four points
             if len(cli_output) > 0:
                 self.debug(_("Inkscape returned the following output when trying to run the vpype object to path back-conversion:"))
                 self.debug(cli_output)
@@ -436,7 +436,7 @@ class vpypetools (inkex.EffectExtension):
             if self.options.input_handling == "layers":
                 if self_viewBox is not None:
                     element.set('transform', 'scale(' + str(scaleX) + ',' + str(scaleY) + ')') #imported groups need to be transformed. Or they have wrong size. Reason: different viewBox sizes/units in namedview definitions
-                if self.options.apply_transformations is True and applyTransformAvailable is True: #we apply the transforms directly after adding them
+                if self.options.apply_transformations is True and applyTransformAvailable is True and self.options.strokes_to_paths is True: #we apply the transforms directly after adding them, but we need to have strokes_to_paths enabled!
                     applytransform.ApplyTransform().recursiveFuseTransform(element) 
 
         # Delete the temporary file again because we do not need it anymore

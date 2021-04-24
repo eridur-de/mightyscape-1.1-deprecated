@@ -23,7 +23,7 @@ class StylesToLayers(inkex.EffectExtension):
     def findLayer(self, layerName):
         svg_layers = self.document.xpath('//svg:g[@inkscape:groupmode="layer"]', namespaces=inkex.NSS)
         for layer in svg_layers:
-            #inkex.utils.debug(str(layer.get('inkscape:label')) + " == " + layerName)
+            #self.msg(str(layer.get('inkscape:label')) + " == " + layerName)
             if layer.get('inkscape:label') == layerName:
                 return layer
         return None
@@ -31,7 +31,7 @@ class StylesToLayers(inkex.EffectExtension):
     def createLayer(self, layerNodeList, layerName):
         svg = self.document.xpath('//svg:svg',namespaces=inkex.NSS)[0]
         for layer in layerNodeList:
-            #inkex.utils.debug(str(layer[0].get('inkscape:label')) + " == " + layerName)
+            #self.msg(str(layer[0].get('inkscape:label')) + " == " + layerName)
             if layer[0].get('inkscape:label') == layerName:
                 return layer[0] #already exists. Do not create duplicate
         layer = etree.SubElement(svg, 'g')
@@ -68,8 +68,8 @@ class StylesToLayers(inkex.EffectExtension):
             import applytransform
             applyTransformAvailable = True
         except Exception as e:
-            # inkex.utils.debug(e)
-            inkex.utils.debug("Calling 'Apply Transformations' extension failed. Maybe the extension is not installed. You can download it from official InkScape Gallery. Skipping ...")
+            # self.msg(e)
+            self.msg("Calling 'Apply Transformations' extension failed. Maybe the extension is not installed. You can download it from official InkScape Gallery. Skipping ...")
              
         layer_name = None
         layerNodeList = [] #list with layer, neutral_value, element and self.options.separateby type
@@ -175,12 +175,11 @@ class StylesToLayers(inkex.EffectExtension):
                                 layer_name = "fill-opacity-none"
                                 
                         else:
-                            inkex.utils.debug("No proper option selected.")
+                            self.msg("No proper option selected.")
                             exit(1)
-                            
+                                                       
                         if neutral_value is not None: #apply decimals filter
                             neutral_value = float(round(neutral_value, self.options.decimals))
-                        
                         if layer_name is not None:
                             layer_name = layer_name.split(";")[0] #cut off existing semicolons to avoid duplicated layers with/without semicolon
                             currentLayer = self.findLayer(layer_name)
@@ -188,13 +187,16 @@ class StylesToLayers(inkex.EffectExtension):
                                 layerNodeList.append([self.createLayer(layerNodeList, layer_name), neutral_value, element, self.options.separateby])
                             else:
                                 layerNodeList.append([currentLayer, neutral_value, element, self.options.separateby]) #layer is existent. append items to this later
+                        elif layer_name is None and self.options.put_unfiltered:
+                            layer_name = 'without-' + self.options.separateby + '-in-style-attribute'
                 else: #if no style attribute in element and not a group
                     if isinstance(element, inkex.Group) is False:
                         if self.options.show_info:
-                            inkex.utils.debug(element.get('id') + ' has no style attribute')
+                            self.msg(element.get('id') + ' has no style attribute')
                         if self.options.put_unfiltered:
                                 layer_name = 'without-style-attribute'
                                 currentLayer = self.findLayer(layer_name)
+
                                 if currentLayer is None: #layer does not exist, so create a new one
                                     layerNodeList.append([self.createLayer(layerNodeList, layer_name), None, element, None])
                                 else:
@@ -235,11 +237,11 @@ class StylesToLayers(inkex.EffectExtension):
                 maxval = max(minmax_range)
                 sliceinterval = (maxval - minval) / self.options.subdividethreshold
         
-                #inkex.utils.debug("neutral values (sorted) = " + str(minmax_range))
-                #inkex.utils.debug("min neutral_value = " + str(minval))
-                #inkex.utils.debug("max neutral_value = " + str(maxval))
-                #inkex.utils.debug("slice value (divide step size) = " + str(sliceinterval))
-                #inkex.utils.debug("subdivides (parent layers) = " + str(self.options.subdividethreshold))
+                #self.msg("neutral values (sorted) = " + str(minmax_range))
+                #self.msg("min neutral_value = " + str(minval))
+                #self.msg("max neutral_value = " + str(maxval))
+                #self.msg("slice value (divide step size) = " + str(sliceinterval))
+                #self.msg("subdivides (parent layers) = " + str(self.options.subdividethreshold))
              
                 for layerNode in layerNodeList:
                     for x in range(0, self.options.subdividethreshold): #loop through the sorted neutral_values and determine to which layer they should belong
@@ -276,8 +278,8 @@ class StylesToLayers(inkex.EffectExtension):
                             
                 #finally append the sublayers to the slices
                 #for layer in topLevelLayerNodeList:
-                    #inkex.utils.debug(layer[0].get('inkscape:label'))
-                    #inkex.utils.debug(layer[1])
+                    #self.msg(layer[0].get('inkscape:label'))
+                    #self.msg(layer[1])
                 for newLayerNode in topLevelLayerNodeList:            
                     newLayerNode[0].append(newLayerNode[1]) #append newlayer to layer     
         
@@ -286,7 +288,7 @@ class StylesToLayers(inkex.EffectExtension):
                 import cleangroups
                 cleangroups.CleanGroups.effect(self)
             except:
-                inkex.utils.debug("Calling 'Remove Empty Groups' extension failed. Maybe the extension is not installed. You can download it from official InkScape Gallery. Skipping ...")
+                self.msg("Calling 'Remove Empty Groups' extension failed. Maybe the extension is not installed. You can download it from official InkScape Gallery. Skipping ...")
             
 if __name__ == '__main__':
     StylesToLayers().run()

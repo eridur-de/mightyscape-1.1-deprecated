@@ -150,9 +150,9 @@ class Polyhedra(inkex.EffectExtension):
         gsub_attribs = {inkex.addNS('label','inkscape'):'Polygon ' + str( poly ) + 'border' }
         gsub = etree.SubElement(g, 'g', gsub_attribs)
 
-        # Create SVG Path for gear
-        cutStyle = { 'stroke': '#0000FF', 'fill': 'none' }
-        perfStyle = { 'stroke': '#FF0000', 'fill': 'none' }
+        # Create SVG Path
+        cutStyle = { 'stroke': '#0000FF', 'stroke-width': '1px', 'fill': 'none' }
+        perfStyle = { 'stroke': '#FF0000', 'stroke-width': '1px', 'fill': 'none' }
         textStyle = {
               'font-size': str( size/4 ),
               'font-family': 'arial',
