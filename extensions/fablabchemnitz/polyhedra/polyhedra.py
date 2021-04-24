@@ -57,9 +57,10 @@ slotStyle = [{\
 class Polyhedra(inkex.EffectExtension):
     
     def add_arguments(self, pars):
-        pars.add_argument("-p", "--poly", default='Cube', help="polygon net to render")
-        pars.add_argument("-s", "--size", type=float, default=100.0, help="size of first edge, in px")
-        pars.add_argument("-t", "--tabs", type=int, default=0, help="tab style")
+        pars.add_argument("-p", "--poly", default='Cube', help="Polygon net to render")
+        pars.add_argument("-s", "--size", type=float, default=100.0, help="Size of first edge")
+        pars.add_argument("-u", "--unit", default= 'mm', help="Units")
+        pars.add_argument("-t", "--tabs", type=int, default=0, help="Tab style")
 
     def get_tab(self, limitAngle):
         return(self.get_connector('tab', limitAngle))
@@ -132,14 +133,13 @@ class Polyhedra(inkex.EffectExtension):
     
     def effect(self):
         poly = self.options.poly
-        size = self.options.size
+        size = self.svg.unittouu(str(self.options.size) + self.options.unit)
 
         eC = polyhedronData[poly]['edgeCoordinates']
         iEI = polyhedronData[poly]['insideEdgeIndices']
         oEI = polyhedronData[poly]['outsideEdgeIndices']
         oED = polyhedronData[poly]['outsideEdgeDegrees']
-        sidelen = sqrt((eC[oEI[0][0]-1][0] - eC[oEI[0][1]-1][0])**2 + \
-                    (eC[oEI[0][0]-1][1] - eC[oEI[0][1]-1][1])**2)
+        sidelen = sqrt((eC[oEI[0][0]-1][0] - eC[oEI[0][1]-1][0])**2 + (eC[oEI[0][0]-1][1] - eC[oEI[0][1]-1][1])**2)
         scale = size / sidelen
 
         #  Translate group, Rotate path.

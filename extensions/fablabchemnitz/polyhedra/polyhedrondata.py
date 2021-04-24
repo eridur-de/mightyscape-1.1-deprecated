@@ -16,7 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
-# net data produced with Mathematica using the notebook at http://jmantonfablab.googlecode.com/svn/trunk/papercuts/polyhedra/autonets/polydatagen.nb
+# net data produced with Mathematica using the notebook at https://github.com/vmario89/fablab-polyhedra/tree/master/autonets
 # angle overrides manually produced, with help from debugging mode on net generation that also outputs the vertex number of the outer edges of the nets.
 
 angleOverride = {\
