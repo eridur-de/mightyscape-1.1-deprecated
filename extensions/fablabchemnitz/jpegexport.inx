@@ -20,7 +20,7 @@ This extension requires that imagemagick is installed, more info and download at
         <object-type>all</object-type>
         <effects-menu>
             <submenu name="FabLab Chemnitz">
-				<submenu name="Import/Export/Transfer"/>
+				<submenu name="Legacy Tools"/>
 			</submenu>
         </effects-menu>
     </effect>
