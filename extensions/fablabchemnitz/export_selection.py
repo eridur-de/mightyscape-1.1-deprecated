@@ -79,6 +79,7 @@ class ExportObject(inkex.EffectExtension):
 		for elem in self.svg.selected.values():
 			elem_copy = deepcopy(elem)
 			elem_copy.attrib['transform'] = str(elem.composed_transform())
+			elem_copy.attrib['style'] = str(elem.composed_style())            
 			group.append(elem_copy)
 
 			template.attrib['viewBox'] = f'{-offset} {-offset} {bbox.width + offset * 2} {bbox.height + offset * 2}'
