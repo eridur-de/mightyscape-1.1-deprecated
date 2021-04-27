@@ -5,7 +5,7 @@
     <param name="tab" type="notebook">
         <page name="subdividePath" gui-text="Subdivide Path">
             <param name="maxLength" type="float" min="0.001" max="99999" gui-text="Max Length / Subdiv Count:">10</param>
-            <param name="unit" type="optiongroup" appearance="combo" default="mm" gui-text="Unit:">
+            <param name="unit" type="optiongroup" appearance="combo" gui-text="Unit:">
                 <option value="px">px</option>
                 <option value="pt">pt</option>
                 <option value="in">in</option>
@@ -14,12 +14,11 @@
                 <option value="perc">%</option>
                 <option value="count">Subdivision Count</option>
             </param>
-            <param name="precision" type="int" default="5" min="1" max="10" gui-text="Precision (max. 5):">5</param>
-            <param name="separateSegs" type="bool" default="True" gui-text="Break Apart"></param>
+            <param name="precision" type="int" min="1" max="10" gui-text="Precision (max. 5):">5</param>
+            <param name="separateSegs" type="bool" gui-text="Break Apart">true</param>
         </page>
         <page name="desc" gui-text="Help">
-            <param name="subdividePathhelp" type="description" xml:space="preserve">This effect subdivides the bezier path into individual segments based on the maximum length or the subdivision count provided. Precision field denotes the number of significant digits, to which the length is rounded.
-            </param>
+            <label xml:space="preserve">This effect subdivides the bezier path into individual segments based on the maximum length or the subdivision count provided. Precision field denotes the number of significant digits, to which the length is rounded.</label>
         </page>
     </param>
     <effect needs-live-preview="true">

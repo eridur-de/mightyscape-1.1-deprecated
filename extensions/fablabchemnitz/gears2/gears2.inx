@@ -19,7 +19,7 @@
     </page>
 
     <page name="Help" gui-text="Help">
-      <param name="help_text" type="description">
+      <label xml:space="preserve">
 Number of teeth: Exactly what it sounds like.
 
 Pressure angle: The angle in degrees of pressure between teeth in contact. The higher this is, the wider and more triangular the teeth will be. This can make them stronger but also less tolerant of manufacturing errors and misalignment. Common values are 14.5, 20 and 25.
@@ -32,7 +32,7 @@ Orientation: External or internal. (Probably external.)
 
 This extension is based on gearUtils-03.js by Dr A.R.Collins.
 Latest version:  www.arc.id.au/gearDrawing.html
-</param>
+</label>
     </page>
   </param>
   <effect needs-live-preview="true">

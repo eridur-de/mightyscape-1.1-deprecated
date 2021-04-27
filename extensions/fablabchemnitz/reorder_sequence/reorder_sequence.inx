@@ -4,7 +4,7 @@
     <id>fablabchemnitz.de.svg_reorder</id>
 <label appearance="header">AxiDraw Plot Optimization Tool</label>
 <label>This utility will re-order objects within each layer of your document, to reduce pen-up travel distance and time.</label>
-<param name="reordering" gui-text="Group Handling" type="optiongroup">
+<param name="reordering" gui-text="Group Handling" type="optiongroup" appearance="radio">
     <option value="2">Reorder within groups</option>
     <option value="1">Preserve groups</option>
     <option value="3">Break apart groups</option>

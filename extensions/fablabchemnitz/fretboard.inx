@@ -5,7 +5,7 @@
     <param name="scale" type="string" gui-text="Scalelenght:">25.00in</param>
     <param name="lnut" type="string" gui-text="Width at Nut:">43mm</param>
     <param name="l12" type="string" gui-text="Width at fret 12:">53mm</param>
-    <param name="numfret" type="int" min="1" max="36" _gui-text="Number of frets:">22</param>
+    <param name="numfret" type="int" min="1" max="36" gui-text="Number of frets:">22</param>
     <param name="fbext" type="string" gui-text="Extension below last fret:">8mm</param>
     <param name="fretwidth" type="string" gui-text="Fret Width:">2mm</param>
     <effect>

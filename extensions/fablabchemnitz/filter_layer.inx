@@ -2,12 +2,12 @@
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
     <name>Filter To Layer</name>
     <id>fablabchemnitz.de.filter_layer</id>
-    <param name="type" type="optiongroup" gui-text="Filter to current layer:">
+    <param name="type" type="optiongroup" appearance="radio" gui-text="Filter to current layer:">
         <option>Add</option>
         <option>Remove</option>
     </param>
-    <param name="help-info" type="description">Filter from selected item: Apply only for the future draws and for selected item. Problem: you can't add more live effects to elements.</param>
-    <effect needs-document="no">
+    <label>Filter from selected item: Apply only for the future draws and for selected item. Problem: you can't add more live effects to elements.</label>
+    <effect needs-document="true">
         <object-type>all</object-type>
         <effects-menu>
             <submenu name="FabLab Chemnitz">

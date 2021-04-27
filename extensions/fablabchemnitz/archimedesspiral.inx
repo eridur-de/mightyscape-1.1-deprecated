@@ -4,7 +4,7 @@
    <id>fablabchemnitz.de.archimedesspiral</id>
     <param name="tab" type="notebook">
         <page name="tab_settings" gui-text="Settings">
-           <param name="name" appearance="header" type="description">R = r + aθ</param>
+           <label appearance="header">R = r + aθ</label>
            <param name="r" type="int" min="0" max="1000000" gui-text="r (mm)">50</param>
            <param name="a" type="float" min="0" max="1000000" gui-text="a">3</param>
            <param name="step" type="int" min="1" max="300" gui-text="Step" gui-description="The higher the value the better the accuracy. If you set the step value really low the resulting length will not be precise and the curve is maybe not drawn at all">50</param>

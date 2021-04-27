@@ -56,7 +56,7 @@
                 <option value="pt">pt</option>
                 <option value="pc">pc</option>
             </param>
-            <param name="delete_existing" type="boolean" gui-text="Remove old palettes">true</param>
+            <param name="delete_existing" type="bool" gui-text="Remove old palettes">true</param>
         </page>
         <page name="save" gui-text="Save as Palette File">
             <label>Save all selected palettes to a (single) palette file</label>

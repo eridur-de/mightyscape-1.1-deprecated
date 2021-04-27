@@ -10,7 +10,7 @@
             <param name="intervals" type="string" gui-text="Intervals">2212221</param>
         </page>
         <page name="scale" gui-text="Scale">
-            <param name="scale" type="enum" gui-text="Musical scale">
+            <param name="scale" type="optiongroup" appearance="combo" gui-text="Musical scale">
                 <option value="0">Ionian</option>
                 <option value="1">Dorian</option>
                 <option value="2">Phrygian</option>
@@ -21,7 +21,7 @@
             </param>
         </page>
         <page name="helpSheet" gui-text="Help sheet">
-            <param name="helpSheet" type="enum" gui-text="Help sheet">
+            <param name="helpSheet" type="optiongroup" appearance="combo" gui-text="Help sheet">
                 <option value="0">Ionian scale</option>
                 <option value="1">Dorian scale</option>
                 <option value="2">Phrygian scale</option>

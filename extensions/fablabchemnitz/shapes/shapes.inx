@@ -2,29 +2,29 @@
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
     <name>Shapes</name>
     <id>fablabchemnitz.de.shapes</id>
-    <param name="help-ren" type="description" xml:space="preserve">Create shapes using the bounding box or the node position of the selected objects</param>
+    <label>Create shapes using the bounding box or the node position of the selected objects</label>
     <param name="tab" type="notebook">
         <page name="bbox" gui-text="From bounding box">
             <param type="notebook" name="tab_from_bb">
                 <page name="chamfer" gui-text="From corners">
                     <!--image>shapes-squared-plugin.svg</image-->
                     <hbox>
-                        <param type="optiongroup" name="chamfertype" gui-text="Type:">
-                            <item value="chamfer">Chamfer</item>
-                            <item value="rect">Rect inside</item>
-                            <item value="round">Round inside</item>
-                            <item value="starcorners">Star</item>
-                            <item value="crosscornersquad">Crossed corners quads</item>
-                            <item value="crosscornerstri">Crossed corners tris</item>
-                            <item value="crosscornersround">Crossed corners round</item>
-                            <item value="pillowrect">Pillow</item>
-                            <item value="spiralrect">Rect spiral</item>
+                        <param type="optiongroup" name="chamfertype" appearance="combo" gui-text="Type:">
+                            <option value="chamfer">Chamfer</option>
+                            <option value="rect">Rect inside</option>
+                            <option value="round">Round inside</option>
+                            <option value="starcorners">Star</option>
+                            <option value="crosscornersquad">Crossed corners quads</option>
+                            <option value="crosscornerstri">Crossed corners tris</option>
+                            <option value="crosscornersround">Crossed corners round</option>
+                            <option value="pillowrect">Pillow</option>
+                            <option value="spiralrect">Rect spiral</option>
                         </param>
-                        <spacer />
-                        <spacer />
-                        <spacer />
+                        <spacer/>
+                        <spacer/>
+                        <spacer/>
                         <vbox>
-                            <param type="boolean" name="fromCornersInv" gui-text="Inverse (for chamfer and round)">false</param>
+                            <param type="bool" name="fromCornersInv" gui-text="Inverse (for chamfer and round)">false</param>
                             <param type="float" name="size" min="0.0" max="1000.0" gui-text="Size:">20</param>
                         </vbox>
                     </hbox>
@@ -32,15 +32,15 @@
                 <page name="mid" gui-text="From the middle">
                     <!--image>shapes-squared-plugin.svg</image-->
                     <hbox>
-                        <param type="optiongroup" name="midtype" gui-text="Type:">
-                            <item value="rombus">Rombus</item>
-                            <item value="cross">Cross</item>
-                            <item value="starcenter">Star</item>
-                            <item value="pillowrombus">Pillow</item>
+                        <param type="optiongroup" appearance="combo" name="midtype" gui-text="Type:">
+                            <option value="rombus">Rombus</option>
+                            <option value="cross">Cross</option>
+                            <option value="starcenter">Star</option>
+                            <option value="pillowrombus">Pillow</option>
                         </param>
-                        <spacer />
-                        <spacer />
-                        <spacer />
+                        <spacer/>
+                        <spacer/>
+                        <spacer/>
                         <vbox>
                             <param type="float" name="midsize" min="0.0" max="1000.0" gui-text="Size:">20</param>
                         </vbox>
@@ -49,70 +49,70 @@
                 <page name="spikes" gui-text="Spikes">
                     <hbox>
                         <vbox>
-                            <param name="spikestype" type="enum" appearance="minimal" gui-text="Shape:">
-                                <item value="tri">Triangle</item>
-                                <item value="trirect">Rectangle</item>
-                                <item value="squ">Square</item>
-                                <item value="rnd">Rounded</item>
-                                <item value="wav">Wave</item>
+                            <param name="spikestype" type="optiongroup" appearance="combo" gui-text="Shape:">
+                                <option value="tri">Triangle</option>
+                                <option value="trirect">Rectangle</option>
+                                <option value="squ">Square</option>
+                                <option value="rnd">Rounded</option>
+                                <option value="wav">Wave</option>
                             </param>
                             <param name="spikesize" type="float" min="0.1" max="1000.0" gui-text="Size:">2.0</param>
                             <param name="spikesep" type="float" min="-1000.0" max="1000.0" gui-text="Distance:">0.0</param>
                             <param name="spikeheight" type="float" min="-1000.0" max="1000.0" gui-text="Height:">0.0</param>
                         </vbox>
                         <vbox>
-                            <param name="spikesdir" type="enum" appearance="minimal" gui-text="Direction:" indent="1">
-                                <item value="out">Outside</item>
-                                <item value="ins">Inside</item>
-                                <item value="alt">Alternate</item>
+                            <param name="spikesdir" type="optiongroup" appearance="combo" gui-text="Direction:" indent="1">
+                                <option value="out">Outside</option>
+                                <option value="ins">Inside</option>
+                                <option value="alt">Alternate</option>
                             </param>
-                            <param name="spikesdirt" type="enum" appearance="minimal" gui-text="Top:" indent="1">
-                                <item value="pre">Predefined</item>
-                                <item value="non">None</item>
-                                <item value="out">Outside</item>
-                                <item value="ins">Inside</item>
-                                <item value="alt">Alternate</item>
+                            <param name="spikesdirt" type="optiongroup" appearance="combo" gui-text="Top:" indent="1">
+                                <option value="pre">Predefined</option>
+                                <option value="non">None</option>
+                                <option value="out">Outside</option>
+                                <option value="ins">Inside</option>
+                                <option value="alt">Alternate</option>
                             </param>
-                            <param name="spikesdirr" type="enum" appearance="minimal" gui-text="Right:" indent="1">
-                                <item value="pre">Predefined</item>
-                                <item value="non">None</item>
-                                <item value="out">Outside</item>
-                                <item value="ins">Inside</item>
-                                <item value="alt">Alternate</item>
+                            <param name="spikesdirr" type="optiongroup" appearance="combo" gui-text="Right:" indent="1">
+                                <option value="pre">Predefined</option>
+                                <option value="non">None</option>
+                                <option value="out">Outside</option>
+                                <option value="ins">Inside</option>
+                                <option value="alt">Alternate</option>
                             </param>
-                            <param name="spikesdirb" type="enum" appearance="minimal" gui-text="Bottom:" indent="1">
-                                <item value="pre">Predefined</item>
-                                <item value="non">None</item>
-                                <item value="out">Outside</item>
-                                <item value="ins">Inside</item>
-                                <item value="alt">Alternate</item>
+                            <param name="spikesdirb" type="optiongroup" appearance="combo" gui-text="Bottom:" indent="1">
+                                <option value="pre">Predefined</option>
+                                <option value="non">None</option>
+                                <option value="out">Outside</option>
+                                <option value="ins">Inside</option>
+                                <option value="alt">Alternate</option>
                             </param>
-                            <param name="spikesdirl" type="enum" appearance="minimal" gui-text="Left:" indent="1">
-                                <item value="pre">Predefined</item>
-                                <item value="non">None</item>
-                                <item value="out">Outside</item>
-                                <item value="ins">Inside</item>
-                                <item value="alt">Alternate</item>
+                            <param name="spikesdirl" type="optiongroup" appearance="combo" gui-text="Left:" indent="1">
+                                <option value="pre">Predefined</option>
+                                <option value="non">None</option>
+                                <option value="out">Outside</option>
+                                <option value="ins">Inside</option>
+                                <option value="alt">Alternate</option>
                             </param>
                         </vbox>
                     </hbox>
                 </page>
                 <page name="triangles" gui-text="Triangles">
-                    <param name="tritype" type="optiongroup" gui-text="Triangle type:">
-                        <item value="isosceles">Isosceles</item>
-                        <item value="equi">Equilateral</item>
-                        <item value="rect">Rectangle</item>
-                        <item value="trii">From 3 nodes: Inscribed triangle</item>
-                        <item value="circi">From 3 nodes: Inscribed circle</item>
-                        <item value="circe">From 3 nodes: Bounding circle</item>
+                    <param name="tritype" type="optiongroup" appearance="combo" gui-text="Triangle type:">
+                        <option value="isosceles">Isosceles</option>
+                        <option value="equi">Equilateral</option>
+                        <option value="rect">Rectangle</option>
+                        <option value="trii">From 3 nodes: Inscribed triangle</option>
+                        <option value="circi">From 3 nodes: Inscribed circle</option>
+                        <option value="circe">From 3 nodes: Bounding circle</option>
                     </param>
-                    <param name="trihside" type="boolean" gui-text="Right side aligned">false</param>
-                    <param name="trivside" type="boolean" gui-text="Top side aligned">false</param>
+                    <param name="trihside" type="bool" gui-text="Right side aligned">false</param>
+                    <param name="trivside" type="bool" gui-text="Top side aligned">false</param>
                 </page>
                 <page name="arrow" gui-text="Arrows">
-                    <param name="arrowtype" type="optiongroup" gui-text="Arrow type:">
-                        <item value="arrowfilled">Filled</item>
-                        <item value="arrowstick">Stick</item>
+                    <param name="arrowtype" type="optiongroup" appearance="combo" gui-text="Arrow type:">
+                        <option value="arrowfilled">Filled</option>
+                        <option value="arrowstick">Stick</option>
                     </param>
                     <param name="headWidth" type="float" min="0.1" max="1000.0" gui-text="Head width:">20.0</param>
                     <param name="headHeight" type="float" min="0.1" max="1000.0" gui-text="Head height:">40.0</param>
@@ -121,21 +121,21 @@
             </param>
         </page>
         <page name="extra" gui-text="Join circles">
-            <param name="joincirctype" type="enum" gui-text="Function:">
-                <item value="trapecio">Rect</item>
-                <item value="blob">Blob</item>
-                <item value="oval">Oval</item>
+            <param name="joincirctype" type="optiongroup" appearance="combo" gui-text="Function:">
+                <option value="trapecio">Rect</option>
+                <option value="blob">Blob</option>
+                <option value="oval">Oval</option>
             </param>
             <param name="joinradius" type="float" min="0.0" max="1000.0" gui-text="Join radius:">0.0</param>
         </page>
         <page name="nodes" gui-text="From nodes">
             <hbox>
-                <param name="obj" type="enum" gui-text="Add:">
-                    <item value="s">Square</item>
-                    <item value="c">Circle</item>
-                    <item value="number">Numerate</item>
-                    <item value="coords">Nodes coordinates</item>
-                    <item value="obj">Object</item>
+                <param name="obj" type="optiongroup" appearance="combo" gui-text="Add:">
+                    <option value="s">Square</option>
+                    <option value="c">Circle</option>
+                    <option value="number">Numerate</option>
+                    <option value="coords">Nodes coordinates</option>
+                    <option value="obj">Object</option>
                 </param>
                 <spacer />
                 <spacer />
@@ -145,20 +145,20 @@
             <param name="objid" type="string" gui-text="Object ID"></param>
             <hbox>
                 <label appearance="header">Position - </label>
-                <param name="posh" type="enum" gui-text="Horizontal:">
-                    <item value="0">Center</item>
-                    <item value="1">Left</item>
-                    <item value="-1">Right</item>
+                <param name="posh" type="optiongroup" appearance="combo" gui-text="Horizontal:">
+                    <option value="0">Center</option>
+                    <option value="1">Left</option>
+                    <option value="-1">Right</option>
                 </param>
-                <param name="posv" type="enum" gui-text="Vertical:">
-                    <item value="0">Center</item>
-                    <item value="-1">Bottom</item>
-                    <item value="1">Top</item>
+                <param name="posv" type="optiongroup" appearance="combo" gui-text="Vertical:">
+                    <option value="0">Center</option>
+                    <option value="-1">Bottom</option>
+                    <option value="1">Top</option>
                 </param>
             </hbox>
             <hbox>
                 <param name="reducey" type="float" min="0.00" max="1000.0" gui-text="Reduce size in Y axis (%):">0.00</param>
-                <param name="ordery" type="boolean" gui-text="Z-index by Y position">false</param>
+                <param name="ordery" type="bool" gui-text="Z-index by Y position">false</param>
             </hbox>
             <param name="fntsize" type="float" min="0.1" max="100.0" gui-text="Font size (for numerate/coordinates):">10</param>
             <param name="maxdecimals" type="int" min="1" max="6" gui-text="Number of decimals (for coordinates):">6</param>
@@ -169,29 +169,29 @@
             <param name="incdec" type="float" min="-1000.0" max="1000.0" gui-text="Increase/decrease size:">0.0</param>
         </vbox>
         <vbox>
-            <param name="unit" gui-text="Unit for values:" type="enum" appearance="minimal">
-                <item value="px">px</item>
-                <item value="pt">pt</item>
-                <item value="in">in</item>
-                <item value="cm">cm</item>
-                <item value="mm">mm</item>
+            <param name="unit" gui-text="Unit for values:" type="optiongroup" appearance="combo">
+                <option value="px">px</option>
+                <option value="pt">pt</option>
+                <option value="in">in</option>
+                <option value="cm">cm</option>
+                <option value="mm">mm</option>
             </param>
         </vbox>
     </hbox>
     <hbox>
-        <param name="squareselection" type="boolean" gui-text="Make the result object square">false</param>
-        <param name="copyfill" type="boolean" gui-text="Copy fill from selected">false</param>
+        <param name="squareselection" type="bool" gui-text="Make the result object square">false</param>
+        <param name="copyfill" type="bool" gui-text="Copy fill from selected">false</param>
     </hbox>
-    <param name="deleteorigin" type="boolean" gui-text="Delete origin object">false</param>
+    <param name="deleteorigin" type="bool" gui-text="Delete origin object">false</param>
     <effect needs-live-preview="true">
         <object-type>all</object-type>
         <effects-menu>
             <submenu name="FabLab Chemnitz">
-                <submenu name="Shape/Pattern from existing Path(s)" />
+                <submenu name="Shape/Pattern from existing Object(s)" />
             </submenu>
         </effects-menu>
     </effect>
     <script>
-        <command reldir="inx" interpreter="python">shapes.py</command>
+        <command location="inx" interpreter="python">shapes.py</command>
     </script>
 </inkscape-extension>

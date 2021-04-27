@@ -10,13 +10,13 @@
          <param name="show_inner_circle" type="bool" gui-text="Show Inner Circle">false</param>
       </page>
       <page name="help" gui-text="Help">
-         <param name="help_info" type="description">This extension creates a sheriff star in the currently selected circle or ellipse.
+         <label xml:space="preserve">This extension creates a sheriff star in the currently selected circle or ellipse.
 
 The outer vertices (points of the star) are connected through a point on the (usually hidden) inner circle. This inner connection point is located at an angle halfway between the angles of the two outer vertices. The radius of this inner circle is expressed as a percentage of the radius of the selected circle or ellipse.
 
 Small circles are placed at the tip of each point of the star. The radius of these small circles is expressed as a percentage of the selected circle's radius (for ellipses, the x-radius is used).
 
-The components that make up the star are left as separate objects so that additional processing can be performed.</param>
+The components that make up the star are left as separate objects so that additional processing can be performed.</label>
       </page>
    </param>
    <effect>

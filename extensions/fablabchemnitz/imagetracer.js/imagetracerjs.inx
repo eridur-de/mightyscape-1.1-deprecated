@@ -16,7 +16,7 @@
                     <spacer/>
                     <label appearance="header">Color Quantization and Layering</label>
                     <separator/>
-                    <param name="colorsampling" appearance="combo" type="optiongroup" default="2" gui-text="Color sampling">
+                    <param name="colorsampling" appearance="combo" type="optiongroup" gui-text="Color sampling">
                        <option value="0">disabled, generating a palette</option>
                        <option value="1">random sampling</option>
                        <option value="2">deterministic sampling</option>
@@ -24,7 +24,7 @@
                     <param name="numberofcolors" type="int" min="1" max="9999" gui-text="Number of colors to use on palette">16</param>
                     <param name="mincolorratio" type="int" gui-text="Color randomization ratio">0</param>
                     <param name="colorquantcycles" type="int" min="1" max="20" gui-text="Color quantization will be repeated this many times">3</param>   
-                    <param name="layering" appearance="combo" type="optiongroup" default="0" gui-text="Layering">
+                    <param name="layering" appearance="combo" type="optiongroup" gui-text="Layering">
                        <option value="0">sequential</option>
                        <option value="1">parallel</option>
                     </param>   
@@ -80,7 +80,7 @@
         </page>
     </param>
     <effect needs-live-preview="true">
-        <object-type>image</object-type>
+        <object-type>all</object-type>
 		<effects-menu>
          <submenu name="FabLab Chemnitz">
             <submenu name="Tracing/Edge Detection"/>

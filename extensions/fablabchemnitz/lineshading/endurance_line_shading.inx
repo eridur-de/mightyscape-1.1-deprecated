@@ -17,8 +17,7 @@
             <param name="gamma" type="float" min="0.1" max="10.0" precision="2" gui-text="Gamma:">2.2</param>
         </page>
         <page name="Help" gui-text="Help">
-            <param name="title" type="description">This extension converts the selected 
-image into a wavy shading.</param>
+            <label>This extension converts the selected image into a wavy shading.</label>
         </page>
     </param>
     <param name="line_width" type="float" min="0.01" max="1000" precision="2" gui-text="Line Width:">0.25</param>

@@ -2,10 +2,8 @@
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
     <name>Quick Joint</name>
     <id>fablabchemnitz.de.quickjoint</id>
-    <param name="qjuse" type="description" xml:space="preserve">Adding box joint tabs or slots to selected object!
-    </param>
-    <param name="qjver" type="description" xml:space="preserve">Version 0.3
-    </param>
+    <label xml:space="preserve">Adding box joint tabs or slots to selected object!</label>
+    <label xml:space="preserve">Version 0.3</label>
     <param name="activetab" type="notebook">
         <page name="tabpage" gui-text="Tabs">
             <param name="side" type="int" min="0" max="512" gui-text="Side:">0</param>

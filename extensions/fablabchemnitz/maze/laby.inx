@@ -6,13 +6,13 @@
     <param name="horiz" type="int" min="2" max="1000" gui-text="Length">20</param>
     <param name="size" type="float" max="100.0" gui-text="Cell Size">10.0</param>
     <param name="width" type="float" gui-text="Line Width">1.0</param>
-    <param name="algo" type="optiongroup" appearance="minimal" gui-text="Algorithm">
+    <param name="algo" type="optiongroup" appearance="combo" gui-text="Algorithm">
         <option value="kruskal">Kruskal</option>
         <option value="recursive_backtrack">Recursive Backtrack</option>
         <option value="empty">Empty</option>
         <option value="full">Full</option>
     </param>
-    <param name="use2" type="description" xml:space="preserve">This script will generate a maze according to a certain algorithm.</param>
+    <label>This script will generate a maze according to a certain algorithm.</label>
     <effect>
         <object-type>path</object-type>
         <effects-menu>
@@ -22,6 +22,6 @@
         </effects-menu>
     </effect>
     <script>
-        <command reldir="inx" interpreter="python">laby.py</command>
+        <command location="inx" interpreter="python">laby.py</command>
     </script>
 </inkscape-extension>

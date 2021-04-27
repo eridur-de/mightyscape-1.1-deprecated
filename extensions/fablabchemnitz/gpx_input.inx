@@ -10,10 +10,10 @@
 		  <param name="j" type="bool" gui-text="Join all segments" gui-description="Join all segments to a big one in the order of the gpx file. This can create an oun-scattered path if the default combining algorthm does not work because there are no matching pints across segments (implies raw conversion)">true</param>
 		</page>
 		<page name="help" gui-text="Help">
-		  <param name="helptext" type="description" xml:space="preserve">
-		    Homepage:  https://efossils.somxslibres.net/fossil/user/mono/repository/inkgpx2svg/index
+		  <label xml:space="preserve">
+		    Homepage: https://efossils.somxslibres.net/fossil/user/mono/repository/inkgpx2svg/index
 		    based on gpx2svg: https://nasauber.de/opensource/gpx2svg/
-		  </param>
+		  </label>
 		</page>
 	</param>
 	<input>

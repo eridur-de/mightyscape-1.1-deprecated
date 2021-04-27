@@ -11,10 +11,10 @@
                 <option value="intermediate">Intermediate</option>
                 <option value="expert">Expert</option>
             </param>
-            <param name="desc_unit" type="description">Layout parameters:</param>
+            <label>Layout parameters:</label>
             <param name="rows" type="int" min="1" max="6" gui-text="Rows">1</param>
             <param name="cols" type="int" min="1" max="6" gui-text="Cols">1</param>
-            <param name="desc_unit" type="description">Puzzle Dimensions:</param>
+            <label>Puzzle Dimensions:</label>
             <param name="units" gui-text="Units" type="optiongroup" appearance="combo">
                 <option value="px">px</option>
                 <option value="pt">pt</option>

@@ -17,7 +17,7 @@
                 <option value="canvas">Canvas</option>
                 <option value="selection">Selection</option>
             </param>
-            <param name="unit" gui-text="Unit:" type="optiongroup" appearance="combo">
+            <param name="unit" type="optiongroup" appearance="combo" gui-text="Unit:" >
                 <option value="px">px</option>
                 <option value="pt">pt</option>
                 <option value="in">in</option>
@@ -25,7 +25,7 @@
                 <option value="mm">mm</option>
             </param>
             <param name="crop_offset" type="float" min="0.0" max="9999.0" precision="3" gui-text="Offset:">5</param>
-            <param name="bleed_settings" type="description" appearance="header">Bleed Margin</param>
+            <label appearance="header">Bleed Margin</label>
             <param name="bleed_top" type="float" indent="1" min="0.0" max="9999.0" precision="3" gui-text="Top:">5</param>
             <param name="bleed_bottom" type="float" indent="1" min="0.0" max="9999.0" precision="3" gui-text="Bottom:">5</param>
             <param name="bleed_left" type="float" indent="1" min="0.0" max="9999.0" precision="3" gui-text="Left:">5</param>

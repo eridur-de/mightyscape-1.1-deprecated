@@ -2,14 +2,12 @@
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
     <name>Prepare Document</name>
     <id>fablabchemnitz.de.svg2shenzhen_prepare</id>
-	<param name="help" type="description">Prepare document for Kicad Export</param>
+	<label>Prepare document for Kicad Export</label>
     <param name="docwidth" type="float" min="0.0" max="100000.0" gui-text="Document width (mm)">100</param>
     <param name="docheight" type="float" min="0.0" max="100000.0" gui-text="Document height (mm)">100</param>
-    <param name="version" type="description">SVG2SHENZHEN SVGSZ_VER</param>
-
     <effect needs-live-preview="false">
         <object-type>all</object-type>
-        <effects-menu name="Prepare Document">
+        <effects-menu>
             <submenu name="FabLab Chemnitz">
                 <submenu name="Svg2Shenzhen"/>
             </submenu>

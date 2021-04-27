@@ -59,7 +59,7 @@
             <param name="clueflapside" type="bool" gui-text="Opposite Side Clue Flap">false</param>
         </page>
         <page name="desc" gui-text="About">
-            <param name="about" type="description">InkPACKING - Professional Packaging for Inkscape
+            <label xml:space="preserve">InkPACKING - Professional Packaging for Inkscape
         
 Author: Celso Junior (celsojr2008 at gmail dot com)
 
@@ -76,7 +76,7 @@ TODO: Mailer Lock; Tuck and Tongle; Gusset Tuck; Arthur Lock
 Dust Flaps; Edge Lock; Houghland Snap Lock Bottom
 (semi automatic); Quad Lock Bottom; Himes Lock (Automatic Bottom); Security Zipper
 
-Brazil - 2009</param>
+Brazil - 2009</label>
         </page>
     </param>
     <param name="unit" gui-text="Unit" type="optiongroup" appearance="combo">

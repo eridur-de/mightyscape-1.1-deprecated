@@ -4,7 +4,7 @@
     <id>fablabchemnitz.de.color_alpha_replace</id>
     <param name="from_color" type="string" max_length="8" gui-text="Replace color (RRGGBB and optional AA): #">000000</param>
     <param name="to_color" type="string" max_length="8" gui-text="By color (RRGGBBAA): #">000000</param>
-    <effect needs-document="no">
+    <effect needs-document="true">
         <object-type>all</object-type>
         <effects-menu>
 			<submenu name="FabLab Chemnitz">

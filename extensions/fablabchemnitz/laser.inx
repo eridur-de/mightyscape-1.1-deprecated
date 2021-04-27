@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
     <name>J Tech Photonics Laser Tool</name>
-    <id>fablabchemnitz.de.laser</id>
+    <id>fablabchemnitz.de.laser</id>    
     <param name="laser-command" type="string" gui-text="Laser ON Command:">M03</param>
     <param name="laser-off-command" type="string" gui-text="Laser OFF Command:">M05</param>
     <param name="travel-speed" type="int" min="0" max="15000" gui-text="Travel Speed (mm/min or in/min):">3000</param>
@@ -18,12 +18,12 @@
         <option value="G20 (All units in inches)">in</option>
     </param>
     <effect>
+        <object-type>path</object-type>
         <effects-menu>
             <submenu name="FabLab Chemnitz">
 				<submenu name="Import/Export/Transfer"/>
 			</submenu>
         </effects-menu>
-        <object-type>path</object-type>
     </effect>
     <script>
         <command location="inx" interpreter="python">laser.py</command>

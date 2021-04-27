@@ -2,8 +2,9 @@
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
    <name>Regular Grid</name>
    <id>fablabchemnitz.de.lace_grid</id>
-   <param name="description" type="description" appearance="header">Creates a grid of dots of specified angle.</param>
-   <param name="filllabel" type="description" appearance="header">Grid description</param>
+   <label appearance="header">Creates a grid of dots of specified angle.</label>
+   <spacer/>
+   <label appearance="header">Grid description</label>
    <hbox indent="1">
       <param name="angle" type="float" precision="1" min="30" max="89" gui-text="Angle (degrees):">45.0</param>
    </hbox>
@@ -17,7 +18,7 @@
          <option value="pt">pt</option>
       </param>
    </hbox>
-   <param name="filllabel" type="description" appearance="header">Patch description</param>
+   <label appearance="header">Patch description</label>
    <hbox indent="1">
       <param name="width" type="float" precision="2" min="0.1" max="1000" gui-text="Width:">50</param>
       <param name="patchunits" gui-text=" " type="optiongroup" appearance="combo">
@@ -31,7 +32,7 @@
    <hbox indent="1">
       <param name="height" type="float" precision="2" min="0.1" max="1000" gui-text="Height:">50</param>
    </hbox>
-   <param name="dotheading" type="description" appearance="header">Dot Appearance</param>
+   <label appearance="header">Dot Appearance</label>
    <hbox indent="1">
       <param name="dotwidth" type="float" precision="2" min="0.01" max="1000" gui-text="Diameter:">2</param>
       <param name="dotunits" gui-text=" " type="optiongroup" appearance="combo">

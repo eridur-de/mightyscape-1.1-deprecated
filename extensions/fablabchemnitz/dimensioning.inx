@@ -41,8 +41,8 @@
          <param name="rotate" type="bool" gui-text="Rotate Annotation">true</param>
       </page>
       <page name="help" gui-text="Help">
-         <param name="somename" type="description">This tool draws beautiful DIN-Style dimensioning arrows.
-    		Draw a path. The dimensioning will go from the start point to the end point of the path.</param>
+         <label>This tool draws beautiful DIN-Style dimensioning arrows.</label>
+         <label>Draw a path. The dimensioning will go from the start point to the end point of the path.</label>
       </page>
    </param>
    <effect>

@@ -6,7 +6,7 @@
     <param name="reglength" type="float" min="0.0" max="10000" gui-text="Y mark distance [mm]">230</param>
     <param name="regoriginx" type="float" min="10.0" max="10000" gui-text="Position of regmark from document left [mm]">15</param>
     <param name="regoriginy" type="float" min="10.0" max="10000" gui-text="Position of regmark from document top [mm]">20</param>
-    <param name="regdistance_help" type="description">Distance of the registration mark edges</param>
+    <label>Distance of the registration mark edges</label>
     <effect>
         <object-type>all</object-type>
         <effects-menu>

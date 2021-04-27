@@ -2,9 +2,9 @@
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
    <name>Ground from Template</name>
    <id>fablabchemnitz.de.lace_ground</id>
-   <param name="description" type="description" appearance="header" xml:space="preserve">Fill a rectangular patch with a lace ground pattern from selected template file.</param>
+   <label appearance="header">Fill a rectangular patch with a lace ground pattern from selected template file.</label>
    <param name="file" type="path" gui-text="Template file name (full path):" mode="file" filetypes="txt">./templates/</param>
-   <param name="filllabel" type="description" appearance="header">Grid description</param>
+   <label appearance="header">Grid description</label>
    <hbox indent="1">
       <param name="angle" type="float" precision="1" min="30" max="89" gui-text="Angle (degrees):">45.0</param>
    </hbox>
@@ -18,7 +18,7 @@
          <option value="pt">pt</option>
       </param>
    </hbox>
-   <param name="filllabel" type="description" appearance="header">Patch description</param>
+   <label appearance="header">Patch description</label>
    <hbox indent="1">
       <param name="width" type="float" precision="2" min="0.1" max="1000" gui-text="Width:">50</param>
       <param name="patchunits" gui-text=" " type="optiongroup" appearance="combo">
@@ -32,7 +32,7 @@
    <hbox indent="1">
       <param name="height" type="float" precision="2" min="0.1" max="1000" gui-text="Height:">50</param>
    </hbox>
-   <param name="lineheading" type="description" appearance="header">Line Appearance</param>
+   <label appearance="header">Line Appearance</label>
    <hbox indent="1">
       <param name="linewidth" type="float" precision="2" min="0.01" max="1000" gui-text="Width:">1</param>
       <param name="lineunits" gui-text=" " type="optiongroup" appearance="combo">

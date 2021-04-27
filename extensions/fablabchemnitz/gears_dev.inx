@@ -18,7 +18,7 @@
             <option value="CP">Circular Pitch</option>
             <option value="DP">Diametral Pitch</option>
          </param>
-         <param name="help" type="description" xml:space="preserve">------------------------------</param>
+         <separator/>
          <param name="angle" type="float" min="5.0" max="45.0" precision="1" gui-text="Pressure angle (5..45)">20.0</param>
          <param name="centercross" type="bool" gui-text="Draw center cross">false</param>
          <param name="pitchcircle" type="bool" gui-text="Draw pitch circle (for meshing)">false</param>
@@ -41,18 +41,17 @@
             <option value="12">12 points: medium</option>
             <option value="6">6 points: low</option>
          </param>
-         <param name="help" type="description">Use higher accuracy with lower tooth count. Set Number of spokes to 0 to disable. Set Mount hole diameter to 0 to disable.</param>
+         <label>Use higher accuracy with lower tooth count. Set Number of spokes to 0 to disable. Set Mount hole diameter to 0 to disable.</label>
       </page>
       <page name="rack" gui-text="Rack">
          <param name="draw_rack" type="bool" gui-text="Draw rack">false</param>
          <param name="rack_teeth_length" type="int" min="1" max="500" gui-text="Rack length (teeth)">10</param>
          <param name="rack_base_height" type="float" min="0.1" max="100" precision="3" gui-text="Height of base">5</param>
          <param name="rack_base_tab" type="float" min="0" max="100" precision="3" gui-text="Length of end tab">5</param>
-         <param name="packing" type="description" xml:space="preserve">The matching rack gear is drawn additionally and below the spur gear.
-			</param>
+         <label>The matching rack gear is drawn additionally and below the spur gear.</label>
       </page>
       <page name="Usage1" gui-text="Usage-core">
-         <param name="gearuse" type="description" xml:space="preserve">Gears:
+         <label xml:space="preserve">Gears:
 
 Be sure to set the document properties to inches or mm if you want real-world dimensions.
 
@@ -68,16 +67,16 @@ The SI measure is the Module - which expresses the core ratio of Pitch Diameter 
 where:
 - Pitch Circle: Radius is equal to the distance from the center of the gear to the pitch point.
 - Pitch Point:  The point of tangency of the pitch circles of two meshing gears.
-			</param>
+			</label>
       </page>
       <page name="Usage2" gui-text="Usage-adv">
-         <param name="gearuse2" type="description" xml:space="preserve">Gears:
+         <label xml:space="preserve">Gears:
 Pressure angle [in degrees]. Usually 20. Historical: 14.5; High torque gears: 25.
 The higher the pressure angle, the stronger the teeth. With higher pressure angles, more effort is needed to turn the gears (due to friction).
 
 
 Caution: Undercut is currently not generated. E.g. a gear at pressure angle 20 deg and less than 17 teeth would either need a (negative!) profile shifting or will cause undercut. We only produce a warning.
-			</param>
+			</label>
          <param name="undercut_alert" type="bool" gui-text="Confirm gear with undercut">true</param>
       </page>
    </param>

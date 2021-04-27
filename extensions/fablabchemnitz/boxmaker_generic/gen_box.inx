@@ -16,7 +16,7 @@
 				<option value="px">px</option>
 				<option value="pc">pc</option>
 			</param>
-			<param name="name" type="description" appearance="header">External dimensions for the box</param>
+			<label appearance="header">External dimensions for the box</label>
 			<param name="x" type="float" min="10.0" max="1000.0" gui-text="width">80.0</param>
 			<param name="y" type="float" min="10.0" max="1000.0" gui-text="depth">60.0</param>
 			<param name="z" type="float" min="10.0" max="1000.0" gui-text="height">40.0</param>
@@ -25,7 +25,7 @@
 		</page>
 		<page name="corners" gui-text="Round corners">
 			<param name="StraigthCorners" type="bool" gui-text="Straight corners">true</param>
-			<param name="name" type="description">If not straight corners, radius of each corner</param>
+			<label>If not straight corners, radius of each corner</label>
 			<param name="back_left_radius" type="float" min="0.0" max="100.0" gui-text="Back left radius">10.0</param>
 			<param name="back_right_radius" type="float" min="0.0" max="100.0" gui-text="Back right radius">10.0</param>
 			<param name="front_left_radius" type="float" min="0.0" max="100.0" gui-text="Front left radius">10.0</param>
@@ -41,9 +41,9 @@
 				<option value="SteelHinge">Steel hinge</option>
 				<option value="Coffin">Coffin</option>
 			</param>
-			<param name="name" type="description" appearance="header">Only used with real lid</param>
+			<label appearance="header">Only used with real lid</label>
 			<param name="z_lid" type="float" min="15.0" max="1000.0" gui-text="Lid height">20.0</param>
-			<param name="name" type="description" appearance="header">Only used with coffin lid</param>
+			<label appearance="header">Only used with coffin lid</label>
 			<param name="z_dome_lid" type="float" min="15.0" max="1000.0" gui-text="dome lid height">20.0</param>
 			<param name="SkipFlexLines" type="bool" gui-text="Skip flex lines when possible">true</param>
 		</page>

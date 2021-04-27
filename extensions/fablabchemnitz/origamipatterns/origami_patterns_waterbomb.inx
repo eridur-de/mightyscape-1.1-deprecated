@@ -13,10 +13,10 @@
 				<option value="magic_ball">Magic ball</option>
 			</param>
 			<param name="phase_shift" type="bool" gui-text="Shift phase?">false</param>
-			<param name="help"   type="description" xml:space="preserve">------------------------------</param>
+            <separator/>
 			<param name="lines" type="int"  min="1" max="100" gui-text="Number of lines">8</param>
 			<param name="columns" type="int" min="1" max="100" gui-text="Number of columns">16</param>
-			<param name="help"   type="description" xml:space="preserve">------------------------------</param>
+            <separator/>
 			<param name="length" type="float" max="10000" precision="3" gui-text="Length of grid square">10.0</param>
 			<param name="units" type="optiongroup" appearance="combo" gui-text=" ">
 				<option value="mm">mm</option>
@@ -24,8 +24,7 @@
 				<option value="in">in</option>
 				<option value="pt">pt</option>
 				<option value="px">px</option></param>
-			<param name="help"   type="description" xml:space="preserve">"Waterbomb tessellation" creates a simple tessellation pattern repeating the Waterbomb base, with a half-step phase shift between each line.&#xA;The Magic ball is a different design that inverts both the upper half of the first line and the bottom half of the last line.</param>
-
+			<label>"Waterbomb tessellation" creates a simple tessellation pattern repeating the Waterbomb base, with a half-step phase shift between each line.&#xA;The Magic ball is a different design that inverts both the upper half of the first line and the bottom half of the last line.</label>
 		</page>
 		<page name="mountains" gui-text="Mountain creases">
 			<param name="mountain_bool" type="bool" gui-text="Draw mountains?">true</param>

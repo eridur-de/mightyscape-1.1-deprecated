@@ -4,16 +4,12 @@
     <id>fablabchemnitz.de.hershey_text_alternative</id>
     <param name="tab" type="notebook">
         <page name="render" gui-text="Render">
-            <param indent="1" name="splashTitle1" type="description" appearance="header" xml:space="preserve">
-Hershey Text
-</param>
-            <param indent="2" name="splashTitle1b" type="description" xml:space="preserve">A tool to replace text with stroke fonts
+            <label appearance="header">Hershey Text</label>
+            <label xml:space="preserve">A tool to replace text with stroke fonts
 
 Version 3.0, 2019-06-16
-
-
-</param>
-            <param indent="1" name="fontface" type="optiongroup" appearance="combo" gui-text="Font face: ">
+</label>
+            <param name="fontface" type="optiongroup" appearance="combo" gui-text="Font face:">
                 <option value="HersheySans1">Hershey Sans 1-stroke</option>
                 <option value="HersheySansMed">Hershey Sans medium</option>
                 <option value="HersheySerifMed">Hershey Serif medium</option>
@@ -36,29 +32,24 @@ Version 3.0, 2019-06-16
                 <!-- Block above this are derived from fonts licensed under SIL Open Font License -->
                 <option value="other">Other (given below)</option>
             </param>
-            <param name="otherFontDesc" type="description" xml:space="preserve">
-Other SVG font name or path (if "Other" selected above):
-</param>
+            <label>Other SVG font name or path (if "Other" selected above):</label>
             <param name="otherfont" type="string" indent="2" gui-text="Name/Path:">HersheySans1</param>
             <param name="preserve" indent="4" type="bool" gui-text="Preserve original text">false</param>
         </page>
         <page name="utilities" gui-text="Utilities">
-            <param name="utilspage" type="description" appearance="header" xml:space="preserve">
-Hershey Text Utility Functions
-  </param>
-            <param indent="2" name="action" type="optiongroup" appearance="combo" gui-text="Action: ">
+            <label appearance="header">Hershey Text Utility Functions</label>
+            <param name="action" type="optiongroup" appearance="combo" gui-text="Action: ">
                 <option value="sample">Generate font table</option>
                 <option value="table">Generate glyph table in selected font</option>
             </param>
-            <param name="utilspage" type="description" xml:space="preserve">
+            <label xml:space="preserve">
 
-Sample text to use when generating font table:</param>
-            <param indent="2" name="text" type="string" gui-text="Text:">
+Sample text to use when generating font table:</label>
+            <param name="text" type="string" gui-text="Text:">
 The Quick Brown Fox Jumps Over a Lazy Dog</param>
         </page>
         <page name="help" gui-text="About">
-            <param name="aboutpage" type="description" xml:space="preserve">
-This extension renders all text (or all selected text)
+            <label xml:space="preserve">This extension renders all text (or all selected text)
 in your document into using specialized "stroke" or
 "engraving" fonts designed for plotters. 
 
@@ -76,11 +67,10 @@ A complete user guide is available to download at:
   
 For extended help, click "Apply" with this tab selected.
 
-  </param>
+  </label>
         </page>
         <page name="info3" gui-text="Credits">
-            <param name="aboutpage3" type="description" xml:space="preserve">
-The classic Hershey fonts included are derived from
+            <label xml:space="preserve">The classic Hershey fonts included are derived from
 work by Dr. A. V. Hershey.
 
 Additional modern "EMS" fonts in this distribution are
@@ -90,7 +80,7 @@ Open Font License.
 For full credits and license information, please read the
 credits embedded within the SVG fonts included with this
 distribution.
-</param>
+</label>
         </page>
     </param>
     <effect needs-live-preview="true">

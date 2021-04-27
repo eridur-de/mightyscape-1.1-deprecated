@@ -2,7 +2,7 @@
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
     <name>Isometric Projection</name>
     <id>fablabchemnitz.de.isometric_projection</id>
-    <param name="conversion" type="optiongroup" gui-text="Convert flat projection to">
+    <param name="conversion" type="optiongroup" appearance="combo" gui-text="Convert flat projection to">
         <option value="top">Isometric top side</option>
         <option value="left">Isometric left-hand side</option>
         <option value="right">Isometric right-hand side</option>

@@ -8,11 +8,10 @@
 			<param name="wrap_in_group" type="bool" gui-text="Wrap in group">true</param>
 		</page>
 		<page name="help" gui-text="Help">
-			<param name="help_text" type="description" xml:space="preserve">
-This Inkscape extension allows you to generate squared squares and squared rectangles from Bouwkamp codes and table codes.
+			<label xml:space="preserve">This Inkscape extension allows you to generate squared squares and squared rectangles from Bouwkamp codes and table codes.
 
 You can paste Bouwkamp codes with or without various formatting characters (like brackets) and convert them to the corresponding squares.
-</param>
+</label>
 		</page>
 	</param>
     <effect>

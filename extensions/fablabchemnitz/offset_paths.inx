@@ -14,16 +14,16 @@
 		</param>
 		<param name="offset_count" type="int" min="1" max="100000" gui-text="Number of offset paths">1</param>
 		<param name="init_offset" type="float" precision="4" min="-1000" max="+1000" gui-text="Initial offset from original path">1.0000</param>
-		<param name="offset" type="float"  precision="4" min="-1000" max="+1000" gui-text="Offset between two paths">1.0000</param>
+		<param name="offset" type="float" precision="4" min="-1000" max="+1000" gui-text="Offset between two paths">1.0000</param>
 		<param name="offset_increase" type="float" precision="4" min="-1000" max="+1000" gui-text="Offset increase per iteration">0.0000</param>
 		<param name="miterlimit" type="float" min="0.0" max="1000" gui-text="Miter limit">3.0</param>
-		<param name="clipperscale" type="int" min="2" max="65.536" gui-text="Scaling factor" gui-description="Should be a multiplicator of 2, like 2^4=16 or 2^10=1024. The higher the scale factor the higher the quality.">1024</param>
-		<param name="jointype" appearance="combo" type="optiongroup" default="2" gui-text="Join type">
+		<param name="clipperscale" type="int" min="2" max="65536" gui-text="Scaling factor" gui-description="Should be a multiplicator of 2, like 2^4=16 or 2^10=1024. The higher the scale factor the higher the quality.">1024</param>
+		<param name="jointype" appearance="combo" type="optiongroup" gui-text="Join type">
 			<option value="0">Square</option>
 			<option value="1">Round</option>
 			<option value="2">Miter</option>
 		</param>
-		<param name="endtype" appearance="combo" type="optiongroup" default="3" gui-text="End type">
+		<param name="endtype" appearance="combo" type="optiongroup" gui-text="End type">
 			<option value="0">Closed Polygon</option>
 			<option value="1">Closed Line</option>
 			<option value="2">Open Butt</option>

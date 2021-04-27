@@ -27,7 +27,6 @@ class NumberSubpaths(inkex.EffectExtension):
         pars.add_argument("--dotsize", default="10px", help="Size of the dots on the path nodes")
         pars.add_argument("--fontsize", default="10px", help="Size of node labels")
         pars.add_argument("--showID", type=inkex.Boolean, default=False)
-        pars.add_argument("--tab", help="The selected UI-tab when OK was pressed")
 
     def effect(self):
         if not self.svg.selected:

@@ -9,13 +9,13 @@
                 <option value="standard">Standard</option>
                 <option value="laser">Laser</option>
             </param>
-            <param name="vcarves" type="description" appearance="header">V-Carve Settings</param>
+            <label appearance="header">V-Carve Settings</label>
             <param name="v_angle" indent="1" type="float" min="0.001" max="179" precision="0" gui-text="Included (full) angle, degrees">90</param>
             <param name="v_top" indent="1" type="float" min="-9999" max="9999" precision="3" gui-text="Z value at top of stock">0</param>
             <param name="v_step" indent="1" type="float" min="0.001" max="9999" precision="3" gui-text="Curve interpolation step size">0</param>
-            <param name="carves" type="description" appearance="header">Standard Mode Settings</param>
+            <label appearance="header">Standard Mode Settings</label>
             <param name="tool_diameter" indent="1" type="float" min="0.001" max="999.999" precision="3" gui-text="Path width / tool diameter">6.35</param>
-            <param name="general" type="description" appearance="header">General Options</param>
+            <label appearance="header">General Options</label>
             <param name="units" indent="1" type="optiongroup" appearance="combo" gui-text="Units (in this import dialog)">
                 <option value="mm">mm</option>
                 <option value="in">in</option>
@@ -27,7 +27,7 @@
             </param>
         </page>
         <page name="help" gui-text="Help">
-            <param name="inputhelp" type="description" xml:space="preserve">
+            <label xml:space="preserve">
 - This is intended to enable hobby CNC users to recover 
   geometry from G-code files in order to reconstitute
   SVG design files.
@@ -39,7 +39,7 @@
 - All individual moves are processed at constant Z
   except in V-carve mode, which requires Z data.
 - Any K parameters for G2/G3 arcs are summarily ignored.
-- Importing a fully 3D carve is unlikely to give a useful result.</param>
+- Importing a fully 3D carve is unlikely to give a useful result.</label>
         </page>
     </param>
     <input>

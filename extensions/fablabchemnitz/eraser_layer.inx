@@ -2,7 +2,7 @@
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
     <name>Erase Layer</name>
     <id>fablabchemnitz.de.eraser_layer</id>
-    <effect needs-document="no">
+    <effect needs-document="true">
         <object-type>all</object-type>
         <effects-menu>
             <submenu name="FabLab Chemnitz">

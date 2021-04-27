@@ -2,17 +2,11 @@
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
     <name>Number Subpaths</name>
     <id>fablabchemnitz.de.number_subpaths</id>
-    <param name="tab" type="notebook">
-        <page name="Options" gui-text="Options">
-            <param name="fontsize" type="string" gui-text="Font size:">10px</param>
-            <param name="dotsize" type="string" gui-text="Dot size:">10px</param>
-			<param name="showID" type="boolean" gui-text="Show path id">false</param>
-			<param name="help" type="description">Green dot = start, red dot = end.</param>
-        </page>
-        <page name="Help" _gui-text="Help">
-            <param name="info" type="description" xml:space="preserve">This extension mark the selection's start and endnodes for each subpath and number the subpaths.</param>
-        </page>
-    </param>        
+    <label xml:space="preserve">This extension mark the selection's start and endnodes for each subpath and number the subpaths.</label>
+    <param name="fontsize" type="string" gui-text="Font size:">10px</param>
+    <param name="dotsize" type="string" gui-text="Dot size:">10px</param>
+	<param name="showID" type="bool" gui-text="Show path id">false</param>
+	<label>Green dot = start, red dot = end.</label>    
     <effect>
         <object-type>path</object-type>
             <effects-menu>

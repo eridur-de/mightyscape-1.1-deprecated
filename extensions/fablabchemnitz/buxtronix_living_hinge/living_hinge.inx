@@ -45,7 +45,7 @@ These patterns allow otherwise rigid materials (eg wood, acrylic) to have bends 
     </param>
     <param name="width" type="float" min="0" max="10000" gui-text="Width">100</param>
     <param name="height" type="float" min="0" max="10000" gui-text="Height">100</param>
-    <param name="unit" gui-text="Unit for width/height" type="optiongroup" appearance="minimal">
+    <param name="unit" gui-text="Unit for width/height" type="optiongroup" appearance="combo">
         <option value="mm">mm</option>
         <option value="cm">cm</option>
         <option value="in">in</option>
@@ -53,7 +53,7 @@ These patterns allow otherwise rigid materials (eg wood, acrylic) to have bends 
     <label>If any object(s) are currently selected, their bounding boxes will be filled with the pattern
 	  instead of using the above Width/Height. Slider dimensions are all millimetres.</label>
     <separator />
-    <param name="swatch" type="boolean" gui-text="Draw swatch card">false</param>
+    <param name="swatch" type="bool" gui-text="Draw swatch card">false</param>
     <effect>
         <object-type>all</object-type>
         <effects-menu>
@@ -63,6 +63,6 @@ These patterns allow otherwise rigid materials (eg wood, acrylic) to have bends 
         </effects-menu>
     </effect>
     <script>
-        <command reldir="inx" interpreter="python">living_hinge.py</command>
+        <command location="inx" interpreter="python">living_hinge.py</command>
     </script>
 </inkscape-extension>

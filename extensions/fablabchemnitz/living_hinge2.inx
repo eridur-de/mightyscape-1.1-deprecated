@@ -23,7 +23,7 @@
     <param name="width" type="float" precision="3" min="0.0" max="10000.0" gui-text="Width">80.0</param>
     <param name="height" type="float" precision="3" min="0.0" max="10000.0" gui-text="Height">50.0</param>
     <param name="tab" type="float" precision="2" min="0.0" max="10000.0" gui-text="Minimum/Preferred Tab Width">6.0</param>
-    <param name="equal" type="optiongroup" gui-text="Tab Width">
+    <param name="equal" type="optiongroup" appearance="combo" gui-text="Tab Width">
         <option value="0">Fixed</option>
         <option value="1">Proportional</option>
     </param>

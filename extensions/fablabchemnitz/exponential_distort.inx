@@ -8,9 +8,9 @@
       <option value="y">Y only</option>
       <option value="xy">X &amp; Y</option>
     </param>-->
-    <param name="exponent" type="float" min="0.01" max="100" precision="2" gui-text="Exponent:  ">1.33</param>
-    <param name="padding_perc" type="float" min="0" max="500" precision="0" gui-text="Padding [%]:  ">0</param>
-    <param name="padding_what" type="description" xml:space="preserve">Apply padding to soften the effect. Without padding the exponential curve runs from 0 to 1. With e.g. 100% padding it runs from 0.5 to 1.</param>
+    <param name="exponent" type="float" min="0.01" max="100" precision="2" gui-text="Exponent:">1.33</param>
+    <param name="padding_perc" type="float" min="0" max="500" precision="0" gui-text="Padding [%]:">0</param>
+    <label>Apply padding to soften the effect. Without padding the exponential curve runs from 0 to 1. With e.g. 100% padding it runs from 0.5 to 1.</label>
   <effect>
     <object-type>all</object-type>
     <effects-menu>

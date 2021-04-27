@@ -16,7 +16,7 @@
 				<option value="pt">pt</option>
 				<option value="px">px</option></param>
 			<param name="theta" type="int" min="0" max="360" gui-text="Rotation angle (degree)">0</param>
-			<param name="help"   type="description" xml:space="preserve">The .inx file defines the bridge between Inkscape's interface and the python script.</param>
+			<label>The .inx file defines the bridge between Inkscape's interface and the python script.</label>
 
 		</page>
 		<page name="mountains" gui-text="Mountain creases">

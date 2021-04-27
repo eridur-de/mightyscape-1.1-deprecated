@@ -16,11 +16,11 @@
         <!--<param name="nodash" type="bool" gui-text="Fix dash-stroke to alow no line only markers">false</param>-->
         </page>
         <page name="about_tab" gui-text="About">
-            <param name="about_swap_head" type="description" appearance="header">Swap</param>
-            <param name="about_swap_desc0" type="description" gui-description="TODO: add more detailed description.">Swap or copy fill, stroke paint.</param>
+            <label appearance="header">Swap</label>
+            <label>Swap or copy fill, stroke paint.</label>
         </page>
     </param>
-    <effect needs-document="no">
+    <effect needs-document="true">
         <object-type>all</object-type>
         <effects-menu>
             <submenu name="FabLab Chemnitz">

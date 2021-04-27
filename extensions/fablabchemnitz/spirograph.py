@@ -21,7 +21,6 @@ class Spirograph(inkBase.inkscapeMadeEasy):
     def __init__(self):
         inkBase.inkscapeMadeEasy.__init__(self)
 
-        self.arg_parser.add_argument("--tab", type=str, dest="tab", default="object")
         self.arg_parser.add_argument("--curveType", type=str, dest="curveType", default='resistor')
         self.arg_parser.add_argument("--radius_R", type=float, dest="radius_R", default=10.0)
         self.arg_parser.add_argument("--radius_r", type=float, dest="radius_r", default=5.0)
@@ -42,8 +41,6 @@ class Spirograph(inkBase.inkscapeMadeEasy):
 
         root_layer = self.document.getroot()
         group = self.createGroup(root_layer, 'Spiro')
-
-        so.tab = so.tab.replace('"', '')  # removes de exceeding double quotes from the string
 
         # curve parameters
         R = so.radius_R

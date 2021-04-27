@@ -7,7 +7,7 @@
         <option value="SLIPCASE">Slipcase/Deck band</option>
         <option value="MATCHBOX">MatchBox</option>
     </param>
-    <param name="num_flaps" type="int" precision="1" min="1" max="2" gui-text="Number of Flaps">1</param>
+    <param name="num_flaps" type="int" min="1" max="2" gui-text="Number of Flaps">1</param>
     <param name="deck_width" type="float" precision="1" min="5" max="1000" gui-text="Box width (mm)">63.5</param>
     <param name="deck_height" type="float" precision="1" min="5" max="1000" gui-text="Box height (mm)">88</param>
     <param name="deck_depth" type="float" precision="1" min="5" max="200" gui-text="Box depth (mm)">20</param>

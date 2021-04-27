@@ -12,8 +12,7 @@
       <param name="bottom" type="bool" gui-text="Top and bottom?">false</param>
     </page>
     <page name="hilfe" gui-text="Hilfe">
-      <param name="use2" type="description" xml:space="preserve">The idea of the can generator is to cut plywood so deep that it can be bent without breaking. From the bent wood the side of the can is formed. The lid is not completely round, but cut in segments. The number of segments corresponds to the cuts in the side of the can. For this purpose, the wood must be cut across the grain direction. The angle determines the number of segments. For example, 22.5 degrees gives 16 segments. Less should not be less.
-			</param>
+      <label xml:space="preserve">The idea of the can generator is to cut plywood so deep that it can be bent without breaking. From the bent wood the side of the can is formed. The lid is not completely round, but cut in segments. The number of segments corresponds to the cuts in the side of the can. For this purpose, the wood must be cut across the grain direction. The angle determines the number of segments. For example, 22.5 degrees gives 16 segments. Less should not be less.</label>
     </page>
   </param>
   <effect>

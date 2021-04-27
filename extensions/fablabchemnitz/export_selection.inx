@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-	<_name>Export Selection As ...</_name>
+	<name>Export Selection As ...</name>
 	<id>fablabchemnitz.de.export_selection_as</id>
-	<param name="wrap_transform" type="boolean" _gui-text="Wrap final document in transform">false</param>
+	<param name="wrap_transform" type="bool" gui-text="Wrap final document in transform">false</param>
     <param name="border_offset" type="float" min="0.000" max="9999.000" precision="3" gui-text="Add border offset around selection">1.000</param>
 	<param name="export_dir" type="path" mode="folder" gui-text="Location to save exported documents">./inkscape_export/</param>
     <param name="opendir" type="bool" gui-text="Open containing output directory after export">false</param>
@@ -10,17 +10,16 @@
     <param name="export_dxf" type="bool" gui-text="Export as DXF R14 file (mm units)">false</param>
     <param name="export_pdf" type="bool" gui-text="Export as PDF 1.5">false</param>
     <param name="newwindow" type="bool" gui-text="Open file in new blocking Inkscape window">false</param>
-
 	<effect needs-document="true" needs-live-preview="false">
 		<object-type>all</object-type>
-		<menu-tip>Export selection to separate files.</menu-tip>
 		<effects-menu>
             <submenu name="FabLab Chemnitz">
 				<submenu name="Import/Export/Transfer"/>
 			</submenu>
 		</effects-menu>
+        <menu-tip>Export selection to separate files.</menu-tip>
 	</effect>
 	<script>
-		<command reldir="inx" interpreter="python">export_selection.py</command>
+		<command location="inx" interpreter="python">export_selection.py</command>
 	</script>
 </inkscape-extension>

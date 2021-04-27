@@ -4,14 +4,14 @@
     <id>fablabchemnitz.de.blobs</id>
     <param type="notebook" name="Nmain">
         <page name="top" gui-text="All">
-            <param name="h" type="description">Fills a box with blobs.</param>
+            <label>Fills a box with blobs.</label>
             <param max="256" name="nb" type="int" gui-text="How many blobs?">10</param>
             <param name="pgsizep" type="bool" gui-text="Default rectangle to page size?">true</param>
             <param max="10000" name="rx" type="int" gui-text="Work area x">1000</param>
             <param max="10000" name="ry" type="int" gui-text="Work area y">1000</param>
         </page>
         <page name="bottom" gui-text="Each">
-            <param name="h2" type="description">Each blob.</param>
+            <label>Each blob.</label>
             <param max="256" name="num" type="int" gui-text="Interior points">10</param>
             <param max="10000." name="sz" type="float" gui-text="Size of a blob">50.</param>
             <param max="1.0" name="cave" type="float" gui-text="Concavity">0.</param>

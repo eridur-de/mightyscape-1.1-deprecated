@@ -189,7 +189,7 @@ class ContourScanner(inkex.EffectExtension):
                     
                     try: 
                         if len(points) > 2: #try to find self-intersecting /overlapping polygons. We need at least 3 points to detect for intersections (only possible if first points matched last point)
-                            isect = poly_point_isect.isect_polygon(points)         
+                            isect = poly_point_isect.isect_polygon(points, validate=True)         
                             if len(isect) > 0:
                                 if closed == False and self.options.addlines == True: #if contour is open and we found intersection points those points might be not relevant
                                     closingLine = intersectionGroup.add(inkex.PathElement())

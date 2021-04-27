@@ -2,7 +2,7 @@
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
     <name>Reverse Order Of Subpaths</name>
     <id>fablabchemnitz.de.reverse_order_subpaths</id>
-    <param name="help" type="description">Reverse order of subpaths (combined paths) without reversing the node order nor the order of the paths.</param>      
+    <label>Reverse order of subpaths (combined paths) without reversing the node order nor the order of the paths.</label>      
     <effect>
         <object-type>path</object-type>
             <effects-menu>

@@ -3,13 +3,11 @@
     <name>Round Corners</name>
     <id>fablabchemnitz.de.round_corners</id>
     <param name="radius" type="float" gui-text="Radius: [mm]" precision="2" min="0.001" max="999.99">2.0</param>
-    <param name="method" type="enum" gui-text="Corner type:">
-        <item value="arc">Arc</item>
-        <item value="line">Line</item>
+    <param name="method" type="optiongroup" appearance="radio" gui-text="Corner type:">
+        <option value="arc">Arc</option>
+        <option value="line">Line</option>
     </param>
-    <label xml:space="preserve">
-
-* Select a path in edit mode.
+    <label xml:space="preserve">* Select a path in edit mode.
 * Select one or more vertices.
 * Start the extension,
    - set the radius of the arc.

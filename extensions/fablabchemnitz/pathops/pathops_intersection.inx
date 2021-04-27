@@ -4,13 +4,13 @@
     <id>fablabchemnitz.de.pathops_intersect</id>
     <param name="ink_verb" gui-hidden="true" type="string" gui-text="Path operation">SelectionIntersect</param>
     <effect needs-document="true" needs-live-preview="false">
-        <effects-menu hidden="false">
+        <object-type>all</object-type>
+        <effects-menu>
             <submenu name="FabLab Chemnitz">
                 <submenu name="PathOps" />
             </submenu>
         </effects-menu>
         <menu-tip>Apply Inkscape 'Intersection' path operation to multiple objects.</menu-tip>
-        <object-type>all</object-type>
     </effect>
     <script>
         <command location="inx" interpreter="python">pathops.py</command>

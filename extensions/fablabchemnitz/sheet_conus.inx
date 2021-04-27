@@ -14,9 +14,9 @@
     <param name="heightCone" type="float" precision="3" min="0" max="10000000000" gui-text="Cone Height:">200.0</param>
     <param name="strokeWidth" type="float" precision="2" min="0.001" max="10000000000" gui-text="Line thickness (in units): ">0.4</param>
     <param name="verbose" type="bool" gui-text="Draw dimensions.">false</param>
-    <param name="name" type="description" xml:space="preserve">Constructs a flat pattern projection (sheet cutting layout)
+    <label xml:space="preserve">Constructs a flat pattern projection (sheet cutting layout)
 that can be rolled or bent into a cone or frustum (truncated cone).
-If Cut diameter=0 then cone will not be truncated.</param>
+If Cut diameter=0 then cone will not be truncated.</label>
     <param name="strokeColour" type="color" appearance="colorbutton" gui-text="Line color: ">255</param>
     <effect>
         <object-type>all</object-type>

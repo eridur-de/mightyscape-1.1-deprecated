@@ -8,10 +8,7 @@
     <option value="object_area">Object Area (for single operations only)</option>
     </param>
     -->
-   <param name="texthelp" type="description">Formating can be used to break a design into separate
-    cutting and engraving files.  Red lines indicate cutting,
-    blue lines indicate engraving, black indicates raster
-    engraving.</param>
+   <label>Formating can be used to break a design into separate cutting and engraving files. Red lines indicate cutting, blue lines indicate engraving, black indicates raster engraving.</label>
    <!--
     <param name="cut_select" type="optiongroup" appearance="combo" gui-text="Type: ">
     <option value="vector_red"> Vector Cuts (export red lines)                      </option>
@@ -39,7 +36,7 @@
       <mimetype>application/x-zip</mimetype>
       <filetypename>Laser Draw LYZ (ZIP)(*.zip)</filetypename>
       <filetypetooltip>LaserDraw LYZ Output Zipped</filetypetooltip>
-      <dataloss>TRUE</dataloss>
+      <dataloss>true</dataloss>
    </output>
    <script>
       <command location="inx" interpreter="python">lyz_export.py</command>

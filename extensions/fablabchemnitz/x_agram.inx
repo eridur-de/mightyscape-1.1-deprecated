@@ -12,13 +12,12 @@
             <param name="inner_ratio" type="int" min="1" max="100" gui-text="Inner Circle Radius %">50</param>
         </page>
         <page name="help" gui-text="Help">
-            <param name="help_info" type="description">
-This extension inscribes a star polygon (pentagram, hexagram, et al.) into the currently selected circle or ellipse.
+            <label xml:space="preserve">This extension inscribes a star polygon (pentagram, hexagram, et al.) into the currently selected circle or ellipse.
 
 If an inner-circle is enabled, then the outer vertices are connected through a point on the inner circle. This inner connection point is located at an angle halfway between the angles of the two outer vertices.
 
 The components that make up the x-agram are left as separate objects so that additional processing can be performed.
-	</param>
+	</label>
         </page>
     </param>
     <effect>

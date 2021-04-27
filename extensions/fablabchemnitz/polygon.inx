@@ -11,7 +11,7 @@
                 <option value="cm">cm</option>
                 <option value="in">in</option>
             </param>
-            <param name="name" type="description" appearance="header">Outer Shape</param>
+            <label appearance="header">Outer Shape</label>
             <param name="o_type" gui-text="Type" type="optiongroup" appearance="combo">
                 <option value="1">Circle</option>
                 <option value="2">Polygone</option>
@@ -24,7 +24,7 @@
                 <option value="3">Side length</option>
             </param>
             <param name="o_offset" type="float" precision="3" min="0.0" max="360.0" gui-text="Offset">0.0</param>
-            <param name="name" type="description" appearance="header">Inner Shape</param>
+            <label appearance="header">Inner Shape</label>
             <param name="i_type" gui-text="Type" type="optiongroup" appearance="combo">
                 <option value="1">None</option>
                 <option value="2">Circle</option>

@@ -13,9 +13,8 @@
     <param name="snap_ends" type="bool" gui-text="Snap connecting ends together">false</param>
 	<param name="close_loops" type="bool" gui-text="Close loops (start/end of the same path)">true</param>
     <!-- Keep in sync with chain_paths.py line 19 __version__ = ... -->
-    <param name="about_version" type="description">
-  https://github.com/fablabnbg/inkscape-chain-paths
-  Version 0.7</param>
+    <label appearance="url">https://github.com/fablabnbg/inkscape-chain-paths</label>
+    <label>Version 0.7</label>
     <effect needs-live-preview="true">
         <object-type>path</object-type>
         <effects-menu>

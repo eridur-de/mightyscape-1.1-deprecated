@@ -4,11 +4,11 @@
     <id>fablabchemnitz.de.join_paths_optimized</id>
     <param name="tab" type="notebook">
         <page name="subdividePath" gui-text="Join Paths">
-            <param name="optimized" type="bool" default="True" gui-text="Optimized"/>
+            <param name="optimized" type="bool" gui-text="Optimized">true</param>
         </page>
         <page name="desc" gui-text="Help">
-            <param name="subdividePathhelp" type="description" xml:space="preserve">This effect joins the Bezier curves, with straight line segments. If the end nodes are close enough, they are merged into a single one. With the optimized option selected, the new curve starts from the top most curve from the selection. The curves are then joined based on the distance of their closest end point to the previous curve.
-            </param>
+            <label xml:space="preserve">This effect joins the Bezier curves, with straight line segments. If the end nodes are close enough, they are merged into a single one. With the optimized option selected, the new curve starts from the top most curve from the selection. The curves are then joined based on the distance of their closest end point to the previous curve.
+            </label>
         </page>
     </param>
     <effect>
