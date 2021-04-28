@@ -163,12 +163,12 @@ class Graph:
 """
 
 class OptimizePaths(inkex.GenerateExtension):
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("-t", "--tolerance", type=float, default=0.1, help="the distance below which 2 nodes will be merged")
-        self.arg_parser.add_argument("-l", "--enableLog", type=inkex.Boolean, default=False, help="Enable logging")
-        self.arg_parser.add_argument("-o", "--overwriteRule", type=int, default=1, help="Options to control edge overwrite rules")
-        self.arg_parser.add_argument("-k", "--keepSelected", type=inkex.Boolean, default=False, help="Keep selected elements")
+
+    def add_arguments(self, pars):
+        pars.add_argument("-t", "--tolerance", type=float, default=0.1, help="the distance below which 2 nodes will be merged")
+        pars.add_argument("-l", "--enableLog", type=inkex.Boolean, default=False, help="Enable logging")
+        pars.add_argument("-o", "--overwriteRule", type=int, default=1, help="Options to control edge overwrite rules")
+        pars.add_argument("-k", "--keepSelected", type=inkex.Boolean, default=False, help="Keep selected elements")
 
     def parseSVG(self):
         vertices = []
