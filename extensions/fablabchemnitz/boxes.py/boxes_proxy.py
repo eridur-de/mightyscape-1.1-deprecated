@@ -34,8 +34,11 @@ class boxesPyWrapper(inkex.GenerateExtension):
         box_file = "box.svg"
         if os.path.exists(box_file):
             os.remove(box_file) #remove previously generated box file at the beginning
-    
-        cmd = "boxes"
+
+        if os.name == "nt":
+            cmd = "boxes.exe"
+        else:
+            cmd = "./boxes"        
         for arg in vars(self.options):
             if arg != "output" and arg != "ids" and arg != "selected_nodes":
                 #inkex.utils.debug(str(arg) + " = " + str(getattr(self.options, arg)))
@@ -61,18 +64,16 @@ class boxesPyWrapper(inkex.GenerateExtension):
             inkex.utils.debug(str(cmd))
             exit(1)
             
-        # write the generated SVG into InkScape's canvas
+        # write the generated SVG into Inkscape's canvas
         p = etree.XMLParser(huge_tree=True)
         doc = etree.parse(stream, parser=etree.XMLParser(huge_tree=True))
         stream.close()
-        
         if os.path.exists(box_file):
             os.remove(box_file) #remove previously generated box file at the end too      
             
         group = inkex.Group(id="boxes.py")
         for element in doc.getroot():
-            group.append(element)   
- 
+            group.append(element)
         return group
         
 if __name__ == '__main__':

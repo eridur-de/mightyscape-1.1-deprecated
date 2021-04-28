@@ -17,17 +17,26 @@ import inkex
 import sys
 import os
 from lxml import etree
+import subprocess
 
 class CutOptimWrapper(inkex.EffectExtension):
-    def __init__(self):
-        inkex.Effect.__init__(self)
+  
+    def openDebugFile(self, file):
+        DETACHED_PROCESS = 0x00000008
+        if os.name == 'nt':
+            subprocess.Popen(["explorer", file], close_fds=True, creationflags=DETACHED_PROCESS).wait()
+        else:
+            subprocess.Popen(["xdg-open", file], close_fds=True, start_new_session=True).wait()
+        
+    def add_arguments(self, pars):
         args = sys.argv[1:] 
         for arg in args:
             key=arg.split("=")[0]
             if len(arg.split("=")) == 2:
                 value=arg.split("=")[1]
                 try:
-                    self.arg_parser.add_argument(key, default=key)
+                    if key != "--id":
+                        pars.add_argument(key, default=key)             
                 except:
                     pass #ignore duplicate id arg
 
@@ -37,8 +46,8 @@ class CutOptimWrapper(inkex.EffectExtension):
             cutoptim="CutOptim.exe"
         else:
             cutoptim="./CutOptim"
-        #inkex.utils.debug(cmd)
         cmd += cutoptim
+        
         for arg in vars(self.options):
             if arg != "output" and arg != "ids" and arg != "selected_nodes":
                 #inkex.utils.debug(str(arg) + " = " + str(getattr(self.options, arg)))
@@ -57,7 +66,6 @@ class CutOptimWrapper(inkex.EffectExtension):
             output_file = "/tmp/cutoptim.svg"
         
         cmd += " --output " + output_file 
-        #inkex.utils.debug(str(cmd))
         
         # run CutOptim with the parameters provided
         with os.popen(cmd, "r") as cutoptim:
@@ -67,14 +75,27 @@ class CutOptimWrapper(inkex.EffectExtension):
         try:
             stream = open(output_file, 'r')
         except FileNotFoundError as e:
-            inkex.utils.debug("There was no SVG output generated. Cannot continue")
+            inkex.utils.debug("There was no SVG output generated. Cannot continue. Command was:")
+            inkex.utils.debug(cmd)
             exit(1)
-            
-        # write the generated SVG into InkScape's canvas
+
+        if self.options.original == "false": #we need to use string representation of bool
+            for element in self.document.getroot():
+                if isinstance(element, inkex.ShapeElement):
+                    element.delete()
+
+        if self.options.debug_file == "true": #we need to use string representation of bool
+            self.openDebugFile("Debug_CutOptim.txt")
+
+        # write the generated SVG into Inkscape's canvas
         p = etree.XMLParser(huge_tree=True)
         doc = etree.parse(stream, parser=etree.XMLParser(huge_tree=True))
         stream.close()
-        doc.write(sys.stdout.buffer)
-        
+        group = inkex.Group(id="CutOptim")
+        targetLayer = doc.xpath('//svg:g[@inkscape:label="Placed_Layer"]', namespaces=inkex.NSS)[0]#.getchildren()[0]
+        for element in targetLayer.getchildren():
+            group.append(element)
+        self.document.getroot().append(group)
+                
 if __name__ == '__main__':
     CutOptimWrapper().run()
