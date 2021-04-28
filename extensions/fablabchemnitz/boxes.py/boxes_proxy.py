@@ -65,14 +65,15 @@ class boxesPyWrapper(inkex.GenerateExtension):
         p = etree.XMLParser(huge_tree=True)
         doc = etree.parse(stream, parser=etree.XMLParser(huge_tree=True))
         stream.close()
-
-        group = inkex.Group(id="boxes.py")
-        for element in doc.getroot():
-            group.append(element)
-        return group
         
         if os.path.exists(box_file):
-            os.remove(box_file) #remove previously generated box file at the end too       
+            os.remove(box_file) #remove previously generated box file at the end too      
+            
+        group = inkex.Group(id="boxes.py")
+        for element in doc.getroot():
+            group.append(element)   
+ 
+        return group
         
 if __name__ == '__main__':
     boxesPyWrapper().run()
