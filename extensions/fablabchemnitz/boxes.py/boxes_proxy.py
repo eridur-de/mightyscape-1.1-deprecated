@@ -35,10 +35,7 @@ class boxesPyWrapper(inkex.GenerateExtension):
         if os.path.exists(box_file):
             os.remove(box_file) #remove previously generated box file at the beginning
 
-        if os.name == "nt":
-            cmd = "boxes.exe"
-        else:
-            cmd = "./boxes"        
+        cmd = "boxes" #boxes.exe in this local dir (or if present in %PATH%), or boxes from $PATH in linux        
         for arg in vars(self.options):
             if arg != "output" and arg != "ids" and arg != "selected_nodes":
                 #inkex.utils.debug(str(arg) + " = " + str(getattr(self.options, arg)))

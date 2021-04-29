@@ -1,4 +1,0 @@
-#!/usr/bin/python3
-# EASY-INSTALL-SCRIPT: 'boxes==0.9','boxes'
-__requires__ = 'boxes==0.9'
-__import__('pkg_resources').run_script('boxes==0.9', 'boxes')
