@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import inkex, re, os, random, sys, subprocess, shutil
+from inkex.command import inkscape
 
 from outputpro import cmyk, cutmarks
 
@@ -11,37 +12,11 @@ from PyQt5.QtCore import *
 import gettext
 _ = gettext.gettext
 
-#reload(sys)
-#sys.setdefaultencoding("utf-8")
+import tempfile
 
-dirpathTempFolder = '/tmp/output-'
-for i in range(5):
-    dirpathTempFolder += str(random.randint(0,9))
-os.mkdir(dirpathTempFolder)
-
-null_dir = " > /dev/null"
-
+dirpathTempFolder = tempfile.TemporaryDirectory(suffix=str(random.randint(0,9)), prefix="output-")
 dirpathSoftware = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'outputpro')
-
-with open(os.getenv("HOME") + '/.config/inkscape/preferences.xml', 'r') as f:
-    inkscape_config = f.read()
-
-list_of_export_formats = ['JPEG']
-list_of_format_tips = {'JPEG':'The JPEG format always has some loss of quality. Although it supports CMYK, it is not recommended for use in printed graphics.'}
-list_of_color_modes_jpeg = ['CMYK','RGB','Gray','CMY','HSB','HSL','HWB','Lab','Log', 'OHTA','Rec601Luma','Rec601YCbCr','Rec709Luma','Rec709YCbCr','sRGB','XYZ','YCbCr','YCC','YIQ','YPbPr','YUV']
-list_of_interlacing_jpeg = {u'None':'none', u'Line':'line', u'Plane':'plane', u'Partition':'partition'}
-list_of_noise_jpeg = {u'Gaussian':'Gaussian-noise', u'Impulse':'Impulse-noise', u'Laplacian':'Laplacian-noise', u'Multiplicative':'Multiplicative-noise', u'Poisson':'Poisson-noise', u'Uniform':'Uniform-noise'}
-list_of_subsampling_jpeg = ['1x1, 1x1, 1x1', '2x1, 1x1, 1x1', '1x2, 1x1, 1x1', '2x2, 1x1, 1x1']
-list_of_dct_jpeg = {u'Integer':'int', u'Integer (fast)':'fast', u'Floating point':'float'}
-list_of_area_to_export = [_(u"Page"), _(u"Drawing"), _(u"Object")]#,  _(u"Área definida")]
-list_of_profiles = os.listdir('/usr/share/color/icc/')
 uuconv = {'in':90.0, 'pt':1.25, 'px':1, 'mm':3.5433070866, 'cm':35.433070866, 'pc':15.0}
-
-selected_screen_profile = inkscape_config.split('id="displayprofile"')[1].split('uri="')[1].split('" />')[0].split('/')[-1]
-selected_print_profile = inkscape_config.split('id="softproof"')[1].split('uri="')[1].split('" />')[0].split('/')[-1]
-
-rgb_profile = '"' + inkscape_config.split('id="displayprofile"')[1].split('uri="')[1].split('" />')[0] + '"'
-#cmyk_profile = '"' + inkscape_config.split('id="softproof"')[1].split('uri="')[1].split('" />')[0] + '"'
 
 def unittouu(string):
     '''Returns userunits given a string representation of units in another system'''
@@ -49,7 +24,7 @@ def unittouu(string):
     param = re.compile(r'(([-+]?[0-9]+(\.[0-9]*)?|[-+]?\.[0-9]+)([eE][-+]?[0-9]+)?)')
 
     p = param.match(string)
-    u = unit.search(string)    
+    u = unit.search(string)
     if p:
         retval = float(p.string[p.start():p.end()])
     else:
@@ -63,8 +38,8 @@ def unittouu(string):
 
 class OutputProBitmap(inkex.EffectExtension):
     
-    def add_arguments(self, pars):
-        pars.add_argument("--title")
+    #def add_arguments(self, pars):
+        #pars.add_argument("--title")
         #pars.add_argument("-n", "--noffset",type=float, default=0.0, help="normal offset")
         #pars.add_argument("-t", "--toffset", type=float, default=0.0, help="tangential offset")
         #pars.add_argument("-k", "--kind", default=True, help="choose between wave or snake effect")
@@ -74,6 +49,34 @@ class OutputProBitmap(inkex.EffectExtension):
         #pars.add_argument("-d", "--duplicate", type=inkex.Boolean, default=False, help="duplicate pattern before deformation")
 
     def effect(self):
+        with open(os.path.join(os.path.abspath(inkex.utils.get_user_directory() + "/../"), "preferences.xml"), 'r') as f:
+            inkscape_config = f.read()
+        
+        list_of_export_formats = ['JPEG']
+        list_of_format_tips = {'JPEG':'The JPEG format always has some loss of quality. Although it supports CMYK, it is not recommended for use in printed graphics.'}
+        list_of_color_modes_jpeg = ['CMYK','RGB','Gray','CMY','HSB','HSL','HWB','Lab','Log', 'OHTA','Rec601Luma','Rec601YCbCr','Rec709Luma','Rec709YCbCr','sRGB','XYZ','YCbCr','YCC','YIQ','YPbPr','YUV']
+        list_of_interlacing_jpeg = {u'None':'none', u'Line':'line', u'Plane':'plane', u'Partition':'partition'}
+        list_of_noise_jpeg = {u'Gaussian':'Gaussian-noise', u'Impulse':'Impulse-noise', u'Laplacian':'Laplacian-noise', u'Multiplicative':'Multiplicative-noise', u'Poisson':'Poisson-noise', u'Uniform':'Uniform-noise'}
+        list_of_subsampling_jpeg = ['1x1, 1x1, 1x1', '2x1, 1x1, 1x1', '1x2, 1x1, 1x1', '2x2, 1x1, 1x1']
+        list_of_dct_jpeg = {u'Integer':'int', u'Integer (fast)':'fast', u'Floating point':'float'}
+        list_of_area_to_export = [_(u"Page"), _(u"Drawing"), _(u"Object")]#,  _(u"Área definida")]
+        
+        #On Windows 7+ -> C:\Windows\System32\spool\drivers\color
+        #On Linux: /usr/share/color/icc/
+
+        if "nt" in os.name:
+            icc_dir = 'C:\\Windows\\System32\\spool\\drivers\\color'
+        else:
+             icc_dir = '/usr/share/color/icc/'
+        list_of_profiles = os.listdir(icc_dir)
+
+        selected_screen_profile = inkscape_config.split('id="displayprofile"')[1].split('uri="')[1].split('" />')[0].split('/')[-1]
+        selected_print_profile = inkscape_config.split('id="softproof"')[1].split('uri="')[1].split('" />')[0].split('/')[-1]
+        
+        rgb_profile = '"' + inkscape_config.split('id="displayprofile"')[1].split('uri="')[1].split('" />')[0] + '"'
+        #cmyk_profile = '"' + inkscape_config.split('id="softproof"')[1].split('uri="')[1].split('" />')[0] + '"'
+    
+        
         list_of_selected_objects = []
         for id, node in self.svg.selected.items():
             list_of_selected_objects.append(node.get('id'))
@@ -84,12 +87,8 @@ class OutputProBitmap(inkex.EffectExtension):
 
         resolution = '90'
 
-        with open(self.options.input_file, 'r') as f:
-            self.code = f.read()
-          
-        with open(dirpathTempFolder +  "/original.svg", 'w') as f:
-            self.code = f.write(self.code)
-            
+        shutil.copy2(self.options.input_file, os.path.join(dirpathTempFolder.name, "original.svg")) # complete target filename given
+
         svg = self.document.getroot()
         page_width  = unittouu(svg.get('width'))
         page_height = unittouu(svg.attrib['height'])
@@ -115,7 +114,7 @@ class OutputProBitmap(inkex.EffectExtension):
 
                 self.preview_bitmap = QtWidgets.QLabel(parent=self.preview_panel)
                 self.preview_bitmap.setGeometry(10, 70, 300, 300)
-                self.preview_bitmap.setPixmap(QtGui.QPixmap(os.path.join(dirpathTempFolder, 'preview.png')))
+                self.preview_bitmap.setPixmap(QtGui.QPixmap(os.path.join(dirpathTempFolder.name, 'preview.png')))
                 #self.preview_bitmap.setStyleSheet("QWidget { background: url(alpha.png)}")
                 #self.preview_bitmap.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignCenter)
 
@@ -561,25 +560,24 @@ class OutputProBitmap(inkex.EffectExtension):
                         self.preview_result_title.setVisible(True)
 
                         final_command = ['convert']
-                        final_command.append(dirpathTempFolder +  '/result-imp.' + list_of_export_formats[self.format_choice.currentIndex()].lower())
+                        final_command.append(os.path.join(dirpathTempFolder.name, 'result-imp.') + list_of_export_formats[self.format_choice.currentIndex()].lower())
 
                         if self.color_profile_choice_jpeg.isChecked():
                             final_command.append('-profile')
-                            final_command.append('/usr/share/color/icc/' + selected_screen_profile)
+                            final_command.append(os.path.join(icc_dir, selected_screen_profile))
 
-                        final_command.append(dirpathTempFolder +  '/result.png')
+                        final_command.append(os.path.join(dirpathTempFolder.name, 'result.png'))
 
                         subprocess.Popen(final_command).wait()
 
-                        file_info = subprocess.Popen(['identify', dirpathTempFolder +  '/source.png'], stdout=subprocess.PIPE).communicate()[0]
-
+                        file_info = subprocess.Popen(['identify', os.path.join(dirpathTempFolder.name,  'source.png')], stdout=subprocess.PIPE).communicate()[0].decode('UTF-8')
                         image_width = int(file_info.split(' ')[2].split('x')[0])
                         image_height = int(file_info.split(' ')[2].split('x')[1])
 
                         marksize = (self.dpi_choice.value() / 90) * unittouu(str(self.prepress_paper_cutmarks_marksize_value.text()) + str(self.prepress_paper_cutmarks_marksize_choice.currentText()))
                         imposition_space = (self.dpi_choice.value() / 90) * unittouu(str(self.imposition_space_value.text()) + str(self.imposition_space_choice.currentText()))
 
-                        file_info = subprocess.Popen(['identify', '-verbose',dirpathTempFolder +  '/result-imp.' + list_of_export_formats[self.format_choice.currentIndex()].lower()], stdout=subprocess.PIPE).communicate()[0]
+                        file_info = subprocess.Popen(['identify', '-verbose', os.path.join(dirpathTempFolder.name,  'result-imp.') + list_of_export_formats[self.format_choice.currentIndex()].lower()], stdout=subprocess.PIPE).communicate()[0].decode('UTF-8')
 
                         file_info_final = ''
                         for line in file_info.split('\n'):
@@ -611,29 +609,28 @@ class OutputProBitmap(inkex.EffectExtension):
                             what_show = '-extent ' + str(int(300 * self.preview_zoom)) + 'x' + str(int(300 * self.preview_zoom)) + '-' + str(int(150 * self.preview_zoom) - int(image_width / 2)) + '-' + str(int(150 * self.preview_zoom) - int(image_height / 2))
                         else:
                             what_show = '-crop ' + str(int(300 * self.preview_zoom)) + 'x' + str(int(300 * self.preview_zoom)) + '+' + str(int(image_width / 2) - int(150 * self.preview_zoom)) + '+' + str(int(image_height / 2) - int(150 * self.preview_zoom))
-
-                        os.system('convert "' + dirpathTempFolder +  '/source.png" ' + what_show + ' "' + dirpathTempFolder +  '/original.png"' )
+                        os.system('convert "' + os.path.join(dirpathTempFolder.name,  'source.png') +  '" ' + what_show + ' "' + os.path.join(dirpathTempFolder.name,  'original.png') +  '"' )
 
                         if image_width < 300 or image_height < 300:
                             what_show = '-extent ' + str(int(300 * self.preview_zoom)) + 'x' + str(int(300 * self.preview_zoom)) + '-' + str(int(150 * self.preview_zoom) - int(image_width / 2) - margin) + '-' + str(int(150 * self.preview_zoom) - int(image_height / 2) - margin)
                         else:
                             what_show = '-crop ' + str(int(300 * self.preview_zoom)) + 'x' + str(int(300 * self.preview_zoom)) + '+' + str(int(image_width / 2) - int(150 * self.preview_zoom) + margin) + '+' + str(int(image_height / 2) - int(150 * self.preview_zoom) + margin)
 
-                        os.system('convert "' + dirpathTempFolder +  '/result.png" ' + what_show + ' "' + dirpathTempFolder +  '/result.png"' )
+                        os.system('convert "' + os.path.join(dirpathTempFolder.name,  'result.png') +  '" ' + what_show + ' "' + os.path.join(dirpathTempFolder.name,  'result.png') +  '"' )
 
                         if not self.preview_zoom == 1:
-                            os.system('convert "' + dirpathTempFolder +  '/original.png" -filter box -resize 300x300 "' + dirpathTempFolder +  '/original.png"' )
-                            os.system('convert "' + dirpathTempFolder +  '/result.png" -filter box -resize 300x300 "' + dirpathTempFolder +  '/result.png"' )
+                            os.system('convert "' + os.path.join(dirpathTempFolder.name,  'original.png') +  '" -filter box -resize 300x300 "' + os.path.join(dirpathTempFolder.name,  'original.png') +  '"' )
+                            os.system('convert "' + os.path.join(dirpathTempFolder.name,  'result.png') +  '" -filter box -resize 300x300 "' + os.path.join(dirpathTempFolder.name,  'result.png') +  '"' )
 
-                        os.system('convert "' + dirpathTempFolder +  '/original.png" "' + dirpathTempFolder +  '/result.png" "' + dirpathSoftware + '/preview_mask.png" -composite "' + dirpathTempFolder +  '/preview.png"' )
+                        os.system('convert "' + os.path.join(dirpathTempFolder.name,  'original.png') +  '" "' + os.path.join(dirpathTempFolder.name,  'result.png') +  '" "' + os.path.join(dirpathTempFolder.name,  'preview_mask.png') + '" -composite "' +  os.path.join(dirpathTempFolder.name,  'preview.png') +  '"' )
 
-                        self.view_image_info.setText(unicode(file_info_final + '<br><small>' + list_of_format_tips[list_of_export_formats[self.format_choice.currentIndex()]] + '</small>', 'utf-8'))
+                        self.view_image_info.setText(file_info_final + '<br><small>' + list_of_format_tips[list_of_export_formats[self.format_choice.currentIndex()]] + '</small>')
 
                     elif self.option_box.currentIndex() == 1:
                         self.preview_original_title.setVisible(False)
                         self.preview_result_title.setVisible(False)
 
-                        subprocess.Popen(['convert', dirpathTempFolder +  '/result-imp.' + list_of_export_formats[self.format_choice.currentIndex()].lower(), '-resize', '300x300', os.path.join(dirpathTempFolder, 'preview.png')]).wait()
+                        subprocess.Popen(['convert', os.path.join(dirpathTempFolder.name,  'result-imp.') + list_of_export_formats[self.format_choice.currentIndex()].lower(), '-resize', '300x300', os.path.join(dirpathTempFolder.name, 'preview.png')]).wait()
 
                     elif self.option_box.currentIndex() == 2:
                         None
@@ -641,7 +638,7 @@ class OutputProBitmap(inkex.EffectExtension):
                     elif self.option_box.currentIndex() == 3:
                         None
 
-                    self.preview_bitmap.setPixmap(QtGui.QPixmap(os.path.join(dirpathTempFolder, 'preview.png')))
+                    self.preview_bitmap.setPixmap(QtGui.QPixmap(os.path.join(dirpathTempFolder.name, 'preview.png')))
 
             def generate_final_file(self):
                 if list_of_export_formats[self.format_choice.currentIndex()] == 'JPEG':
@@ -649,38 +646,37 @@ class OutputProBitmap(inkex.EffectExtension):
 
                     if not self.cmyk_advanced_manipulation_option_jpeg.isChecked():
                         pre_command = ['convert']
-                        pre_command.append(dirpathTempFolder +  '/source.tiff')
+                        pre_command.append(os.path.join(dirpathTempFolder.name, 'source.tiff'))
 
                         if list_of_color_modes_jpeg[self.color_mode_choice_jpeg.currentIndex()] == 'CMYK' or list_of_color_modes_jpeg[self.color_mode_choice_jpeg.currentIndex()] == 'RGB':
                             if self.color_profile_choice_jpeg.isChecked():
                                 pre_command.append('-profile')
-                                pre_command.append('/usr/share/color/icc/' + selected_screen_profile)
+                                pre_command.append(os.path.join(icc_dir, selected_screen_profile))
                                 pre_command.append('-profile')
-                                pre_command.append('/usr/share/color/icc/' + selected_print_profile)
+                                pre_command.append(os.path.join(icc_dir, selected_screen_profile))
 
                             if list_of_color_modes_jpeg[self.color_mode_choice_jpeg.currentIndex()] == 'RGB':
-                                pre_command.append(dirpathTempFolder +  '/result.tiff')
+                                pre_command.append(os.path.join(dirpathTempFolder.name, 'result.tiff'))
                                 subprocess.Popen(pre_command).wait()
                                 del pre_command[:]
                                 pre_command.append('convert')
-                                pre_command.append(dirpathTempFolder +  '/result.tiff')
+                                pre_command.append(os.path.join(dirpathTempFolder.name, 'result.tiff'))
                                 pre_command.append('-profile')
-                                pre_command.append('/usr/share/color/icc/' + selected_screen_profile)
+                                pre_command.append(os.path.join(icc_dir, selected_screen_profile))
 
-                        pre_command.append(dirpathTempFolder +  '/result.tiff')
+                        pre_command.append(os.path.join(dirpathTempFolder.name, 'result.tiff'))
                         subprocess.Popen(pre_command).wait()
 
                     else:
                         if self.color_profile_choice_jpeg.isChecked():
                             pre_command = ['convert']
-                            pre_command.append(dirpathTempFolder +  '/result.tiff')
+                            pre_command.append(os.path.join(dirpathTempFolder.name, 'result.tiff'))
                             pre_command.append('-profile')
-                            pre_command.append('/usr/share/color/icc/' + selected_print_profile)
-                            pre_command.append(dirpathTempFolder +  '/result.tiff')
+                            pre_command.append(os.path.join(icc_dir, selected_screen_profile))
+                            pre_command.append(os.path.join(dirpathTempFolder.name, 'result.tiff'))
                             subprocess.Popen(pre_command).wait()
 
-                    file_info = subprocess.Popen(['identify', dirpathTempFolder +  '/source.png'], stdout=subprocess.PIPE).communicate()[0]
-
+                    file_info = subprocess.Popen(['identify', os.path.join(dirpathTempFolder.name, 'source.png')], stdout=subprocess.PIPE).communicate()[0].decode('UTF-8')
                     if self.prepress_paper_cutmarks_check.isChecked():
                         bleedsize = (self.dpi_choice.value() / 90) * unittouu(str(self.prepress_paper_cutmarks_bleedsize_value.text()) + str(self.prepress_paper_cutmarks_bleedsize_choice.currentText()))
                         marksize = (self.dpi_choice.value() / 90) * unittouu(str(self.prepress_paper_cutmarks_marksize_value.text()) + str(self.prepress_paper_cutmarks_marksize_choice.currentText()))
@@ -699,10 +695,10 @@ class OutputProBitmap(inkex.EffectExtension):
                         image_height.append(int(file_info.split(' ')[2].split('x')[1]))
 
                     imposition_command = ['convert']
-                    imposition_command.append(dirpathTempFolder + '/result.tiff')
+                    imposition_command.append(os.path.join(dirpathTempFolder.name, 'result.tiff'))
                     imposition_command.append('-extent')
                     imposition_command.append(str(sum(image_width) + (marksize*2) + (imposition_space * (len(image_width) -1))) + 'x' + str(sum(image_height) + (marksize*2) + (imposition_space * (len(image_height) -1))) + '-' + str(marksize) + '-' + str(marksize))
-                    imposition_command.append(dirpathTempFolder + '/result-imp.tiff')
+                    imposition_command.append(os.path.join(dirpathTempFolder.name, 'result-imp.tiff'))
                     subprocess.Popen(imposition_command).wait()
 
                     last_width = 0
@@ -714,9 +710,9 @@ class OutputProBitmap(inkex.EffectExtension):
                                 imposition_command = ['composite']
                                 imposition_command.append('-geometry')
                                 imposition_command.append('+'  + str(last_width + marksize) + '+' + str(last_height + marksize))
-                                imposition_command.append(dirpathTempFolder + '/result.tiff')
-                                imposition_command.append(dirpathTempFolder + '/result-imp.tiff')
-                                imposition_command.append(dirpathTempFolder + '/result-imp.tiff')
+                                imposition_command.append(os.path.join(dirpathTempFolder.name, 'result.tiff'))
+                                imposition_command.append(os.path.join(dirpathTempFolder.name, 'result-imp.tiff'))
+                                imposition_command.append(os.path.join(dirpathTempFolder.name, 'result-imp.tiff'))
                                 subprocess.Popen(imposition_command).wait()
 
                             last_height += height + imposition_space
@@ -732,12 +728,12 @@ class OutputProBitmap(inkex.EffectExtension):
                         cut_marks_command.append('Multiply')
                         cut_marks_command.append('-gravity')
                         cut_marks_command.append('center')
-                        cut_marks_command.append(dirpathTempFolder + '/cut_mark.tiff')
-                        cut_marks_command.append(dirpathTempFolder + '/result-imp.tiff')
-                        cut_marks_command.append(dirpathTempFolder + '/result-imp.tiff')
+                        cut_marks_command.append(os.path.join(dirpathTempFolder.name, 'cut_mark.tiff'))
+                        cut_marks_command.append(os.path.join(dirpathTempFolder.name, 'result-imp.tiff'))
+                        cut_marks_command.append(os.path.join(dirpathTempFolder.name, 'result-imp.tiff'))
                         subprocess.Popen(cut_marks_command).wait()
 
-                    jpeg_command.append(dirpathTempFolder +  '/result-imp.tiff')
+                    jpeg_command.append(os.path.join(dirpathTempFolder.name, 'result-imp.tiff'))
 
                     if self.prepress_paper_settings_invert.isChecked():
                         jpeg_command.append('-negate')
@@ -753,7 +749,7 @@ class OutputProBitmap(inkex.EffectExtension):
 
                     if self.jpeg_interlace_option_jpeg.isChecked():
                         jpeg_command.append('-interlace')
-                        jpeg_command.append(list_of_interlacing_jpeg[unicode(self.jpeg_interlace_choice_jpeg.currentText(), 'utf-8')])
+                        jpeg_command.append(list_of_interlacing_jpeg[self.jpeg_interlace_choice_jpeg.currentText()])
 
                     if self.jpeg_optimize_option_jpeg.isChecked():
                         jpeg_command.append('-type')
@@ -761,16 +757,16 @@ class OutputProBitmap(inkex.EffectExtension):
 
                     if self.jpeg_noise_option_jpeg.isChecked():
                         jpeg_command.append('-evaluate')
-                        jpeg_command.append(list_of_noise_jpeg[unicode(self.jpeg_noise_choice_jpeg.currentText(), 'utf-8')])
+                        jpeg_command.append(list_of_noise_jpeg[self.jpeg_noise_choice_jpeg.currentText()])
                         jpeg_command.append(str(self.jpeg_noise_ammount_jpeg.value()))
 
                     jpeg_command.append('-sampling-factor')
                     jpeg_command.append(self.jpeg_subsampling_choice_jpeg.currentText())
 
                     jpeg_command.append('-define')
-                    jpeg_command.append('jpeg:dct-method=' + list_of_dct_jpeg[unicode(self.jpeg_dct_choice_jpeg.currentText(), 'utf-8')])
+                    jpeg_command.append('jpeg:dct-method=' + list_of_dct_jpeg[self.jpeg_dct_choice_jpeg.currentText()])
 
-                    jpeg_command.append(dirpathTempFolder +  '/result-imp.jpeg')
+                    jpeg_command.append(os.path.join(dirpathTempFolder.name, 'result-imp.jpeg'))
 
                     subprocess.Popen(jpeg_command).wait()
 
@@ -850,16 +846,16 @@ class OutputProBitmap(inkex.EffectExtension):
 
             def cmyk_overprint_black(self):
                 if self.cmyk_overblack_jpeg.isChecked():
-                    cmyk.generate_svg_separations(dirpathTempFolder +  '/', open(dirpathTempFolder +  '/original.svg').read(), True)
+                    cmyk.generate_svg_separations(dirpathTempFolder +  '/', open(os.path.join(dirpathTempFolder.name, 'original.svg')).read(), True)
                 else:
-                    cmyk.generate_svg_separations(dirpathTempFolder +  '/', open(dirpathTempFolder +  '/original.svg').read(), False)
+                    cmyk.generate_svg_separations(dirpathTempFolder +  '/', open(os.path.join(dirpathTempFolder.name, 'original.svg')).read(), False)
 
             def cmyk_advanced_manipulation(self):
                 area_to_export = self.area_to_export()
                 cmyk.generate_png_separations(dirpathTempFolder + '/', self.area_to_export(), self.dpi_choice.value(), False)
 
                 for color in ['C', 'M', 'Y', 'K']:
-                    subprocess.Popen(['convert', dirpathTempFolder + '/' + "separated" + area_to_export.replace(' ', '') + color + ".png", '-colorspace', 'CMYK', '-channel', color, '-separate', dirpathTempFolder + '/' + "separated" + area_to_export.replace(' ', '') + color + ".png"]).wait()
+                    subprocess.Popen(['convert', os.path.join(dirpathTempFolder.name, 'separated') + area_to_export.replace(' ', '') + color + ".png", '-colorspace', 'CMYK', '-channel', color, '-separate', dirpathTempFolder + '/' + "separated" + area_to_export.replace(' ', '') + color + ".png"]).wait()
 
                 self.cmyk_advanced_manipulation_view_separations()
 
@@ -870,51 +866,51 @@ class OutputProBitmap(inkex.EffectExtension):
 
                 image_size = file_info.split(' ')[2]
 
-                subprocess.Popen(['convert', '-size', image_size, 'xc:black', dirpathTempFolder +  '/empty.png']).wait()
+                subprocess.Popen(['convert', '-size', image_size, 'xc:black',  os.path.join(dirpathTempFolder.name, 'empty.png')]).wait()
 
                 final_command = ['convert']
 
                 if self.view_c_button.isChecked():
-                    final_command.append(dirpathTempFolder + '/' + "separated" + area_to_export.replace(' ', '') + 'C' + ".png")
+                    final_command.append( os.path.join(dirpathTempFolder.name, 'separated') + area_to_export.replace(' ', '') + 'C' + ".png")
                 else:
-                    final_command.append(dirpathTempFolder + '/' + "empty.png")
+                    final_command.append( os.path.join(dirpathTempFolder.name, 'empty.pn'))
 
                 if self.view_m_button.isChecked():
-                    final_command.append(dirpathTempFolder + '/' + "separated" + area_to_export.replace(' ', '') + 'M' + ".png")
+                    final_command.append( os.path.join(dirpathTempFolder.name, 'separated') + area_to_export.replace(' ', '') + 'M' + ".png")
                 else:
-                    final_command.append(dirpathTempFolder + '/' + "empty.png")
+                    final_command.append( os.path.join(dirpathTempFolder.name, 'empty.png'))
 
                 if self.view_y_button.isChecked():
-                    final_command.append(dirpathTempFolder + '/' + "separated" + area_to_export.replace(' ', '') + 'Y' + ".png")
+                    final_command.append( os.path.join(dirpathTempFolder.name, 'separated') + area_to_export.replace(' ', '') + 'Y' + ".png")
                 else:
-                    final_command.append(dirpathTempFolder + '/' + "empty.png")
+                    final_command.append( os.path.join(dirpathTempFolder.name, 'empty.png'))
 
                 if self.view_k_button.isChecked():
-                    final_command.append(dirpathTempFolder + '/' + "separated" + area_to_export.replace(' ', '') + 'K' + ".png")
+                    final_command.append( os.path.join(dirpathTempFolder.name, 'separated') + area_to_export.replace(' ', '') + 'K' + ".png")
                 else:
-                    final_command.append(dirpathTempFolder + '/' + "empty.png")
+                    final_command.append( os.path.join(dirpathTempFolder.name, 'empty.png'))
 
                 final_command.extend(['-set', 'colorspace', 'cmyk'])
-                final_command.extend(['-combine', dirpathTempFolder + '/' + 'result.tiff'])
+                final_command.extend(['-combine', os.path.join(dirpathTempFolder.name, 'result.tiff')])
                 subprocess.Popen(final_command).wait()
 
                 self.generate_preview()
 
             def area_to_export(self):
                 if self.area_to_export_choice.currentIndex() == 1:
-                    return ' -D '
+                    return 'export-area-drawing'
 
                 elif self.area_to_export_choice.currentIndex() == 2:
                     if self.area_to_export_idonly_check.isChecked():
-                        return ' --export-id=' + str(self.area_to_export_id_name.text()) + ' --export-id-only '
+                        return 'export-id:' + str(self.area_to_export_id_name.text()) + 'export-id-only'
                     else:
-                        return ' --export-id=' + str(self.area_to_export_id_name.text())
+                        return 'export-id:' + str(self.area_to_export_id_name.text())
 
                 elif self.area_to_export_choice.currentIndex() == 3:
-                    return ' --export-area=' + str(self.x0_value.value()) + ':' + str(self.y0_value.value()) + ':' + str(self.x1_value.value()) + ':' + str(self.y1_value.value())
+                    return 'export-area:' + str(self.x0_value.value()) + ':' + str(self.y0_value.value()) + ':' + str(self.x1_value.value()) + ':' + str(self.y1_value.value())
 
                 else:
-                    return ' -C '
+                    return 'export-area-page'
 
             def change_area_to_export(self):
                 self.x0_value.setVisible(False)
@@ -937,8 +933,14 @@ class OutputProBitmap(inkex.EffectExtension):
                     self.x1_value.setVisible(True)
                     self.y1_value.setVisible(True)
 
-                os.system('inkscape' + ' -z "' + dirpathTempFolder +  '/original.svg" ' + self.area_to_export() + ' --export-dpi=' + str(self.dpi_choice.value()) + ' --export-background-opacity=1 --export-png="' + dirpathTempFolder + '/source.png"' + null_dir)
-                subprocess.Popen(['convert', dirpathTempFolder + '/source.png', dirpathTempFolder + '/source.tiff']).wait()
+                cmd = self.area_to_export() + ';export-dpi:' + str(self.dpi_choice.value()) + ';export-background-opacity:1;export-filename:' + os.path.join(dirpathTempFolder.name, 'source.png') + ';export-do'
+                cli_output = inkscape(os.path.join(dirpathTempFolder.name, 'original.svg'), actions=cmd)
+                if len(cli_output) > 0:
+                    self.debug(_("Inkscape returned the following output when trying to run the file export; the file export may still have worked:"))
+                    self.debug(cli_output)
+
+                #ImageMagick
+                subprocess.Popen(['convert', os.path.join(dirpathTempFolder.name, 'source.png'), os.path.join(dirpathTempFolder.name, 'source.tiff')]).wait()
 
                 self.generate_preview()
 
@@ -1020,15 +1022,16 @@ class OutputProBitmap(inkex.EffectExtension):
                     self.generate_final_file()
 
                 if not str(self.location_path) == '':
-                    shutil.copy2(dirpathTempFolder +  '/result-imp.' + list_of_export_formats[self.format_choice.currentIndex()].lower(), self.location_path)
+                    shutil.copy2(os.path.join(dirpathTempFolder.name, 'result-imp.') + list_of_export_formats[self.format_choice.currentIndex()].lower(), self.location_path)
 
 
 
         app = QtWidgets.QApplication(sys.argv)
         app.main = mainWindow()
         app.main.show()
-
+        dirpathTempFolder.cleanup() #close temp dir
         sys.exit(app.exec_())
+
 
 if __name__ == '__main__':
     OutputProBitmap().run()

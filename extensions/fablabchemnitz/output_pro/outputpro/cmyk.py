@@ -1,7 +1,6 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 
-import re, subprocess, simplestyle, os#inkex, os, random, sys, subprocess, shutil
+import re, subprocess, simplestyle, os
 
 def calculateCMYK(red, green, blue):
     C = float()
@@ -25,11 +24,11 @@ def calculateCMYK(red, green, blue):
     return [C, M, Y, K]
 
 def clean_svg_color_definitions(svg):
-    def change_colors(origin, tipo_cor):
-        for i in range(len(str(origin).split(tipo_cor + ':'))):
-            if str(str(origin).split(tipo_cor + ':')[i].split(';')[0]) in simplestyle.svgcolors.keys():
-                numeros_da_cor = simplestyle.formatColoria(simplestyle.parseColor(str(str(origin).split(tipo_cor + ':')[i].split(';')[0])))
-                origin = str(origin).replace(':' + str(str(origin).split(tipo_cor + ':')[i].split(';')[0]) + ';', ':' + numeros_da_cor + ';')
+    def change_colors(origin, color_type):
+        for i in range(len(str(origin).split(color_type + ':'))):
+            if str(str(origin).split(color_type + ':')[i].split(';')[0]) in simplestyle.svgcolors.keys():
+                color_numbers = simplestyle.formatColoria(simplestyle.parseColor(str(str(origin).split(color_type + ':')[i].split(';')[0])))
+                origin = str(origin).replace(':' + str(str(origin).split(color_type + ':')[i].split(';')[0]) + ';', ':' + color_numbers + ';')
         return origin
 
     colortypes = ['fill', 'stop-color', 'flood-color', 'lighting-color', 'stroke']
@@ -38,16 +37,16 @@ def clean_svg_color_definitions(svg):
 
     return svg
 
-def removeK(origem):
-    def zerar_opacidade(valor):
-        return str(valor.group()).split('opacity:')[0] + "opacity:0;"
-    #return re.sub("#000000;fill-opacity:[0-9.]+;", zerar_opacidade, re.sub("#000000;stop-opacity:[0-9.]+;", zerar_opacidade, re.sub("#000000;stroke-opacity:[0-9.]+;", zerar_opacidade, re.sub("#000000;flood-opacity:[0-9.]+;", zerar_opacidade, re.sub("#000000;lighting-opacity:[0-9.]+;", zerar_opacidade, origem)))))
-    return re.sub("#000000;fill-opacity:[0-9.?]+", zerar_opacidade, re.sub("#000000;stop-opacity:[0-9.?]+", zerar_opacidade, re.sub("#000000;stroke-opacity:[0-9.?]+", zerar_opacidade, re.sub("#000000;flood-opacity:[0-9.?]+", zerar_opacidade, re.sub("#000000;lighting-opacity:[0-9.?]+", zerar_opacidade, origem)))))
+def removeK(origin):
+    def reset_opacity(value):
+        return str(value.group()).split('opacity:')[0] + "opacity:0;"
+    #return re.sub("#000000;fill-opacity:[0-9.]+;", reset_opacity, re.sub("#000000;stop-opacity:[0-9.]+;", reset_opacity, re.sub("#000000;stroke-opacity:[0-9.]+;", reset_opacity, re.sub("#000000;flood-opacity:[0-9.]+;", reset_opacity, re.sub("#000000;lighting-opacity:[0-9.]+;", reset_opacity, origin)))))
+    return re.sub("#000000;fill-opacity:[0-9.?]+", reset_opacity, re.sub("#000000;stop-opacity:[0-9.?]+", reset_opacity, re.sub("#000000;stroke-opacity:[0-9.?]+", reset_opacity, re.sub("#000000;flood-opacity:[0-9.?]+", reset_opacity, re.sub("#000000;lighting-opacity:[0-9.?]+", reset_opacity, origin)))))
 
 def representC(value):
     # returns CMS color if available
-    if (re.search("icc-color", value.group()) ):
-        return simplestyle.formatColor3f(float(1.00 - float(re.split('[,\)\s]+',value.group())[2])), float(1.00), float(1.00))
+    if (re.search("icc-color", value.group())):
+        return simplestyle.formatColor3f(float(1.00 - float(re.split(r'[,\)\s]+',value.group())[2])), float(1.00), float(1.00))
     else:
         red =   float(simplestyle.parseColor(str(value.group()))[0]/255.00)
         green = float(simplestyle.parseColor(str(value.group()))[1]/255.00)
@@ -57,7 +56,7 @@ def representC(value):
 def representM(value):
     # returns CMS color if available
     if ( re.search("icc-color", value.group()) ):
-        return simplestyle.formatColor3f(float(1.00), float(1.00 - float(re.split('[,\)\s]+',value.group())[3])), float(1.00))
+        return simplestyle.formatColor3f(float(1.00), float(1.00 - float(re.split(r'[,\)\s]+',value.group())[3])), float(1.00))
     else:
         red =   float(simplestyle.parseColor(str(value.group()))[0]/255.00)
         green = float(simplestyle.parseColor(str(value.group()))[1]/255.00)
@@ -67,7 +66,7 @@ def representM(value):
 def representY(value):
     # returns CMS color if available
     if (re.search("icc-color", value.group()) ):
-        return simplestyle.formatColor3f(float(1.00), float(1.00), float(1.00 - float(re.split('[,\)\s]+',value.group())[4])))
+        return simplestyle.formatColor3f(float(1.00), float(1.00), float(1.00 - float(re.split(r'[,\)\s]+',value.group())[4])))
     else:
         red =   float(simplestyle.parseColor(str(value.group()))[0]/255.00)
         green = float(simplestyle.parseColor(str(value.group()))[1]/255.00)
@@ -77,7 +76,7 @@ def representY(value):
 def representK(value):
     # returns CMS color if available
     if (re.search("icc-color", value.group()) ):
-        return simplestyle.formatColor3f(float(1.00 - float(re.split('[,\)\s]+',value.group())[5])), float(1.00 - float(re.split('[,\)\s]+',value.group())[5])), float(1.00 - float(re.split('[,\)\s]+',value.group())[5])))
+        return simplestyle.formatColor3f(float(1.00 - float(re.split(r'[,\)\s]+',value.group())[5])), float(1.00 - float(re.split(r'[,\)\s]+',value.group())[5])), float(1.00 - float(re.split(r'[,\)\s]+',value.group())[5])))
     else:
         red =   float(simplestyle.parseColor(str(value.group()))[0]/255.00)
         green = float(simplestyle.parseColor(str(value.group()))[1]/255.00)
@@ -88,14 +87,14 @@ def representK(value):
 def generate_svg_separations(temp_dir, original_source, overblack):
     svg_ready = clean_svg_color_definitions(original_source)
 
-    open(temp_dir + "separationK.svg","w").write(re.sub("#[a-fA-F0-9]{6}( icc-color\(.*?\))?", representK, svg_ready))
+    open(temp_dir + "separationK.svg","w").write(re.sub(r"#[a-fA-F0-9]{6}( icc-color\(.*?\))?", representK, svg_ready))
 
     if overblack:
         svg_ready = removeK(svg_ready)
 
-    open(temp_dir + "separationC.svg","w").write(re.sub("#[a-fA-F0-9]{6}( icc-color\(.*?\))?", representC, svg_ready))
-    open(temp_dir + "separationM.svg","w").write(re.sub("#[a-fA-F0-9]{6}( icc-color\(.*?\))?", representM, svg_ready))
-    open(temp_dir + "separationY.svg","w").write(re.sub("#[a-fA-F0-9]{6}( icc-color\(.*?\))?", representY, svg_ready))
+    open(temp_dir + "separationC.svg","w").write(re.sub(r"#[a-fA-F0-9]{6}( icc-color\(.*?\))?", representC, svg_ready))
+    open(temp_dir + "separationM.svg","w").write(re.sub(r"#[a-fA-F0-9]{6}( icc-color\(.*?\))?", representM, svg_ready))
+    open(temp_dir + "separationY.svg","w").write(re.sub(r"#[a-fA-F0-9]{6}( icc-color\(.*?\))?", representY, svg_ready))
 
 def generate_png_separations(temp_dir, area_to_export, resolution, alpha):
     if alpha:
@@ -106,10 +105,7 @@ def generate_png_separations(temp_dir, area_to_export, resolution, alpha):
     for color in ['C', 'M', 'Y', 'K']:
         string_inkscape_exec += temp_dir + "separation" + color + ".svg " + area_to_export + ' --export-png=' + temp_dir + "separated" + area_to_export.replace(' ', '') + color + ".png" + alpha_command + ' --export-dpi=' + str(resolution) + "\n"
 
-    open('/tmp/teste.txt', 'w').write(string_inkscape_exec)
+    open('/tmp/test.txt', 'w').write(string_inkscape_exec)
 
     inkscape_exec = subprocess.Popen(['inkscape -z --shell'], shell=True, stdout=open(os.devnull, 'w'), stderr=open(os.devnull, 'w'), stdin=subprocess.PIPE)
     inkscape_exec.communicate(input=string_inkscape_exec)
-
-
-

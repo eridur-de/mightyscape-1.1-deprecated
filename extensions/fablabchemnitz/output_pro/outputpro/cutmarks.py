@@ -1,7 +1,6 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 
-import subprocess #re, subprocess, simplestyle, os#inkex, os, random, sys, subprocess, shutil
+import subprocess
 
 def generate_final_file(isvector, hide_inside_marks, colormode, width, height, space, strokewidth, bleedsize, marksize, temp_dir):
     if not isvector:
