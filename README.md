@@ -1,4 +1,4 @@
-# MightyScape for Inkscape 1.0 / 1.1dev
+# MightyScape for Inkscape 1.0+
 
 Looking to get more productive i started using some more special Inkscape extensions. I love Inkscape. And i love things like 3d printing, laser cutting, vinyl cutting, pen plotting, maths, physics, geometry, patterns, 2D drawings, 3D CAD and so on. I am also interested to learn embroidery and more stuff. All this you can do with Inkscape! After years i recognized that there is no good source to pull extensions in a quick and clean way. Each developer puts his own code on his hidden/unknown repository and often without enough documentation or visible results for understanding. Many plugins are completely unknown and a lot of extensions are forked x times or are unmaintained. So many of them do not work with recent Inkscape or were never tested with newer versions so far.
 
