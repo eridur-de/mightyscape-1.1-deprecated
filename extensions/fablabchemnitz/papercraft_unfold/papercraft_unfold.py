@@ -179,11 +179,17 @@ class Unfold(inkex.EffectExtension):
         except FileNotFoundError as e:
             inkex.utils.debug("There was no SVG output generated. Cannot continue")
             exit(1)
-        p = etree.XMLParser(huge_tree=True)
-        doc = etree.parse(stream, parser=etree.XMLParser(huge_tree=True)).getroot()
-        stream.close()
+        p = etree.XMLParser(huge_tree=True)   
+        try:
+            doc = etree.parse(stream, parser=etree.XMLParser(huge_tree=True)).getroot()
+        except BaseException as e:
+            self.msg("Error: STL could not be unfolded")
+            exit(1)
+        finally:
+            stream.close()
+
         doc.set('id', self.svg.get_unique_id('papercraft_unfold'))
-        self.document.getroot().append(doc)              
+        self.document.getroot().append(doc)             
 
         #adjust viewport and width/height to have the import at the center of the canvas
         if self.options.resizetoimport:
