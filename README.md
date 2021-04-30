@@ -46,3 +46,11 @@ I think this package is ideal for makers who are travelling around and/or using 
 
 # Documentation and examples
 Please see at https://fablabchemnitz.de/pages/viewpage.action?pageId=73040380
+
+# Donate
+We are the Stadtfabrikanten, running the FabLab Chemnitz since 2016. A FabLab is an open workshop that gives people access to machines and digital tools like 3D printers, laser cutters and CNC milling machines.
+
+You like our work and want to support us? You can donate to our non-profit organization by different ways:
+https://y.stadtfabrikanten.org/donate
+
+**Thanks for using our extension and helping us!**
