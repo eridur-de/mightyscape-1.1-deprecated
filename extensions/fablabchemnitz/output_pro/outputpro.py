@@ -55,10 +55,13 @@ class OutputProBitmap(inkex.EffectExtension):
             if "nt" in os.name:
                 icc_dir = 'C:\\Windows\\System32\\spool\\drivers\\color'
             else:
-                 icc_dir = '/usr/share/color/icc/'
+                 icc_dir = '/usr/share/color/icc/colord/'
             list_of_profiles = os.listdir(icc_dir)
+            #inkex.utils.debug(list_of_profiles)
     
             selected_screen_profile = inkscape_config.split('id="displayprofile"')[1].split('uri="')[1].split('" />')[0].split('/')[-1]
+            if selected_screen_profile == '':
+                inkex.utils.debug("Configured icc color profile (Inkscape) is not set. Configure it in preferences and restart Inkscape to apply changes.")
             selected_print_profile = inkscape_config.split('id="softproof"')[1].split('uri="')[1].split('" />')[0].split('/')[-1]
             
             rgb_profile = '"' + inkscape_config.split('id="displayprofile"')[1].split('uri="')[1].split('" />')[0] + '"'
