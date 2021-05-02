@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import subprocess
+import subprocess, os
 
 def generate_final_file(isvector, hide_inside_marks, colormode, width, height, space, strokewidth, bleedsize, marksize, temp_dir):
     if not isvector:
@@ -27,8 +27,8 @@ def generate_final_file(isvector, hide_inside_marks, colormode, width, height, s
                 number_of_line = 1
 
                 for line in height:
-
-                    open('/tmp/str.txt', 'a').write(str(width.index(column)))
+                    with open(os.path.join(temp_dir, 'str.txt'), 'a') as f:
+                        f.write(str(width.index(column)))
 
                     if not hide_inside_marks or (hide_inside_marks and number_of_column == 1):
                         command.append('-draw')
@@ -58,24 +58,22 @@ def generate_final_file(isvector, hide_inside_marks, colormode, width, height, s
                     number_of_line += 1
                 width_value += column + space
                 number_of_column += 1
-            command.append(temp_dir + '/cut_mark_' + color + '.png')
+            command.append(os.path.join(temp_dir, 'cut_mark_' + color + '.png'))
             subprocess.Popen(command).wait()
             del command[:]
 
             command.append('convert')
-            command.append(temp_dir + '/cut_mark_' + color + '.png')
+            command.append(os.path.join(temp_dir, 'cut_mark_' + color + '.png'))
             command.append('-colorspace')
             command.append(str(colormode).lower())
             command.append('-channel')
             command.append('K')
             command.append('-separate')
-            command.append(temp_dir + '/cut_mark_' + color + '.png')
+            command.append(os.path.join(temp_dir, 'cut_mark_' + color + '.png'))
             subprocess.Popen(command).wait()
             del command[:]
 
-            final_command.append(temp_dir + '/cut_mark_' + color + '.png')
+            final_command.append(os.path.join(temp_dir, 'cut_mark_' + color + '.png'))
 
-        final_command.extend(['-set', 'colorspace', colormode, '-combine', temp_dir + '/cut_mark.tiff'])
+        final_command.extend(['-set', 'colorspace', colormode, '-combine', os.path.join(temp_dir, 'cut_mark.tiff')])
         subprocess.Popen(final_command).wait()
-    
-    

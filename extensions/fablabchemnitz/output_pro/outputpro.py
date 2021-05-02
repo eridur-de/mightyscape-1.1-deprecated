@@ -609,7 +609,17 @@ class OutputProBitmap(inkex.EffectExtension):
                                 os.system('convert "' + os.path.join(dirpathTempFolder.name,  'original.png') +  '" -filter box -resize 300x300 "' + os.path.join(dirpathTempFolder.name,  'original.png') +  '"' )
                                 os.system('convert "' + os.path.join(dirpathTempFolder.name,  'result.png') +  '" -filter box -resize 300x300 "' + os.path.join(dirpathTempFolder.name,  'result.png') +  '"' )
     
-                            os.system('convert "' + os.path.join(dirpathTempFolder.name,  'original.png') +  '" "' + os.path.join(dirpathTempFolder.name,  'result.png') +  '" "' + os.path.join(dirpathTempFolder.name,  'preview_mask.png') + '" -composite "' +  os.path.join(dirpathTempFolder.name,  'preview.png') +  '"' )
+                            os.system(
+                                'convert "' + 
+                                os.path.join(dirpathTempFolder.name, 'original.png') +  
+                                '" "' + 
+                                os.path.join(dirpathTempFolder.name, 'result.png') +  
+                                '" "' + 
+                                os.path.join(dirpathSoftware, 'preview_mask.png') + #static file from extension directory
+                                '" -composite "' +  
+                                os.path.join(dirpathTempFolder.name, 'preview.png') +  
+                                '"'
+                                )
     
                             self.view_image_info.setText(file_info_final + '<br><small>' + list_of_format_tips[list_of_export_formats[self.format_choice.currentIndex()]] + '</small>')
     
@@ -708,7 +718,16 @@ class OutputProBitmap(inkex.EffectExtension):
                             last_height = 0
     
                         if self.prepress_paper_cutmarks_check.isChecked():
-                            cutmarks.generate_final_file(False, self.prepress_paper_cutmarks_inside_check.isChecked(),list_of_color_modes_jpeg[self.color_mode_choice_jpeg.currentIndex()], image_width, image_height, imposition_space,unittouu(str(self.prepress_paper_cutmarks_strokewidth_value.text()) + str(self.prepress_paper_cutmarks_strokewidth_choice.currentText())), bleedsize, marksize, dirpathTempFolder)
+                            cutmarks.generate_final_file(False, 
+                                                         self.prepress_paper_cutmarks_inside_check.isChecked(),
+                                                         list_of_color_modes_jpeg[self.color_mode_choice_jpeg.currentIndex()], 
+                                                         image_width, 
+                                                         image_height, 
+                                                         imposition_space,
+                                                         unittouu(str(self.prepress_paper_cutmarks_strokewidth_value.text()) + str(self.prepress_paper_cutmarks_strokewidth_choice.currentText())), 
+                                                         bleedsize, 
+                                                         marksize, 
+                                                         dirpathTempFolder.name)
     
                             cut_marks_command = ['composite']
                             cut_marks_command.append('-compose')
@@ -833,23 +852,30 @@ class OutputProBitmap(inkex.EffectExtension):
     
                 def cmyk_overprint_black(self):
                     if self.cmyk_overblack_jpeg.isChecked():
-                        cmyk.generate_svg_separations(dirpathTempFolder +  '/', open(os.path.join(dirpathTempFolder.name, 'original.svg')).read(), True)
+                        cmyk.generate_svg_separations(dirpathTempFolder.name, open(os.path.join(dirpathTempFolder.name, 'original.svg')).read(), True)
                     else:
-                        cmyk.generate_svg_separations(dirpathTempFolder +  '/', open(os.path.join(dirpathTempFolder.name, 'original.svg')).read(), False)
+                        cmyk.generate_svg_separations(dirpathTempFolder.name, open(os.path.join(dirpathTempFolder.name, 'original.svg')).read(), False)
     
                 def cmyk_advanced_manipulation(self):
                     area_to_export = self.area_to_export()
-                    cmyk.generate_png_separations(dirpathTempFolder + '/', self.area_to_export(), self.dpi_choice.value(), False)
+                    cmyk.generate_png_separations(dirpathTempFolder.name, self.area_to_export(), self.dpi_choice.value(), False)
     
                     for color in ['C', 'M', 'Y', 'K']:
-                        subprocess.Popen(['convert', os.path.join(dirpathTempFolder.name, 'separated') + area_to_export.replace(' ', '') + color + ".png", '-colorspace', 'CMYK', '-channel', color, '-separate', dirpathTempFolder + '/' + "separated" + area_to_export.replace(' ', '') + color + ".png"]).wait()
+                        subprocess.Popen(
+                            ['convert', 
+                             os.path.join(dirpathTempFolder.name, 'separated' + area_to_export.replace(' ', '') + color + ".png"),
+                             '-colorspace', 'CMYK', '-channel', 
+                             color,
+                             '-separate',
+                             os.path.join(dirpathTempFolder.name, 'separated' + area_to_export.replace(' ', '') + color + ".png")]
+                            ).wait()
     
                     self.cmyk_advanced_manipulation_view_separations()
     
                 def cmyk_advanced_manipulation_view_separations(self):
                     area_to_export = self.area_to_export()
     
-                    file_info = subprocess.Popen(['identify', dirpathTempFolder +  '/source.png'], stdout=subprocess.PIPE).communicate()[0]
+                    file_info = subprocess.Popen(['identify', os.path.join(dirpathTempFolder.name, 'source.svg')], stdout=subprocess.PIPE).communicate()[0].decode('UTF-8')
     
                     image_size = file_info.split(' ')[2]
     
@@ -1000,16 +1026,16 @@ class OutputProBitmap(inkex.EffectExtension):
                         self.export_button.setGeometry(430, 560, 200, 30)
                         self.format_preview_check.setGeometry(230, 85, 200, 25)
     
-                    self.move((QtGui.QDesktopWidget().screenGeometry().width()-self.geometry().width())/2, (QtGui.QDesktopWidget().screenGeometry().height()-self.geometry().height())/2)
+                    self.move(int((QtWidgets.QDesktopWidget().screenGeometry().width()-self.geometry().width())/2), int((QtWidgets.QDesktopWidget().screenGeometry().height()-self.geometry().height())/2))
     
                 def export(self):
-                    self.location_path = QtGui.QFileDialog.getSaveFileName(self, _(u"Save image"), os.environ.get('HOME', None), list_of_export_formats[self.format_choice.currentIndex()]).toUtf8()
-    
+                    self.location_path = QtWidgets.QFileDialog.getSaveFileName(self, _(u"Save image"), os.environ.get('HOME', None), list_of_export_formats[self.format_choice.currentIndex()], options=QtWidgets.QFileDialog.DontConfirmOverwrite)
+
                     if not self.format_preview_check.isChecked():
                         self.generate_final_file()
     
                     if not str(self.location_path) == '':
-                        shutil.copy2(os.path.join(dirpathTempFolder.name, 'result-imp.') + list_of_export_formats[self.format_choice.currentIndex()].lower(), self.location_path)
+                        shutil.copy2(os.path.join(dirpathTempFolder.name, 'result-imp.' + list_of_export_formats[self.format_choice.currentIndex()].lower()), self.location_path[0] + "." + self.location_path[1].lower())
     
     
     

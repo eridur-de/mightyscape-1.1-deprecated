@@ -1,4 +1,10 @@
 eclipse.preferences.version=1
+encoding//extensions/fablabchemnitz/color_harmony/color_harmony.py=utf-8
 encoding//extensions/fablabchemnitz/create_links.py=utf-8
+encoding//extensions/fablabchemnitz/jitter_gradients.py=utf-8
 encoding//extensions/fablabchemnitz/next_gen.py=utf-8
+encoding//extensions/fablabchemnitz/openClosedPath.py=utf-8
+encoding//extensions/fablabchemnitz/output_pro/outputpro.py=utf-8
+encoding//extensions/fablabchemnitz/path_number_subpaths.py=utf-8
+encoding//extensions/fablabchemnitz/reverse_order_subpaths.py=utf-8
 encoding//extensions/fablabchemnitz/svgo-inkscape/svgo.inkscape.py=utf-8

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import re, subprocess, simplestyle, os
+import inkex
 
 def calculateCMYK(red, green, blue):
     C = float()
@@ -87,15 +88,19 @@ def representK(value):
 def generate_svg_separations(temp_dir, original_source, overblack):
     svg_ready = clean_svg_color_definitions(original_source)
 
-    open(temp_dir + "separationK.svg","w").write(re.sub(r"#[a-fA-F0-9]{6}( icc-color\(.*?\))?", representK, svg_ready))
+    with open(os.path.join(temp_dir, "separationK.svg"), "w") as f:
+        f.write(re.sub(r"#[a-fA-F0-9]{6}( icc-color\(.*?\))?", representK, svg_ready))
 
     if overblack:
         svg_ready = removeK(svg_ready)
 
-    open(temp_dir + "separationC.svg","w").write(re.sub(r"#[a-fA-F0-9]{6}( icc-color\(.*?\))?", representC, svg_ready))
-    open(temp_dir + "separationM.svg","w").write(re.sub(r"#[a-fA-F0-9]{6}( icc-color\(.*?\))?", representM, svg_ready))
-    open(temp_dir + "separationY.svg","w").write(re.sub(r"#[a-fA-F0-9]{6}( icc-color\(.*?\))?", representY, svg_ready))
-
+    with open(os.path.join(temp_dir, "separationC.svg"), "w") as f:
+        f.write(re.sub(r"#[a-fA-F0-9]{6}( icc-color\(.*?\))?", representC, svg_ready))
+    with open(os.path.join(temp_dir, "separationM.svg"), "w") as f:
+        f.write(re.sub(r"#[a-fA-F0-9]{6}( icc-color\(.*?\))?", representM, svg_ready))
+    with open(os.path.join(temp_dir, "separationY.svg"), "w") as f:
+        f.write(re.sub(r"#[a-fA-F0-9]{6}( icc-color\(.*?\))?", representY, svg_ready))
+            
 def generate_png_separations(temp_dir, area_to_export, resolution, alpha):
     if alpha:
         alpha_command = ""
@@ -105,7 +110,8 @@ def generate_png_separations(temp_dir, area_to_export, resolution, alpha):
     for color in ['C', 'M', 'Y', 'K']:
         string_inkscape_exec += temp_dir + "separation" + color + ".svg " + area_to_export + ' --export-png=' + temp_dir + "separated" + area_to_export.replace(' ', '') + color + ".png" + alpha_command + ' --export-dpi=' + str(resolution) + "\n"
 
-    open('/tmp/test.txt', 'w').write(string_inkscape_exec)
+    with open(os.path.join(temp_dir, 'test.txt'), 'w') as f:
+        f.write(string_inkscape_exec)
 
     inkscape_exec = subprocess.Popen(['inkscape -z --shell'], shell=True, stdout=open(os.devnull, 'w'), stderr=open(os.devnull, 'w'), stdin=subprocess.PIPE)
-    inkscape_exec.communicate(input=string_inkscape_exec)
+    inkscape_exec.communicate(input=string_inkscape_exec.encode('UTF-8'))
