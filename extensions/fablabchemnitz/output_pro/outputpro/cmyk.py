@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
-import re, subprocess, simplestyle, os
+import re, subprocess, os
 import inkex
+from inkex.command import inkscape
 
 def calculateCMYK(red, green, blue):
     C = float()
@@ -27,8 +28,8 @@ def calculateCMYK(red, green, blue):
 def clean_svg_color_definitions(svg):
     def change_colors(origin, color_type):
         for i in range(len(str(origin).split(color_type + ':'))):
-            if str(str(origin).split(color_type + ':')[i].split(';')[0]) in simplestyle.svgcolors.keys():
-                color_numbers = simplestyle.formatColoria(simplestyle.parseColor(str(str(origin).split(color_type + ':')[i].split(';')[0])))
+            if str(str(origin).split(color_type + ':')[i].split(';')[0]) in inkex.colors.SVG_COLOR.keys():
+                color_numbers = str(inkex.Color(inkex.Color(str(str(origin).split(color_type + ':')[i].split(';')[0])).to_rgb()))
                 origin = str(origin).replace(':' + str(str(origin).split(color_type + ':')[i].split(';')[0]) + ';', ':' + color_numbers + ';')
         return origin
 
@@ -47,42 +48,42 @@ def removeK(origin):
 def representC(value):
     # returns CMS color if available
     if (re.search("icc-color", value.group())):
-        return simplestyle.formatColor3f(float(1.00 - float(re.split(r'[,\)\s]+',value.group())[2])), float(1.00), float(1.00))
+        return str(inkex.Color((float(1.00 - float(re.split(r'[,\)\s]+',value.group())[2])), float(1.00), float(1.00))))
     else:
-        red =   float(simplestyle.parseColor(str(value.group()))[0]/255.00)
-        green = float(simplestyle.parseColor(str(value.group()))[1]/255.00)
-        blue =  float(simplestyle.parseColor(str(value.group()))[2]/255.00)
-        return simplestyle.formatColor3f(float(1.00 - calculateCMYK(red, green, blue)[0]), float(1.00), float(1.00))
+        red =   float(inkex.Color(str(value.group())).to_rgb()[0]/255.00)
+        green = float(inkex.Color(str(value.group())).to_rgb()[1]/255.00)
+        blue =  float(inkex.Color(str(value.group())).to_rgb()[2]/255.00)
+        return str(inkex.Color((float(1.00 - calculateCMYK(red, green, blue)[0]), float(1.00), float(1.00))))
 
 def representM(value):
     # returns CMS color if available
     if ( re.search("icc-color", value.group()) ):
-        return simplestyle.formatColor3f(float(1.00), float(1.00 - float(re.split(r'[,\)\s]+',value.group())[3])), float(1.00))
+        return str(inkex.Color((float(1.00), float(1.00 - float(re.split(r'[,\)\s]+',value.group())[3])), float(1.00))))
     else:
-        red =   float(simplestyle.parseColor(str(value.group()))[0]/255.00)
-        green = float(simplestyle.parseColor(str(value.group()))[1]/255.00)
-        blue =  float(simplestyle.parseColor(str(value.group()))[2]/255.00)
-        return simplestyle.formatColor3f(float(1.00), float(1.00 - calculateCMYK(red, green, blue)[1]), float(1.00))
+        red =   float(inkex.Color(str(value.group())).to_rgb()[0]/255.00)
+        green = float(inkex.Color(str(value.group())).to_rgb()[1]/255.00)
+        blue =  float(inkex.Color(str(value.group())).to_rgb()[2]/255.00)
+        return str(inkex.Color((float(1.00), float(1.00 - calculateCMYK(red, green, blue)[1]), float(1.00))))
 
 def representY(value):
     # returns CMS color if available
     if (re.search("icc-color", value.group()) ):
-        return simplestyle.formatColor3f(float(1.00), float(1.00), float(1.00 - float(re.split(r'[,\)\s]+',value.group())[4])))
+        return str(inkex.Color((float(1.00), float(1.00), float(1.00 - float(re.split(r'[,\)\s]+',value.group())[4])))))
     else:
-        red =   float(simplestyle.parseColor(str(value.group()))[0]/255.00)
-        green = float(simplestyle.parseColor(str(value.group()))[1]/255.00)
-        blue =  float(simplestyle.parseColor(str(value.group()))[2]/255.00)
-        return simplestyle.formatColor3f(float(1.00), float(1.00), float(1.00 - calculateCMYK(red, green, blue)[2]))
+        red =   float(inkex.Color(str(value.group())).to_rgb()[0]/255.00)
+        green = float(inkex.Color(str(value.group())).to_rgb()[1]/255.00)
+        blue =  float(inkex.Color(str(value.group())).to_rgb()[2]/255.00)
+        return str(inkex.Color((float(1.00), float(1.00), float(1.00 - calculateCMYK(red, green, blue)[2]))))
 
 def representK(value):
     # returns CMS color if available
     if (re.search("icc-color", value.group()) ):
-        return simplestyle.formatColor3f(float(1.00 - float(re.split(r'[,\)\s]+',value.group())[5])), float(1.00 - float(re.split(r'[,\)\s]+',value.group())[5])), float(1.00 - float(re.split(r'[,\)\s]+',value.group())[5])))
+        return str(inkex.Color((float(1.00 - float(re.split(r'[,\)\s]+',value.group())[5])), float(1.00 - float(re.split(r'[,\)\s]+',value.group())[5])), float(1.00 - float(re.split(r'[,\)\s]+',value.group())[5])))))
     else:
-        red =   float(simplestyle.parseColor(str(value.group()))[0]/255.00)
-        green = float(simplestyle.parseColor(str(value.group()))[1]/255.00)
-        blue =  float(simplestyle.parseColor(str(value.group()))[2]/255.00)
-        return simplestyle.formatColor3f(float(1.00 - calculateCMYK(red, green, blue)[3]), float(1.00 - calculateCMYK(red, green, blue)[3]), float(1.00 - calculateCMYK(red, green, blue)[3]))
+        red =   float(inkex.Color(str(value.group())).to_rgb()[0]/255.00)
+        green = float(inkex.Color(str(value.group())).to_rgb()[1]/255.00)
+        blue =  float(inkex.Color(str(value.group())).to_rgb()[2]/255.00)
+        return str(inkex.Color((float(1.00 - calculateCMYK(red, green, blue)[3]), float(1.00 - calculateCMYK(red, green, blue)[3]), float(1.00 - calculateCMYK(red, green, blue)[3]))))
 
 
 def generate_svg_separations(temp_dir, original_source, overblack):
@@ -105,13 +106,12 @@ def generate_png_separations(temp_dir, area_to_export, resolution, alpha):
     if alpha:
         alpha_command = ""
     else:
-        alpha_command = " --export-background=white "
-    string_inkscape_exec = ''
+        alpha_command = ";export-background:white"
     for color in ['C', 'M', 'Y', 'K']:
-        string_inkscape_exec += temp_dir + "separation" + color + ".svg " + area_to_export + ' --export-png=' + temp_dir + "separated" + area_to_export.replace(' ', '') + color + ".png" + alpha_command + ' --export-dpi=' + str(resolution) + "\n"
-
-    with open(os.path.join(temp_dir, 'test.txt'), 'w') as f:
-        f.write(string_inkscape_exec)
-
-    inkscape_exec = subprocess.Popen(['inkscape -z --shell'], shell=True, stdout=open(os.devnull, 'w'), stderr=open(os.devnull, 'w'), stdin=subprocess.PIPE)
-    inkscape_exec.communicate(input=string_inkscape_exec.encode('UTF-8'))
+        cmd = area_to_export + alpha_command + ';export-dpi:' + str(resolution) + ';export-background-opacity:1;export-filename:' + os.path.join(temp_dir, "separated" + area_to_export.replace(' ', '') + color + ".png") + ';export-do'
+        #inkex.utils.debug(cmd)
+        cli_output = inkscape(os.path.join(temp_dir, "separation" + color + ".svg"), actions=cmd)
+        if len(cli_output) > 0:
+            inkex.utils.debug(cli_output)
+    #inkex.utils.debug(os.listdir(temp_dir))
+            

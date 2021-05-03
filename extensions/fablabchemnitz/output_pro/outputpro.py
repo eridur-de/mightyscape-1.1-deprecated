@@ -854,31 +854,37 @@ class OutputProBitmap(inkex.EffectExtension):
                         self.generate_preview()
     
                 def cmyk_overprint_black(self):
-                    if self.cmyk_overblack_jpeg.isChecked():
-                        cmyk.generate_svg_separations(dirpathTempFolder.name, open(os.path.join(dirpathTempFolder.name, 'original.svg')).read(), True)
-                    else:
-                        cmyk.generate_svg_separations(dirpathTempFolder.name, open(os.path.join(dirpathTempFolder.name, 'original.svg')).read(), False)
+                    with open(os.path.join(dirpathTempFolder.name, 'original.svg'), 'r') as f:
+                        if self.cmyk_overblack_jpeg.isChecked(): 
+                            cmyk.generate_svg_separations(dirpathTempFolder.name, f.read(), True)
+                        else:
+                            cmyk.generate_svg_separations(dirpathTempFolder.name, f.read(), False)
     
                 def cmyk_advanced_manipulation(self):
                     area_to_export = self.area_to_export()
                     cmyk.generate_png_separations(dirpathTempFolder.name, self.area_to_export(), self.dpi_choice.value(), False)
     
                     for color in ['C', 'M', 'Y', 'K']:
-                        subprocess.Popen(
-                            ['convert', 
+                        cmd = ['convert', 
                              os.path.join(dirpathTempFolder.name, 'separated' + area_to_export.replace(' ', '') + color + ".png"),
-                             '-colorspace', 'CMYK', '-channel', 
+                             '-colorspace', 
+                             'CMYK', 
+                             '-channel', 
                              color,
                              '-separate',
                              os.path.join(dirpathTempFolder.name, 'separated' + area_to_export.replace(' ', '') + color + ".png")]
-                            ).wait()
-    
+                        #inkex.utils.debug(cmd)
+                        p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                        stdout, stderr = p.communicate()
+                        p.wait()
+                        #if p.returncode != 0: 
+                        #   inkex.utils.debug("Command failed: %d %s %s" % (p.returncode, stdout, stderr))
                     self.cmyk_advanced_manipulation_view_separations()
     
                 def cmyk_advanced_manipulation_view_separations(self):
                     area_to_export = self.area_to_export()
     
-                    file_info = subprocess.Popen(['identify', os.path.join(dirpathTempFolder.name, 'source.svg')], stdout=subprocess.PIPE).communicate()[0].decode('UTF-8')
+                    file_info = subprocess.Popen(['identify', os.path.join(dirpathTempFolder.name, 'source.png')], stdout=subprocess.PIPE).communicate()[0].decode('UTF-8')
     
                     image_size = file_info.split(' ')[2]
     
@@ -887,24 +893,24 @@ class OutputProBitmap(inkex.EffectExtension):
                     final_command = ['convert']
     
                     if self.view_c_button.isChecked():
-                        final_command.append( os.path.join(dirpathTempFolder.name, 'separated') + area_to_export.replace(' ', '') + 'C' + ".png")
+                        final_command.append(os.path.join(dirpathTempFolder.name, 'separated') + area_to_export.replace(' ', '') + 'C' + ".png")
                     else:
-                        final_command.append( os.path.join(dirpathTempFolder.name, 'empty.pn'))
+                        final_command.append(os.path.join(dirpathTempFolder.name, 'empty.png'))
     
                     if self.view_m_button.isChecked():
-                        final_command.append( os.path.join(dirpathTempFolder.name, 'separated') + area_to_export.replace(' ', '') + 'M' + ".png")
+                        final_command.append(os.path.join(dirpathTempFolder.name, 'separated') + area_to_export.replace(' ', '') + 'M' + ".png")
                     else:
-                        final_command.append( os.path.join(dirpathTempFolder.name, 'empty.png'))
+                        final_command.append(os.path.join(dirpathTempFolder.name, 'empty.png'))
     
                     if self.view_y_button.isChecked():
-                        final_command.append( os.path.join(dirpathTempFolder.name, 'separated') + area_to_export.replace(' ', '') + 'Y' + ".png")
+                        final_command.append(os.path.join(dirpathTempFolder.name, 'separated') + area_to_export.replace(' ', '') + 'Y' + ".png")
                     else:
-                        final_command.append( os.path.join(dirpathTempFolder.name, 'empty.png'))
+                        final_command.append(os.path.join(dirpathTempFolder.name, 'empty.png'))
     
                     if self.view_k_button.isChecked():
-                        final_command.append( os.path.join(dirpathTempFolder.name, 'separated') + area_to_export.replace(' ', '') + 'K' + ".png")
+                        final_command.append(os.path.join(dirpathTempFolder.name, 'separated') + area_to_export.replace(' ', '') + 'K' + ".png")
                     else:
-                        final_command.append( os.path.join(dirpathTempFolder.name, 'empty.png'))
+                        final_command.append(os.path.join(dirpathTempFolder.name, 'empty.png'))
     
                     final_command.extend(['-set', 'colorspace', 'cmyk'])
                     final_command.extend(['-combine', os.path.join(dirpathTempFolder.name, 'result.tiff')])
@@ -1049,6 +1055,7 @@ class OutputProBitmap(inkex.EffectExtension):
         except Exception as e:
             self.msg(e)
         finally:
+            #inkex.utils.debug(os.listdir(dirpathTempFolder.name))
             dirpathTempFolder.cleanup() #close temp dir
 
 if __name__ == '__main__':
