@@ -418,31 +418,30 @@ def msg_extrude_by_hull_and_paths(id, prefix):
     return msg
 
 
-class OpenSCAD(inkex.Effect):
-    def __init__(self):
+class OpenSCAD(inkex.EffectExtension):
 
+    def add_arguments(self, pars):
         inkex.localization.localize()  # does not help for localizing my *.inx file
-        inkex.Effect.__init__(self)
 
-        self.arg_parser.add_argument( "--tab", default="splash", help="The active tab when Apply was pressed", )
-        self.arg_parser.add_argument( "--smoothness", type=float, default=float(0.2), help="Curve smoothing (less for more)", )
-        self.arg_parser.add_argument( "--chamfer", type=float, default=float(1.), help="Add a chamfer radius, displacing all object walls outwards [mm]", )
-        self.arg_parser.add_argument( "--chamfer_fn", type=int, default=int(4), help="Chamfer precision ($fn when generating the minkowski sphere)", )
-        self.arg_parser.add_argument( "--zsize", default="5", help="Depth (Z-size) [mm]", )
-        self.arg_parser.add_argument( "--min_line_width", type=float, default=float(1), help="Line width for non closed curves [mm]", )
-        self.arg_parser.add_argument( "--line_width_scale_perc", type=float, default=float(1), help="Percentage of SVG line width. Use e.g. 26.46 to compensate a px/mm confusion. Default: 100 [%]", )
-        self.arg_parser.add_argument( "--line_fn", type=int, default=int(4), help="Line width precision ($fn when constructing hull)", )
-        self.arg_parser.add_argument( "--force_line", type=inkex.utils.Boolean, default=False, help="Force outline mode.", )
-        self.arg_parser.add_argument( "--fname", default="{NAME}.scad", help="openSCAD output file derived from the svg file name.", )
-        self.arg_parser.add_argument( "--parsedesc", default="true", help="Parse zsize and other parameters from object descriptions", )
-        self.arg_parser.add_argument( "--scadview", default="false", help="Open the file with openscad ( details see --scadviewcmd option )", )
-        self.arg_parser.add_argument( "--scadviewcmd", default=INX_SCADVIEW, help="Command used start an openscad viewer. Use {SCAD} for the openSCAD input.", )
-        self.arg_parser.add_argument( "--scad2stl", default="false", help="Also convert to STL ( details see --scad2stlcmd option )", )
-        self.arg_parser.add_argument( "--scad2stlcmd", default=INX_SCAD2STL, help="Command used to convert to STL. You can use {NAME}.scad for the openSCAD file to read and "
+        pars.add_argument( "--tab", default="splash", help="The active tab when Apply was pressed", )
+        pars.add_argument( "--smoothness", type=float, default=float(0.2), help="Curve smoothing (less for more)", )
+        pars.add_argument( "--chamfer", type=float, default=float(1.), help="Add a chamfer radius, displacing all object walls outwards [mm]", )
+        pars.add_argument( "--chamfer_fn", type=int, default=int(4), help="Chamfer precision ($fn when generating the minkowski sphere)", )
+        pars.add_argument( "--zsize", default="5", help="Depth (Z-size) [mm]", )
+        pars.add_argument( "--min_line_width", type=float, default=float(1), help="Line width for non closed curves [mm]", )
+        pars.add_argument( "--line_width_scale_perc", type=float, default=float(1), help="Percentage of SVG line width. Use e.g. 26.46 to compensate a px/mm confusion. Default: 100 [%]", )
+        pars.add_argument( "--line_fn", type=int, default=int(4), help="Line width precision ($fn when constructing hull)", )
+        pars.add_argument( "--force_line", type=inkex.utils.Boolean, default=False, help="Force outline mode.", )
+        pars.add_argument( "--fname", default="{NAME}.scad", help="openSCAD output file derived from the svg file name.", )
+        pars.add_argument( "--parsedesc", default="true", help="Parse zsize and other parameters from object descriptions", )
+        pars.add_argument( "--scadview", default="false", help="Open the file with openscad ( details see --scadviewcmd option )", )
+        pars.add_argument( "--scadviewcmd", default=INX_SCADVIEW, help="Command used start an openscad viewer. Use {SCAD} for the openSCAD input.", )
+        pars.add_argument( "--scad2stl", default="false", help="Also convert to STL ( details see --scad2stlcmd option )", )
+        pars.add_argument( "--scad2stlcmd", default=INX_SCAD2STL, help="Command used to convert to STL. You can use {NAME}.scad for the openSCAD file to read and "
         + "{NAME}.stl for the STL file to write.", )
-        self.arg_parser.add_argument( "--stlpost", default="false", help="Start e.g. a slicer. This implies the --scad2stl option. ( see --stlpostcmd )", )
-        self.arg_parser.add_argument( "--stlpostcmd", default=INX_STL_POSTPROCESSING, help="Command used for post processing an STL file (typically a slicer). You can use {NAME}.stl for the STL file.", )
-        self.arg_parser.add_argument( "--stlmodule",default="false", help="Output configured to comment out final rendering line, to create a module file for import.", )
+        pars.add_argument( "--stlpost", default="false", help="Start e.g. a slicer. This implies the --scad2stl option. ( see --stlpostcmd )", )
+        pars.add_argument( "--stlpostcmd", default=INX_STL_POSTPROCESSING, help="Command used for post processing an STL file (typically a slicer). You can use {NAME}.stl for the STL file.", )
+        pars.add_argument( "--stlmodule",default="false", help="Output configured to comment out final rendering line, to create a module file for import.", )
 
         self.userunitsx = 1.0  # Move to pure userunits per mm for v1.0
         self.userunitsy = 1.0
@@ -1396,9 +1395,9 @@ module chamfer_sphere(rad=chamfer, res=chamfer_fn)
                 except Exception:
                     tty = subprocess.PIPE
                 try:
-                    proc = subprocess.Popen(
-                        cmd, shell=True, stdin=tty, stdout=tty, stderr=tty
-                    )
+                    proc = subprocess.Popen(cmd, shell=True, stdin=tty, stdout=tty, stderr=tty)
+                    proc.wait()
+                    tty.close()
                 except OSError as e:
                     raise OSError("%s failed: errno=%d %s" % (cmd, e.errno, e.strerror))
                 try:
@@ -1428,13 +1427,8 @@ module chamfer_sphere(rad=chamfer, res=chamfer_fn)
             import subprocess
 
             try:
-                proc = subprocess.Popen(
-                    cmd,
-                    shell=True,
-                    stdin=subprocess.PIPE,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                )
+                proc = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                proc.wait()
             except OSError as e:
                 raise OSError(
                     "{0} failed: errno={1} {2}".format(cmd, e.errno, e.strerror)
@@ -1459,8 +1453,7 @@ module chamfer_sphere(rad=chamfer, res=chamfer_fn)
                 inkex.errormsg("= " * 24)
                 if len <= 0:  # something is wrong. better stop here
                     self.options.stlpost = "false"
-            stdout.close()
-            stderr.close()
+            proc.wait()
             if self.options.stlpost == "true":
                 cmd = self.options.stlpostcmd.format(
                     **{"STL": self.basename + ".stl", "NAME": self.basename}
@@ -1471,9 +1464,8 @@ module chamfer_sphere(rad=chamfer, res=chamfer_fn)
                     tty = subprocess.PIPE
 
                 try:
-                    proc = subprocess.Popen(
-                        cmd, shell=True, stdin=tty, stdout=tty, stderr=tty
-                    )
+                    proc = subprocess.Popen(cmd, shell=True, stdin=tty, stdout=tty, stderr=tty)
+                    proc.wait()
                 except OSError as e:
                     raise OSError("%s failed: errno=%d %s" % (cmd, e.errno, e.strerror))
 
@@ -1487,8 +1479,6 @@ module chamfer_sphere(rad=chamfer, res=chamfer_fn)
                 if stderr:
                     inkex.errmsg("STDERR: {}".format(stderr))
                     inkex.errormsg("= " * 24)
-                    stdout.close()
-                    stderr.close()
 
 if __name__ == '__main__':
     OpenSCAD().run()
