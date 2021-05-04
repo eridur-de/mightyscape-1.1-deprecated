@@ -1,5 +1,6 @@
 *.pyc
 /.project
 /.pydevproject
+/.nohup.out
 extensions/fablabchemnitz/animate_order/drawing.svg
 extensions/fablabchemnitz/animate_order/animate_order.html

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-import re, subprocess, os
+import re
+import os
 import inkex
 from inkex.command import inkscape
 

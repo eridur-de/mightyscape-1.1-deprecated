@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
 
-import subprocess, os
+import subprocess
+import os
 
 def generate_final_file(isvector, hide_inside_marks, colormode, width, height, space, strokewidth, bleedsize, marksize, temp_dir):
     if not isvector:
 
+        if "nt" in os.name:
+            shell = True
+        else:
+             shell = False
 
         command = []
         final_command = ['convert']
@@ -59,7 +64,7 @@ def generate_final_file(isvector, hide_inside_marks, colormode, width, height, s
                 width_value += column + space
                 number_of_column += 1
             command.append(os.path.join(temp_dir, 'cut_mark_' + color + '.png'))
-            subprocess.Popen(command).wait()
+            subprocess.Popen(command, shell=shell).wait()
             del command[:]
 
             command.append('convert')
@@ -70,10 +75,10 @@ def generate_final_file(isvector, hide_inside_marks, colormode, width, height, s
             command.append('K')
             command.append('-separate')
             command.append(os.path.join(temp_dir, 'cut_mark_' + color + '.png'))
-            subprocess.Popen(command).wait()
+            subprocess.Popen(command, shell=shell).wait()
             del command[:]
 
             final_command.append(os.path.join(temp_dir, 'cut_mark_' + color + '.png'))
 
         final_command.extend(['-set', 'colorspace', colormode, '-combine', os.path.join(temp_dir, 'cut_mark.tiff')])
-        subprocess.Popen(final_command).wait()
+        subprocess.Popen(final_command, shell=shell).wait()
