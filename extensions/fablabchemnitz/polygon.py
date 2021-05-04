@@ -52,7 +52,7 @@ def svg_from_points(points,offset):
     s+='Z'
     return s
   
-class Polygon(inkex.EffecExtension):
+class Polygon(inkex.EffectExtension):
 
     def add_arguments(self, pars):
         pars.add_argument('--page')
