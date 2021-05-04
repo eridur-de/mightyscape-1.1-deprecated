@@ -47,7 +47,7 @@ class Archimedes(inkex.EffectExtension):
         layer = etree.SubElement(self.document.getroot(),'g')
         path = etree.Element(inkex.addNS('path','svg'))
         path.set('d', self.built(r, step, a, turns))
-        path.set('style',"opacity:0.8;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.8;stroke-miterlimit:4;stroke-dashaphiay:none;stroke-opacity:1")
+        path.set('style',"fill:none;stroke:#000000;stroke-width:1px;stroke-opacity:1")
         layer.append(path)
 
     def built(self, r0, st = 4, a = 4, k = 1, th = 0):
