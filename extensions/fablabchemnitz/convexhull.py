@@ -63,7 +63,7 @@ class ConvexHull(inkex.EffectExtension):
         self.paths = {}
         self.paths_clone_transform = {}
         
-    def joinWithNode (self, node, path, makeGroup=False, cloneTransform=None):
+    def joinWithElement (self, element, path, makeGroup=False, cloneTransform=None):
         if (not path) or (len(path) == 0 ):
             return
         g = self.document.getroot()   
@@ -75,29 +75,29 @@ class ConvexHull(inkex.EffectExtension):
             line_attribs['transform'] = cloneTransform
         etree.SubElement(g, inkex.addNS('path', 'svg' ), line_attribs) 
 
+    def getControlPoints(self, element, n_array = None): #this does the same as "CTRL + SHIFT + K"
+        if n_array == None:
+            n_array = []
+        if element.tag == inkex.addNS('path','svg'):
+            element.apply_transform()
+            p = CubicSuperPath(element.get('d'))
+            for subpath in p: # there may be several paths joined together (e.g. holes)
+                for csp in subpath: # groups of three to handle control points.
+                    # just the points no control points (handles)
+                    n_array.append(csp[1][0])
+                    n_array.append(csp[1][1])
+        for child in element.getchildren():
+            n_array += self.getControlPoints(child, n_array)
+        return n_array
+
     def effect(self):
     
         if len(self.svg.selected) > 0:
-            global output_nodes, points
+            global output_elements, points
             
-            #create numpy array of nodes
             n_array = []
-                    
-            #Iterate through all the selected objects in Inkscape
-            for  node in self.svg.selected.values():
-                #Check if the node is a path ("svg:path" node in XML )
-                #id = node.id
-                if node.tag == inkex.addNS('path','svg'):
-                    # bake (or fuse) transform
-                    node.apply_transform()
-                    #turn into cubicsuperpath
-                    d = node.get('d')
-                    p = CubicSuperPath(d)
-                    for subpath in p: # there may be several paths joined together (e.g. holes)
-                        for csp in subpath: # groups of three to handle control points.
-                            # just the points no control points (handles)
-                            n_array.append(csp[1][0])
-                            n_array.append(csp[1][1])
+            for element in self.svg.selected.values():
+                n_array += self.getControlPoints(element, None)
 
             k = n.asarray(n_array)
             length = int(len(k)/2)
@@ -114,7 +114,7 @@ class ConvexHull(inkex.EffectExtension):
             path = 'polygon'
             makeGroup = False
             paths_clone_transform = None
-            self.joinWithNode(path, pdata, makeGroup, paths_clone_transform)
+            self.joinWithElement(path, pdata, makeGroup, paths_clone_transform)
             
         else:
             inkex.errormsg('Please select some paths first.')

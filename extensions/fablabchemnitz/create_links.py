@@ -20,7 +20,7 @@
 #
 """
 This extension converts a path into a dashed line using 'stroke-dasharray'
-It is a modification of the file addnodes.py
+It is a modification of the file addelements.py
 It is a modification of the file convert2dash.py
 Extension to convert paths into dash-array line
 
@@ -63,14 +63,14 @@ class LinksCreator(inkex.EffectExtension):
         pars.add_argument("--show_info", type=inkex.Boolean, default=False, help="Print some length and pattern information")
         pars.add_argument("--skip_errors", type=inkex.Boolean, default=False, help="Skip errors")
 
-    def breakContours(self, node, breakNodes = None): #this does the same as "CTRL + SHIFT + K"
-        if breakNodes == None:
-            breakNodes = []
-        if node.tag == inkex.addNS('path','svg'):
-            parent = node.getparent()
-            idx = parent.index(node)
+    def breakContours(self, element, breakelements = None): #this does the same as "CTRL + SHIFT + K"
+        if breakelements == None:
+            breakelements = []
+        if element.tag == inkex.addNS('path','svg'):
+            parent = element.getparent()
+            idx = parent.index(element)
             idSuffix = 0    
-            raw = node.path.to_arrays()
+            raw = element.path.to_arrays()
             subPaths, prev = [], 0
             for i in range(len(raw)): # Breaks compound paths into simple paths
                 if raw[i][0] == 'M' and i != 0:
@@ -78,24 +78,24 @@ class LinksCreator(inkex.EffectExtension):
                     prev = i
             subPaths.append(raw[prev:])
             for subpath in subPaths:
-                replacedNode = copy.copy(node)
-                oldId = replacedNode.get('id')
-                replacedNode.set('d', CubicSuperPath(subpath))
-                replacedNode.set('id', oldId + str(idSuffix).zfill(5))
-                parent.insert(idx, replacedNode)
+                replacedelement = copy.copy(element)
+                oldId = replacedelement.get('id')
+                replacedelement.set('d', CubicSuperPath(subpath))
+                replacedelement.set('id', oldId + str(idSuffix).zfill(5))
+                parent.insert(idx, replacedelement)
                 idSuffix += 1
-                breakNodes.append(replacedNode)
-            parent.remove(node)
-        for child in node:
-            self.breakContours(child, breakNodes)
-        return breakNodes
+                breakelements.append(replacedelement)
+            parent.remove(element)
+        for child in element.getchildren():
+            self.breakContours(child, breakelements)
+        return breakelements
 
     def effect(self):
-        def createLinks(node):   
-            nodeParent = node.getparent()
+        def createLinks(element):   
+            elementParent = element.getparent()
 
             pathIsClosed = False
-            path = node.path.to_arrays() #to_arrays() is deprecated. How to make more modern?
+            path = element.path.to_arrays() #to_arrays() is deprecated. How to make more modern?
             if path[-1][0] == 'Z' or path[0][1] == path[-1][1]:  #if first is last point the path is also closed. The "Z" command is not required
                 pathIsClosed = True
             if self.options.path_types == 'open_paths' and pathIsClosed is True:
@@ -105,20 +105,20 @@ class LinksCreator(inkex.EffectExtension):
             elif self.options.path_types == 'both':
                 pass
                          
-            # if keeping is enabled we make of copy of the current node and insert it while modifying the original ones. We could also delete the original and modify a copy...
+            # if keeping is enabled we make of copy of the current element and insert it while modifying the original ones. We could also delete the original and modify a copy...
             if self.options.keep_selected is True:
-                parent = node.getparent()
-                idx = parent.index(node)
-                copynode = copy.copy(node)
-                parent.insert(idx, copynode)
+                parent = element.getparent()
+                idx = parent.index(element)
+                copyelement = copy.copy(element)
+                parent.insert(idx, copyelement)
 
             # we measure the length of the path to calculate the required dash configuration
-            csp = node.path.transform(node.composed_transform()).to_superpath()
+            csp = element.path.transform(element.composed_transform()).to_superpath()
             slengths, stotal = csplength(csp) #get segment lengths and total length of path in document's internal unit
            
             if self.options.length_filter is True:
                 if stotal < self.svg.unittouu(str(self.options.length_filter_value) + self.options.length_filter_unit):
-                    if self.options.show_info is True: self.msg("node " + node.get('id') + " is shorter than minimum allowed length of {:1.3f} {}. Path length is {:1.3f} {}".format(self.options.length_filter_value, self.options.length_filter_unit, stotal, self.options.creationunit))
+                    if self.options.show_info is True: self.msg("element " + element.get('id') + " is shorter than minimum allowed length of {:1.3f} {}. Path length is {:1.3f} {}".format(self.options.length_filter_value, self.options.length_filter_unit, stotal, self.options.creationunit))
                     return #skip this loop iteration
 
             if self.options.creationunit == "percent":
@@ -141,7 +141,7 @@ class LinksCreator(inkex.EffectExtension):
                     
                 #validate dashes. May not be negative (dash or gap cannot be longer than the path itself). Otherwise Inkscape will freeze forever. Reason: rendering issue
                 if any(dash <= 0.0 for dash in dashes) == True: 
-                    if self.options.show_info is True: self.msg("node " + node.get('id') + ": Error! Dash array may not contain negative numbers: " + ' '.join(format(dash, "1.3f") for dash in dashes) + ". Path skipped. Maybe it's too short. Adjust your link count, multiplicator and length accordingly, or set to unit '%'")
+                    if self.options.show_info is True: self.msg("element " + element.get('id') + ": Error! Dash array may not contain negative numbers: " + ' '.join(format(dash, "1.3f") for dash in dashes) + ". Path skipped. Maybe it's too short. Adjust your link count, multiplicator and length accordingly, or set to unit '%'")
                     return False if self.options.skip_errors is True else exit(1)
                
                 if self.options.creationunit == "percent":
@@ -154,10 +154,10 @@ class LinksCreator(inkex.EffectExtension):
 
             if self.options.creationtype == "use_existing":
                 if self.options.no_convert is True:
-                    if self.options.show_info is True: self.msg("node " + node.get('id') + ": Nothing to do. Please select another creation method or disable cosmetic style output paths.")
+                    if self.options.show_info is True: self.msg("element " + element.get('id') + ": Nothing to do. Please select another creation method or disable cosmetic style output paths.")
                     return False if self.options.skip_errors is True else exit(1)
                 stroke_dashoffset = 0
-                style = node.style
+                style = element.style
                 if 'stroke-dashoffset' in style:
                     stroke_dashoffset = style['stroke-dashoffset']
                 try:
@@ -167,7 +167,7 @@ class LinksCreator(inkex.EffectExtension):
                     else:
                         raise ValueError
                 except:
-                    if self.options.show_info is True: self.msg("node " + node.get('id') + ": No dash style to continue with.")
+                    if self.options.show_info is True: self.msg("element " + element.get('id') + ": No dash style to continue with.")
                     return False if self.options.skip_errors is True else exit(1)
                            
             if self.options.creationtype == "custom_dashpattern":
@@ -179,19 +179,19 @@ class LinksCreator(inkex.EffectExtension):
                     else:
                         raise ValueError
                 except:
-                    if self.options.show_info is True: self.msg("node " + node.get('id') + ": Error in custom dasharray string (might be empty or does not contain any numbers).")
+                    if self.options.show_info is True: self.msg("element " + element.get('id') + ": Error in custom dasharray string (might be empty or does not contain any numbers).")
                     return False if self.options.skip_errors is True else exit(1)
 
             #assign stroke dasharray from entered values, existing style or custom dashpattern
             stroke_dasharray = ' '.join(format(dash, "1.3f") for dash in dashes)
 
-            # check if the node has a style attribute. If not we create a blank one with a black stroke and without fill
+            # check if the element has a style attribute. If not we create a blank one with a black stroke and without fill
             style = None
             default_fill = 'none'
             default_stroke_width = '1px'
             default_stroke = '#000000'
-            if node.attrib.has_key('style'):
-                style = node.get('style')
+            if element.attrib.has_key('style'):
+                style = element.get('style')
                 if style.endswith(';') is False:
                     style += ';'
                     
@@ -212,10 +212,10 @@ class LinksCreator(inkex.EffectExtension):
                             declarations[i] = prop + ':{}'.format(stroke_dasharray)
                         if prop == 'stroke-dashoffset':
                             declarations[i] = prop + ':{}'.format(stroke_dashoffset)
-                node.set('style', ';'.join(declarations)) #apply new style to node
+                element.set('style', ';'.join(declarations)) #apply new style to element
                     
                 #if has style attribute but the style attribute does not contain fill, stroke, stroke-width, stroke-dasharray or stroke-dashoffset yet
-                style = node.style
+                style = element.style
                 if re.search('fill:(.*?)(;|$)', str(style)) is None:
                     style += 'fill:{};'.format(default_fill)
                 if re.search('(;|^)stroke:(.*?)(;|$)', str(style)) is None: #if "stroke" is None, add one. We need to distinguish because there's also attribute "-inkscape-stroke" that's why we check starting with ^ or ;
@@ -226,14 +226,14 @@ class LinksCreator(inkex.EffectExtension):
                     style += 'stroke-dasharray:{};'.format(stroke_dasharray)
                 if not 'stroke-dashoffset' in style:
                     style += 'stroke-dashoffset:{};'.format(stroke_dashoffset)
-                node.set('style', style)
+                element.set('style', style)
             else:
                 style = 'fill:{};stroke:{};stroke-width:{};stroke-dasharray:{};stroke-dashoffset:{};'.format(default_fill, default_stroke, default_stroke_width, stroke_dasharray, stroke_dashoffset)
-                node.set('style', style)
+                element.set('style', style)
 
             # Print some info about values
             if self.options.show_info is True:
-                self.msg("node " + node.get('id') + ":")
+                self.msg("element " + element.get('id') + ":")
                 if self.options.creationunit == "percent":
                     self.msg(" * total path length = {:1.3f} {}".format(stotal, self.svg.unit)) #show length, converted in selected unit
                     self.msg(" * (calculated) offset: {:1.3f} %".format(stroke_dashoffset))
@@ -250,10 +250,10 @@ class LinksCreator(inkex.EffectExtension):
      
             # Conversion step (split cosmetic path into real segments)    
             if self.options.no_convert is False:
-                style = node.style #get the style again, but this time as style class    
+                style = element.style #get the style again, but this time as style class    
                     
                 new = []
-                for sub in node.path.to_superpath():
+                for sub in element.path.to_superpath():
                     idash = 0
                     dash = dashes[0]
                     length = float(stroke_dashoffset)
@@ -281,47 +281,47 @@ class LinksCreator(inkex.EffectExtension):
                             new[-1].append(sub[i])
                         i += 1
                 style.pop('stroke-dasharray')
-                node.pop('sodipodi:type')
+                element.pop('sodipodi:type')
                 csp = CubicSuperPath(new)
-                node.path = CubicSuperPath(new)
-                node.style = style
+                element.path = CubicSuperPath(new)
+                element.style = style
                 
                 # break apart the combined path to have multiple elements
                 if self.options.breakapart is True:
-                    breakOutputNodes = None
-                    breakOutputNodes = self.breakContours(node, breakOutputNodes)
-                    breakApartGroup = nodeParent.add(inkex.Group())
-                    for breakOutputNode in breakOutputNodes:
-                        breakApartGroup.append(breakOutputNode)
-                        #self.msg(replacedNode.get('id'))
-                        #self.svg.selection.set(replacedNode.get('id')) #update selection to split paths segments (does not work, so commented out)
+                    breakOutputelements = None
+                    breakOutputelements = self.breakContours(element, breakOutputelements)
+                    breakApartGroup = elementParent.add(inkex.Group())
+                    for breakOutputelement in breakOutputelements:
+                        breakApartGroup.append(breakOutputelement)
+                        #self.msg(replacedelement.get('id'))
+                        #self.svg.selection.set(replacedelement.get('id')) #update selection to split paths segments (does not work, so commented out)
 
                         #cleanup useless points
-                        p = breakOutputNode.path
+                        p = breakOutputelement.path
                         commandsCoords = p.to_arrays()
                         # "m 45.250809,91.692739" - this path contains onyl one command - a single point
                         if len(commandsCoords) == 1:
-                            breakOutputNode.delete()
+                            breakOutputelement.delete()
                         # "m 45.250809,91.692739 z"  - this path contains two commands, but only one coordinate. 
                         # It's a single point, the path is closed by a Z command
                         elif len(commandsCoords) == 2 and commandsCoords[0][1] == commandsCoords[1][1]:
-                            breakOutputNode.delete()
+                            breakOutputelement.delete()
                         # "m 45.250809,91.692739 l 45.250809,91.692739" - this path contains two commands, 
                         # but the first and second coordinate are the same. It will render als point
                         elif len(commandsCoords) == 2 and commandsCoords[-1][0] == 'Z':
-                            breakOutputNode.delete()
+                            breakOutputelement.delete()
                         # "m 45.250809,91.692739 l 45.250809,91.692739 z" - this path contains three commands, 
                         # but the first and second coordinate are the same. It will render als point, the path is closed by a Z command
                         elif len(commandsCoords) == 3 and commandsCoords[0][1] == commandsCoords[1][1] and commandsCoords[2][1] == 'Z':
-                            breakOutputNode.delete()
+                            breakOutputelement.delete()
                         
         if len(self.svg.selected) > 0:
-            for node in self.svg.selection.values():
-                #at first we need to break down combined nodes to single path, otherwise dasharray cannot properly be applied
-                breakInputNodes = None
-                breakInputNodes = self.breakContours(node, breakInputNodes)
-                for breakInputNode in breakInputNodes:
-                    createLinks(breakInputNode)
+            for element in self.svg.selection.values():
+                #at first we need to break down combined elements to single path, otherwise dasharray cannot properly be applied
+                breakInputelements = None
+                breakInputelements = self.breakContours(element, breakInputelements)
+                for breakInputelement in breakInputelements:
+                    createLinks(breakInputelement)
         else:
             self.msg('Please select some paths first.')
             return
