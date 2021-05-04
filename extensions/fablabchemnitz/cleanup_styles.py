@@ -45,11 +45,12 @@ class Cleanup(inkex.EffectExtension):
         pars.add_argument("--stroke_width_units", default="mm", help="Stroke width unit")
         pars.add_argument("--stroke_opacity_override", type=inkex.Boolean, default=False, help="Override stroke opacity")
         pars.add_argument("--stroke_opacity", type=float, default="100.0", help="Stroke opacity (%)")
-        pars.add_argument("--reset_stroke_attributes", type=inkex.Boolean, help="Remove stroke style attributes 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linejoin', 'stroke-linecap', 'stroke-miterlimit'")
-        pars.add_argument("--reset_fill_attributes", type=inkex.Boolean, help="Sets 'fill:none;fill-opacity:1;' to style attribute")
-        pars.add_argument("--apply_hairlines", type=inkex.Boolean, help="Adds 'vector-effect:non-scaling-stroke;' and '-inkscape-stroke:hairline;' Hint: stroke-width is kept in background. All hairlines still have a valued width.")
-        pars.add_argument("--apply_black_strokes", type=inkex.Boolean, help="Adds 'stroke:#000000;' to style attribute")
-        pars.add_argument("--remove_group_styles", type=inkex.Boolean, help="Remove styles from groups")
+        pars.add_argument("--reset_opacity", type=inkex.Boolean, default=True, help="Reset stroke style attribute 'opacity'. Do not mix up with 'fill-opacity' and 'stroke-opacity'")
+        pars.add_argument("--reset_stroke_attributes", type=inkex.Boolean, default=True, help="Remove stroke style attributes 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linejoin', 'stroke-linecap', 'stroke-miterlimit'")
+        pars.add_argument("--reset_fill_attributes", type=inkex.Boolean, default=True, help="Sets 'fill:none;fill-opacity:1;' to style attribute")
+        pars.add_argument("--apply_hairlines", type=inkex.Boolean, default=True, help="Adds 'vector-effect:non-scaling-stroke;' and '-inkscape-stroke:hairline;' Hint: stroke-width is kept in background. All hairlines still have a valued width.")
+        pars.add_argument("--apply_black_strokes", type=inkex.Boolean, default=True, help="Adds 'stroke:#000000;' to style attribute")
+        pars.add_argument("--remove_group_styles", type=inkex.Boolean, default=False, help="Remove styles from groups")
         
     def effect(self):
         if len(self.svg.selected) == 0:
@@ -87,7 +88,8 @@ class Cleanup(inkex.EffectExtension):
             # - merge dedicated properties, but prefer properties from composed style
             dedicatedStyleAttributesDict = {}
             popDict = []
-            popDict.extend(['stroke', 'stroke-opacity', 'stroke-width', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'fill', 'fill-opacity'])
+            # there are opacity (of group/parent), fill-opacity and stroke-opacity
+            popDict.extend(['opacity', 'stroke', 'stroke-opacity', 'stroke-width', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'fill', 'fill-opacity'])
             for popItem in popDict:
                 if node.attrib.has_key(str(popItem)):
                     dedicatedStyleAttributesDict.update({'{}'.format(popItem): node.get(popItem)})
@@ -142,6 +144,9 @@ class Cleanup(inkex.EffectExtension):
                     if prop == 'stroke-opacity' and self.options.stroke_opacity_override is True:
                         new_val = self.options.stroke_opacity / 100
                         declarations[i] = prop + ':{:1.1f}'.format(new_val)
+                    if self.options.reset_opacity is True:
+                        if prop == 'opacity':
+                            declarations[i] = ''             
                     if self.options.reset_stroke_attributes is True:
                         if prop == 'stroke-dasharray':
                             declarations[i] = ''
