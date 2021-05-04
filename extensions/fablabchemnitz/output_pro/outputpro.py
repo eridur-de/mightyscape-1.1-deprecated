@@ -60,8 +60,8 @@ class OutputProBitmap(inkex.EffectExtension):
             #inkex.utils.debug(list_of_profiles)
     
             selected_screen_profile = inkscape_config.split('id="displayprofile"')[1].split('uri="')[1].split('" />')[0].split('/')[-1]
-            if selected_screen_profile == '':
-                inkex.utils.debug("Configured icc color profile (Inkscape) is not set. Configure it in preferences and restart Inkscape to apply changes.")
+            #if selected_screen_profile == '':
+            #    inkex.utils.debug("Configured icc color profile (Inkscape) is not set. Configure it in preferences and restart Inkscape to apply changes.")
             selected_print_profile = inkscape_config.split('id="softproof"')[1].split('uri="')[1].split('" />')[0].split('/')[-1]
             
             rgb_profile = '"' + inkscape_config.split('id="displayprofile"')[1].split('uri="')[1].split('" />')[0] + '"'
@@ -557,18 +557,16 @@ class OutputProBitmap(inkex.EffectExtension):
                                 final_command.append(os.path.join(icc_dir, selected_screen_profile))
     
                             final_command.append(os.path.join(dirpathTempFolder.name, 'result.png'))
+                            subprocess.Popen(final_command, shell=True).wait()
     
-                            subprocess.Popen(final_command).wait()
-    
-                            file_info = subprocess.Popen(['identify', os.path.join(dirpathTempFolder.name,  'source.png')], stdout=subprocess.PIPE).communicate()[0].decode('UTF-8')
+                            file_info = subprocess.Popen(['identify', os.path.join(dirpathTempFolder.name,  'source.png')], shell=True, stdout=subprocess.PIPE).communicate()[0].decode('UTF-8')
                             image_width = int(file_info.split(' ')[2].split('x')[0])
                             image_height = int(file_info.split(' ')[2].split('x')[1])
     
                             marksize = (self.dpi_choice.value() / 90) * unittouu(str(self.prepress_paper_cutmarks_marksize_value.text()) + str(self.prepress_paper_cutmarks_marksize_choice.currentText()))
                             imposition_space = (self.dpi_choice.value() / 90) * unittouu(str(self.imposition_space_value.text()) + str(self.imposition_space_choice.currentText()))
     
-                            file_info = subprocess.Popen(['identify', '-verbose', os.path.join(dirpathTempFolder.name,  'result-imp.') + list_of_export_formats[self.format_choice.currentIndex()].lower()], stdout=subprocess.PIPE).communicate()[0].decode('UTF-8')
-    
+                            file_info = subprocess.Popen(['identify', '-verbose', os.path.join(dirpathTempFolder.name,  'result-imp.') + list_of_export_formats[self.format_choice.currentIndex()].lower()], shell=True, stdout=subprocess.PIPE).communicate()[0].decode('UTF-8')
                             file_info_final = ''
                             for line in file_info.split('\n'):
                                 if '  Format: ' in line:
@@ -630,7 +628,7 @@ class OutputProBitmap(inkex.EffectExtension):
                             self.preview_original_title.setVisible(False)
                             self.preview_result_title.setVisible(False)
     
-                            subprocess.Popen(['convert', os.path.join(dirpathTempFolder.name,  'result-imp.') + list_of_export_formats[self.format_choice.currentIndex()].lower(), '-resize', '300x300', os.path.join(dirpathTempFolder.name, 'preview.png')]).wait()
+                            subprocess.Popen(['convert', os.path.join(dirpathTempFolder.name,  'result-imp.') + list_of_export_formats[self.format_choice.currentIndex()].lower(), '-resize', '300x300', os.path.join(dirpathTempFolder.name, 'preview.png')], shell=True).wait()
     
                         elif self.option_box.currentIndex() == 2:
                             None
@@ -657,7 +655,7 @@ class OutputProBitmap(inkex.EffectExtension):
     
                                 if list_of_color_modes_jpeg[self.color_mode_choice_jpeg.currentIndex()] == 'RGB':
                                     pre_command.append(os.path.join(dirpathTempFolder.name, 'result.tiff'))
-                                    subprocess.Popen(pre_command).wait()
+                                    subprocess.Popen(pre_command, shell=True).wait()
                                     del pre_command[:]
                                     pre_command.append('convert')
                                     pre_command.append(os.path.join(dirpathTempFolder.name, 'result.tiff'))
@@ -665,8 +663,10 @@ class OutputProBitmap(inkex.EffectExtension):
                                     pre_command.append(os.path.join(icc_dir, selected_screen_profile))
     
                             pre_command.append(os.path.join(dirpathTempFolder.name, 'result.tiff'))
-                            subprocess.Popen(pre_command).wait()
-    
+                            subprocess.Popen(pre_command, shell=True).wait()
+                            if not os.path.isfile(os.path.join(dirpathTempFolder.name, 'result.tiff')):
+                                inkex.utils.debug("Error. Missing result.tiff")
+
                         else:
                             if self.color_profile_choice_jpeg.isChecked():
                                 pre_command = ['convert']
@@ -674,9 +674,9 @@ class OutputProBitmap(inkex.EffectExtension):
                                 pre_command.append('-profile')
                                 pre_command.append(os.path.join(icc_dir, selected_screen_profile))
                                 pre_command.append(os.path.join(dirpathTempFolder.name, 'result.tiff'))
-                                subprocess.Popen(pre_command).wait()
+                                subprocess.Popen(pre_command, shell=True).wait()
     
-                        file_info = subprocess.Popen(['identify', os.path.join(dirpathTempFolder.name, 'source.png')], stdout=subprocess.PIPE).communicate()[0].decode('UTF-8')
+                        file_info = subprocess.Popen(['identify', os.path.join(dirpathTempFolder.name, 'source.png')], shell=True, stdout=subprocess.PIPE).communicate()[0].decode('UTF-8')
                         if self.prepress_paper_cutmarks_check.isChecked():
                             bleedsize = (self.dpi_choice.value() / 90) * unittouu(str(self.prepress_paper_cutmarks_bleedsize_value.text()) + str(self.prepress_paper_cutmarks_bleedsize_choice.currentText()))
                             marksize = (self.dpi_choice.value() / 90) * unittouu(str(self.prepress_paper_cutmarks_marksize_value.text()) + str(self.prepress_paper_cutmarks_marksize_choice.currentText()))
@@ -699,7 +699,7 @@ class OutputProBitmap(inkex.EffectExtension):
                         imposition_command.append('-extent')
                         imposition_command.append(str(sum(image_width) + (marksize*2) + (imposition_space * (len(image_width) -1))) + 'x' + str(sum(image_height) + (marksize*2) + (imposition_space * (len(image_height) -1))) + '-' + str(marksize) + '-' + str(marksize))
                         imposition_command.append(os.path.join(dirpathTempFolder.name, 'result-imp.tiff'))
-                        subprocess.Popen(imposition_command).wait()
+                        subprocess.Popen(imposition_command, shell=True).wait()
     
                         last_width = 0
                         last_height = 0
@@ -713,7 +713,7 @@ class OutputProBitmap(inkex.EffectExtension):
                                     imposition_command.append(os.path.join(dirpathTempFolder.name, 'result.tiff'))
                                     imposition_command.append(os.path.join(dirpathTempFolder.name, 'result-imp.tiff'))
                                     imposition_command.append(os.path.join(dirpathTempFolder.name, 'result-imp.tiff'))
-                                    subprocess.Popen(imposition_command).wait()
+                                    subprocess.Popen(imposition_command, shell=True).wait()
     
                                 last_height += height + imposition_space
                                 last_marksize = 0
@@ -740,8 +740,11 @@ class OutputProBitmap(inkex.EffectExtension):
                             cut_marks_command.append(os.path.join(dirpathTempFolder.name, 'cut_mark.tiff'))
                             cut_marks_command.append(os.path.join(dirpathTempFolder.name, 'result-imp.tiff'))
                             cut_marks_command.append(os.path.join(dirpathTempFolder.name, 'result-imp.tiff'))
-                            subprocess.Popen(cut_marks_command).wait()
+                            subprocess.Popen(cut_marks_command, shell=True).wait()
     
+                        if not os.path.isfile(os.path.join(dirpathTempFolder.name, 'result-imp.tiff')):
+                            inkex.utils.debug("Error. Missing result-imp.tiff")
+                                
                         jpeg_command.append(os.path.join(dirpathTempFolder.name, 'result-imp.tiff'))
     
                         if self.prepress_paper_settings_invert.isChecked():
@@ -776,8 +779,8 @@ class OutputProBitmap(inkex.EffectExtension):
                         jpeg_command.append('jpeg:dct-method=' + list_of_dct_jpeg[self.jpeg_dct_choice_jpeg.currentText()])
     
                         jpeg_command.append(os.path.join(dirpathTempFolder.name, 'result-imp.jpeg'))
-    
-                        subprocess.Popen(jpeg_command).wait()
+                        
+                        subprocess.Popen(jpeg_command, shell=True).wait()
     
                 def change_format(self):
                     self.general_options_panel_jpeg.setVisible(False)
@@ -874,21 +877,18 @@ class OutputProBitmap(inkex.EffectExtension):
                              '-separate',
                              os.path.join(dirpathTempFolder.name, 'separated' + area_to_export.replace(' ', '') + color + ".png")]
                         #inkex.utils.debug(cmd)
-                        p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                        stdout, stderr = p.communicate()
-                        p.wait()
-                        #if p.returncode != 0: 
-                        #   inkex.utils.debug("Command failed: %d %s %s" % (p.returncode, stdout, stderr))
+                        p = subprocess.Popen(cmd, shell=True).wait()
+
                     self.cmyk_advanced_manipulation_view_separations()
     
                 def cmyk_advanced_manipulation_view_separations(self):
                     area_to_export = self.area_to_export()
     
-                    file_info = subprocess.Popen(['identify', os.path.join(dirpathTempFolder.name, 'source.png')], stdout=subprocess.PIPE).communicate()[0].decode('UTF-8')
+                    file_info = subprocess.Popen(['identify', os.path.join(dirpathTempFolder.name, 'source.png')], shell=True, stdout=subprocess.PIPE).communicate()[0].decode('UTF-8')
     
                     image_size = file_info.split(' ')[2]
     
-                    subprocess.Popen(['convert', '-size', image_size, 'xc:black',  os.path.join(dirpathTempFolder.name, 'empty.png')]).wait()
+                    subprocess.Popen(['convert', '-size', image_size, 'xc:black',  os.path.join(dirpathTempFolder.name, 'empty.png')], shell=True).wait()
     
                     final_command = ['convert']
     
@@ -914,7 +914,7 @@ class OutputProBitmap(inkex.EffectExtension):
     
                     final_command.extend(['-set', 'colorspace', 'cmyk'])
                     final_command.extend(['-combine', os.path.join(dirpathTempFolder.name, 'result.tiff')])
-                    subprocess.Popen(final_command).wait()
+                    subprocess.Popen(final_command, shell=True).wait()
     
                     self.generate_preview()
     
@@ -957,13 +957,16 @@ class OutputProBitmap(inkex.EffectExtension):
     
                     cmd = self.area_to_export() + ';export-dpi:' + str(self.dpi_choice.value()) + ';export-background-opacity:1;export-filename:' + os.path.join(dirpathTempFolder.name, 'source.png') + ';export-do'
                     cli_output = inkscape(os.path.join(dirpathTempFolder.name, 'original.svg'), actions=cmd)
+                    #inkex.utils.debug(cmd)
                     if len(cli_output) > 0:
                         self.debug(_("Inkscape returned the following output when trying to run the file export; the file export may still have worked:"))
                         self.debug(cli_output)
     
-                    #ImageMagick
-                    subprocess.Popen(['convert', os.path.join(dirpathTempFolder.name, 'source.png'), os.path.join(dirpathTempFolder.name, 'source.tiff')]).wait()
-    
+                    subprocess.Popen(['convert', os.path.join(dirpathTempFolder.name, 'source.png'), os.path.join(dirpathTempFolder.name, 'source.tiff')], shell=True).wait()
+
+                    if not os.path.isfile(os.path.join(dirpathTempFolder.name, 'source.tiff')):
+                        inkex.utils.debug("Error. Missing source.tiff")
+
                     self.generate_preview()
     
                 def zoom_out(self):
@@ -1044,14 +1047,22 @@ class OutputProBitmap(inkex.EffectExtension):
                         self.generate_final_file()
     
                     if not str(self.location_path) == '':
-                        shutil.copy2(os.path.join(dirpathTempFolder.name, 'result-imp.' + list_of_export_formats[self.format_choice.currentIndex()].lower()), self.location_path[0] + "." + self.location_path[1].lower())
-    
-    
+                        result_imp = os.path.join(dirpathTempFolder.name, 'result-imp.' + list_of_export_formats[self.format_choice.currentIndex()].lower())
+                        target_imp = os.path.abspath(self.location_path[0] + "." + self.location_path[1].lower())
+                        if not os.path.isfile(result_imp):
+                            inkex.utils.debug("Error. No result generated to export. The following files were created in temp dir:")
+                            inkex.utils.debug(os.listdir(dirpathTempFolder.name))                   
+                        else:
+                            shutil.copy2(result_imp, target_imp)    
     
             app = QtWidgets.QApplication(sys.argv)
             app.main = mainWindow()
+            getattr(app.main, "raise")()
             app.main.show()
+            app.main.activateWindow() #bring to front (required for Windows; but not for Linux)
             sys.exit(app.exec_())
+            
+            
         except Exception as e:
             self.msg(e)
         finally:
