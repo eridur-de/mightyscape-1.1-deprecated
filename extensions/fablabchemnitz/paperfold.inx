@@ -19,6 +19,7 @@
             </param>
             <param name="color_valley_cut" type="color" appearance="colorbutton" gui-text="Color for valley cuts">255</param>
             <param name="color_mountain_cut" type="color" appearance="colorbutton" gui-text="Color for mountain cuts">1968208895</param>
+            <param name="color_coplanar_lines" type="color" appearance="colorbutton" gui-text="Color for coplanar lines">1943148287</param>
             <param name="color_valley_perforate" type="color" appearance="colorbutton" gui-text="Color for valley perforations">3422552319</param>
             <param name="color_mountain_perforate" type="color" appearance="colorbutton" gui-text="Color for mountain perforations">879076607</param>
             <param name="printStats" type="bool" gui-text="Show some unfold statistics">true</param>

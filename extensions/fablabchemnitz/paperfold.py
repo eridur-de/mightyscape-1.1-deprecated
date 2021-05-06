@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import openmesh as om
+import math
 import inkex
 import tempfile
 import os
@@ -36,14 +37,7 @@ possible import file types -> https://www.graphics.rwth-aachen.de/media/openmesh
 
 ToDos:
 - Add glue tabs
-- Fix bug with canvas resizing. bounding box of paperfoldMainGroup returns unexplainable wrong results. How to update the view to get correct values here?
-- Print statistics about 
-  - groups
-  - edge count per type (valley cut, mountain cut, valley fold, mountain fold)
-- remove unrequired extra folding edges on plane surfaces (compare the output from osresearch/papercraft and paperfoldmodels) which should be removed before printing/cutting. 
-  For example take a pentagon - it's face gets divided into three triangles if we put it into a mesh triangulation tool. Means we receive two fold edges which we don't need.
-  This would create more convenient output like osresearch/papercraft and dxf2papercraft do. 
-  See https://github.com/osresearch/papercraft/blob/master/unfold.c > coplanar_check() method
+- Print statistics about groups
 
 """
 
@@ -114,7 +108,9 @@ def triangleIntersection(t1, t2, epsilon):
 def addVisualisationData(mesh, unfoldedMesh, originalHalfedges, unfoldedHalfedges, glueNumber, foldingDirection):
     for i in range(3):
         # Folding direction
-        if mesh.calc_dihedral_angle(originalHalfedges[i]) < 0:
+        if round(math.degrees(mesh.calc_dihedral_angle(originalHalfedges[i])), 3) == 0.0:
+            foldingDirection[unfoldedMesh.edge_handle(unfoldedHalfedges[i]).idx()] = 0 # adjacent coplanar
+        elif mesh.calc_dihedral_angle(originalHalfedges[i]) < 0:
             foldingDirection[unfoldedMesh.edge_handle(unfoldedHalfedges[i]).idx()] = -1
         else:
             foldingDirection[unfoldedMesh.edge_handle(unfoldedHalfedges[i]).idx()] = 1
@@ -124,7 +120,7 @@ def addVisualisationData(mesh, unfoldedMesh, originalHalfedges, unfoldedHalfedge
 
 # Function that unwinds a spanning tree
 def unfoldSpanningTree(mesh, spanningTree):
-    unfoldedMesh = om.TriMesh()  # Das abgewickelte Netz
+    unfoldedMesh = om.TriMesh()  # the unfolded mesh
 
     numFaces = mesh.n_faces()
     sizeTree = spanningTree.number_of_edges()
@@ -438,6 +434,7 @@ def writeSVG(self, unfolding, size, printNumbers):
     gluePairs = 0
     mountainCuts = 0
     valleyCuts = 0
+    coplanarLines = 0
     mountainPerforations = 0
     valleyPerforations = 0
     
@@ -467,10 +464,6 @@ def writeSVG(self, unfolding, size, printNumbers):
 
         # Write a straight line between the two corners
         line = paperfoldPageGroup.add(inkex.PathElement())
-        #line.path = [
-        #       ["M", [vertex0[0], vertex0[1]]],
-        #       ["L", [vertex1[0], vertex1[1]]]
-        #    ]
         line.set('d', "M " + str(vertex0[0]) + "," + str(vertex0[1]) + " " + str(vertex1[0]) + "," + str(vertex1[1]))
         # Colour depending on folding direction
         lineStyle = {"fill": "none"}
@@ -482,6 +475,10 @@ def writeSVG(self, unfolding, size, printNumbers):
             lineStyle.update({"stroke": self.options.color_valley_cut})
             line.set("id", self.svg.get_unique_id("valley-cut-"))
             valleyCuts += 1
+        elif foldingDirection[edge.idx()] == 0:
+            lineStyle.update({"stroke": self.options.color_coplanar_lines})
+            line.set("id", self.svg.get_unique_id("coplanar-line-"))
+            coplanarLines += 1
                     
         lineStyle.update({"stroke-width":str(strokewidth)})
         lineStyle.update({"stroke-linecap":"butt"})
@@ -542,6 +539,7 @@ def writeSVG(self, unfolding, size, printNumbers):
         inkex.utils.debug("Folding edges stats: ")
         inkex.utils.debug(" * Number of mountain cuts: " + str(mountainCuts))
         inkex.utils.debug(" * Number of valley cuts: " + str(valleyCuts))
+        inkex.utils.debug(" * Number of coplanar lines: " + str(coplanarLines))
         inkex.utils.debug(" * Number of mountain perforations: " + str(mountainPerforations))
         inkex.utils.debug(" * Number of valley perforations: " + str(valleyPerforations))
         inkex.utils.debug("-----------------------------------------------------------")
@@ -562,6 +560,7 @@ class Unfold(inkex.EffectExtension):
         pars.add_argument("--extraborder_units")         
         pars.add_argument("--color_valley_cut", type=Color, default='255', help="Color for valley cuts")
         pars.add_argument("--color_mountain_cut", type=Color, default='1968208895', help="Color for mountain cuts")
+        pars.add_argument("--color_coplanar_lines", type=Color, default='1943148287', help="Color for coplanar lines")
         pars.add_argument("--color_valley_perforate", type=Color, default='3422552319', help="Color for valley perforations")
         pars.add_argument("--color_mountain_perforate", type=Color, default='879076607', help="Color for mountain perforations")
         pars.add_argument("--printStats", type=inkex.Boolean, default=True, help="Show some unfold statistics") 
@@ -571,6 +570,8 @@ class Unfold(inkex.EffectExtension):
             inkex.utils.debug("The input file does not exist. Please select a proper file and try again.")
             exit(1)
         mesh = om.read_trimesh(self.options.inputfile)
+        #mesh = om.read_polymesh(self.options.inputfile) #we must work with triangles instead of polygons because the algorithm works with that
+
         fullUnfolded, unfoldedComponents = unfold(mesh, self.options.maxNumFaces, self.options.printStats)
         # Compute maxSize of the components
         # All components must be scaled to the same size as the largest component
