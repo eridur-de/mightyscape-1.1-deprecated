@@ -17,7 +17,7 @@ Paperfold is another flattener for triangle mesh files, heavily based on paperfo
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 13.09.2020
-Last patch: 13.09.2020
+Last patch: 06.05.2021
 License: GNU GPL v3
 
 To run this you need to install OpenMesh with python pip. 
@@ -39,12 +39,11 @@ ToDos:
 - Fix bug with canvas resizing. bounding box of paperfoldMainGroup returns unexplainable wrong results. How to update the view to get correct values here?
 - Print statistics about 
   - groups
-  - triagle count
   - edge count per type (valley cut, mountain cut, valley fold, mountain fold)
-  - remove unrequired extra folding edges on plane surfaces (compare the output from osresearch/papercraft and paperfoldmodels) which should be removed before printing/cutting. 
-    For example take a pentagon - it's face gets divided into three triangles if we put it into a mesh triangulation tool. Means we receive two fold edges which we don't need.
-    This would create more convenient output like osresearch/papercraft and dxf2papercraft do. 
-    See https://github.com/osresearch/papercraft/blob/master/unfold.c > coplanar_check() method
+- remove unrequired extra folding edges on plane surfaces (compare the output from osresearch/papercraft and paperfoldmodels) which should be removed before printing/cutting. 
+  For example take a pentagon - it's face gets divided into three triangles if we put it into a mesh triangulation tool. Means we receive two fold edges which we don't need.
+  This would create more convenient output like osresearch/papercraft and dxf2papercraft do. 
+  See https://github.com/osresearch/papercraft/blob/master/unfold.c > coplanar_check() method
 
 """
 
@@ -258,11 +257,23 @@ def unfoldSpanningTree(mesh, spanningTree):
 
     return [unfoldedMesh, isFoldingEdge, connections, glueNumber, foldingDirection]
 
-def unfold(mesh):
+def unfold(mesh, maxNumFaces, printStats):
     # Calculate the number of surfaces, edges and corners, as well as the length of the longest shortest edge
     numEdges = mesh.n_edges()
     numVertices = mesh.n_vertices()
     numFaces = mesh.n_faces()
+
+    if numFaces > maxNumFaces:
+        inkex.utils.debug("Aborted. Target STL file has " + str(numFaces) + " faces, but " + str(maxNumFaces) + " are allowed.")
+        exit(1)
+
+    if printStats is True:
+        inkex.utils.debug("Input STL mesh stats:")
+        inkex.utils.debug("* Number of edges: " + str(numEdges))
+        inkex.utils.debug("* Number of vertices: " + str(numVertices))
+        inkex.utils.debug("* Number of faces: " + str(numFaces))
+        inkex.utils.debug("-----------------------------------------------------------")
+
 
     # Generate the dual graph of the mesh and calculate the weights
     dualGraph = nx.Graph()
@@ -423,6 +434,13 @@ def writeSVG(self, unfolding, size, printNumbers):
     glueNumber = unfolding[3]
     foldingDirection = unfolding[4]
 
+    #statistic values
+    gluePairs = 0
+    mountainCuts = 0
+    valleyCuts = 0
+    mountainPerforations = 0
+    valleyPerforations = 0
+    
     # Calculate the bounding box
     [xmin, ymin, boxSize] = findBoundingBox(unfolding[0])
 
@@ -459,10 +477,12 @@ def writeSVG(self, unfolding, size, printNumbers):
         if foldingDirection[edge.idx()] > 0:
             lineStyle.update({"stroke": self.options.color_mountain_cut})
             line.set("id", self.svg.get_unique_id("mountain-cut-"))
+            mountainCuts += 1
         elif foldingDirection[edge.idx()] < 0:
             lineStyle.update({"stroke": self.options.color_valley_cut})
             line.set("id", self.svg.get_unique_id("valley-cut-"))
-                     
+            valleyCuts += 1
+                    
         lineStyle.update({"stroke-width":str(strokewidth)})
         lineStyle.update({"stroke-linecap":"butt"})
         lineStyle.update({"stroke-linejoin":"miter"})
@@ -474,9 +494,11 @@ def writeSVG(self, unfolding, size, printNumbers):
             if foldingDirection[edge.idx()] > 0:
                 lineStyle.update({"stroke": self.options.color_mountain_perforate})
                 line.set("id", self.svg.get_unique_id("mountain-perforate-"))
+                mountainPerforations += 1
             if foldingDirection[edge.idx()] < 0:
                 lineStyle.update({"stroke": self.options.color_valley_perforate})
-                line.set("id", self.svg.get_unique_id("valley-perforate-"))     
+                line.set("id", self.svg.get_unique_id("valley-perforate-")) 
+                valleyPerforations += 1    
         else:
             lineStyle.update({"stroke-dasharray":"none"})
 
@@ -513,7 +535,18 @@ def writeSVG(self, unfolding, size, printNumbers):
                 tspan.set("x", str(position[0]))
                 tspan.set("y", str(position[1]))
                 tspan.set("style", "stroke-width:" + str(textStrokewidth))
-                tspan.text = str(glueNumber[edge.idx()])       
+                tspan.text = str(glueNumber[edge.idx()])
+            gluePairs += 1
+                
+    if self.options.printStats is True:
+        inkex.utils.debug("Folding edges stats: ")
+        inkex.utils.debug(" * Number of mountain cuts: " + str(mountainCuts))
+        inkex.utils.debug(" * Number of valley cuts: " + str(valleyCuts))
+        inkex.utils.debug(" * Number of mountain perforations: " + str(mountainPerforations))
+        inkex.utils.debug(" * Number of valley perforations: " + str(valleyPerforations))
+        inkex.utils.debug("-----------------------------------------------------------")
+        inkex.utils.debug("Number of glue pairs: " + str(gluePairs)) 
+                    
     return paperfoldPageGroup
                 
 class Unfold(inkex.EffectExtension):
@@ -521,6 +554,7 @@ class Unfold(inkex.EffectExtension):
     def add_arguments(self, pars):
         pars.add_argument("--tab")
         pars.add_argument("--inputfile")
+        pars.add_argument("--maxNumFaces", type=int, default=200, help="If the STL file has too much detail it contains a large number of faces. This will make unfolding extremely slow. So we can limit it.")
         pars.add_argument("--printNumbers", type=inkex.Boolean, default=False, help="Print numbers on the cut edges")
         pars.add_argument("--scalefactor", type=float, default=1.0, help="Manual scale factor")
         pars.add_argument("--resizetoimport", type=inkex.Boolean, default=True, help="Resize the canvas to the imported drawing's bounding box") 
@@ -530,10 +564,14 @@ class Unfold(inkex.EffectExtension):
         pars.add_argument("--color_mountain_cut", type=Color, default='1968208895', help="Color for mountain cuts")
         pars.add_argument("--color_valley_perforate", type=Color, default='3422552319', help="Color for valley perforations")
         pars.add_argument("--color_mountain_perforate", type=Color, default='879076607', help="Color for mountain perforations")
-                                
+        pars.add_argument("--printStats", type=inkex.Boolean, default=True, help="Show some unfold statistics") 
+               
     def effect(self):
+        if not os.path.exists(self.options.inputfile):
+            inkex.utils.debug("The input file does not exist. Please select a proper file and try again.")
+            exit(1)
         mesh = om.read_trimesh(self.options.inputfile)
-        fullUnfolded, unfoldedComponents = unfold(mesh)
+        fullUnfolded, unfoldedComponents = unfold(mesh, self.options.maxNumFaces, self.options.printStats)
         # Compute maxSize of the components
         # All components must be scaled to the same size as the largest component
         maxSize = 0
