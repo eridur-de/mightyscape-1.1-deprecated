@@ -9,7 +9,7 @@
 			<param name="number" type="bool" gui-text="Print face numbers (labels)" gui-description="Disable this if you want to split custom faces">false</param>
 			<param name="divide" type="bool" gui-text="Draw each face separate">false</param>
 			<param name="overlap" type="bool" gui-text="Allow overlapping faces in cut-out sheet">false</param>
-			<param name="hide" type="bool" gui-text="Hide glue tabs">false</param>
+			<param name="hide" type="bool" gui-text="Hide glue tabs. Does not work if 'Print face numbers (labels)' is activated">false</param>
 			<param name="force" type="bool" gui-text="Force glue tabs, even if intersecting faces">false</param>
 			<param name="split" type="string" gui-text="Comma separated list of face numbers to disconnect from the rest" gui-description="Enable face numbers tp have a view on it. If face number option is activated the splitting will not be performed!"></param>
 			<param name="strategy" type="optiongroup" appearance="combo" gui-text="Generation strategy">

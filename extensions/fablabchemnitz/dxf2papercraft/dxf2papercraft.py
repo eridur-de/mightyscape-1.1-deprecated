@@ -121,29 +121,28 @@ class PapercraftUnfold(inkex.EffectExtension):
         p = etree.XMLParser(huge_tree=True)
         doc = etree.parse(stream, parser=etree.XMLParser(huge_tree=True)).getroot()
         stream.close()
-        doc.set('id', self.svg.get_unique_id('dxf2papercraft-'))
-        self.document.getroot().append(doc)              
-
-        #do some viewport adjustments
-        doc.set('width','')
-        doc.set('height','')
-        doc.set('viewBox','')
-        doc.getchildren()[1].set('transform','') #this removes the "transform:scale(1, -1)" from <svg:g id="draft"> child within dxf2papercraft-<id> group
-
+        
+        dxfGroup = inkex.Group(id=self.svg.get_unique_id("dxf2papercraft-"))
+        for element in doc.iter("{http://www.w3.org/2000/svg}g"):
+            if element.get('id') != "draft":
+                dxfGroup.append(element)
+        self.document.getroot().add(dxfGroup)
+                
         #apply scale factor
-        node = doc.getchildren()[1]
         translation_matrix = [[self.options.scalefactor, 0.0, 0.0], [0.0, self.options.scalefactor, 0.0]]            
-        node.transform = Transform(translation_matrix) * node.transform
+        dxfGroup.transform = Transform(translation_matrix) * dxfGroup.transform
 
         #Adjust viewport and width/height to have the import at the center of the canvas
         if self.options.resizetoimport:
-            bbox = inkex.elements._selected.ElementList.bounding_box(node)
+            bbox = dxfGroup.bounding_box() #does not work. why?
             if bbox is not None:
                 root = self.svg.getElement('//svg:svg');
                 offset = self.svg.unittouu(str(self.options.extraborder) + self.options.extraborder_units)
                 root.set('viewBox', '%f %f %f %f' % (bbox.left - offset, bbox.top - offset, bbox.width + 2 * offset, bbox.height + 2 * offset))
                 root.set('width', bbox.width + 2 * offset)
                 root.set('height', bbox.height + 2 * offset)
+            else:
+                self.msg("Error resizing to bounding box.")
 
 if __name__ == '__main__':
     PapercraftUnfold().run()
