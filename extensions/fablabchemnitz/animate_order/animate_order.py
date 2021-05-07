@@ -29,6 +29,7 @@ ToDo:
     - we should do it the way like vivus instant -> http://maxwellito.github.io/vivus / https://maxwellito.github.io/vivus-instant
     - the generated SVGs can be downloaded again and include all animations!
  - calculate the total length of all paths and auto-adjust the speed to have good visibility
+ - Possible feature request could be to handle "animate selected objects only". See "Export selection as ... " extension to steal that code.
 """
 DETACHED_PROCESS = 0x00000008
 
