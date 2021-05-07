@@ -107,14 +107,7 @@ def triangleIntersection(t1, t2, epsilon):
 # Functions for visualisation and output
 def addVisualisationData(mesh, unfoldedMesh, originalHalfedges, unfoldedHalfedges, glueNumber, foldingDirection):
     for i in range(3):
-        # Folding direction
-        if round(math.degrees(mesh.calc_dihedral_angle(originalHalfedges[i])), 3) == 0.0:
-            foldingDirection[unfoldedMesh.edge_handle(unfoldedHalfedges[i]).idx()] = 0 # adjacent coplanar
-        elif mesh.calc_dihedral_angle(originalHalfedges[i]) < 0:
-            foldingDirection[unfoldedMesh.edge_handle(unfoldedHalfedges[i]).idx()] = -1
-        else:
-            foldingDirection[unfoldedMesh.edge_handle(unfoldedHalfedges[i]).idx()] = 1
-
+        foldingDirection[unfoldedMesh.edge_handle(unfoldedHalfedges[i]).idx()] = round(math.degrees(mesh.calc_dihedral_angle(originalHalfedges[i])), 3)
         # Information, which edges belong together
         glueNumber[unfoldedMesh.edge_handle(unfoldedHalfedges[i]).idx()] = mesh.edge_handle(originalHalfedges[i]).idx()
 
@@ -128,7 +121,7 @@ def unfoldSpanningTree(mesh, spanningTree):
 
     isFoldingEdge = np.zeros(numUnfoldedEdges, dtype=bool)  # Indicates whether an edge is folded or cut
     glueNumber = np.empty(numUnfoldedEdges, dtype=int)  # Saves with which edge is glued together
-    foldingDirection = np.empty(numUnfoldedEdges, dtype=int)  # Valley folding or mountain folding
+    foldingDirection = np.empty(numUnfoldedEdges, dtype=float)  # Valley folding or mountain folding
 
     connections = np.empty(numFaces, dtype=int)  # Saves which original triangle belongs to the unrolled one
 
@@ -447,10 +440,9 @@ def writeSVG(self, unfolding, size, printNumbers):
     strokewidth = 0.002 * boxSize
     dashLength = 0.008 * boxSize
     spaceLength = 0.02 * boxSize
-    textDistance = 0.02 * boxSize
+    textDistance = boxSize * self.options.fontSize / 800
     textStrokewidth = 0.05 * strokewidth
-    textLength = 0.001 * boxSize
-    fontsize = 0.015 * boxSize
+    fontsize = boxSize * self.options.fontSize / 1000
 
     # Generate a main group
     paperfoldPageGroup = self.document.getroot().add(inkex.Group(id=self.svg.get_unique_id("paperfold-page-")))
@@ -467,15 +459,18 @@ def writeSVG(self, unfolding, size, printNumbers):
         line.set('d', "M " + str(vertex0[0]) + "," + str(vertex0[1]) + " " + str(vertex1[0]) + "," + str(vertex1[1]))
         # Colour depending on folding direction
         lineStyle = {"fill": "none"}
-        if foldingDirection[edge.idx()] > 0:
+
+        dihedralAngle = foldingDirection[edge.idx()]
+        
+        if dihedralAngle > 0:
             lineStyle.update({"stroke": self.options.color_mountain_cut})
             line.set("id", self.svg.get_unique_id("mountain-cut-"))
             mountainCuts += 1
-        elif foldingDirection[edge.idx()] < 0:
+        elif dihedralAngle < 0:
             lineStyle.update({"stroke": self.options.color_valley_cut})
             line.set("id", self.svg.get_unique_id("valley-cut-"))
             valleyCuts += 1
-        elif foldingDirection[edge.idx()] == 0:
+        elif dihedralAngle == 0:
             lineStyle.update({"stroke": self.options.color_coplanar_lines})
             line.set("id", self.svg.get_unique_id("coplanar-line-"))
             coplanarLines += 1
@@ -486,13 +481,14 @@ def writeSVG(self, unfolding, size, printNumbers):
         lineStyle.update({"stroke-miterlimit":"4"})  
             
         # Dotted lines for folding edges    
-        if isFoldingEdge[edge.idx()]: 
-            lineStyle.update({"stroke-dasharray":(str(dashLength) + ", " + str(spaceLength))})
-            if foldingDirection[edge.idx()] > 0:
+        if isFoldingEdge[edge.idx()]:
+            if self.options.dashes is True:
+                lineStyle.update({"stroke-dasharray":(str(dashLength) + ", " + str(spaceLength))})
+            if dihedralAngle > 0:
                 lineStyle.update({"stroke": self.options.color_mountain_perforate})
                 line.set("id", self.svg.get_unique_id("mountain-perforate-"))
                 mountainPerforations += 1
-            if foldingDirection[edge.idx()] < 0:
+            if dihedralAngle < 0:
                 lineStyle.update({"stroke": self.options.color_valley_perforate})
                 line.set("id", self.svg.get_unique_id("valley-perforate-")) 
                 valleyPerforations += 1    
@@ -525,18 +521,21 @@ def writeSVG(self, unfolding, size, printNumbers):
                 text.set("x", str(position[0]))
                 text.set("y", str(position[1]))
                 text.set("font-size", str(fontsize))
-                text.set("style", "stroke-width:" + str(textStrokewidth))
+                text.set("style", "stroke-width:" + str(textStrokewidth) + ";text-anchor:middle;text-align:center")
                 text.set("transform", "rotate(" + str(rotation) + "," + str(position[0]) + "," + str(position[1]) + ")")
                 
                 tspan = text.add(Tspan())
                 tspan.set("x", str(position[0]))
                 tspan.set("y", str(position[1]))
-                tspan.set("style", "stroke-width:" + str(textStrokewidth))
+                tspan.set("style", "stroke-width:" + str(textStrokewidth) + ";text-anchor:middle;text-align:center")
                 tspan.text = str(glueNumber[edge.idx()])
+                if self.options.printAngles is True:
+                    tspan.text += " ({:0.2f}°)".format(dihedralAngle)
+                    
             gluePairs += 1
                 
     if self.options.printStats is True:
-        inkex.utils.debug("Folding edges stats: ")
+        inkex.utils.debug("Folding edges stats:")
         inkex.utils.debug(" * Number of mountain cuts: " + str(mountainCuts))
         inkex.utils.debug(" * Number of valley cuts: " + str(valleyCuts))
         inkex.utils.debug(" * Number of coplanar lines: " + str(coplanarLines))
@@ -554,6 +553,8 @@ class Unfold(inkex.EffectExtension):
         pars.add_argument("--inputfile")
         pars.add_argument("--maxNumFaces", type=int, default=200, help="If the STL file has too much detail it contains a large number of faces. This will make unfolding extremely slow. So we can limit it.")
         pars.add_argument("--printNumbers", type=inkex.Boolean, default=False, help="Print numbers on the cut edges")
+        pars.add_argument("--printAngles", type=inkex.Boolean, default=False, help="Print folding angles on the cut edges")
+        pars.add_argument("--fontSize", type=int, default=15, help="Label font size (%)")
         pars.add_argument("--scalefactor", type=float, default=1.0, help="Manual scale factor")
         pars.add_argument("--resizetoimport", type=inkex.Boolean, default=True, help="Resize the canvas to the imported drawing's bounding box") 
         pars.add_argument("--extraborder", type=float, default=0.0)
@@ -563,6 +564,7 @@ class Unfold(inkex.EffectExtension):
         pars.add_argument("--color_coplanar_lines", type=Color, default='1943148287', help="Color for coplanar lines")
         pars.add_argument("--color_valley_perforate", type=Color, default='3422552319', help="Color for valley perforations")
         pars.add_argument("--color_mountain_perforate", type=Color, default='879076607', help="Color for mountain perforations")
+        pars.add_argument("--dashes", type=inkex.Boolean, default=True, help="Dashes for cut/coplanar lines")         
         pars.add_argument("--printStats", type=inkex.Boolean, default=True, help="Show some unfold statistics") 
                
     def effect(self):
