@@ -29,8 +29,9 @@ class BBoxAdjust(inkex.EffectExtension):
                 bbox += element.bounding_box()
 
         # adjust the viewBox to the bbox size and add the desired offset
-        self.document.getroot().attrib['viewBox'] = f'{-offset} {-offset} {bbox.width + offset * 2} {bbox.height + offset * 2}'
+        # note from 07.05.2021: seems if the following order is viewBox/width/height, or width/height/viewBox, the units are not respected. So me mess around a little bit
         self.document.getroot().attrib['width'] = f'{bbox.width + offset * 2}' + self.svg.unit
+        self.document.getroot().attrib['viewBox'] = f'{-offset} {-offset} {bbox.width + offset * 2} {bbox.height + offset * 2}'
         self.document.getroot().attrib['height'] = f'{bbox.height + offset * 2}' + self.svg.unit
 
         # translate all elements to fit the adjusted viewBox
