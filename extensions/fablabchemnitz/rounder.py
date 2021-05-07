@@ -30,8 +30,8 @@ class svgRounder(inkex.EffectExtension):
     
     def add_arguments(self, pars):
         pars.add_argument("--precision", type=int, default=3, help="Precision")
-        pars.add_argument("--ctrl", type=inkex.Boolean, default = False, help="Round node handles")
-        pars.add_argument("--along", type=inkex.Boolean, default = True, help="Move handles following node movement")
+        pars.add_argument("--ctrl", type=inkex.Boolean, default = False, help="Round element handles")
+        pars.add_argument("--along", type=inkex.Boolean, default = True, help="Move handles following element movement")
         pars.add_argument("--half", type=inkex.Boolean, default = False, help="Allow round to half if nearest")
         pars.add_argument("--paths", type=inkex.Boolean, default = True, help="Affect to paths")
         pars.add_argument("--widthheight", type=inkex.Boolean, default = False, help="Affect to width and height of objects")
@@ -55,9 +55,9 @@ class svgRounder(inkex.EffectExtension):
         y = self.roundFloat(p[1])
         return [float(x) - p[0], float(y) - p[1]]
     
-    def path_round_it(self,node):
-        if node.tag == inkex.addNS('path','svg'):
-            d = node.get('d')
+    def path_round_it(self,element):
+        if element.tag == inkex.addNS('path','svg'):
+            d = element.get('d')
             p = CubicSuperPath(d)
             for subpath in p:
                 for csp in subpath:
@@ -77,9 +77,9 @@ class svgRounder(inkex.EffectExtension):
                         delta = self.roundit(csp[2])
                         csp[2][0]+=delta[0] 
                         csp[2][1]+=delta[1] 
-            node.set('d',str(Path(p)))
-        elif node.tag == inkex.addNS('g','svg'):
-            for e in node:
+            element.set('d',str(Path(p)))
+        elif element.tag == inkex.addNS('g','svg'):
+            for e in element:
                 self.path_round_it(e)
 
     def roundStroke(self,matchobj):
@@ -92,69 +92,74 @@ class svgRounder(inkex.EffectExtension):
         return matchobj.group(1) + self.roundFloat(float( matchobj.group(2))) +  matchobj.group(3);
 
 
-    def stroke_round_it(self, node):
-        if node.tag == inkex.addNS('g','svg'):
-            for e in node:
+    def stroke_round_it(self, element):
+        if element.tag == inkex.addNS('g','svg'):
+            for e in element:
                 self.stroke_round_it(e)
         else:
-            style = node.get('style')
+            style = element.get('style')
             if style:
                 style = re.sub('stroke-width:(.*?)(;|$)',self.roundStroke, style)
-                node.set('style',style)
-    def opacity_round_it(self, node, typeOpacity):
-        if node.tag == inkex.addNS('g','svg'):
-            for e in node:
+                element.set('style',style)
+    def opacity_round_it(self, element, typeOpacity):
+        if element.tag == inkex.addNS('g','svg'):
+            for e in element:
                 self.opacity_round_it(e, typeOpacity)
         else:
-            style = node.get('style')
+            style = element.get('style')
             if style:
                 style = re.sub('(^|;)(' + typeOpacity + ':)(.*?)(;|$)',self.roundOpacity, style)
-                node.set('style',style)
+                element.set('style',style)
 
-    def widthheight_round_it(self, node):
-        if node.tag == inkex.addNS('g','svg'):
-            for e in node:
+    def widthheight_round_it(self, element):
+        if element.tag == inkex.addNS('g','svg'):
+            for e in element:
                 self.widthheight_round_it(e)
         else:
-            width = node.get('width')
+            width = element.get('width')
             if width:
                 width = re.sub('^(\-|)([0-9]+\.[0-9]+)(.*?)$',self.roundWHXY, width)
-                node.set('width',width)
-            height = node.get('height')
+                element.set('width',width)
+            height = element.get('height')
             if height:
                 height = re.sub('^(\-|)([0-9]+\.[0-9]+)(.*?)$',self.roundWHXY, height)
-                node.set('height',height)
+                element.set('height',height)
     
-    def position_round_it(self, node):
-        if node.tag == inkex.addNS('g','svg'):
-            for e in node:
+    def position_round_it(self, element):
+        if element.tag == inkex.addNS('g','svg'):
+            for e in element:
                 self.position_round_it(e)
         else:
-            x = node.get('x')
+            x = element.get('x')
             if x:
                 x = re.sub('^(\-|)([0-9]+\.[0-9]+)(.*?)$',self.roundWHXY, x)
-                node.set('x', x)
-            y = node.get('y')
+                element.set('x', x)
+            y = element.get('y')
             if y:
                 y = re.sub('^(\-|)([0-9]+\.[0-9]+)(.*?)$',self.roundWHXY, y)
-                node.set('y', y)
+                element.set('y', y)
     
     def effect(self):
-        for id, node in self.svg.selected.items():
-            if self.options.paths:
-                self.path_round_it(node)
-            if self.options.strokewidth:
-                self.stroke_round_it(node)
-            if self.options.widthheight:
-                self.widthheight_round_it(node)
-            if self.options.position:
-                self.position_round_it(node)
-            if self.options.opacity:
-                self.opacity_round_it(node, "opacity")
-            if self.options.strokeopacity:
-                self.opacity_round_it(node, "stroke-opacity")
-            if self.options.fillopacity:
-                self.opacity_round_it(node, "fill-opacity")
+        
+        if len(self.svg.selected) > 0:
+            for element in self.svg.selection.values():
+                if self.options.paths:
+                    self.path_round_it(element)
+                if self.options.strokewidth:
+                    self.stroke_round_it(element)
+                if self.options.widthheight:
+                    self.widthheight_round_it(element)
+                if self.options.position:
+                    self.position_round_it(element)
+                if self.options.opacity:
+                    self.opacity_round_it(element, "opacity")
+                if self.options.strokeopacity:
+                    self.opacity_round_it(element, "stroke-opacity")
+                if self.options.fillopacity:
+                    self.opacity_round_it(element, "fill-opacity")
+        else:
+            self.msg('Please select some paths first.')
+            return 
 
 if __name__ == '__main__':
     svgRounder().run()

@@ -13,11 +13,14 @@
     <param name="opacity" type="bool" gui-text="Round global opacity">false</param>
     <param name="strokeopacity" type="bool" gui-text="Round stroke opacity">false</param>
     <param name="fillopacity" type="bool" gui-text="Round fill opacity">false</param>
+    <spacer/>
+    <label>Please note: Rounder only applies to svg:path elements. You cannot use it for rectangle, circle, ellipsis, arc, polygon, line, polyline, etc.</label>
+    <label appearance="url">https://y.stadtfabrikanten.org/rounder</label>
     <effect>
         <object-type>all</object-type>
         <effects-menu>
             <submenu name="FabLab Chemnitz">
-                <submenu name="Various" />
+                <submenu name="Modify existing Path(s)" />
             </submenu>
         </effects-menu>
     </effect>
