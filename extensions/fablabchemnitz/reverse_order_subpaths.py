@@ -21,22 +21,25 @@ from inkex import PathElement, CubicSuperPath
 
 class ReverseOrderSubpaths(inkex.EffectExtension):
     
+    def reverse(self, element):
+        if element.tag == inkex.addNS('path','svg'):
+            new = []
+            sub = element.path.to_superpath()
+            i = 0
+            while i < len(sub):
+                new.append(sub[-1-i])
+                i += 1    
+            element.path = CubicSuperPath(new).to_path(curves_only=True)
+        elif element.tag == inkex.addNS('g','svg'):
+            for child in element.getchildren():
+                self.reverse(child)
+    
     def effect(self):
         """Reverse order of subpaths (combined paths) without reversing node-order or order of paths"""
         if not self.svg.selected:
             raise inkex.AbortExtension("Please select an object.")
-        for id, elem in self.svg.selection.id_dict().items():
-        
-            new=[]
-            sub=elem.path.to_superpath()
-
-            i=0
-            while i<len(sub):
-                new.append(sub[-1-i])
-                i+=1
-            
-            elem.path = CubicSuperPath(new).to_path(curves_only=True)
-
+        for element in self.svg.selection.values():
+            self.reverse(element)
 
 if __name__ == '__main__':
     ReverseOrderSubpaths().run()
