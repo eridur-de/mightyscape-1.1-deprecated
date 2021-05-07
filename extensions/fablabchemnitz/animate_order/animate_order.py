@@ -5,6 +5,7 @@ import subprocess
 import shutil
 import os
 import sys
+import warnings
 
 """
 Extension for InkScape 1.X
@@ -14,7 +15,7 @@ Features
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 21.04.2021
-Last patch: 21.04.2021
+Last patch: 07.05.2021
 License: GNU GPL v3
 
 Used version of Vivus JS library: https://github.com/maxwellito/vivus/releases/tag/v0.4.6 - MIT License
@@ -29,8 +30,20 @@ ToDo:
     - the generated SVGs can be downloaded again and include all animations!
  - calculate the total length of all paths and auto-adjust the speed to have good visibility
 """
+DETACHED_PROCESS = 0x00000008
 
 class AnimateOrder (inkex.EffectExtension):
+
+    def spawnIndependentProcess(self, args): #function to spawn non-blocking inkscape instance. the inkscape command is available because it is added to ENVIRONMENT when Inkscape main instance is started
+        if os.name == 'nt':
+            warnings.simplefilter('ignore', ResourceWarning) #suppress "enable tracemalloc to get the object allocation traceback"
+            subprocess.Popen(args, close_fds=True, creationflags=DETACHED_PROCESS)
+            warnings.simplefilter("default", ResourceWarning)            
+        else:
+            pid = os.fork()
+            if pid == 0: # new process
+                os.system("nohup " + args + " &")
+                exit()
 
     def add_arguments(self, pars):
         pars.add_argument("--tab")
@@ -48,9 +61,11 @@ class AnimateOrder (inkex.EffectExtension):
 
         target_html = os.path.join(extension_dir, "animate_order.html")
         
-        title = "Animate Order - " + self.document.getroot().get("{http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd}docname")
-        if title is None:
+        docTitle = self.document.getroot().get("{http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd}docname")
+        if docTitle is None:
             title = "Animate Order - Vivus JS"
+        else:
+            title = "Animate Order - " + docTitle
         vivus_include = "./vivus-0.4.6/dist/vivus.js"
         
         duration = self.options.time  * self.options.fps # we guess we have 20 ... 60 fps. depends on performance of the machine
@@ -81,10 +96,7 @@ class AnimateOrder (inkex.EffectExtension):
 
         #now open firefox
         args = [self.options.browser, target_html]
-        proc = subprocess.Popen(args, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdout, stderr = proc.communicate()
-        if proc.returncode != 0:
-            inkex.utils.debug("%d %s %s" % (proc.returncode, stdout, stderr))
-            
+        self.spawnIndependentProcess(args)
+
 if __name__ == '__main__':
     AnimateOrder().run()

@@ -9,7 +9,7 @@
 	<param name="dxf_exporter_path" type="path" mode="file" filetypes="py" gui-text="Location of dxf_outlines.py">/usr/share/inkscape/extensions/dxf_outlines.py</param>
     <param name="export_dxf" type="bool" gui-text="Export as DXF R14 file (mm units)">false</param>
     <param name="export_pdf" type="bool" gui-text="Export as PDF 1.5">false</param>
-    <param name="newwindow" type="bool" gui-text="Open file in new blocking Inkscape window">false</param>
+    <param name="newwindow" type="bool" gui-text="Open file in new Inkscape instance">false</param>
 	<effect needs-document="true" needs-live-preview="false">
 		<object-type>all</object-type>
 		<effects-menu>
