@@ -5,9 +5,10 @@ from pathlib import Path
 import logging
 import math
 import os
+import sys
 import subprocess
 from subprocess import Popen, PIPE
-
+import warnings
 import inkex
 import inkex.command
 from inkex.command import inkscape, inkscape_command
@@ -18,7 +19,7 @@ from scour.scour import scourString
 
 logger = logging.getLogger(__name__)
 
-
+DETACHED_PROCESS = 0x00000008
 GROUP_ID = 'export_selection_transform'
 
 
@@ -36,17 +37,32 @@ class ExportObject(inkex.EffectExtension):
 		
 
 	def openExplorer(self, dir):
-		DETACHED_PROCESS = 0x00000008
 		if os.name == 'nt':
 			Popen(["explorer", dir], close_fds=True, creationflags=DETACHED_PROCESS).wait()
 		else:
 			Popen(["xdg-open", dir], close_fds=True, start_new_session=True).wait()
+
+	def spawnIndependentInkscape(self, file): #function to spawn non-blocking inkscape instance. the inkscape command is available because it is added to ENVIRONMENT when Inkscape main instance is started
+		if os.name == 'nt':
+			warnings.simplefilter('ignore', ResourceWarning) #suppress "enable tracemalloc to get the object allocation traceback"
+			Popen(["inkscape", file], close_fds=True, creationflags=DETACHED_PROCESS)
+			warnings.simplefilter("default", ResourceWarning)
+		else:
+			pid = os.fork()
+			if pid == 0: # new process
+			    os.system("nohup inkscape " + file + " &")
+			    exit()
 
 	def effect(self):
 		if not self.svg.selected:
 			inkex.errormsg("Selection is empty. Please select some objects first!")
 			return
 
+		#preflight check for DXF input dir
+		if not os.path.exists(self.options.dxf_exporter_path):
+			inkex.utils.debug("Location of dxf_outlines.py does not exist. Please select a proper file and try again.")
+			exit(1)
+			
 		export_dir = Path(self.absolute_href(self.options.export_dir))
 		os.makedirs(export_dir, exist_ok=True)
 
@@ -108,14 +124,22 @@ class ExportObject(inkex.EffectExtension):
 			self.openExplorer(export_dir)
 			
 		if self.options.newwindow is True:
-			inkscape(os.path.join(export_dir, filename))
+			#inkscape(os.path.join(export_dir, filename)) #blocking
+			self.spawnIndependentInkscape(os.path.join(export_dir, filename)) #non-blocking
 			
 		if self.options.export_dxf is True:
-			#ensure that python3 command is available #we pass 25.4/96 which stands for unit mm. See inkex.units.UNITS and dxf_outlines.inx
-			cmd = ['python3', self.options.dxf_exporter_path, '--output=' + os.path.join(export_dir, filename + '.dxf'), r'--units=25.4/96', os.path.join(export_dir, filename)]
+			#ensure that python command is available #we pass 25.4/96 which stands for unit mm. See inkex.units.UNITS and dxf_outlines.inx
+			cmd = [
+				sys.executable, #the path of the python interpreter which is used for this script 
+				self.options.dxf_exporter_path, 
+				'--output=' + os.path.join(export_dir, filename + '.dxf'), 
+				r'--units=25.4/96', 
+				os.path.join(export_dir, filename)
+				]
 			proc = Popen(cmd, shell=False, stdout=PIPE, stderr=PIPE)
 			stdout, stderr = proc.communicate()
-			#inkex.utils.debug("%d %s %s" % (proc.returncode, stdout, stderr))
+			if proc.returncode != 0:
+				inkex.utils.debug("%d %s %s" % (proc.returncode, stdout, stderr))
 			
 		if self.options.export_pdf is True:	
 			cli_output = inkscape(os.path.join(export_dir, filename), actions='export-pdf-version:1.5;export-text-to-path;export-filename:{file_name};export-do;FileClose'.format(file_name=os.path.join(export_dir, filename + '.pdf')))
