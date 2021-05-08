@@ -4,29 +4,45 @@
     <id>fablabchemnitz.de.paperfold</id>
     <param name="tab" type="notebook">
         <page name="tab_settings" gui-text="Paperfold for Inkscape">
-        	<param name="inputfile" type="path" gui-text="Input File" filetypes="obj,off,ply,stl"  mode="file" gui-description="The model to unfold. You can use obj files provided in extensions dir of Inkscape \Poly3DObjects\*.obj to play around">/your/beautiful/3dmodel/file</param>
-            <param name="maxNumFaces" type="int" min="1" max="99999" gui-text="Maximum allowed faces" gui-description="If the STL file has too much detail it contains a large number of faces. This will make unfolding extremely slow. So we can limit it.">200</param>
-            <param name="printNumbers" type="bool" gui-text="Print numbers on the cut edges">true</param>
-            <param name="printAngles" type="bool" gui-text="Print folding angles on the cut edges">true</param>
-            <param name="fontSize" type="int" min="1" max="100" gui-text="Label font size (%)">15</param>
+            <label appearance="header">Input</label>
+            <param name="inputfile" type="path" gui-text="Input File" filetypes="obj,off,ply,stl"  mode="file" gui-description="The model to unfold. You can use obj files provided in extensions dir of Inkscape \Poly3DObjects\*.obj to play around">/your/beautiful/3dmodel/file</param>
+            <param name="maxNumFaces" type="int" min="1" max="99999" gui-text="Maximum allowed faces" gui-description="If the STL file has too much detail it contains a large number of faces. This will make unfolding extremely slow. So we can limit it.">200</param>     
             <param name="scalefactor" type="float" precision="3" min="0.0001" max="10000.0" gui-text="Manual scale factor" gui-description="default is 1.0">1.0</param>
-            <param name="resizetoimport" type="bool" gui-text="Resize the canvas to the imported drawing's bounding box">true</param>
-            <param name="extraborder" type="float" precision="3" gui-text="Add extra border around fitted canvas">0.0</param>
-            <param name="extraborder_units" type="optiongroup" appearance="combo" gui-text="Border offset units">
-               <option value="mm">mm</option>
-               <option value="cm">cm</option>
-               <option value="in">in</option>
-               <option value="pt">pt</option>
-               <option value="px">px</option>
-            </param>
-            <param name="color_valley_cut" type="color" appearance="colorbutton" gui-text="Color for valley cuts">255</param>
-            <param name="color_mountain_cut" type="color" appearance="colorbutton" gui-text="Color for mountain cuts">1968208895</param>
-            <param name="color_coplanar_lines" type="color" appearance="colorbutton" gui-text="Color for coplanar lines">1943148287</param>
-            <param name="color_valley_perforate" type="color" appearance="colorbutton" gui-text="Color for valley perforations">3422552319</param>
-            <param name="color_mountain_perforate" type="color" appearance="colorbutton" gui-text="Color for mountain perforations">879076607</param>
-            <param name="dashes" type="bool" gui-text="Dashes for cut/coplanar lines">true</param>
-            <param name="printStats" type="bool" gui-text="Show some unfold statistics">true</param>
-            <label appearance="header">Post Processing</label>     
+            <separator/>
+            <hbox>
+                <vbox>
+                    <label appearance="header">Output</label>
+                    <param name="printGluePairNumbers" type="bool" gui-text="Print glue pair numbers on cut edges">false</param>
+                    <param name="printAngles" type="bool" gui-text="Print folding angles on edges">false</param>
+                    <param name="printLengths" type="bool" gui-text="Print lengths on edges">false</param>
+                    <param name="importCoplanarEdges" type="bool" gui-text="Import coplanar edges">false</param>
+                    <param name="printStats" type="bool" gui-text="Show some unfold statistics">false</param>
+                    <param name="resizetoimport" type="bool" gui-text="Resize the canvas to the imported drawing's bounding box">true</param>
+                    <param name="extraborder" type="float" precision="3" gui-text="Add extra border around fitted canvas">0.0</param>
+                    <param name="extraborderUnits" type="optiongroup" appearance="combo" gui-text="Border offset units">
+                       <option value="mm">mm</option>
+                       <option value="cm">cm</option>
+                       <option value="in">in</option>
+                       <option value="pt">pt</option>
+                       <option value="px">px</option>
+                    </param>
+                </vbox>
+                <separator/>
+                <vbox>
+                    <label appearance="header">Style</label>                 
+                    <param name="fontSize" type="int" min="1" max="100" gui-text="Label font size (%)">15</param>
+                    <param name="flipLabels" type="bool" gui-text="Flip labels">false</param>
+                    <param name="dashes" type="bool" gui-text="Dashes for cut/coplanar lines">true</param>
+                    <param name="separateGluePairsByColor" type="bool" gui-text="Separate glue pairs by color">false</param>
+                    <param name="colorValleyCut" type="color" appearance="colorbutton" gui-text="Valley cut edges">255</param>
+                    <param name="colorMountainCut" type="color" appearance="colorbutton" gui-text="Mountain cut edges">1968208895</param>
+                    <param name="colorCoplanarEdges" type="color" appearance="colorbutton" gui-text="Coplanar edges">1943148287</param>
+                    <param name="colorValleyPerforates" type="color" appearance="colorbutton" gui-text="Valley perforation edges">3422552319</param>
+                    <param name="colorMountainPerforates" type="color" appearance="colorbutton" gui-text="Mountain perforation edges">879076607</param>
+                </vbox>
+            </hbox>
+            <separator/> 
+            <label appearance="header">Post Processing</label>
             <label appearance="url">https://clementzheng.github.io/joinery</label>
         </page>
         <page name="tab_about" gui-text="About">

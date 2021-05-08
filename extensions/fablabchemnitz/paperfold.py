@@ -4,6 +4,7 @@ import math
 import inkex
 import tempfile
 import os
+import random
 import numpy as np
 import openmesh as om
 import networkx as nx
@@ -18,7 +19,7 @@ Paperfold is another flattener for triangle mesh files, heavily based on paperfo
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 13.09.2020
-Last patch: 06.05.2021
+Last patch: 08.05.2021
 License: GNU GPL v3
 
 To run this you need to install OpenMesh with python pip. 
@@ -34,10 +35,6 @@ Module licenses
 - paperfoldmodels (https://github.com/felixfeliz/paperfoldmodels) - MIT License
 
 possible import file types -> https://www.graphics.rwth-aachen.de/media/openmesh_static/Documentations/OpenMesh-8.0-Documentation/a04096.html
-
-ToDos:
-- Add glue tabs
-- Print statistics about groups
 
 """
 
@@ -417,7 +414,7 @@ def findBoundingBox(mesh):
     return [xmin, ymin, boxSize]
 
 
-def writeSVG(self, unfolding, size, printNumbers):
+def writeSVG(self, unfolding, size):
     mesh = unfolding[0]
     isFoldingEdge = unfolding[1]
     glueNumber = unfolding[3]
@@ -447,6 +444,15 @@ def writeSVG(self, unfolding, size, printNumbers):
     # Generate a main group
     paperfoldPageGroup = self.document.getroot().add(inkex.Group(id=self.svg.get_unique_id("paperfold-page-")))
 
+    #generate random colors for glue pairs
+    randomColorSet = []
+    if self.options.separateGluePairsByColor:
+        while len(randomColorSet) < len(mesh.edges()):
+            r = lambda: random.randint(0,255)
+            newColor = '#%02X%02X%02X' % (r(),r(),r())
+            if newColor not in randomColorSet:
+                randomColorSet.append(newColor)
+            
     # Go over all edges of the grid
     for edge in mesh.edges():
         # The two endpoints
@@ -463,16 +469,18 @@ def writeSVG(self, unfolding, size, printNumbers):
         dihedralAngle = foldingDirection[edge.idx()]
         
         if dihedralAngle > 0:
-            lineStyle.update({"stroke": self.options.color_mountain_cut})
+            lineStyle.update({"stroke": self.options.colorMountainCut})
             line.set("id", self.svg.get_unique_id("mountain-cut-"))
             mountainCuts += 1
         elif dihedralAngle < 0:
-            lineStyle.update({"stroke": self.options.color_valley_cut})
+            lineStyle.update({"stroke": self.options.colorValleyCut})
             line.set("id", self.svg.get_unique_id("valley-cut-"))
             valleyCuts += 1
         elif dihedralAngle == 0:
-            lineStyle.update({"stroke": self.options.color_coplanar_lines})
+            lineStyle.update({"stroke": self.options.colorCoplanarEdges})
             line.set("id", self.svg.get_unique_id("coplanar-line-"))
+            if self.options.importCoplanarEdges is False:
+                line.delete()
             coplanarLines += 1
                     
         lineStyle.update({"stroke-width":str(strokewidth)})
@@ -485,55 +493,73 @@ def writeSVG(self, unfolding, size, printNumbers):
             if self.options.dashes is True:
                 lineStyle.update({"stroke-dasharray":(str(dashLength) + ", " + str(spaceLength))})
             if dihedralAngle > 0:
-                lineStyle.update({"stroke": self.options.color_mountain_perforate})
+                lineStyle.update({"stroke": self.options.colorMountainPerforates})
                 line.set("id", self.svg.get_unique_id("mountain-perforate-"))
                 mountainPerforations += 1
             if dihedralAngle < 0:
-                lineStyle.update({"stroke": self.options.color_valley_perforate})
+                lineStyle.update({"stroke": self.options.colorValleyPerforates})
                 line.set("id", self.svg.get_unique_id("valley-perforate-")) 
                 valleyPerforations += 1    
         else:
             lineStyle.update({"stroke-dasharray":"none"})
 
-
+        # The number of the edge to be glued  
+        if not isFoldingEdge[edge.idx()]:
+            if self.options.separateGluePairsByColor is True:
+                lineStyle.update({"stroke": randomColorSet[glueNumber[edge.idx()]]})
+            gluePairs += 1
+            
         lineStyle.update({"stroke-dashoffset":"0"})
         lineStyle.update({"stroke-opacity":"1"})       
         line.style = lineStyle
+            
+        # Textual things
+        halfEdge = mesh.halfedge_handle(edge, 0) # Find halfedge in the face
+        if mesh.face_handle(halfEdge).idx() == -1:
+            halfEdge = mesh.opposite_halfedge_handle(halfEdge)
+        vector = mesh.calc_edge_vector(halfEdge)
+        # normalize
+        vector = vector / np.linalg.norm(vector)
+        midPoint = 0.5 * (
+                mesh.point(mesh.from_vertex_handle(halfEdge)) + mesh.point(mesh.to_vertex_handle(halfEdge)))
+        rotatedVector = np.array([-vector[1], vector[0], 0])
+        angle = np.arctan2(vector[1], vector[0])
+        position = midPoint + textDistance * rotatedVector
+        if self.options.flipLabels is True:
+            position = midPoint - textDistance * rotatedVector
+        rotation = 180 / np.pi * angle
+        if self.options.flipLabels is True:
+            rotation += 180
 
-        # The number of the edge to be glued
-        if not isFoldingEdge[edge.idx()]:
-            # Find halfedge in the face
-            halfEdge = mesh.halfedge_handle(edge, 0)
-            if mesh.face_handle(halfEdge).idx() == -1:
-                halfEdge = mesh.opposite_halfedge_handle(halfEdge)
-            vector = mesh.calc_edge_vector(halfEdge)
-            # normalize
-            vector = vector / np.linalg.norm(vector)
-            midPoint = 0.5 * (
-                    mesh.point(mesh.from_vertex_handle(halfEdge)) + mesh.point(mesh.to_vertex_handle(halfEdge)))
-            rotatedVector = np.array([-vector[1], vector[0], 0])
-            angle = np.arctan2(vector[1], vector[0])
-            position = midPoint + textDistance * rotatedVector
-            rotation = 180 / np.pi * angle
+        text = paperfoldPageGroup.add(TextElement(id=self.svg.get_unique_id("number-")))
+        text.set("x", str(position[0]))
+        text.set("y", str(position[1]))
+        text.set("font-size", str(fontsize))
+        text.set("style", "stroke-width:" + str(textStrokewidth) + ";text-anchor:middle;text-align:center")
+        text.set("transform", "rotate(" + str(rotation) + "," + str(position[0]) + "," + str(position[1]) + ")")
+        
+        tspan = text.add(Tspan())
+        tspan.set("x", str(position[0]))
+        tspan.set("y", str(position[1]))
+        tspan.set("style", "stroke-width:" + str(textStrokewidth) + ";text-anchor:middle;text-align:center")
+        tspanText = []
+        if self.options.printGluePairNumbers is True and not isFoldingEdge[edge.idx()]:
+            tspanText.append(str(glueNumber[edge.idx()]))
+        if self.options.printAngles is True:
+            tspanText.append("{:0.2f}°".format(dihedralAngle))
+        if self.options.printLengths is True:
+            printUnit = True
+            if printUnit is False:
+                unitToPrint = self.svg.unit
+            else:
+                unitToPrint = ""
+            tspanText.append("{:0.2f} {}".format(self.options.scalefactor * math.hypot(vertex1[0] - vertex0[0], vertex1[1] - vertex0[1]), unitToPrint))
+        tspan.text = " | ".join(tspanText)
 
-            if (printNumbers):
-                text = paperfoldPageGroup.add(TextElement(id=self.svg.get_unique_id("number-")))
-                text.set("x", str(position[0]))
-                text.set("y", str(position[1]))
-                text.set("font-size", str(fontsize))
-                text.set("style", "stroke-width:" + str(textStrokewidth) + ";text-anchor:middle;text-align:center")
-                text.set("transform", "rotate(" + str(rotation) + "," + str(position[0]) + "," + str(position[1]) + ")")
-                
-                tspan = text.add(Tspan())
-                tspan.set("x", str(position[0]))
-                tspan.set("y", str(position[1]))
-                tspan.set("style", "stroke-width:" + str(textStrokewidth) + ";text-anchor:middle;text-align:center")
-                tspan.text = str(glueNumber[edge.idx()])
-                if self.options.printAngles is True:
-                    tspan.text += " ({:0.2f}°)".format(dihedralAngle)
-                    
-            gluePairs += 1
-                
+        if (self.options.printGluePairNumbers is False and self.options.printAngles is False and self.options.printLengths is False)  or self.options.importCoplanarEdges is False and dihedralAngle == 0:
+            text.delete()
+            tspan.delete()
+          
     if self.options.printStats is True:
         inkex.utils.debug("Folding edges stats:")
         inkex.utils.debug(" * Number of mountain cuts: " + str(mountainCuts))
@@ -542,7 +568,7 @@ def writeSVG(self, unfolding, size, printNumbers):
         inkex.utils.debug(" * Number of mountain perforations: " + str(mountainPerforations))
         inkex.utils.debug(" * Number of valley perforations: " + str(valleyPerforations))
         inkex.utils.debug("-----------------------------------------------------------")
-        inkex.utils.debug("Number of glue pairs: " + str(gluePairs)) 
+        inkex.utils.debug("Number of glue pairs: {:0.0f}".format(gluePairs / 2)) 
                     
     return paperfoldPageGroup
                 
@@ -550,22 +576,32 @@ class Unfold(inkex.EffectExtension):
     
     def add_arguments(self, pars):
         pars.add_argument("--tab")
+        
+        #Input
         pars.add_argument("--inputfile")
         pars.add_argument("--maxNumFaces", type=int, default=200, help="If the STL file has too much detail it contains a large number of faces. This will make unfolding extremely slow. So we can limit it.")
-        pars.add_argument("--printNumbers", type=inkex.Boolean, default=False, help="Print numbers on the cut edges")
-        pars.add_argument("--printAngles", type=inkex.Boolean, default=False, help="Print folding angles on the cut edges")
-        pars.add_argument("--fontSize", type=int, default=15, help="Label font size (%)")
         pars.add_argument("--scalefactor", type=float, default=1.0, help="Manual scale factor")
+
+        #Output
+        pars.add_argument("--printGluePairNumbers", type=inkex.Boolean, default=False, help="Print glue pair numbers on cut edges")
+        pars.add_argument("--printAngles", type=inkex.Boolean, default=False, help="Print folding angles on edges")
+        pars.add_argument("--printLengths", type=inkex.Boolean, default=False, help="Print elengths on edges")
+        pars.add_argument("--importCoplanarEdges", type=inkex.Boolean, default=False, help="Import coplanar edges")
+        pars.add_argument("--printStats", type=inkex.Boolean, default=True, help="Show some unfold statistics")
         pars.add_argument("--resizetoimport", type=inkex.Boolean, default=True, help="Resize the canvas to the imported drawing's bounding box") 
         pars.add_argument("--extraborder", type=float, default=0.0)
-        pars.add_argument("--extraborder_units")         
-        pars.add_argument("--color_valley_cut", type=Color, default='255', help="Color for valley cuts")
-        pars.add_argument("--color_mountain_cut", type=Color, default='1968208895', help="Color for mountain cuts")
-        pars.add_argument("--color_coplanar_lines", type=Color, default='1943148287', help="Color for coplanar lines")
-        pars.add_argument("--color_valley_perforate", type=Color, default='3422552319', help="Color for valley perforations")
-        pars.add_argument("--color_mountain_perforate", type=Color, default='879076607', help="Color for mountain perforations")
-        pars.add_argument("--dashes", type=inkex.Boolean, default=True, help="Dashes for cut/coplanar lines")         
-        pars.add_argument("--printStats", type=inkex.Boolean, default=True, help="Show some unfold statistics") 
+        pars.add_argument("--extraborderUnits")            
+
+        #Style 
+        pars.add_argument("--fontSize", type=int, default=15, help="Label font size (%)")
+        pars.add_argument("--flipLabels", type=inkex.Boolean, default=False, help="Flip labels")
+        pars.add_argument("--dashes", type=inkex.Boolean, default=True, help="Dashes for cut/coplanar edges")             
+        pars.add_argument("--separateGluePairsByColor", type=inkex.Boolean, default=False, help="Separate glue pairs by color")
+        pars.add_argument("--colorValleyCut", type=Color, default='255', help="Valley cut edges")
+        pars.add_argument("--colorMountainCut", type=Color, default='1968208895', help="Mountain cut edges")
+        pars.add_argument("--colorCoplanarEdges", type=Color, default='1943148287', help="Coplanar edges")
+        pars.add_argument("--colorValleyPerforates", type=Color, default='3422552319', help="Valley perforation edges")
+        pars.add_argument("--colorMountainPerforates", type=Color, default='879076607', help="Mountain perforation edges")
                
     def effect(self):
         if not os.path.exists(self.options.inputfile):
@@ -586,7 +622,7 @@ class Unfold(inkex.EffectExtension):
         # Create a new container group to attach all paperfolds
         paperfoldMainGroup = self.document.getroot().add(inkex.Group(id=self.svg.get_unique_id("paperfold-"))) #make a new group at root level
         for i in range(len(unfoldedComponents)):
-            paperfoldPageGroup = writeSVG(self, unfoldedComponents[i], maxSize, self.options.printNumbers)
+            paperfoldPageGroup = writeSVG(self, unfoldedComponents[i], maxSize)
             #translate the groups next to each other to remove overlappings
             if i != 0:
                 previous_bbox = paperfoldMainGroup[i-1].bounding_box()
@@ -606,7 +642,7 @@ class Unfold(inkex.EffectExtension):
             namedView = self.document.getroot().find(inkex.addNS('namedview', 'sodipodi'))
             doc_units = namedView.get(inkex.addNS('document-units', 'inkscape'))
             root = self.svg.getElement('//svg:svg');
-            offset = self.svg.unittouu(str(self.options.extraborder) + self.options.extraborder_units)
+            offset = self.svg.unittouu(str(self.options.extraborder) + self.options.extraborderUnits)
             root.set('viewBox', '%f %f %f %f' % (bbox.left - offset, bbox.top - offset, bbox.width + 2 * offset, bbox.height + 2 * offset))
             root.set('width', str(bbox.width + 2 * offset) + doc_units)
             root.set('height', str(bbox.height + 2 * offset) + doc_units)
