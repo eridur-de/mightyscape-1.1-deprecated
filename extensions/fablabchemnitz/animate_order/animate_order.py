@@ -6,6 +6,7 @@ import shutil
 import os
 import sys
 import warnings
+import shlex
 
 """
 Extension for InkScape 1.X
@@ -36,15 +37,14 @@ DETACHED_PROCESS = 0x00000008
 class AnimateOrder (inkex.EffectExtension):
 
     def spawnIndependentProcess(self, args): #function to spawn non-blocking inkscape instance. the inkscape command is available because it is added to ENVIRONMENT when Inkscape main instance is started
+        warnings.simplefilter('ignore', ResourceWarning) #suppress "enable tracemalloc to get the object allocation traceback"
         if os.name == 'nt':
-            warnings.simplefilter('ignore', ResourceWarning) #suppress "enable tracemalloc to get the object allocation traceback"
             subprocess.Popen(args, close_fds=True, creationflags=DETACHED_PROCESS)
-            warnings.simplefilter("default", ResourceWarning)            
         else:
-            pid = os.fork()
-            if pid == 0: # new process
-                os.system("nohup " + args + " &")
-                exit()
+            cmd = "nohup " + " ".join(args) + " &"
+            cmds = shlex.split(cmd)
+            subprocess.Popen(cmds, start_new_session=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        warnings.simplefilter("default", ResourceWarning)
 
     def add_arguments(self, pars):
         pars.add_argument("--tab")
