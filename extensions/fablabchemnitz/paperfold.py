@@ -441,31 +441,52 @@ def writeSVG(self, unfolding, size, randomColorSet):
     textStrokewidth = boxSize * self.options.fontSize / 3000
     fontsize = boxSize * self.options.fontSize / 1000
 
-    # Generate a main group
-    paperfoldPageGroup = self.document.getroot().add(inkex.Group(id=self.svg.get_unique_id("paperfold-page-")))
+    minAngle = min(foldingDirection)
+    maxAngle = max(foldingDirection)
+    angleRange = maxAngle - minAngle
+    #self.msg(minAngle)
+    #self.msg(maxAngle)
+    #self.msg(angleRange)
 
+    # Grouping
+    uniqueMainId = self.svg.get_unique_id("")
+    
+    paperfoldPageGroup = self.document.getroot().add(inkex.Group(id=uniqueMainId + "-paperfold-page"))
+    
+    textGroup = inkex.Group(id=uniqueMainId + "-text")   
+    edgesGroup = inkex.Group(id=uniqueMainId + "-edges")
+    paperfoldPageGroup.add(textGroup)
+    paperfoldPageGroup.add(edgesGroup) 
+    
+    textFacesGroup = inkex.Group(id=uniqueMainId + "-textFaces")
+    textEdgesGroup = inkex.Group(id=uniqueMainId + "-textEdges")
+    textGroup.add(textFacesGroup)
+    textGroup.add(textEdgesGroup)
+    
     if self.options.printTriangleNumbers is True:
-        faceIdx = 0
+
         for face in mesh.faces():
-            faceIdx += 1
             centroid = mesh.calc_face_centroid(face)
             
-            circle = paperfoldPageGroup.add(Circle(cx=str(centroid[0]), cy=str(centroid[1]), r=str(fontsize)))
-            circle.set('id', self.svg.get_unique_id('faceCircle-'))
+            textFaceGroup = inkex.Group(id=uniqueMainId + "-textFace-" + str(face.idx()))
+            
+            circle = textFaceGroup.add(Circle(cx=str(centroid[0]), cy=str(centroid[1]), r=str(fontsize)))
+            circle.set('id', uniqueMainId + "-textFaceCricle-" + str(face.idx()))
             circle.set("style", "stroke:#000000;stroke-width:" + str(strokewidth/2) + ";fill:none")
             
-            text = paperfoldPageGroup.add(TextElement(id=self.svg.get_unique_id("faceNumber-")))
+            text = textFaceGroup.add(TextElement(id=uniqueMainId + "-textFaceNumber-" + str(face.idx())))
             text.set("x", str(centroid[0]))
             text.set("y", str(centroid[1] + fontsize / 3))
             text.set("font-size", str(fontsize))
             text.set("style", "stroke-width:" + str(textStrokewidth) + ";text-anchor:middle;text-align:center")
             
-            tspan = text.add(Tspan())
+            tspan = text.add(Tspan(id=uniqueMainId + "-textFaceNumberTspan-" + str(face.idx())))
             tspan.set("x", str(centroid[0]))
             tspan.set("y", str(centroid[1] + fontsize / 3))
             tspan.set("style", "stroke-width:" + str(textStrokewidth) + ";text-anchor:middle;text-align:center")
-            tspan.text = str(faceIdx)
-            
+            tspan.text = str(face.idx())
+            textFacesGroup.append(textFaceGroup)
+                  
     # Go over all edges of the grid
     for edge in mesh.edges():
         # The two endpoints
@@ -474,7 +495,7 @@ def writeSVG(self, unfolding, size, randomColorSet):
         vertex1 = mesh.point(mesh.to_vertex_handle(he))
 
         # Write a straight line between the two corners
-        line = paperfoldPageGroup.add(inkex.PathElement())
+        line = edgesGroup.add(inkex.PathElement())
         line.set('d', "M " + str(vertex0[0]) + "," + str(vertex0[1]) + " " + str(vertex1[0]) + "," + str(vertex1[1]))
         # Colour depending on folding direction
         lineStyle = {"fill": "none"}
@@ -483,15 +504,15 @@ def writeSVG(self, unfolding, size, randomColorSet):
         
         if dihedralAngle > 0:
             lineStyle.update({"stroke": self.options.colorMountainCut})
-            line.set("id", self.svg.get_unique_id("mountain-cut-"))
+            line.set("id", uniqueMainId + "-mountain-cut-" + str(edge.idx()))
             mountainCuts += 1
         elif dihedralAngle < 0:
             lineStyle.update({"stroke": self.options.colorValleyCut})
-            line.set("id", self.svg.get_unique_id("valley-cut-"))
+            line.set("id", uniqueMainId + "-valley-cut-" + str(edge.idx()))
             valleyCuts += 1
         elif dihedralAngle == 0:
             lineStyle.update({"stroke": self.options.colorCoplanarEdges})
-            line.set("id", self.svg.get_unique_id("coplanar-edge-"))
+            line.set("id", uniqueMainId + "-coplanar-edge-" + str(edge.idx()))
             #if self.options.importCoplanarEdges is False:
             #    line.delete()  
             coplanarLines += 1
@@ -507,15 +528,15 @@ def writeSVG(self, unfolding, size, randomColorSet):
                 lineStyle.update({"stroke-dasharray":(str(dashLength) + ", " + str(spaceLength))})
             if dihedralAngle > 0:
                 lineStyle.update({"stroke": self.options.colorMountainPerforates})
-                line.set("id", self.svg.get_unique_id("mountain-perforate-"))
+                line.set("id", uniqueMainId + "-mountain-perforate-" + str(edge.idx()))
                 mountainPerforations += 1
             if dihedralAngle < 0:
                 lineStyle.update({"stroke": self.options.colorValleyPerforates})
-                line.set("id", self.svg.get_unique_id("valley-perforate-")) 
+                line.set("id", uniqueMainId + "-valley-perforate-" + str(edge.idx()))
                 valleyPerforations += 1
             if dihedralAngle == 0:
                 lineStyle.update({"stroke": self.options.colorCoplanarEdges})
-                line.set("id", self.svg.get_unique_id("coplanar-edge-"))
+                line.set("id", uniqueMainId + "-coplanar-edge-" + str(edge.idx()))
                 if self.options.importCoplanarEdges is False:
                     line.delete()
                 valleyPerforations += 1
@@ -530,9 +551,19 @@ def writeSVG(self, unfolding, size, randomColorSet):
             
         lineStyle.update({"stroke-dashoffset":"0"})
         lineStyle.update({"stroke-opacity":"1"})       
+
+        if self.options.saturationsForAngles is True:
+            if dihedralAngle != 0: #we dont want to apply HSL adjustments for zero angle lines because they would be invisible then
+                hslColor = inkex.Color(lineStyle.get('stroke')).to_hsl()
+                newSaturation = abs(dihedralAngle / angleRange) * 100 #percentage values
+                hslColor.saturation = newSaturation
+                lineStyle.update({"stroke":hslColor.to_rgb()})       
+
         line.style = lineStyle
        
+        ########################################################
         # Textual things
+        ########################################################
         halfEdge = mesh.halfedge_handle(edge, 0) # Find halfedge in the face
         if mesh.face_handle(halfEdge).idx() == -1:
             halfEdge = mesh.opposite_halfedge_handle(halfEdge)
@@ -549,7 +580,7 @@ def writeSVG(self, unfolding, size, randomColorSet):
         if self.options.flipLabels is True:
             rotation += 180
 
-        text = paperfoldPageGroup.add(TextElement(id=self.svg.get_unique_id("edgeNumber-")))
+        text = textEdgesGroup.add(TextElement(id=uniqueMainId + "-edgeNumber-" + str(edge.idx())))
         text.set("x", str(position[0]))
         text.set("y", str(position[1]))
         text.set("font-size", str(fontsize))
@@ -614,7 +645,8 @@ class Unfold(inkex.EffectExtension):
         #Style 
         pars.add_argument("--fontSize", type=int, default=15, help="Label font size (%)")
         pars.add_argument("--flipLabels", type=inkex.Boolean, default=False, help="Flip labels")
-        pars.add_argument("--dashes", type=inkex.Boolean, default=True, help="Dashes for cut/coplanar edges")             
+        pars.add_argument("--dashes", type=inkex.Boolean, default=True, help="Dashes for cut/coplanar edges")
+        pars.add_argument("--saturationsForAngles",  type=inkex.Boolean, help="Adjust color saturation for folding edges. The larger the angle the darker the color")
         pars.add_argument("--separateGluePairsByColor", type=inkex.Boolean, default=False, help="Separate glue pairs by color")
         pars.add_argument("--colorValleyCut", type=Color, default='255', help="Valley cut edges")
         pars.add_argument("--colorMountainCut", type=Color, default='1968208895', help="Mountain cut edges")
@@ -646,7 +678,7 @@ class Unfold(inkex.EffectExtension):
                 newColor = '#%02X%02X%02X' % (r(),r(),r())
                 if newColor not in randomColorSet:
                     randomColorSet.append(newColor)   
-                     
+                  
         # Create a new container group to attach all paperfolds
         paperfoldMainGroup = self.document.getroot().add(inkex.Group(id=self.svg.get_unique_id("paperfold-"))) #make a new group at root level
         for i in range(len(unfoldedComponents)):

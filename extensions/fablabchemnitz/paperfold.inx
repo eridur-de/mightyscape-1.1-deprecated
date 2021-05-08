@@ -34,6 +34,7 @@
                     <param name="fontSize" type="int" min="1" max="100" gui-text="Label font size (%)">15</param>
                     <param name="flipLabels" type="bool" gui-text="Flip labels">false</param>
                     <param name="dashes" type="bool" gui-text="Dashes for cut/coplanar lines">true</param>
+                    <param name="saturationsForAngles" type="bool" gui-text="Adjust color saturation for folding edges" gui-description="The larger the angle the darker the color">false</param>
                     <param name="separateGluePairsByColor" type="bool" gui-text="Separate glue pairs by color">false</param>
                     <param name="colorValleyCut" type="color" appearance="colorbutton" gui-text="Valley cut edges">255</param>
                     <param name="colorMountainCut" type="color" appearance="colorbutton" gui-text="Mountain cut edges">1968208895</param>
