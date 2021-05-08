@@ -9,7 +9,7 @@ import numpy as np
 import openmesh as om
 import networkx as nx
 from lxml import etree
-from inkex import Transform, TextElement, Tspan, Color
+from inkex import Transform, TextElement, Tspan, Color, Circle
 
 """
 Extension for InkScape 1.0
@@ -414,7 +414,7 @@ def findBoundingBox(mesh):
     return [xmin, ymin, boxSize]
 
 
-def writeSVG(self, unfolding, size):
+def writeSVG(self, unfolding, size, randomColorSet):
     mesh = unfolding[0]
     isFoldingEdge = unfolding[1]
     glueNumber = unfolding[3]
@@ -434,24 +434,37 @@ def writeSVG(self, unfolding, size):
     if size > 0:
         boxSize = size
 
-    strokewidth = 0.002 * boxSize
-    dashLength = 0.008 * boxSize
-    spaceLength = 0.02 * boxSize
+    strokewidth = boxSize * self.options.fontSize / 8000
+    dashLength = boxSize * self.options.fontSize / 2000
+    spaceLength = boxSize * self.options.fontSize / 800
     textDistance = boxSize * self.options.fontSize / 800
-    textStrokewidth = 0.05 * strokewidth
+    textStrokewidth = boxSize * self.options.fontSize / 3000
     fontsize = boxSize * self.options.fontSize / 1000
 
     # Generate a main group
     paperfoldPageGroup = self.document.getroot().add(inkex.Group(id=self.svg.get_unique_id("paperfold-page-")))
 
-    #generate random colors for glue pairs
-    randomColorSet = []
-    if self.options.separateGluePairsByColor:
-        while len(randomColorSet) < len(mesh.edges()):
-            r = lambda: random.randint(0,255)
-            newColor = '#%02X%02X%02X' % (r(),r(),r())
-            if newColor not in randomColorSet:
-                randomColorSet.append(newColor)
+    if self.options.printTriangleNumbers is True:
+        faceIdx = 0
+        for face in mesh.faces():
+            faceIdx += 1
+            centroid = mesh.calc_face_centroid(face)
+            
+            circle = paperfoldPageGroup.add(Circle(cx=str(centroid[0]), cy=str(centroid[1]), r=str(fontsize)))
+            circle.set('id', self.svg.get_unique_id('faceCircle-'))
+            circle.set("style", "stroke:#000000;stroke-width:" + str(strokewidth/2) + ";fill:none")
+            
+            text = paperfoldPageGroup.add(TextElement(id=self.svg.get_unique_id("faceNumber-")))
+            text.set("x", str(centroid[0]))
+            text.set("y", str(centroid[1] + fontsize / 3))
+            text.set("font-size", str(fontsize))
+            text.set("style", "stroke-width:" + str(textStrokewidth) + ";text-anchor:middle;text-align:center")
+            
+            tspan = text.add(Tspan())
+            tspan.set("x", str(centroid[0]))
+            tspan.set("y", str(centroid[1] + fontsize / 3))
+            tspan.set("style", "stroke-width:" + str(textStrokewidth) + ";text-anchor:middle;text-align:center")
+            tspan.text = str(faceIdx)
             
     # Go over all edges of the grid
     for edge in mesh.edges():
@@ -478,9 +491,9 @@ def writeSVG(self, unfolding, size):
             valleyCuts += 1
         elif dihedralAngle == 0:
             lineStyle.update({"stroke": self.options.colorCoplanarEdges})
-            line.set("id", self.svg.get_unique_id("coplanar-line-"))
-            if self.options.importCoplanarEdges is False:
-                line.delete()
+            line.set("id", self.svg.get_unique_id("coplanar-edge-"))
+            #if self.options.importCoplanarEdges is False:
+            #    line.delete()  
             coplanarLines += 1
                     
         lineStyle.update({"stroke-width":str(strokewidth)})
@@ -499,7 +512,13 @@ def writeSVG(self, unfolding, size):
             if dihedralAngle < 0:
                 lineStyle.update({"stroke": self.options.colorValleyPerforates})
                 line.set("id", self.svg.get_unique_id("valley-perforate-")) 
-                valleyPerforations += 1    
+                valleyPerforations += 1
+            if dihedralAngle == 0:
+                lineStyle.update({"stroke": self.options.colorCoplanarEdges})
+                line.set("id", self.svg.get_unique_id("coplanar-edge-"))
+                if self.options.importCoplanarEdges is False:
+                    line.delete()
+                valleyPerforations += 1
         else:
             lineStyle.update({"stroke-dasharray":"none"})
 
@@ -512,14 +531,13 @@ def writeSVG(self, unfolding, size):
         lineStyle.update({"stroke-dashoffset":"0"})
         lineStyle.update({"stroke-opacity":"1"})       
         line.style = lineStyle
-            
+       
         # Textual things
         halfEdge = mesh.halfedge_handle(edge, 0) # Find halfedge in the face
         if mesh.face_handle(halfEdge).idx() == -1:
             halfEdge = mesh.opposite_halfedge_handle(halfEdge)
         vector = mesh.calc_edge_vector(halfEdge)
-        # normalize
-        vector = vector / np.linalg.norm(vector)
+        vector = vector / np.linalg.norm(vector) # normalize
         midPoint = 0.5 * (
                 mesh.point(mesh.from_vertex_handle(halfEdge)) + mesh.point(mesh.to_vertex_handle(halfEdge)))
         rotatedVector = np.array([-vector[1], vector[0], 0])
@@ -531,7 +549,7 @@ def writeSVG(self, unfolding, size):
         if self.options.flipLabels is True:
             rotation += 180
 
-        text = paperfoldPageGroup.add(TextElement(id=self.svg.get_unique_id("number-")))
+        text = paperfoldPageGroup.add(TextElement(id=self.svg.get_unique_id("edgeNumber-")))
         text.set("x", str(position[0]))
         text.set("y", str(position[1]))
         text.set("font-size", str(fontsize))
@@ -585,7 +603,8 @@ class Unfold(inkex.EffectExtension):
         #Output
         pars.add_argument("--printGluePairNumbers", type=inkex.Boolean, default=False, help="Print glue pair numbers on cut edges")
         pars.add_argument("--printAngles", type=inkex.Boolean, default=False, help="Print folding angles on edges")
-        pars.add_argument("--printLengths", type=inkex.Boolean, default=False, help="Print elengths on edges")
+        pars.add_argument("--printLengths", type=inkex.Boolean, default=False, help="Print lengths on edges")
+        pars.add_argument("--printTriangleNumbers", type=inkex.Boolean, default=False, help="Print triangle numbers on faces")
         pars.add_argument("--importCoplanarEdges", type=inkex.Boolean, default=False, help="Import coplanar edges")
         pars.add_argument("--printStats", type=inkex.Boolean, default=True, help="Show some unfold statistics")
         pars.add_argument("--resizetoimport", type=inkex.Boolean, default=True, help="Resize the canvas to the imported drawing's bounding box") 
@@ -619,10 +638,19 @@ class Unfold(inkex.EffectExtension):
             if boxSize > maxSize:
                 maxSize = boxSize
                      
+        #generate random colors for glue pairs
+        randomColorSet = []
+        if self.options.separateGluePairsByColor:
+            while len(randomColorSet) < len(mesh.edges()):
+                r = lambda: random.randint(0,255)
+                newColor = '#%02X%02X%02X' % (r(),r(),r())
+                if newColor not in randomColorSet:
+                    randomColorSet.append(newColor)   
+                     
         # Create a new container group to attach all paperfolds
         paperfoldMainGroup = self.document.getroot().add(inkex.Group(id=self.svg.get_unique_id("paperfold-"))) #make a new group at root level
         for i in range(len(unfoldedComponents)):
-            paperfoldPageGroup = writeSVG(self, unfoldedComponents[i], maxSize)
+            paperfoldPageGroup = writeSVG(self, unfoldedComponents[i], maxSize, randomColorSet)
             #translate the groups next to each other to remove overlappings
             if i != 0:
                 previous_bbox = paperfoldMainGroup[i-1].bounding_box()

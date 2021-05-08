@@ -15,6 +15,7 @@
                     <param name="printGluePairNumbers" type="bool" gui-text="Print glue pair numbers on cut edges">false</param>
                     <param name="printAngles" type="bool" gui-text="Print folding angles on edges">false</param>
                     <param name="printLengths" type="bool" gui-text="Print lengths on edges">false</param>
+                    <param name="printTriangleNumbers" type="bool" gui-text="Print triangle numbers on faces">false</param>
                     <param name="importCoplanarEdges" type="bool" gui-text="Import coplanar edges">false</param>
                     <param name="printStats" type="bool" gui-text="Show some unfold statistics">false</param>
                     <param name="resizetoimport" type="bool" gui-text="Resize the canvas to the imported drawing's bounding box">true</param>
