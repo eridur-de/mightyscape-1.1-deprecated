@@ -608,6 +608,12 @@ def writeSVG(self, unfolding, size, randomColorSet):
         if (self.options.printGluePairNumbers is False and self.options.printAngles is False and self.options.printLengths is False)  or self.options.importCoplanarEdges is False and dihedralAngle == 0:
             text.delete()
             tspan.delete()
+    
+    #delete unrequired groups if no text labels
+    if (self.options.printGluePairNumbers is False and self.options.printAngles is False and self.options.printLengths is False)  or self.options.importCoplanarEdges is False and dihedralAngle == 0:
+        textGroup.delete()
+        textFacesGroup.delete()
+        textEdgesGroup.delete()
           
     if self.options.printStats is True:
         inkex.utils.debug("Folding edges stats:")
@@ -670,7 +676,7 @@ class Unfold(inkex.EffectExtension):
             if boxSize > maxSize:
                 maxSize = boxSize
                      
-        #generate random colors for glue pairs
+        #generate random colors; used to identify glue tab pairs
         randomColorSet = []
         if self.options.separateGluePairsByColor:
             while len(randomColorSet) < len(mesh.edges()):
