@@ -36,6 +36,15 @@ Module licenses
 
 possible import file types -> https://www.graphics.rwth-aachen.de/media/openmesh_static/Documentations/OpenMesh-8.0-Documentation/a04096.html
 
+todo:
+- debug coplanar color for edges for some cases
+- remove empty groups (text)
+- abort if 0 faces
+- give hints for joinery preparations (apply transform, ungroup, ...)
+- update documentation accordingly
+- make angleRange global for complete unfolding (to match glue pairs between multiple unfoldings)
+- add angleRange to stats
+
 """
 
 # Compute the third point of a triangle when two points and all edge lengths are given
