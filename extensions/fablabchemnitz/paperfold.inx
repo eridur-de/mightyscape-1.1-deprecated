@@ -8,6 +8,7 @@
             <param name="inputfile" type="path" gui-text="Input File" filetypes="obj,off,ply,stl"  mode="file" gui-description="The model to unfold. You can use obj files provided in extensions dir of Inkscape \Poly3DObjects\*.obj to play around">/your/beautiful/3dmodel/file</param>
             <param name="maxNumFaces" type="int" min="1" max="99999" gui-text="Maximum allowed faces" gui-description="If the STL file has too much detail it contains a large number of faces. This will make unfolding extremely slow. So we can limit it.">200</param>     
             <param name="scalefactor" type="float" precision="3" min="0.0001" max="10000.0" gui-text="Manual scale factor" gui-description="default is 1.0">1.0</param>
+            <param name="roundingDigits" type="int" min="0" max="16" gui-text="Digits for rounding" gui-description="Controls how (nearly) coplanar lines are handled.">3</param>
             <separator/>
             <hbox>
                 <vbox>
@@ -27,6 +28,8 @@
                        <option value="pt">pt</option>
                        <option value="px">px</option>
                     </param>
+                    <param name="writeTwoDSTL" type="bool" gui-text="Write 2D STL unfoldings">false</param>
+                    <param name="TwoDSTLdir" type="path" mode="folder" gui-text="Location to save exported 2D STL">./inkscape_export/</param>
                 </vbox>
                 <separator/>
                 <vbox>
@@ -35,7 +38,7 @@
                     <param name="flipLabels" type="bool" gui-text="Flip labels">false</param>
                     <param name="dashes" type="bool" gui-text="Dashes for cut/coplanar lines">true</param>
                     <param name="saturationsForAngles" type="bool" gui-text="Adjust color saturation for folding edges" gui-description="The larger the angle the darker the color">false</param>
-                    <param name="separateGluePairsByColor" type="bool" gui-text="Separate glue pairs by color">false</param>
+                    <param name="separateGluePairsByColor" type="bool" gui-text="Separate glue tab pairs by color" gui-description="Generates random color sets for glue tab pairs">false</param>
                     <param name="colorValleyCut" type="color" appearance="colorbutton" gui-text="Valley cut edges">255</param>
                     <param name="colorMountainCut" type="color" appearance="colorbutton" gui-text="Mountain cut edges">1968208895</param>
                     <param name="colorCoplanarEdges" type="color" appearance="colorbutton" gui-text="Coplanar edges">1943148287</param>
@@ -43,9 +46,17 @@
                     <param name="colorMountainPerforates" type="color" appearance="colorbutton" gui-text="Mountain perforation edges">879076607</param>
                 </vbox>
             </hbox>
-            <separator/> 
-            <label appearance="header">Post Processing</label>
+        </page>
+        <page name="tab_postprocessing" gui-text="Post Processing">
+            <label appearance="header">Joinery</label>
+            <label>Joinery only works on ungrouped paths.</label>            
+            <param name="joineryMode" type="bool" gui-text="Enable joinery mode"  gui-description="Makes flat file instead creating groups. Guarantees compability for joinery.">false</param>            
             <label appearance="url">https://clementzheng.github.io/joinery</label>
+            <label appearance="url">https://www.instructables.com/Joinery-Joints-for-Laser-Cut-Assemblies</label>
+            <label appearance="header">Origami Simulator</label>
+            <label appearance="url">https://origamisimulator.org</label>
+            <label appearance="url">https://github.com/amandaghassaei/OrigamiSimulator</label>
+            <param name="origamiSimulatorMode" type="bool" gui-text="Enable origami simulator mode"  gui-description="Overwrites styles to be compatible to origami simulator.">false</param>            
         </page>
         <page name="tab_about" gui-text="About">
             <label appearance="header">Paperfold for Inkscape</label>

@@ -75,7 +75,7 @@ class ConvexHull(inkex.EffectExtension):
             line_attribs['transform'] = cloneTransform
         etree.SubElement(g, inkex.addNS('path', 'svg' ), line_attribs) 
 
-    def getControlPoints(self, element, n_array = None): #this does the same as "CTRL + SHIFT + K"
+    def getControlPoints(self, element, n_array = None):
         if n_array == None:
             n_array = []
         if element.tag == inkex.addNS('path','svg'):

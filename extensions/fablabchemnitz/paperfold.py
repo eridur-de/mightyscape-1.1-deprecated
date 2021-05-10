@@ -19,7 +19,7 @@ Paperfold is another flattener for triangle mesh files, heavily based on paperfo
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 13.09.2020
-Last patch: 08.05.2021
+Last patch: 10.05.2021
 License: GNU GPL v3
 
 To run this you need to install OpenMesh with python pip. 
@@ -38,606 +38,633 @@ possible import file types -> https://www.graphics.rwth-aachen.de/media/openmesh
 
 todo:
 - debug coplanar color for edges for some cases
-- remove empty groups (text)
-- abort if 0 faces
-- give hints for joinery preparations (apply transform, ungroup, ...)
-- update documentation accordingly
 - make angleRange global for complete unfolding (to match glue pairs between multiple unfoldings)
-- add angleRange to stats
-
+- option to render all triangles in a detached way (overlapping lines/independent) + merge coplanar adjacent triangles to polygons
+- write tab and slot generator (like joinery/polyhedra extension)
+- fstl preview
+- origami simulator docu + add support for opacities
+- fix line: dualGraph.add_edge(face1.idx(), face2.idx(), idx=edge.idx(), weight=edgeweight) # #might fail without throwing any error ...
 """
 
-# Compute the third point of a triangle when two points and all edge lengths are given
-def getThirdPoint(v0, v1, l01, l12, l20):
-    v2rotx = (l01 ** 2 + l20 ** 2 - l12 ** 2) / (2 * l01)
-    v2roty0 = np.sqrt((l01 + l20 + l12) * (l01 + l20 - l12) * (l01 - l20 + l12) * (-l01 + l20 + l12)) / (2 * l01)
+class Unfold(inkex.EffectExtension):
 
-    v2roty1 = - v2roty0
-
-    theta = np.arctan2(v1[1] - v0[1], v1[0] - v0[0])
-
-    v2trans0 = np.array(
-        [v2rotx * np.cos(theta) - v2roty0 * np.sin(theta), v2rotx * np.sin(theta) + v2roty0 * np.cos(theta), 0])
-    v2trans1 = np.array(
-        [v2rotx * np.cos(theta) - v2roty1 * np.sin(theta), v2rotx * np.sin(theta) + v2roty1 * np.cos(theta), 0])
-    return [v2trans0 + v0, v2trans1 + v0]
-
-
-# Check if two lines intersect
-def lineIntersection(v1, v2, v3, v4, epsilon):
-    d = (v4[1] - v3[1]) * (v2[0] - v1[0]) - (v4[0] - v3[0]) * (v2[1] - v1[1])
-    u = (v4[0] - v3[0]) * (v1[1] - v3[1]) - (v4[1] - v3[1]) * (v1[0] - v3[0])
-    v = (v2[0] - v1[0]) * (v1[1] - v3[1]) - (v2[1] - v1[1]) * (v1[0] - v3[0])
-    if d < 0:
-        u, v, d = -u, -v, -d
-    return ((0 + epsilon) <= u <= (d - epsilon)) and ((0 + epsilon) <= v <= (d - epsilon))
-
-# Check if a point lies inside a triangle
-def pointInTriangle(A, B, C, P, epsilon):
-    v0 = [C[0] - A[0], C[1] - A[1]]
-    v1 = [B[0] - A[0], B[1] - A[1]]
-    v2 = [P[0] - A[0], P[1] - A[1]]
-    cross = lambda u, v: u[0] * v[1] - u[1] * v[0]
-    u = cross(v2, v0)
-    v = cross(v1, v2)
-    d = cross(v1, v0)
-    if d < 0:
-        u, v, d = -u, -v, -d
-    return u >= (0 + epsilon) and v >= (0 + epsilon) and (u + v) <= (d - epsilon)
-
-
-# Check if two triangles intersect
-def triangleIntersection(t1, t2, epsilon):
-    if lineIntersection(t1[0], t1[1], t2[0], t2[1], epsilon): return True
-    if lineIntersection(t1[0], t1[1], t2[0], t2[2], epsilon): return True
-    if lineIntersection(t1[0], t1[1], t2[1], t2[2], epsilon): return True
-    if lineIntersection(t1[0], t1[2], t2[0], t2[1], epsilon): return True
-    if lineIntersection(t1[0], t1[2], t2[0], t2[2], epsilon): return True
-    if lineIntersection(t1[0], t1[2], t2[1], t2[2], epsilon): return True
-    if lineIntersection(t1[1], t1[2], t2[0], t2[1], epsilon): return True
-    if lineIntersection(t1[1], t1[2], t2[0], t2[2], epsilon): return True
-    if lineIntersection(t1[1], t1[2], t2[1], t2[2], epsilon): return True
-    inTri = True
-    inTri = inTri and pointInTriangle(t1[0], t1[1], t1[2], t2[0], epsilon)
-    inTri = inTri and pointInTriangle(t1[0], t1[1], t1[2], t2[1], epsilon)
-    inTri = inTri and pointInTriangle(t1[0], t1[1], t1[2], t2[2], epsilon)
-    if inTri == True: return True
-    inTri = True
-    inTri = inTri and pointInTriangle(t2[0], t2[1], t2[2], t1[0], epsilon)
-    inTri = inTri and pointInTriangle(t2[0], t2[1], t2[2], t1[1], epsilon)
-    inTri = inTri and pointInTriangle(t2[0], t2[1], t2[2], t1[2], epsilon)
-    if inTri == True: return True
-    return False
-
-
-# Functions for visualisation and output
-def addVisualisationData(mesh, unfoldedMesh, originalHalfedges, unfoldedHalfedges, glueNumber, foldingDirection):
-    for i in range(3):
-        foldingDirection[unfoldedMesh.edge_handle(unfoldedHalfedges[i]).idx()] = round(math.degrees(mesh.calc_dihedral_angle(originalHalfedges[i])), 3)
-        # Information, which edges belong together
-        glueNumber[unfoldedMesh.edge_handle(unfoldedHalfedges[i]).idx()] = mesh.edge_handle(originalHalfedges[i]).idx()
-
-# Function that unwinds a spanning tree
-def unfoldSpanningTree(mesh, spanningTree):
-    unfoldedMesh = om.TriMesh()  # the unfolded mesh
-
-    numFaces = mesh.n_faces()
-    sizeTree = spanningTree.number_of_edges()
-    numUnfoldedEdges = 3 * numFaces - sizeTree
-
-    isFoldingEdge = np.zeros(numUnfoldedEdges, dtype=bool)  # Indicates whether an edge is folded or cut
-    glueNumber = np.empty(numUnfoldedEdges, dtype=int)  # Saves with which edge is glued together
-    foldingDirection = np.empty(numUnfoldedEdges, dtype=float)  # Valley folding or mountain folding
-
-    connections = np.empty(numFaces, dtype=int)  # Saves which original triangle belongs to the unrolled one
-
-    # Select the first triangle as desired
-    startingNode = list(spanningTree.nodes())[0]
-    startingTriangle = mesh.face_handle(startingNode)
-
-    # We unwind the first triangle
-
-    # All half edges of the first triangle
-    firstHalfEdge = mesh.halfedge_handle(startingTriangle)
-    secondHalfEdge = mesh.next_halfedge_handle(firstHalfEdge)
-    thirdHalfEdge = mesh.next_halfedge_handle(secondHalfEdge)
-    originalHalfEdges = [firstHalfEdge, secondHalfEdge, thirdHalfEdge]
-
-    # Calculate the lengths of the edges, this will determine the shape of the triangle (congruence)
-    edgelengths = [mesh.calc_edge_length(firstHalfEdge), mesh.calc_edge_length(secondHalfEdge),
-                   mesh.calc_edge_length(thirdHalfEdge)]
-
-    # The first two points
-    firstUnfoldedPoint = np.array([0, 0, 0])
-    secondUnfoldedPoint = np.array([edgelengths[0], 0, 0])
-
-    # We calculate the third point of the triangle from the first two. There are two possibilities
-    [thirdUnfolded0, thirdUnfolded1] = getThirdPoint(firstUnfoldedPoint, secondUnfoldedPoint, edgelengths[0],
-                                                     edgelengths[1],
-                                                     edgelengths[2])
-    if thirdUnfolded0[1] > 0:
-        thirdUnfoldedPoint = thirdUnfolded0
-    else:
-        thirdUnfoldePoint = thirdUnfolded1
-
-    # Add the new corners to the unwound net
-    firstUnfoldedVertex = unfoldedMesh.add_vertex(secondUnfoldedPoint)
-    secondUnfoldedVertex = unfoldedMesh.add_vertex(thirdUnfoldedPoint)
-    thirdUnfoldedVertex = unfoldedMesh.add_vertex(firstUnfoldedPoint)
-
-    #firstUnfoldedVertex = unfoldedMesh.add_vertex(firstUnfoldedPoint)
-    #secondUnfoldedVertex = unfoldedMesh.add_vertex(secondUnfoldedPoint)
-    #thirdUnfoldedVertex = unfoldedMesh.add_vertex(thirdUnfoldedPoint)
-
-    # Create the page
-    unfoldedFace = unfoldedMesh.add_face(firstUnfoldedVertex, secondUnfoldedVertex, thirdUnfoldedVertex)
-
-    # Memory properties of the surface and edges
-    # The half edges in unrolled mesh
-    firstUnfoldedHalfEdge = unfoldedMesh.opposite_halfedge_handle(unfoldedMesh.halfedge_handle(firstUnfoldedVertex))
-    secondUnfoldedHalfEdge = unfoldedMesh.next_halfedge_handle(firstUnfoldedHalfEdge)
-    thirdUnfoldedHalfEdge = unfoldedMesh.next_halfedge_handle(secondUnfoldedHalfEdge)
-
-    unfoldedHalfEdges = [firstUnfoldedHalfEdge, secondUnfoldedHalfEdge, thirdUnfoldedHalfEdge]
-
-    # Associated triangle in 3D mesh
-    connections[unfoldedFace.idx()] = startingTriangle.idx()
-    # Folding direction and adhesive number
-    addVisualisationData(mesh, unfoldedMesh, originalHalfEdges, unfoldedHalfEdges, glueNumber, foldingDirection)
-
-    halfEdgeConnections = {firstHalfEdge.idx(): firstUnfoldedHalfEdge.idx(),
-                           secondHalfEdge.idx(): secondUnfoldedHalfEdge.idx(),
-                           thirdHalfEdge.idx(): thirdUnfoldedHalfEdge.idx()}
-
-    # We walk through the tree
-    for dualEdge in nx.dfs_edges(spanningTree, source=startingNode):
-        foldingEdge = mesh.edge_handle(spanningTree[dualEdge[0]][dualEdge[1]]['idx'])
-        # Find the corresponding half edge in the output triangle
-        foldingHalfEdge = mesh.halfedge_handle(foldingEdge, 0)
-        if not (mesh.face_handle(foldingHalfEdge).idx() == dualEdge[0]):
-            foldingHalfEdge = mesh.halfedge_handle(foldingEdge, 1)
-
-        # Find the corresponding unwound half edge
-        unfoldedLastHalfEdge = unfoldedMesh.halfedge_handle(halfEdgeConnections[foldingHalfEdge.idx()])
-
-        # Find the point in the unrolled triangle that is not on the folding edge
-        oppositeUnfoldedVertex = unfoldedMesh.to_vertex_handle(unfoldedMesh.next_halfedge_handle(unfoldedLastHalfEdge))
-
-        # We turn the half edges over to lie in the new triangle
-        foldingHalfEdge = mesh.opposite_halfedge_handle(foldingHalfEdge)
-        unfoldedLastHalfEdge = unfoldedMesh.opposite_halfedge_handle(unfoldedLastHalfEdge)
-
-        # The two corners of the folding edge
-        unfoldedFromVertex = unfoldedMesh.from_vertex_handle(unfoldedLastHalfEdge)
-        unfoldedToVertex = unfoldedMesh.to_vertex_handle(unfoldedLastHalfEdge)
-
-        # Calculate the edge lengths in the new triangle
-        secondHalfEdgeInFace = mesh.next_halfedge_handle(foldingHalfEdge)
-        thirdHalfEdgeInFace = mesh.next_halfedge_handle(secondHalfEdgeInFace)
-
-        originalHalfEdges = [foldingHalfEdge, secondHalfEdgeInFace, thirdHalfEdgeInFace]
-
-        edgelengths = [mesh.calc_edge_length(foldingHalfEdge), mesh.calc_edge_length(secondHalfEdgeInFace),
-                       mesh.calc_edge_length(thirdHalfEdgeInFace)]
-
-        # We calculate the two possibilities for the third point in the triangle
-        [newUnfoldedVertex0, newUnfoldedVertex1] = getThirdPoint(unfoldedMesh.point(unfoldedFromVertex),
-                                                                 unfoldedMesh.point(unfoldedToVertex), edgelengths[0],
-                                                                 edgelengths[1], edgelengths[2])
-
-
-        newUnfoldedVertex = unfoldedMesh.add_vertex(newUnfoldedVertex0)
-
-        # Make the face
-        newface = unfoldedMesh.add_face(unfoldedFromVertex, unfoldedToVertex, newUnfoldedVertex)
-
-        secondUnfoldedHalfEdge = unfoldedMesh.next_halfedge_handle(unfoldedLastHalfEdge)
-        thirdUnfoldedHalfEdge = unfoldedMesh.next_halfedge_handle(secondUnfoldedHalfEdge)
-        unfoldedHalfEdges = [unfoldedLastHalfEdge, secondUnfoldedHalfEdge, thirdUnfoldedHalfEdge]
-
-        # Saving the information about edges and page
-        # Dotted line in the output
-        unfoldedLastEdge = unfoldedMesh.edge_handle(unfoldedLastHalfEdge)
-        isFoldingEdge[unfoldedLastEdge.idx()] = True
-
-        # Gluing number and folding direction
-        addVisualisationData(mesh, unfoldedMesh, originalHalfEdges, unfoldedHalfEdges, glueNumber, foldingDirection)
-
-        # Related page
-        connections[newface.idx()] = dualEdge[1]
-
-        # Identify the half edges
+    # Compute the third point of a triangle when two points and all edge lengths are given
+    def getThirdPoint(self, v0, v1, l01, l12, l20):
+        v2rotx = (l01 ** 2 + l20 ** 2 - l12 ** 2) / (2 * l01)
+        v2roty0 = np.sqrt((l01 + l20 + l12) * (l01 + l20 - l12) * (l01 - l20 + l12) * (-l01 + l20 + l12)) / (2 * l01)
+    
+        v2roty1 = - v2roty0
+    
+        theta = np.arctan2(v1[1] - v0[1], v1[0] - v0[0])
+    
+        v2trans0 = np.array(
+            [v2rotx * np.cos(theta) - v2roty0 * np.sin(theta), v2rotx * np.sin(theta) + v2roty0 * np.cos(theta), 0])
+        v2trans1 = np.array(
+            [v2rotx * np.cos(theta) - v2roty1 * np.sin(theta), v2rotx * np.sin(theta) + v2roty1 * np.cos(theta), 0])
+        return [v2trans0 + v0, v2trans1 + v0]
+    
+    
+    # Check if two lines intersect
+    def lineIntersection(self, v1, v2, v3, v4, epsilon):
+        d = (v4[1] - v3[1]) * (v2[0] - v1[0]) - (v4[0] - v3[0]) * (v2[1] - v1[1])
+        u = (v4[0] - v3[0]) * (v1[1] - v3[1]) - (v4[1] - v3[1]) * (v1[0] - v3[0])
+        v = (v2[0] - v1[0]) * (v1[1] - v3[1]) - (v2[1] - v1[1]) * (v1[0] - v3[0])
+        if d < 0:
+            u, v, d = -u, -v, -d
+        return ((0 + epsilon) <= u <= (d - epsilon)) and ((0 + epsilon) <= v <= (d - epsilon))
+    
+    # Check if a point lies inside a triangle
+    def pointInTriangle(self, A, B, C, P, epsilon):
+        v0 = [C[0] - A[0], C[1] - A[1]]
+        v1 = [B[0] - A[0], B[1] - A[1]]
+        v2 = [P[0] - A[0], P[1] - A[1]]
+        cross = lambda u, v: u[0] * v[1] - u[1] * v[0]
+        u = cross(v2, v0)
+        v = cross(v1, v2)
+        d = cross(v1, v0)
+        if d < 0:
+            u, v, d = -u, -v, -d
+        return u >= (0 + epsilon) and v >= (0 + epsilon) and (u + v) <= (d - epsilon)
+    
+    
+    # Check if two triangles intersect
+    def triangleIntersection(self, t1, t2, epsilon):
+        if self.lineIntersection(t1[0], t1[1], t2[0], t2[1], epsilon): return True
+        if self.lineIntersection(t1[0], t1[1], t2[0], t2[2], epsilon): return True
+        if self.lineIntersection(t1[0], t1[1], t2[1], t2[2], epsilon): return True
+        if self.lineIntersection(t1[0], t1[2], t2[0], t2[1], epsilon): return True
+        if self.lineIntersection(t1[0], t1[2], t2[0], t2[2], epsilon): return True
+        if self.lineIntersection(t1[0], t1[2], t2[1], t2[2], epsilon): return True
+        if self.lineIntersection(t1[1], t1[2], t2[0], t2[1], epsilon): return True
+        if self.lineIntersection(t1[1], t1[2], t2[0], t2[2], epsilon): return True
+        if self.lineIntersection(t1[1], t1[2], t2[1], t2[2], epsilon): return True
+        inTri = True
+        inTri = inTri and self.pointInTriangle(t1[0], t1[1], t1[2], t2[0], epsilon)
+        inTri = inTri and self.pointInTriangle(t1[0], t1[1], t1[2], t2[1], epsilon)
+        inTri = inTri and self.pointInTriangle(t1[0], t1[1], t1[2], t2[2], epsilon)
+        if inTri == True: return True
+        inTri = True
+        inTri = inTri and self.pointInTriangle(t2[0], t2[1], t2[2], t1[0], epsilon)
+        inTri = inTri and self.pointInTriangle(t2[0], t2[1], t2[2], t1[1], epsilon)
+        inTri = inTri and self.pointInTriangle(t2[0], t2[1], t2[2], t1[2], epsilon)
+        if inTri == True: return True
+        return False
+    
+    
+    # Functions for visualisation and output
+    def addVisualisationData(self, mesh, unfoldedMesh, originalHalfedges, unfoldedHalfedges, glueNumber, foldingDirection):
         for i in range(3):
-            halfEdgeConnections[originalHalfEdges[i].idx()] = unfoldedHalfEdges[i].idx()
-
-    return [unfoldedMesh, isFoldingEdge, connections, glueNumber, foldingDirection]
-
-def unfold(mesh, maxNumFaces, printStats):
-    # Calculate the number of surfaces, edges and corners, as well as the length of the longest shortest edge
-    numEdges = mesh.n_edges()
-    numVertices = mesh.n_vertices()
-    numFaces = mesh.n_faces()
-
-    if numFaces > maxNumFaces:
-        inkex.utils.debug("Aborted. Target STL file has " + str(numFaces) + " faces, but " + str(maxNumFaces) + " are allowed.")
-        exit(1)
-
-    if printStats is True:
-        inkex.utils.debug("Input STL mesh stats:")
-        inkex.utils.debug("* Number of edges: " + str(numEdges))
-        inkex.utils.debug("* Number of vertices: " + str(numVertices))
-        inkex.utils.debug("* Number of faces: " + str(numFaces))
-        inkex.utils.debug("-----------------------------------------------------------")
-
-
-    # Generate the dual graph of the mesh and calculate the weights
-    dualGraph = nx.Graph()
-
-    # For the weights: calculate the longest and shortest edge of the triangle
-    minLength = 1000
-    maxLength = 0
-    for edge in mesh.edges():
-        edgelength = mesh.calc_edge_length(edge)
-        if edgelength < minLength:
-            minLength = edgelength
-        if edgelength > maxLength:
-            maxLength = edgelength
-
-    # All edges in the net
-    for edge in mesh.edges():
-        # The two sides adjacent to the edge
-        face1 = mesh.face_handle(mesh.halfedge_handle(edge, 0))
-        face2 = mesh.face_handle(mesh.halfedge_handle(edge, 1))
-
-        # The weight
-        edgeweight = 1.0 - (mesh.calc_edge_length(edge) - minLength) / (maxLength - minLength)
-
-        # Calculate the centres of the pages (only necessary for visualisation)
-        center1 = (0, 0)
-        for vertex in mesh.fv(face1):
-            center1 = center1 + 0.3333333333333333 * np.array([mesh.point(vertex)[0], mesh.point(vertex)[2]])
-        center2 = (0, 0)
-        for vertex in mesh.fv(face2):
-            center2 = center2 + 0.3333333333333333 * np.array([mesh.point(vertex)[0], mesh.point(vertex)[2]])
-
-        # Add the new nodes and edge to the dual graph
-        dualGraph.add_node(face1.idx(), pos=center1)
-        dualGraph.add_node(face2.idx(), pos=center2)
-        dualGraph.add_edge(face1.idx(), face2.idx(), idx=edge.idx(), weight=edgeweight)
-
-    # Calculate the minimum spanning tree
-    spanningTree = nx.minimum_spanning_tree(dualGraph)
-
-    # Unfold the tree
-    fullUnfolding = unfoldSpanningTree(mesh, spanningTree)
-    [unfoldedMesh, isFoldingEdge, connections, glueNumber, foldingDirection] = fullUnfolding
-
-
-    # Resolve the intersections
-    # Find all intersections
-    epsilon = 1E-12  # Accuracy
-    faceIntersections = []
-    for face1 in unfoldedMesh.faces():
-        for face2 in unfoldedMesh.faces():
-            if face2.idx() < face1.idx():  # so that we do not double check the couples
-                # Get the triangle faces
-                triangle1 = []
-                triangle2 = []
-                for halfedge in unfoldedMesh.fh(face1):
-                    triangle1.append(unfoldedMesh.point(unfoldedMesh.from_vertex_handle(halfedge)))
-                for halfedge in unfoldedMesh.fh(face2):
-                    triangle2.append(unfoldedMesh.point(unfoldedMesh.from_vertex_handle(halfedge)))
-                if triangleIntersection(triangle1, triangle2, epsilon):
-                    faceIntersections.append([connections[face1.idx()], connections[face2.idx()]])
-
-    # Find the paths
-    # We find the minimum number of cuts to resolve any self-intersection
-
-    # Search all paths between overlapping triangles
-    paths = []
-    for intersection in faceIntersections:
-        paths.append(
-            nx.algorithms.shortest_paths.shortest_path(spanningTree, source=intersection[0], target=intersection[1]))
-
-    # Find all edges in all threads
-    edgepaths = []
-    for path in paths:
-        edgepath = []
-        for i in range(len(path) - 1):
-            edgepath.append((path[i], path[i + 1]))
-        edgepaths.append(edgepath)
-
-    # List of all edges in all paths
-    allEdgesInPaths = list(set().union(*edgepaths))
-
-    # Count how often each edge occurs
-    numEdgesInPaths = []
-    for edge in allEdgesInPaths:
-        num = 0
-        for path in edgepaths:
-            if edge in path:
-                num = num + 1
-        numEdgesInPaths.append(num)
-
-    S = []
-    C = []
-
-    while len(C) != len(paths):
-        # Calculate the weights to decide which edge to cut
-        cutWeights = np.empty(len(allEdgesInPaths))
-        for i in range(len(allEdgesInPaths)):
-            currentEdge = allEdgesInPaths[i]
-
-            # Count how many of the paths in which the edge occurs have already been cut
-            numInC = 0
-            for path in C:
-                if currentEdge in path:
-                    numInC = numInC + 1
-
-            # Determine the weight
-            if (numEdgesInPaths[i] - numInC) > 0:
-                cutWeights[i] = 1 / (numEdgesInPaths[i] - numInC)
-            else:
-                cutWeights[i] = 1000  # 1000 = infinite
-        # Find the edge with the least weight
-        minimalIndex = np.argmin(cutWeights)
-        S.append(allEdgesInPaths[minimalIndex])
-        # Find all paths where the edge occurs and add them to C
-        for path in edgepaths:
-            if allEdgesInPaths[minimalIndex] in path and not path in C:
-                C.append(path)
-
-    # Now we remove the cut edges from the minimum spanning tree
-    spanningTree.remove_edges_from(S)
-
-    # Find the cohesive components
-    connectedComponents = nx.algorithms.components.connected_components(spanningTree)
-    connectedComponentList = list(connectedComponents)
-
-    # Unfolding of the components
-    unfoldings = []
-    for component in connectedComponentList:
-        unfoldings.append(unfoldSpanningTree(mesh, spanningTree.subgraph(component)))
-
-    return fullUnfolding, unfoldings
-
-
-def findBoundingBox(mesh):
-    firstpoint = mesh.point(mesh.vertex_handle(0))
-    xmin = firstpoint[0]
-    xmax = firstpoint[0]
-    ymin = firstpoint[1]
-    ymax = firstpoint[1]
-    for vertex in mesh.vertices():
-        coordinates = mesh.point(vertex)
-        if (coordinates[0] < xmin):
-            xmin = coordinates[0]
-        if (coordinates[0] > xmax):
-            xmax = coordinates[0]
-        if (coordinates[1] < ymin):
-            ymin = coordinates[1]
-        if (coordinates[1] > ymax):
-            ymax = coordinates[1]
-    boxSize = np.maximum(np.abs(xmax - xmin), np.abs(ymax - ymin))
-
-    return [xmin, ymin, boxSize]
-
-
-def writeSVG(self, unfolding, size, randomColorSet):
-    mesh = unfolding[0]
-    isFoldingEdge = unfolding[1]
-    glueNumber = unfolding[3]
-    foldingDirection = unfolding[4]
-
-    #statistic values
-    gluePairs = 0
-    mountainCuts = 0
-    valleyCuts = 0
-    coplanarLines = 0
-    mountainPerforations = 0
-    valleyPerforations = 0
+            foldingDirection[unfoldedMesh.edge_handle(unfoldedHalfedges[i]).idx()] = round(math.degrees(mesh.calc_dihedral_angle(originalHalfedges[i])), self.options.roundingDigits)
+            # Information, which edges belong together
+            glueNumber[unfoldedMesh.edge_handle(unfoldedHalfedges[i]).idx()] = mesh.edge_handle(originalHalfedges[i]).idx()
     
-    # Calculate the bounding box
-    [xmin, ymin, boxSize] = findBoundingBox(unfolding[0])
-
-    if size > 0:
-        boxSize = size
-
-    strokewidth = boxSize * self.options.fontSize / 8000
-    dashLength = boxSize * self.options.fontSize / 2000
-    spaceLength = boxSize * self.options.fontSize / 800
-    textDistance = boxSize * self.options.fontSize / 800
-    textStrokewidth = boxSize * self.options.fontSize / 3000
-    fontsize = boxSize * self.options.fontSize / 1000
-
-    minAngle = min(foldingDirection)
-    maxAngle = max(foldingDirection)
-    angleRange = maxAngle - minAngle
-    #self.msg(minAngle)
-    #self.msg(maxAngle)
-    #self.msg(angleRange)
-
-    # Grouping
-    uniqueMainId = self.svg.get_unique_id("")
-    
-    paperfoldPageGroup = self.document.getroot().add(inkex.Group(id=uniqueMainId + "-paperfold-page"))
-    
-    textGroup = inkex.Group(id=uniqueMainId + "-text")   
-    edgesGroup = inkex.Group(id=uniqueMainId + "-edges")
-    paperfoldPageGroup.add(textGroup)
-    paperfoldPageGroup.add(edgesGroup) 
-    
-    textFacesGroup = inkex.Group(id=uniqueMainId + "-textFaces")
-    textEdgesGroup = inkex.Group(id=uniqueMainId + "-textEdges")
-    textGroup.add(textFacesGroup)
-    textGroup.add(textEdgesGroup)
-    
-    if self.options.printTriangleNumbers is True:
-
-        for face in mesh.faces():
-            centroid = mesh.calc_face_centroid(face)
-            
-            textFaceGroup = inkex.Group(id=uniqueMainId + "-textFace-" + str(face.idx()))
-            
-            circle = textFaceGroup.add(Circle(cx=str(centroid[0]), cy=str(centroid[1]), r=str(fontsize)))
-            circle.set('id', uniqueMainId + "-textFaceCricle-" + str(face.idx()))
-            circle.set("style", "stroke:#000000;stroke-width:" + str(strokewidth/2) + ";fill:none")
-            
-            text = textFaceGroup.add(TextElement(id=uniqueMainId + "-textFaceNumber-" + str(face.idx())))
-            text.set("x", str(centroid[0]))
-            text.set("y", str(centroid[1] + fontsize / 3))
-            text.set("font-size", str(fontsize))
-            text.set("style", "stroke-width:" + str(textStrokewidth) + ";text-anchor:middle;text-align:center")
-            
-            tspan = text.add(Tspan(id=uniqueMainId + "-textFaceNumberTspan-" + str(face.idx())))
-            tspan.set("x", str(centroid[0]))
-            tspan.set("y", str(centroid[1] + fontsize / 3))
-            tspan.set("style", "stroke-width:" + str(textStrokewidth) + ";text-anchor:middle;text-align:center")
-            tspan.text = str(face.idx())
-            textFacesGroup.append(textFaceGroup)
-                  
-    # Go over all edges of the grid
-    for edge in mesh.edges():
-        # The two endpoints
-        he = mesh.halfedge_handle(edge, 0)
-        vertex0 = mesh.point(mesh.from_vertex_handle(he))
-        vertex1 = mesh.point(mesh.to_vertex_handle(he))
-
-        # Write a straight line between the two corners
-        line = edgesGroup.add(inkex.PathElement())
-        line.set('d', "M " + str(vertex0[0]) + "," + str(vertex0[1]) + " " + str(vertex1[0]) + "," + str(vertex1[1]))
-        # Colour depending on folding direction
-        lineStyle = {"fill": "none"}
-
-        dihedralAngle = foldingDirection[edge.idx()]
+     # Function that unwinds a spanning tree
+    def unfoldSpanningTree(self, mesh, spanningTree): 
+        try:
+            unfoldedMesh = om.TriMesh()  # the unfolded mesh
         
-        if dihedralAngle > 0:
-            lineStyle.update({"stroke": self.options.colorMountainCut})
-            line.set("id", uniqueMainId + "-mountain-cut-" + str(edge.idx()))
-            mountainCuts += 1
-        elif dihedralAngle < 0:
-            lineStyle.update({"stroke": self.options.colorValleyCut})
-            line.set("id", uniqueMainId + "-valley-cut-" + str(edge.idx()))
-            valleyCuts += 1
-        elif dihedralAngle == 0:
-            lineStyle.update({"stroke": self.options.colorCoplanarEdges})
-            line.set("id", uniqueMainId + "-coplanar-edge-" + str(edge.idx()))
-            #if self.options.importCoplanarEdges is False:
-            #    line.delete()  
-            coplanarLines += 1
-                    
-        lineStyle.update({"stroke-width":str(strokewidth)})
-        lineStyle.update({"stroke-linecap":"butt"})
-        lineStyle.update({"stroke-linejoin":"miter"})
-        lineStyle.update({"stroke-miterlimit":"4"})  
+            numFaces = mesh.n_faces()
+            sizeTree = spanningTree.number_of_edges()
+            numUnfoldedEdges = 3 * numFaces - sizeTree
+        
+            isFoldingEdge = np.zeros(numUnfoldedEdges, dtype=bool)  # Indicates whether an edge is folded or cut
+            glueNumber = np.empty(numUnfoldedEdges, dtype=int)  # Saves with which edge is glued together
+            foldingDirection = np.empty(numUnfoldedEdges, dtype=float)  # Valley folding or mountain folding
+        
+            connections = np.empty(numFaces, dtype=int)  # Saves which original triangle belongs to the unrolled one
+        
+            # Select the first triangle as desired
+            startingNode = list(spanningTree.nodes())[0]
+            startingTriangle = mesh.face_handle(startingNode)
+        
+            # We unwind the first triangle
+        
+            # All half edges of the first triangle
+            firstHalfEdge = mesh.halfedge_handle(startingTriangle)
+            secondHalfEdge = mesh.next_halfedge_handle(firstHalfEdge)
+            thirdHalfEdge = mesh.next_halfedge_handle(secondHalfEdge)
+            originalHalfEdges = [firstHalfEdge, secondHalfEdge, thirdHalfEdge]
+        
+            # Calculate the lengths of the edges, this will determine the shape of the triangle (congruence)
+            edgelengths = [mesh.calc_edge_length(firstHalfEdge), mesh.calc_edge_length(secondHalfEdge),
+                           mesh.calc_edge_length(thirdHalfEdge)]
+        
+            # The first two points
+            firstUnfoldedPoint = np.array([0, 0, 0])
+            secondUnfoldedPoint = np.array([edgelengths[0], 0, 0])
+        
+            # We calculate the third point of the triangle from the first two. There are two possibilities
+            [thirdUnfolded0, thirdUnfolded1] = self.getThirdPoint(firstUnfoldedPoint, secondUnfoldedPoint, edgelengths[0],
+                                                             edgelengths[1],
+                                                             edgelengths[2])
+            if thirdUnfolded0[1] > 0:
+                thirdUnfoldedPoint = thirdUnfolded0
+            else:
+                thirdUnfoldePoint = thirdUnfolded1
+        
+            # Add the new corners to the unwound net
+            firstUnfoldedVertex = unfoldedMesh.add_vertex(secondUnfoldedPoint)
+            secondUnfoldedVertex = unfoldedMesh.add_vertex(thirdUnfoldedPoint)
+            thirdUnfoldedVertex = unfoldedMesh.add_vertex(firstUnfoldedPoint)
+        
+            #firstUnfoldedVertex = unfoldedMesh.add_vertex(firstUnfoldedPoint)
+            #secondUnfoldedVertex = unfoldedMesh.add_vertex(secondUnfoldedPoint)
+            #thirdUnfoldedVertex = unfoldedMesh.add_vertex(thirdUnfoldedPoint)
+        
+            # Create the page
+            unfoldedFace = unfoldedMesh.add_face(firstUnfoldedVertex, secondUnfoldedVertex, thirdUnfoldedVertex)
+        
+            # Memory properties of the surface and edges
+            # The half edges in unrolled mesh
+            firstUnfoldedHalfEdge = unfoldedMesh.opposite_halfedge_handle(unfoldedMesh.halfedge_handle(firstUnfoldedVertex))
+            secondUnfoldedHalfEdge = unfoldedMesh.next_halfedge_handle(firstUnfoldedHalfEdge)
+            thirdUnfoldedHalfEdge = unfoldedMesh.next_halfedge_handle(secondUnfoldedHalfEdge)
+        
+            unfoldedHalfEdges = [firstUnfoldedHalfEdge, secondUnfoldedHalfEdge, thirdUnfoldedHalfEdge]
+        
+            # Associated triangle in 3D mesh
+            connections[unfoldedFace.idx()] = startingTriangle.idx()
+            # Folding direction and adhesive number
+            self.addVisualisationData(mesh, unfoldedMesh, originalHalfEdges, unfoldedHalfEdges, glueNumber, foldingDirection)
+        
+            halfEdgeConnections = {firstHalfEdge.idx(): firstUnfoldedHalfEdge.idx(),
+                                   secondHalfEdge.idx(): secondUnfoldedHalfEdge.idx(),
+                                   thirdHalfEdge.idx(): thirdUnfoldedHalfEdge.idx()}
+        
+            # We walk through the tree
+            for dualEdge in nx.dfs_edges(spanningTree, source=startingNode):
+                foldingEdge = mesh.edge_handle(spanningTree[dualEdge[0]][dualEdge[1]]['idx'])
+                # Find the corresponding half edge in the output triangle
+                foldingHalfEdge = mesh.halfedge_handle(foldingEdge, 0)
+                if not (mesh.face_handle(foldingHalfEdge).idx() == dualEdge[0]):
+                    foldingHalfEdge = mesh.halfedge_handle(foldingEdge, 1)
+        
+                # Find the corresponding unwound half edge
+                unfoldedLastHalfEdge = unfoldedMesh.halfedge_handle(halfEdgeConnections[foldingHalfEdge.idx()])
+        
+                # Find the point in the unrolled triangle that is not on the folding edge
+                oppositeUnfoldedVertex = unfoldedMesh.to_vertex_handle(unfoldedMesh.next_halfedge_handle(unfoldedLastHalfEdge))
+        
+                # We turn the half edges over to lie in the new triangle
+                foldingHalfEdge = mesh.opposite_halfedge_handle(foldingHalfEdge)
+                unfoldedLastHalfEdge = unfoldedMesh.opposite_halfedge_handle(unfoldedLastHalfEdge)
+        
+                # The two corners of the folding edge
+                unfoldedFromVertex = unfoldedMesh.from_vertex_handle(unfoldedLastHalfEdge)
+                unfoldedToVertex = unfoldedMesh.to_vertex_handle(unfoldedLastHalfEdge)
+        
+                # Calculate the edge lengths in the new triangle
+                secondHalfEdgeInFace = mesh.next_halfedge_handle(foldingHalfEdge)
+                thirdHalfEdgeInFace = mesh.next_halfedge_handle(secondHalfEdgeInFace)
+        
+                originalHalfEdges = [foldingHalfEdge, secondHalfEdgeInFace, thirdHalfEdgeInFace]
+        
+                edgelengths = [mesh.calc_edge_length(foldingHalfEdge), mesh.calc_edge_length(secondHalfEdgeInFace),
+                               mesh.calc_edge_length(thirdHalfEdgeInFace)]
+        
+                # We calculate the two possibilities for the third point in the triangle
+                [newUnfoldedVertex0, newUnfoldedVertex1] = self.getThirdPoint(unfoldedMesh.point(unfoldedFromVertex),
+                                                                         unfoldedMesh.point(unfoldedToVertex), edgelengths[0],
+                                                                         edgelengths[1], edgelengths[2])
+        
+        
+                newUnfoldedVertex = unfoldedMesh.add_vertex(newUnfoldedVertex0)
+        
+                # Make the face
+                newface = unfoldedMesh.add_face(unfoldedFromVertex, unfoldedToVertex, newUnfoldedVertex)
+        
+                secondUnfoldedHalfEdge = unfoldedMesh.next_halfedge_handle(unfoldedLastHalfEdge)
+                thirdUnfoldedHalfEdge = unfoldedMesh.next_halfedge_handle(secondUnfoldedHalfEdge)
+                unfoldedHalfEdges = [unfoldedLastHalfEdge, secondUnfoldedHalfEdge, thirdUnfoldedHalfEdge]
+        
+                # Saving the information about edges and page
+                # Dotted one's in the output
+                unfoldedLastEdge = unfoldedMesh.edge_handle(unfoldedLastHalfEdge)
+                isFoldingEdge[unfoldedLastEdge.idx()] = True
+        
+                # Gluing number and folding direction
+                self.addVisualisationData(mesh, unfoldedMesh, originalHalfEdges, unfoldedHalfEdges, glueNumber, foldingDirection)
+        
+                # Related page
+                connections[newface.idx()] = dualEdge[1]
+        
+                # Identify the half edges
+                for i in range(3):
+                    halfEdgeConnections[originalHalfEdges[i].idx()] = unfoldedHalfEdges[i].idx()
+        
+            return [unfoldedMesh, isFoldingEdge, connections, glueNumber, foldingDirection]
+        except Exception as e:
+            inkex.utils.debug(str(e))
+            inkex.utils.debug("Error: model could not be unfolded. Check for:")
+            inkex.utils.debug(" - watertight model / intact hull")
+            inkex.utils.debug(" - duplicated edges or faces")
+            inkex.utils.debug(" - detached faces or holes")
+            inkex.utils.debug(" - missing units")
+            inkex.utils.debug(" - missing coordinate system")
+            exit(1)
+ 
+    
+    def unfold(self, mesh):
+        # Calculate the number of surfaces, edges and corners, as well as the length of the longest shortest edge
+        numEdges = mesh.n_edges()
+        numVertices = mesh.n_vertices()
+        numFaces = mesh.n_faces()
+    
+        if numFaces > self.options.maxNumFaces:
+            inkex.utils.debug("Aborted. Target STL file has " + str(numFaces) + " faces, but only " + str(maxNumFaces) + " are allowed.")
+            exit(1)
+    
+        if self.options.printStats is True:
+            inkex.utils.debug("Input STL mesh stats:")
+            inkex.utils.debug("* Number of edges: " + str(numEdges))
+            inkex.utils.debug("* Number of vertices: " + str(numVertices))
+            inkex.utils.debug("* Number of faces: " + str(numFaces))
+            inkex.utils.debug("-----------------------------------------------------------")
+    
+        # Generate the dual graph of the mesh and calculate the weights
+        dualGraph = nx.Graph()
+    
+        # For the weights: calculate the longest and shortest edge of the triangle
+        minLength = 1000
+        maxLength = 0
+        for edge in mesh.edges():
+            edgelength = mesh.calc_edge_length(edge)
+            if edgelength < minLength:
+                minLength = edgelength
+            if edgelength > maxLength:
+                maxLength = edgelength
+    
+        # All edges in the net
+        for edge in mesh.edges():
+            #inkex.utils.debug("edge.idx = " + str(edge.idx()))
             
-        # Dotted lines for folding edges    
-        if isFoldingEdge[edge.idx()]:
-            if self.options.dashes is True:
-                lineStyle.update({"stroke-dasharray":(str(dashLength) + ", " + str(spaceLength))})
+            # The two sides adjacent to the edge
+            face1 = mesh.face_handle(mesh.halfedge_handle(edge, 0))
+            face2 = mesh.face_handle(mesh.halfedge_handle(edge, 1))
+    
+            # The weight
+            edgeweight = 1.0 - (mesh.calc_edge_length(edge) - minLength) / (maxLength - minLength)
+            #inkex.utils.debug("edgeweight = " + str(edgeweight))
+    
+            # Calculate the centres of the pages (only necessary for visualisation)
+            center1 = (0, 0)
+            for vertex in mesh.fv(face1):
+                center1 = center1 + 0.3333333333333333 * np.array([mesh.point(vertex)[0], mesh.point(vertex)[2]])
+            center2 = (0, 0)
+            for vertex in mesh.fv(face2):
+                center2 = center2 + 0.3333333333333333 * np.array([mesh.point(vertex)[0], mesh.point(vertex)[2]])
+    
+            # Add the new nodes and edge to the dual graph
+            dualGraph.add_node(face1.idx(), pos=center1)
+            dualGraph.add_node(face2.idx(), pos=center2)
+            dualGraph.add_edge(face1.idx(), face2.idx(), idx=edge.idx(), weight=edgeweight) # #might fail without throwing any error ...
+           
+        
+        # Calculate the minimum spanning tree
+        spanningTree = nx.minimum_spanning_tree(dualGraph)
+    
+        # Unfold the tree
+        fullUnfolding = self.unfoldSpanningTree(mesh, spanningTree)
+        [unfoldedMesh, isFoldingEdge, connections, glueNumber, foldingDirection] = fullUnfolding
+    
+    
+        # Resolve the intersections
+        # Find all intersections
+        epsilon = 1E-12  # Accuracy
+        faceIntersections = []
+        for face1 in unfoldedMesh.faces():
+            for face2 in unfoldedMesh.faces():
+                if face2.idx() < face1.idx():  # so that we do not double check the couples
+                    # Get the triangle faces
+                    triangle1 = []
+                    triangle2 = []
+                    for halfedge in unfoldedMesh.fh(face1):
+                        triangle1.append(unfoldedMesh.point(unfoldedMesh.from_vertex_handle(halfedge)))
+                    for halfedge in unfoldedMesh.fh(face2):
+                        triangle2.append(unfoldedMesh.point(unfoldedMesh.from_vertex_handle(halfedge)))
+                    if self.triangleIntersection(triangle1, triangle2, epsilon):
+                        faceIntersections.append([connections[face1.idx()], connections[face2.idx()]])
+    
+        # Find the paths
+        # We find the minimum number of cuts to resolve any self-intersection
+    
+        # Search all paths between overlapping triangles
+        paths = []
+        for intersection in faceIntersections:
+            paths.append(
+                nx.algorithms.shortest_paths.shortest_path(spanningTree, source=intersection[0], target=intersection[1]))
+    
+        # Find all edges in all threads
+        edgepaths = []
+        for path in paths:
+            edgepath = []
+            for i in range(len(path) - 1):
+                edgepath.append((path[i], path[i + 1]))
+            edgepaths.append(edgepath)
+    
+        # List of all edges in all paths
+        allEdgesInPaths = list(set().union(*edgepaths))
+    
+        # Count how often each edge occurs
+        numEdgesInPaths = []
+        for edge in allEdgesInPaths:
+            num = 0
+            for path in edgepaths:
+                if edge in path:
+                    num = num + 1
+            numEdgesInPaths.append(num)
+    
+        S = []
+        C = []
+    
+        while len(C) != len(paths):
+            # Calculate the weights to decide which edge to cut
+            cutWeights = np.empty(len(allEdgesInPaths))
+            for i in range(len(allEdgesInPaths)):
+                currentEdge = allEdgesInPaths[i]
+    
+                # Count how many of the paths in which the edge occurs have already been cut
+                numInC = 0
+                for path in C:
+                    if currentEdge in path:
+                        numInC = numInC + 1
+    
+                # Determine the weight
+                if (numEdgesInPaths[i] - numInC) > 0:
+                    cutWeights[i] = 1 / (numEdgesInPaths[i] - numInC)
+                else:
+                    cutWeights[i] = 1000  # 1000 = infinite
+            # Find the edge with the least weight
+            minimalIndex = np.argmin(cutWeights)
+            S.append(allEdgesInPaths[minimalIndex])
+            # Find all paths where the edge occurs and add them to C
+            for path in edgepaths:
+                if allEdgesInPaths[minimalIndex] in path and not path in C:
+                    C.append(path)
+    
+        # Now we remove the cut edges from the minimum spanning tree
+        spanningTree.remove_edges_from(S)
+    
+        # Find the cohesive components
+        connectedComponents = nx.algorithms.components.connected_components(spanningTree)
+        connectedComponentList = list(connectedComponents)
+    
+        # Unfolding of the components
+        unfoldings = []
+        for component in connectedComponentList:
+            unfoldings.append(self.unfoldSpanningTree(mesh, spanningTree.subgraph(component)))
+    
+    
+        return fullUnfolding, unfoldings
+    
+    
+    def findBoundingBox(self, mesh):
+        firstpoint = mesh.point(mesh.vertex_handle(0))
+        xmin = firstpoint[0]
+        xmax = firstpoint[0]
+        ymin = firstpoint[1]
+        ymax = firstpoint[1]
+        for vertex in mesh.vertices():
+            coordinates = mesh.point(vertex)
+            if (coordinates[0] < xmin):
+                xmin = coordinates[0]
+            if (coordinates[0] > xmax):
+                xmax = coordinates[0]
+            if (coordinates[1] < ymin):
+                ymin = coordinates[1]
+            if (coordinates[1] > ymax):
+                ymax = coordinates[1]
+        boxSize = np.maximum(np.abs(xmax - xmin), np.abs(ymax - ymin))
+    
+        return [xmin, ymin, boxSize]
+    
+    
+    def writeSVG(self, unfolding, size, randomColorSet):
+        mesh = unfolding[0]
+        isFoldingEdge = unfolding[1]
+        glueNumber = unfolding[3]
+        foldingDirection = unfolding[4]
+    
+        #statistic values
+        gluePairs = 0
+        mountainCuts = 0
+        valleyCuts = 0
+        coplanarEdges = 0
+        mountainPerforations = 0
+        valleyPerforations = 0
+        
+        # Calculate the bounding box
+        [xmin, ymin, boxSize] = self.findBoundingBox(unfolding[0])
+    
+        if size > 0:
+            boxSize = size
+    
+        strokewidth = boxSize * self.options.fontSize / 8000
+        dashLength = boxSize * self.options.fontSize / 2000
+        spaceLength = boxSize * self.options.fontSize / 800
+        textDistance = boxSize * self.options.fontSize / 800
+        textStrokewidth = boxSize * self.options.fontSize / 3000
+        fontsize = boxSize * self.options.fontSize / 1000
+    
+        minAngle = min(foldingDirection)
+        maxAngle = max(foldingDirection)
+        angleRange = maxAngle - minAngle
+        #self.msg(minAngle)
+        #self.msg(maxAngle)
+        #self.msg(angleRange)
+        
+        # Grouping
+        uniqueMainId = self.svg.get_unique_id("")
+        
+        paperfoldPageGroup = self.document.getroot().add(inkex.Group(id=uniqueMainId + "-paperfold-page"))
+        
+        textGroup = inkex.Group(id=uniqueMainId + "-text")   
+        edgesGroup = inkex.Group(id=uniqueMainId + "-edges")
+        paperfoldPageGroup.add(textGroup)
+        paperfoldPageGroup.add(edgesGroup) 
+        
+        textFacesGroup = inkex.Group(id=uniqueMainId + "-textFaces")
+        textEdgesGroup = inkex.Group(id=uniqueMainId + "-textEdges")
+        textGroup.add(textFacesGroup)
+        textGroup.add(textEdgesGroup)
+      
+        #we could write the unfolded mesh as a 2D stl file to disk if we like:
+        if self.options.writeTwoDSTL is True:
+            if not os.path.exists(self.options.TwoDSTLdir):
+                inkex.utils.debug("Export location for 2D STL unfoldings does not exist. Please select a another dir and try again.")
+                exit(1)
+            else:
+                om.write_mesh(os.path.join(self.options.TwoDSTLdir, uniqueMainId + "-paperfold-page.stl"), mesh)
+    
+        
+        if self.options.printTriangleNumbers is True:
+    
+            for face in mesh.faces():
+                centroid = mesh.calc_face_centroid(face)
+                
+                textFaceGroup = inkex.Group(id=uniqueMainId + "-textFace-" + str(face.idx()))
+                
+                circle = textFaceGroup.add(Circle(cx=str(centroid[0]), cy=str(centroid[1]), r=str(fontsize)))
+                circle.set('id', uniqueMainId + "-textFaceCricle-" + str(face.idx()))
+                circle.set("style", "stroke:#000000;stroke-width:" + str(strokewidth/2) + ";fill:none")
+                
+                text = textFaceGroup.add(TextElement(id=uniqueMainId + "-textFaceNumber-" + str(face.idx())))
+                text.set("x", str(centroid[0]))
+                text.set("y", str(centroid[1] + fontsize / 3))
+                text.set("font-size", str(fontsize))
+                text.set("style", "stroke-width:" + str(textStrokewidth) + ";text-anchor:middle;text-align:center")
+                
+                tspan = text.add(Tspan(id=uniqueMainId + "-textFaceNumberTspan-" + str(face.idx())))
+                tspan.set("x", str(centroid[0]))
+                tspan.set("y", str(centroid[1] + fontsize / 3))
+                tspan.set("style", "stroke-width:" + str(textStrokewidth) + ";text-anchor:middle;text-align:center")
+                tspan.text = str(face.idx())
+                textFacesGroup.append(textFaceGroup)
+                      
+        # Go over all edges of the grid
+        for edge in mesh.edges():
+            # The two endpoints
+            he = mesh.halfedge_handle(edge, 0)
+            vertex0 = mesh.point(mesh.from_vertex_handle(he))
+            vertex1 = mesh.point(mesh.to_vertex_handle(he))
+    
+            # Write a straight line between the two corners
+            line = edgesGroup.add(inkex.PathElement())
+            line.set('d', "M " + str(vertex0[0]) + "," + str(vertex0[1]) + " " + str(vertex1[0]) + "," + str(vertex1[1]))
+            # Colour depending on folding direction
+            lineStyle = {"fill": "none"}
+    
+            dihedralAngle = foldingDirection[edge.idx()]
+            
             if dihedralAngle > 0:
-                lineStyle.update({"stroke": self.options.colorMountainPerforates})
-                line.set("id", uniqueMainId + "-mountain-perforate-" + str(edge.idx()))
-                mountainPerforations += 1
-            if dihedralAngle < 0:
-                lineStyle.update({"stroke": self.options.colorValleyPerforates})
-                line.set("id", uniqueMainId + "-valley-perforate-" + str(edge.idx()))
-                valleyPerforations += 1
-            if dihedralAngle == 0:
+                lineStyle.update({"stroke": self.options.colorMountainCut})
+                line.set("id", uniqueMainId + "-mountain-cut-" + str(edge.idx()))
+                mountainCuts += 1
+            elif dihedralAngle < 0:
+                lineStyle.update({"stroke": self.options.colorValleyCut})
+                line.set("id", uniqueMainId + "-valley-cut-" + str(edge.idx()))
+                valleyCuts += 1
+            elif dihedralAngle == 0:
                 lineStyle.update({"stroke": self.options.colorCoplanarEdges})
                 line.set("id", uniqueMainId + "-coplanar-edge-" + str(edge.idx()))
-                if self.options.importCoplanarEdges is False:
-                    line.delete()
-                valleyPerforations += 1
-        else:
-            lineStyle.update({"stroke-dasharray":"none"})
-
-        # The number of the edge to be glued  
-        if not isFoldingEdge[edge.idx()]:
-            if self.options.separateGluePairsByColor is True:
-                lineStyle.update({"stroke": randomColorSet[glueNumber[edge.idx()]]})
-            gluePairs += 1
-            
-        lineStyle.update({"stroke-dashoffset":"0"})
-        lineStyle.update({"stroke-opacity":"1"})       
-
-        if self.options.saturationsForAngles is True:
-            if dihedralAngle != 0: #we dont want to apply HSL adjustments for zero angle lines because they would be invisible then
-                hslColor = inkex.Color(lineStyle.get('stroke')).to_hsl()
-                newSaturation = abs(dihedralAngle / angleRange) * 100 #percentage values
-                hslColor.saturation = newSaturation
-                lineStyle.update({"stroke":hslColor.to_rgb()})       
-
-        line.style = lineStyle
-       
-        ########################################################
-        # Textual things
-        ########################################################
-        halfEdge = mesh.halfedge_handle(edge, 0) # Find halfedge in the face
-        if mesh.face_handle(halfEdge).idx() == -1:
-            halfEdge = mesh.opposite_halfedge_handle(halfEdge)
-        vector = mesh.calc_edge_vector(halfEdge)
-        vector = vector / np.linalg.norm(vector) # normalize
-        midPoint = 0.5 * (
-                mesh.point(mesh.from_vertex_handle(halfEdge)) + mesh.point(mesh.to_vertex_handle(halfEdge)))
-        rotatedVector = np.array([-vector[1], vector[0], 0])
-        angle = np.arctan2(vector[1], vector[0])
-        position = midPoint + textDistance * rotatedVector
-        if self.options.flipLabels is True:
-            position = midPoint - textDistance * rotatedVector
-        rotation = 180 / np.pi * angle
-        if self.options.flipLabels is True:
-            rotation += 180
-
-        text = textEdgesGroup.add(TextElement(id=uniqueMainId + "-edgeNumber-" + str(edge.idx())))
-        text.set("x", str(position[0]))
-        text.set("y", str(position[1]))
-        text.set("font-size", str(fontsize))
-        text.set("style", "stroke-width:" + str(textStrokewidth) + ";text-anchor:middle;text-align:center")
-        text.set("transform", "rotate(" + str(rotation) + "," + str(position[0]) + "," + str(position[1]) + ")")
-        
-        tspan = text.add(Tspan())
-        tspan.set("x", str(position[0]))
-        tspan.set("y", str(position[1]))
-        tspan.set("style", "stroke-width:" + str(textStrokewidth) + ";text-anchor:middle;text-align:center")
-        tspanText = []
-        if self.options.printGluePairNumbers is True and not isFoldingEdge[edge.idx()]:
-            tspanText.append(str(glueNumber[edge.idx()]))
-        if self.options.printAngles is True:
-            tspanText.append("{:0.2f}°".format(dihedralAngle))
-        if self.options.printLengths is True:
-            printUnit = True
-            if printUnit is False:
-                unitToPrint = self.svg.unit
-            else:
-                unitToPrint = ""
-            tspanText.append("{:0.2f} {}".format(self.options.scalefactor * math.hypot(vertex1[0] - vertex0[0], vertex1[1] - vertex0[1]), unitToPrint))
-        tspan.text = " | ".join(tspanText)
-
-        if (self.options.printGluePairNumbers is False and self.options.printAngles is False and self.options.printLengths is False)  or self.options.importCoplanarEdges is False and dihedralAngle == 0:
-            text.delete()
-            tspan.delete()
-    
-    #delete unrequired groups if no text labels
-    if (self.options.printGluePairNumbers is False and self.options.printAngles is False and self.options.printLengths is False)  or self.options.importCoplanarEdges is False and dihedralAngle == 0:
-        textGroup.delete()
-        textFacesGroup.delete()
-        textEdgesGroup.delete()
-          
-    if self.options.printStats is True:
-        inkex.utils.debug("Folding edges stats:")
-        inkex.utils.debug(" * Number of mountain cuts: " + str(mountainCuts))
-        inkex.utils.debug(" * Number of valley cuts: " + str(valleyCuts))
-        inkex.utils.debug(" * Number of coplanar lines: " + str(coplanarLines))
-        inkex.utils.debug(" * Number of mountain perforations: " + str(mountainPerforations))
-        inkex.utils.debug(" * Number of valley perforations: " + str(valleyPerforations))
-        inkex.utils.debug("-----------------------------------------------------------")
-        inkex.utils.debug("Number of glue pairs: {:0.0f}".format(gluePairs / 2)) 
-                    
-    return paperfoldPageGroup
+                #if self.options.importCoplanarEdges is False:
+                #    line.delete()  
+                coplanarEdges += 1
+                        
+            lineStyle.update({"stroke-width":str(strokewidth)})
+            lineStyle.update({"stroke-linecap":"butt"})
+            lineStyle.update({"stroke-linejoin":"miter"})
+            lineStyle.update({"stroke-miterlimit":"4"})  
                 
-class Unfold(inkex.EffectExtension):
+            # Dotted lines for folding edges    
+            if isFoldingEdge[edge.idx()]:
+                if self.options.dashes is True:
+                    lineStyle.update({"stroke-dasharray":(str(dashLength) + ", " + str(spaceLength))})
+                if dihedralAngle > 0:
+                    lineStyle.update({"stroke": self.options.colorMountainPerforates})
+                    line.set("id", uniqueMainId + "-mountain-perforate-" + str(edge.idx()))
+                    mountainPerforations += 1
+                if dihedralAngle < 0:
+                    lineStyle.update({"stroke": self.options.colorValleyPerforates})
+                    line.set("id", uniqueMainId + "-valley-perforate-" + str(edge.idx()))
+                    valleyPerforations += 1
+                if dihedralAngle == 0:
+                    lineStyle.update({"stroke": self.options.colorCoplanarEdges})
+                    line.set("id", uniqueMainId + "-coplanar-edge-" + str(edge.idx()))
+                    if self.options.importCoplanarEdges is False:
+                        line.delete()
+                    valleyPerforations += 1
+            else:
+                lineStyle.update({"stroke-dasharray":"none"})
     
+            # The number of the edge to be glued  
+            if not isFoldingEdge[edge.idx()]:
+                if self.options.separateGluePairsByColor is True:
+                    lineStyle.update({"stroke": randomColorSet[glueNumber[edge.idx()]]})
+                gluePairs += 1
+                
+            lineStyle.update({"stroke-dashoffset":"0"})
+            lineStyle.update({"stroke-opacity":"1"})       
+    
+            if self.options.saturationsForAngles is True:
+                if dihedralAngle != 0: #we dont want to apply HSL adjustments for zero angle lines because they would be invisible then
+                    hslColor = inkex.Color(lineStyle.get('stroke')).to_hsl()
+                    newSaturation = abs(dihedralAngle / angleRange) * 100 #percentage values
+                    hslColor.saturation = newSaturation
+                    lineStyle.update({"stroke":hslColor.to_rgb()})       
+    
+            line.style = lineStyle
+           
+            ########################################################
+            # Textual things
+            ########################################################
+            halfEdge = mesh.halfedge_handle(edge, 0) # Find halfedge in the face
+            if mesh.face_handle(halfEdge).idx() == -1:
+                halfEdge = mesh.opposite_halfedge_handle(halfEdge)
+            vector = mesh.calc_edge_vector(halfEdge)
+            vector = vector / np.linalg.norm(vector) # normalize
+            midPoint = 0.5 * (
+                    mesh.point(mesh.from_vertex_handle(halfEdge)) + mesh.point(mesh.to_vertex_handle(halfEdge)))
+            rotatedVector = np.array([-vector[1], vector[0], 0])
+            angle = np.arctan2(vector[1], vector[0])
+            position = midPoint + textDistance * rotatedVector
+            if self.options.flipLabels is True:
+                position = midPoint - textDistance * rotatedVector
+            rotation = 180 / np.pi * angle
+            if self.options.flipLabels is True:
+                rotation += 180
+    
+            text = textEdgesGroup.add(TextElement(id=uniqueMainId + "-edgeNumber-" + str(edge.idx())))
+            text.set("x", str(position[0]))
+            text.set("y", str(position[1]))
+            text.set("font-size", str(fontsize))
+            text.set("style", "stroke-width:" + str(textStrokewidth) + ";text-anchor:middle;text-align:center")
+            text.set("transform", "rotate(" + str(rotation) + "," + str(position[0]) + "," + str(position[1]) + ")")
+            
+            tspan = text.add(Tspan())
+            tspan.set("x", str(position[0]))
+            tspan.set("y", str(position[1]))
+            tspan.set("style", "stroke-width:" + str(textStrokewidth) + ";text-anchor:middle;text-align:center")
+            tspanText = []
+            if self.options.printGluePairNumbers is True and not isFoldingEdge[edge.idx()]:
+                tspanText.append(str(glueNumber[edge.idx()]))
+            if self.options.printAngles is True:
+                tspanText.append("{:0.2f}°".format(dihedralAngle))
+            if self.options.printLengths is True:
+                printUnit = True
+                if printUnit is False:
+                    unitToPrint = self.svg.unit
+                else:
+                    unitToPrint = ""
+                tspanText.append("{:0.2f} {}".format(self.options.scalefactor * math.hypot(vertex1[0] - vertex0[0], vertex1[1] - vertex0[1]), unitToPrint))
+            tspan.text = " | ".join(tspanText)
+    
+            if tspan.text == "": #if no text we remove again to clean up
+                text.delete()
+                tspan.delete()
+ 
+        if len(textFacesGroup) == 0:
+            textFacesGroup.delete() #delete if empty set
+            
+        if len(textFacesGroup) == 0:
+            textEdgesGroup.delete() #delete if empty set
+            
+        if len(textGroup) == 0:
+            textGroup.delete() #delete if empty set
+              
+        if self.options.printStats is True:
+            inkex.utils.debug(" * Number of mountain cuts: " + str(mountainCuts))
+            inkex.utils.debug(" * Number of valley cuts: " + str(valleyCuts))
+            inkex.utils.debug(" * Number of coplanar edges: " + str(coplanarEdges))
+            inkex.utils.debug(" * Number of mountain perforations: " + str(mountainPerforations))
+            inkex.utils.debug(" * Number of valley perforations: " + str(valleyPerforations))
+            inkex.utils.debug(" * Number of glue pairs: {:0.0f}".format(gluePairs / 2))
+            inkex.utils.debug(" * min angle: {:0.2f}".format(minAngle))
+            inkex.utils.debug(" * max angle: {:0.2f}".format(maxAngle))
+            inkex.utils.debug(" * Edge angle range: {:0.2f}".format(angleRange))
+                        
+        return paperfoldPageGroup
+                
     def add_arguments(self, pars):
         pars.add_argument("--tab")
         
@@ -645,6 +672,7 @@ class Unfold(inkex.EffectExtension):
         pars.add_argument("--inputfile")
         pars.add_argument("--maxNumFaces", type=int, default=200, help="If the STL file has too much detail it contains a large number of faces. This will make unfolding extremely slow. So we can limit it.")
         pars.add_argument("--scalefactor", type=float, default=1.0, help="Manual scale factor")
+        pars.add_argument("--roundingDigits", type=int, default=3, help="Digits for rounding")
 
         #Output
         pars.add_argument("--printGluePairNumbers", type=inkex.Boolean, default=False, help="Print glue pair numbers on cut edges")
@@ -652,10 +680,12 @@ class Unfold(inkex.EffectExtension):
         pars.add_argument("--printLengths", type=inkex.Boolean, default=False, help="Print lengths on edges")
         pars.add_argument("--printTriangleNumbers", type=inkex.Boolean, default=False, help="Print triangle numbers on faces")
         pars.add_argument("--importCoplanarEdges", type=inkex.Boolean, default=False, help="Import coplanar edges")
-        pars.add_argument("--printStats", type=inkex.Boolean, default=True, help="Show some unfold statistics")
+        pars.add_argument("--printStats", type=inkex.Boolean, default=False, help="Show some unfold statistics")
         pars.add_argument("--resizetoimport", type=inkex.Boolean, default=True, help="Resize the canvas to the imported drawing's bounding box") 
         pars.add_argument("--extraborder", type=float, default=0.0)
-        pars.add_argument("--extraborderUnits")            
+        pars.add_argument("--extraborderUnits")
+        pars.add_argument("--writeTwoDSTL", type=inkex.Boolean, default=False, help="Write 2D STL unfoldings")
+        pars.add_argument("--TwoDSTLdir", default="./inkscape_export/", help="Location to save exported 2D STL")
 
         #Style 
         pars.add_argument("--fontSize", type=int, default=15, help="Label font size (%)")
@@ -668,6 +698,10 @@ class Unfold(inkex.EffectExtension):
         pars.add_argument("--colorCoplanarEdges", type=Color, default='1943148287', help="Coplanar edges")
         pars.add_argument("--colorValleyPerforates", type=Color, default='3422552319', help="Valley perforation edges")
         pars.add_argument("--colorMountainPerforates", type=Color, default='879076607', help="Mountain perforation edges")
+        
+        #Post Processing
+        pars.add_argument("--joineryMode", type=inkex.Boolean, default=False, help="Enable joinery mode")
+        pars.add_argument("--origamiSimulatorMode", type=inkex.Boolean, default=False, help="Enable origami simulator mode")
                
     def effect(self):
         if not os.path.exists(self.options.inputfile):
@@ -676,12 +710,21 @@ class Unfold(inkex.EffectExtension):
         mesh = om.read_trimesh(self.options.inputfile)
         #mesh = om.read_polymesh(self.options.inputfile) #we must work with triangles instead of polygons because the algorithm works with that
 
-        fullUnfolded, unfoldedComponents = unfold(mesh, self.options.maxNumFaces, self.options.printStats)
+        fullUnfolded, unfoldedComponents = self.unfold(mesh)
+ 
+ 
+        #if len(unfoldedComponents) == 0:
+        #    inkex.utils.debug("Error: no components were unfolded.")
+        #    exit(1)
+ 
+        if self.options.printStats is True:
+            inkex.utils.debug("Unfolding components: {:0.0f}".format(len(unfoldedComponents)))
+        
         # Compute maxSize of the components
         # All components must be scaled to the same size as the largest component
         maxSize = 0
         for unfolding in unfoldedComponents:
-            [xmin, ymin, boxSize] = findBoundingBox(unfolding[0])
+            [xmin, ymin, boxSize] = self.findBoundingBox(unfolding[0])
             if boxSize > maxSize:
                 maxSize = boxSize
                      
@@ -693,11 +736,27 @@ class Unfold(inkex.EffectExtension):
                 newColor = '#%02X%02X%02X' % (r(),r(),r())
                 if newColor not in randomColorSet:
                     randomColorSet.append(newColor)   
+    
+        #some mode configs:
+        if self.options.joineryMode is True:
+            self.options.separateGluePairsByColor = True #we need random colors in this mode
+             
+        if self.options.origamiSimulatorMode is True:
+            self.options.joineryMode = True #we set to true even if false because we need the same flat structure for origami simulator
+            self.options.separateGluePairsByColor = False #we need to have no weird random colors in this mode
+            self.options.colorMountainCut = "#000000" #black
+            self.options.colorValleyCut = "#000000" #black
+            self.options.colorCoplanarEdges = "#000000" #black
+            self.options.colorMountainPerforates = "#ff0000" #red
+            self.options.colorValleyPerforates = "#0000ff" #blue
                   
         # Create a new container group to attach all paperfolds
         paperfoldMainGroup = self.document.getroot().add(inkex.Group(id=self.svg.get_unique_id("paperfold-"))) #make a new group at root level
         for i in range(len(unfoldedComponents)):
-            paperfoldPageGroup = writeSVG(self, unfoldedComponents[i], maxSize, randomColorSet)
+            if self.options.printStats is True:
+                inkex.utils.debug("-----------------------------------------------------------")
+                inkex.utils.debug("Unfolding component nr.: {:0.0f}".format(i))
+            paperfoldPageGroup = self.writeSVG(unfoldedComponents[i], maxSize, randomColorSet)
             #translate the groups next to each other to remove overlappings
             if i != 0:
                 previous_bbox = paperfoldMainGroup[i-1].bounding_box()
@@ -715,12 +774,22 @@ class Unfold(inkex.EffectExtension):
         if self.options.resizetoimport:
             bbox = paperfoldMainGroup.bounding_box()
             namedView = self.document.getroot().find(inkex.addNS('namedview', 'sodipodi'))
-            doc_units = namedView.get(inkex.addNS('document-units', 'inkscape'))
             root = self.svg.getElement('//svg:svg');
             offset = self.svg.unittouu(str(self.options.extraborder) + self.options.extraborderUnits)
             root.set('viewBox', '%f %f %f %f' % (bbox.left - offset, bbox.top - offset, bbox.width + 2 * offset, bbox.height + 2 * offset))
-            root.set('width', str(bbox.width + 2 * offset) + doc_units)
-            root.set('height', str(bbox.height + 2 * offset) + doc_units)
+            root.set('width', str(bbox.width + 2 * offset) + self.svg.unit)
+            root.set('height', str(bbox.height + 2 * offset) + self.svg.unit)
+
+        #if set, we move all edges (path elements) to the top level
+        if self.options.joineryMode is True:
+            for paperfoldPage in paperfoldMainGroup.getchildren():
+                for child in paperfoldPage:
+                    if "-edges" in child.get('id'):
+                        for edge in child:
+                            edgeTransform = edge.composed_transform()
+                            self.document.getroot().append(edge)
+                            edge.transform = edgeTransform
+
 
 if __name__ == '__main__':
     Unfold().run()
