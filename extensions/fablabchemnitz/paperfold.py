@@ -37,16 +37,18 @@ Module licenses
 possible import file types -> https://www.graphics.rwth-aachen.de/media/openmesh_static/Documentations/OpenMesh-8.0-Documentation/a04096.html
 
 todo:
-- debug coplanar color for edges for some cases
-- make angleRange global for complete unfolding (to match glue pairs between multiple unfoldings)
 - option to render all triangles in a detached way (overlapping lines/independent) + merge coplanar adjacent triangles to polygons
 - write tab and slot generator (like joinery/polyhedra extension)
 - fstl preview
-- origami simulator docu + add support for opacities
-- fix line: dualGraph.add_edge(face1.idx(), face2.idx(), idx=edge.idx(), weight=edgeweight) # #might fail without throwing any error ...
+- fix line: dualGraph.add_edge(face1.idx(), face2.idx(), idx=edge.idx(), weight=edgeweight) # #might fail without throwing any error (silent aborts) ...
 """
 
 class Unfold(inkex.EffectExtension):
+
+    angleRangeCalculated = False #set to true after first calculation iteration (needed globally)
+    minAngle = 0
+    minAngle = 0
+    angleRange = 0
 
     # Compute the third point of a triangle when two points and all edge lengths are given
     def getThirdPoint(self, v0, v1, l01, l12, l20):
@@ -112,9 +114,9 @@ class Unfold(inkex.EffectExtension):
     
     
     # Functions for visualisation and output
-    def addVisualisationData(self, mesh, unfoldedMesh, originalHalfedges, unfoldedHalfedges, glueNumber, foldingDirection):
+    def addVisualisationData(self, mesh, unfoldedMesh, originalHalfedges, unfoldedHalfedges, glueNumber, dihedralAngles):
         for i in range(3):
-            foldingDirection[unfoldedMesh.edge_handle(unfoldedHalfedges[i]).idx()] = round(math.degrees(mesh.calc_dihedral_angle(originalHalfedges[i])), self.options.roundingDigits)
+            dihedralAngles[unfoldedMesh.edge_handle(unfoldedHalfedges[i]).idx()] = round(math.degrees(mesh.calc_dihedral_angle(originalHalfedges[i])), self.options.roundingDigits)
             # Information, which edges belong together
             glueNumber[unfoldedMesh.edge_handle(unfoldedHalfedges[i]).idx()] = mesh.edge_handle(originalHalfedges[i]).idx()
     
@@ -129,8 +131,7 @@ class Unfold(inkex.EffectExtension):
         
             isFoldingEdge = np.zeros(numUnfoldedEdges, dtype=bool)  # Indicates whether an edge is folded or cut
             glueNumber = np.empty(numUnfoldedEdges, dtype=int)  # Saves with which edge is glued together
-            foldingDirection = np.empty(numUnfoldedEdges, dtype=float)  # Valley folding or mountain folding
-        
+            dihedralAngles = np.empty(numUnfoldedEdges, dtype=float)  # Valley folding or mountain folding
             connections = np.empty(numFaces, dtype=int)  # Saves which original triangle belongs to the unrolled one
         
             # Select the first triangle as desired
@@ -185,7 +186,21 @@ class Unfold(inkex.EffectExtension):
             # Associated triangle in 3D mesh
             connections[unfoldedFace.idx()] = startingTriangle.idx()
             # Folding direction and adhesive number
-            self.addVisualisationData(mesh, unfoldedMesh, originalHalfEdges, unfoldedHalfEdges, glueNumber, foldingDirection)
+            self.addVisualisationData(mesh, unfoldedMesh, originalHalfEdges, unfoldedHalfEdges, glueNumber, dihedralAngles)
+        
+            if self.angleRangeCalculated is False:
+                self.minAngle = min(dihedralAngles)
+                self.maxAngle = max(dihedralAngles)
+                #sometimes weird large value are returned, like -34345645435464565453356788761029782
+                if self.minAngle < -180.0:
+                    self.minAngle = -180.0
+                if self.maxAngle > 180.0:
+                    self.maxAngle = 180.0
+                self.angleRange = self.maxAngle - self.minAngle
+                #self.msg(minAngle)
+                #self.msg(maxAngle)
+                #self.msg(angleRange)
+                self.angleRangeCalculated = True
         
             halfEdgeConnections = {firstHalfEdge.idx(): firstUnfoldedHalfEdge.idx(),
                                    secondHalfEdge.idx(): secondUnfoldedHalfEdge.idx(),
@@ -243,7 +258,7 @@ class Unfold(inkex.EffectExtension):
                 isFoldingEdge[unfoldedLastEdge.idx()] = True
         
                 # Gluing number and folding direction
-                self.addVisualisationData(mesh, unfoldedMesh, originalHalfEdges, unfoldedHalfEdges, glueNumber, foldingDirection)
+                self.addVisualisationData(mesh, unfoldedMesh, originalHalfEdges, unfoldedHalfEdges, glueNumber, dihedralAngles)
         
                 # Related page
                 connections[newface.idx()] = dualEdge[1]
@@ -252,15 +267,16 @@ class Unfold(inkex.EffectExtension):
                 for i in range(3):
                     halfEdgeConnections[originalHalfEdges[i].idx()] = unfoldedHalfEdges[i].idx()
         
-            return [unfoldedMesh, isFoldingEdge, connections, glueNumber, foldingDirection]
+            return [unfoldedMesh, isFoldingEdge, connections, glueNumber, dihedralAngles]
         except Exception as e:
-            inkex.utils.debug(str(e))
             inkex.utils.debug("Error: model could not be unfolded. Check for:")
             inkex.utils.debug(" - watertight model / intact hull")
             inkex.utils.debug(" - duplicated edges or faces")
             inkex.utils.debug(" - detached faces or holes")
             inkex.utils.debug(" - missing units")
             inkex.utils.debug(" - missing coordinate system")
+            inkex.utils.debug(" - multiple bodies in one file")
+            inkex.utils.debug("error was: " + str(e))
             exit(1)
  
     
@@ -271,7 +287,7 @@ class Unfold(inkex.EffectExtension):
         numFaces = mesh.n_faces()
     
         if numFaces > self.options.maxNumFaces:
-            inkex.utils.debug("Aborted. Target STL file has " + str(numFaces) + " faces, but only " + str(maxNumFaces) + " are allowed.")
+            inkex.utils.debug("Aborted. Target STL file has " + str(numFaces) + " faces, but only " + str( self.options.maxNumFaces) + " are allowed.")
             exit(1)
     
         if self.options.printStats is True:
@@ -325,7 +341,7 @@ class Unfold(inkex.EffectExtension):
     
         # Unfold the tree
         fullUnfolding = self.unfoldSpanningTree(mesh, spanningTree)
-        [unfoldedMesh, isFoldingEdge, connections, glueNumber, foldingDirection] = fullUnfolding
+        [unfoldedMesh, isFoldingEdge, connections, glueNumber, dihedralAngles] = fullUnfolding
     
     
         # Resolve the intersections
@@ -443,12 +459,11 @@ class Unfold(inkex.EffectExtension):
         mesh = unfolding[0]
         isFoldingEdge = unfolding[1]
         glueNumber = unfolding[3]
-        foldingDirection = unfolding[4]
+        dihedralAngles = unfolding[4]
     
         #statistic values
         gluePairs = 0
-        mountainCuts = 0
-        valleyCuts = 0
+        cuts = 0
         coplanarEdges = 0
         mountainPerforations = 0
         valleyPerforations = 0
@@ -463,15 +478,8 @@ class Unfold(inkex.EffectExtension):
         dashLength = boxSize * self.options.fontSize / 2000
         spaceLength = boxSize * self.options.fontSize / 800
         textDistance = boxSize * self.options.fontSize / 800
-        textStrokewidth = boxSize * self.options.fontSize / 3000
+        textStrokeWidth = boxSize * self.options.fontSize / 3000
         fontsize = boxSize * self.options.fontSize / 1000
-    
-        minAngle = min(foldingDirection)
-        maxAngle = max(foldingDirection)
-        angleRange = maxAngle - minAngle
-        #self.msg(minAngle)
-        #self.msg(maxAngle)
-        #self.msg(angleRange)
         
         # Grouping
         uniqueMainId = self.svg.get_unique_id("")
@@ -497,30 +505,34 @@ class Unfold(inkex.EffectExtension):
                 om.write_mesh(os.path.join(self.options.TwoDSTLdir, uniqueMainId + "-paperfold-page.stl"), mesh)
     
         
+        #########################################################
+        # Nmbering triangle faces with circle around
+        #########################################################
         if self.options.printTriangleNumbers is True:
-    
             for face in mesh.faces():
-                centroid = mesh.calc_face_centroid(face)
-                
+                centroid = mesh.calc_face_centroid(face) 
                 textFaceGroup = inkex.Group(id=uniqueMainId + "-textFace-" + str(face.idx()))
                 
                 circle = textFaceGroup.add(Circle(cx=str(centroid[0]), cy=str(centroid[1]), r=str(fontsize)))
                 circle.set('id', uniqueMainId + "-textFaceCricle-" + str(face.idx()))
-                circle.set("style", "stroke:#000000;stroke-width:" + str(strokewidth/2) + ";fill:none")
+                circle.set("style", "stroke:#000000;stroke-width {:0.6f}".format(strokewidth/2) + ";fill:none")
                 
                 text = textFaceGroup.add(TextElement(id=uniqueMainId + "-textFaceNumber-" + str(face.idx())))
                 text.set("x", str(centroid[0]))
                 text.set("y", str(centroid[1] + fontsize / 3))
                 text.set("font-size", str(fontsize))
-                text.set("style", "stroke-width:" + str(textStrokewidth) + ";text-anchor:middle;text-align:center")
+                text.set("style", "stroke-width {:0.6f}".format(textStrokeWidth) + ";text-anchor:middle;text-align:center")
                 
                 tspan = text.add(Tspan(id=uniqueMainId + "-textFaceNumberTspan-" + str(face.idx())))
                 tspan.set("x", str(centroid[0]))
                 tspan.set("y", str(centroid[1] + fontsize / 3))
-                tspan.set("style", "stroke-width:" + str(textStrokewidth) + ";text-anchor:middle;text-align:center")
+                tspan.set("style", "stroke-width {:0.6f}".format(textStrokeWidth) + ";text-anchor:middle;text-align:center")
                 tspan.text = str(face.idx())
                 textFacesGroup.append(textFaceGroup)
-                      
+      
+        #########################################################
+        # Nmbering triangle edges and style them according to their type
+        #########################################################        
         # Go over all edges of the grid
         for edge in mesh.edges():
             # The two endpoints
@@ -534,46 +546,34 @@ class Unfold(inkex.EffectExtension):
             # Colour depending on folding direction
             lineStyle = {"fill": "none"}
     
-            dihedralAngle = foldingDirection[edge.idx()]
-            
-            if dihedralAngle > 0:
-                lineStyle.update({"stroke": self.options.colorMountainCut})
-                line.set("id", uniqueMainId + "-mountain-cut-" + str(edge.idx()))
-                mountainCuts += 1
-            elif dihedralAngle < 0:
-                lineStyle.update({"stroke": self.options.colorValleyCut})
-                line.set("id", uniqueMainId + "-valley-cut-" + str(edge.idx()))
-                valleyCuts += 1
-            elif dihedralAngle == 0:
-                lineStyle.update({"stroke": self.options.colorCoplanarEdges})
-                line.set("id", uniqueMainId + "-coplanar-edge-" + str(edge.idx()))
-                #if self.options.importCoplanarEdges is False:
-                #    line.delete()  
-                coplanarEdges += 1
+            lineStyle.update({"stroke": self.options.colorCutEdges})
+            line.set("id", uniqueMainId + "-cut-edge-" + str(edge.idx())) 
                         
-            lineStyle.update({"stroke-width":str(strokewidth)})
+            lineStyle.update({"stroke-width": "{:0.6f}".format(strokewidth)})
             lineStyle.update({"stroke-linecap":"butt"})
             lineStyle.update({"stroke-linejoin":"miter"})
             lineStyle.update({"stroke-miterlimit":"4"})  
+         
+            dihedralAngle = dihedralAngles[edge.idx()]
                 
             # Dotted lines for folding edges    
             if isFoldingEdge[edge.idx()]:
                 if self.options.dashes is True:
                     lineStyle.update({"stroke-dasharray":(str(dashLength) + ", " + str(spaceLength))})
                 if dihedralAngle > 0:
-                    lineStyle.update({"stroke": self.options.colorMountainPerforates})
-                    line.set("id", uniqueMainId + "-mountain-perforate-" + str(edge.idx()))
+                    lineStyle.update({"stroke": self.options.colorMountainFolds})
+                    line.set("id", uniqueMainId + "-mountain-fold-" + str(edge.idx()))
                     mountainPerforations += 1
                 if dihedralAngle < 0:
-                    lineStyle.update({"stroke": self.options.colorValleyPerforates})
-                    line.set("id", uniqueMainId + "-valley-perforate-" + str(edge.idx()))
+                    lineStyle.update({"stroke": self.options.colorValleyFolds})
+                    line.set("id", uniqueMainId + "-valley-fold-" + str(edge.idx()))
                     valleyPerforations += 1
                 if dihedralAngle == 0:
                     lineStyle.update({"stroke": self.options.colorCoplanarEdges})
                     line.set("id", uniqueMainId + "-coplanar-edge-" + str(edge.idx()))
                     if self.options.importCoplanarEdges is False:
                         line.delete()
-                    valleyPerforations += 1
+                    coplanarEdges += 1
             else:
                 lineStyle.update({"stroke-dasharray":"none"})
     
@@ -583,21 +583,26 @@ class Unfold(inkex.EffectExtension):
                     lineStyle.update({"stroke": randomColorSet[glueNumber[edge.idx()]]})
                 gluePairs += 1
                 
-            lineStyle.update({"stroke-dashoffset":"0"})
-            lineStyle.update({"stroke-opacity":"1"})       
+            lineStyle.update({"stroke-dashoffset":"0.0"})
+            lineStyle.update({"stroke-opacity":"1.0"})       
     
-            if self.options.saturationsForAngles is True:
+            if self.options.edgeStyle == "saturationsForAngles":
                 if dihedralAngle != 0: #we dont want to apply HSL adjustments for zero angle lines because they would be invisible then
                     hslColor = inkex.Color(lineStyle.get('stroke')).to_hsl()
-                    newSaturation = abs(dihedralAngle / angleRange) * 100 #percentage values
+                    newSaturation = abs(dihedralAngle / self.angleRange) * 100 #percentage values
                     hslColor.saturation = newSaturation
-                    lineStyle.update({"stroke":hslColor.to_rgb()})       
+                    lineStyle.update({"stroke":hslColor.to_rgb()})
+    
+            elif self.options.edgeStyle == "opacitiesForAngles":
+                if dihedralAngle != 0: #we dont want to apply opacity adjustments for zero angle lines because they would be invisible then
+                    opacity = abs(dihedralAngle / 180)
+                    lineStyle.update({"stroke-opacity": "{:0.6f}".format(opacity)})
     
             line.style = lineStyle
            
-            ########################################################
+            #########################################################
             # Textual things
-            ########################################################
+            #########################################################
             halfEdge = mesh.halfedge_handle(edge, 0) # Find halfedge in the face
             if mesh.face_handle(halfEdge).idx() == -1:
                 halfEdge = mesh.opposite_halfedge_handle(halfEdge)
@@ -618,13 +623,13 @@ class Unfold(inkex.EffectExtension):
             text.set("x", str(position[0]))
             text.set("y", str(position[1]))
             text.set("font-size", str(fontsize))
-            text.set("style", "stroke-width:" + str(textStrokewidth) + ";text-anchor:middle;text-align:center")
+            text.set("style", "stroke-width {:0.6f}".format(textStrokeWidth) + ";text-anchor:middle;text-align:center")
             text.set("transform", "rotate(" + str(rotation) + "," + str(position[0]) + "," + str(position[1]) + ")")
             
             tspan = text.add(Tspan())
             tspan.set("x", str(position[0]))
             tspan.set("y", str(position[1]))
-            tspan.set("style", "stroke-width:" + str(textStrokewidth) + ";text-anchor:middle;text-align:center")
+            tspan.set("style", "stroke-width {:0.6f}".format(textStrokeWidth) + ";text-anchor:middle;text-align:center")
             tspanText = []
             if self.options.printGluePairNumbers is True and not isFoldingEdge[edge.idx()]:
                 tspanText.append(str(glueNumber[edge.idx()]))
@@ -653,15 +658,14 @@ class Unfold(inkex.EffectExtension):
             textGroup.delete() #delete if empty set
               
         if self.options.printStats is True:
-            inkex.utils.debug(" * Number of mountain cuts: " + str(mountainCuts))
-            inkex.utils.debug(" * Number of valley cuts: " + str(valleyCuts))
+            inkex.utils.debug(" * Number of cuts: " + str(cuts))
             inkex.utils.debug(" * Number of coplanar edges: " + str(coplanarEdges))
-            inkex.utils.debug(" * Number of mountain perforations: " + str(mountainPerforations))
-            inkex.utils.debug(" * Number of valley perforations: " + str(valleyPerforations))
+            inkex.utils.debug(" * Number of mountain folds: " + str(mountainPerforations))
+            inkex.utils.debug(" * Number of valley folds: " + str(valleyPerforations))
             inkex.utils.debug(" * Number of glue pairs: {:0.0f}".format(gluePairs / 2))
-            inkex.utils.debug(" * min angle: {:0.2f}".format(minAngle))
-            inkex.utils.debug(" * max angle: {:0.2f}".format(maxAngle))
-            inkex.utils.debug(" * Edge angle range: {:0.2f}".format(angleRange))
+            inkex.utils.debug(" * min angle: {:0.2f}".format(self.minAngle))
+            inkex.utils.debug(" * max angle: {:0.2f}".format(self.maxAngle))
+            inkex.utils.debug(" * Edge angle range: {:0.2f}".format(self.angleRange))
                         
         return paperfoldPageGroup
                 
@@ -691,13 +695,12 @@ class Unfold(inkex.EffectExtension):
         pars.add_argument("--fontSize", type=int, default=15, help="Label font size (%)")
         pars.add_argument("--flipLabels", type=inkex.Boolean, default=False, help="Flip labels")
         pars.add_argument("--dashes", type=inkex.Boolean, default=True, help="Dashes for cut/coplanar edges")
-        pars.add_argument("--saturationsForAngles",  type=inkex.Boolean, help="Adjust color saturation for folding edges. The larger the angle the darker the color")
+        pars.add_argument("--edgeStyle", help="Adjust color saturation or opacity for folding edges. The larger the angle the darker the color")
         pars.add_argument("--separateGluePairsByColor", type=inkex.Boolean, default=False, help="Separate glue pairs by color")
-        pars.add_argument("--colorValleyCut", type=Color, default='255', help="Valley cut edges")
-        pars.add_argument("--colorMountainCut", type=Color, default='1968208895', help="Mountain cut edges")
+        pars.add_argument("--colorCutEdges", type=Color, default='255', help="Cut edges")
         pars.add_argument("--colorCoplanarEdges", type=Color, default='1943148287', help="Coplanar edges")
-        pars.add_argument("--colorValleyPerforates", type=Color, default='3422552319', help="Valley perforation edges")
-        pars.add_argument("--colorMountainPerforates", type=Color, default='879076607', help="Mountain perforation edges")
+        pars.add_argument("--colorValleyFolds", type=Color, default='3422552319', help="Valley fold edges")
+        pars.add_argument("--colorMountainFolds", type=Color, default='879076607', help="Mountain fold edges")
         
         #Post Processing
         pars.add_argument("--joineryMode", type=inkex.Boolean, default=False, help="Enable joinery mode")
@@ -737,18 +740,41 @@ class Unfold(inkex.EffectExtension):
                 if newColor not in randomColorSet:
                     randomColorSet.append(newColor)   
     
-        #some mode configs:
+        #########################################################
+        # mode config for joinery:
+        #########################################################
         if self.options.joineryMode is True:
             self.options.separateGluePairsByColor = True #we need random colors in this mode
              
+             
+        #########################################################
+        # mode config for origami simulator:
+        #########################################################
+            '''
+            required style for Origami Simulator:
+            colors:
+             - #ff0000 (red)     - mountain folds
+             - #0000ff (blue)    - valley folds
+             - #000000 (black)   - boundary cuts (for both the outline of the pattern and any internal holes)
+             - #ffff00 (yellow)  - coplonar triangle edges ("facet creases") (no support for polygons > 3 edges)
+             - #00ff00 (green)   - thin slits
+             - #ff00ff (magenta) - undriven creases (swing freely)
+
+            opacity:
+             - final fold angle of a mountain or valley fold is set by its opacity. Any fold angle between 0° and 180° may be used. For example:
+                  - 1.0 = 180° (fully folded)
+                  - 0.5 = 90°
+                  - 0 = 0° (flat)
+            '''      
         if self.options.origamiSimulatorMode is True:
             self.options.joineryMode = True #we set to true even if false because we need the same flat structure for origami simulator
             self.options.separateGluePairsByColor = False #we need to have no weird random colors in this mode
-            self.options.colorMountainCut = "#000000" #black
-            self.options.colorValleyCut = "#000000" #black
-            self.options.colorCoplanarEdges = "#000000" #black
-            self.options.colorMountainPerforates = "#ff0000" #red
-            self.options.colorValleyPerforates = "#0000ff" #blue
+            self.options.edgeStyle = "opacitiesForAngles" #highly important for simulation
+            self.options.importCoplanarEdges = True
+            self.options.colorCutEdges = "#000000" #black
+            self.options.colorCoplanarEdges = "#ffff00" #yellow
+            self.options.colorMountainFolds = "#ff0000" #red
+            self.options.colorValleyFolds = "#0000ff" #blue
                   
         # Create a new container group to attach all paperfolds
         paperfoldMainGroup = self.document.getroot().add(inkex.Group(id=self.svg.get_unique_id("paperfold-"))) #make a new group at root level
