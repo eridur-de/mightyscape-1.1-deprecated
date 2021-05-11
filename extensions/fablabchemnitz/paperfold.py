@@ -632,7 +632,7 @@ class Unfold(inkex.EffectExtension):
             tspanText = []
             if self.options.printGluePairNumbers is True and not isFoldingEdge[edge.idx()]:
                 tspanText.append(str(glueNumber[edge.idx()]))
-            if self.options.printAngles is True:
+            if self.options.printAngles is True and dihedralAngle != 0.0:
                 tspanText.append("{:0.2f}°".format(dihedralAngle))
             if self.options.printLengths is True:
                 printUnit = True
