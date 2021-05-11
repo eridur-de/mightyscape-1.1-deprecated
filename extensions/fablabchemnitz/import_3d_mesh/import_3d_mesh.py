@@ -51,14 +51,14 @@ Many settings for appearance, lighting, rotation, etc are available.
 
 import os
 from math import acos, cos, floor, pi, sin, sqrt
-
-import inkex
-from inkex.utils import pairwise
-from inkex import Group, Circle
-from inkex.paths import Move, Line
 import numpy
 import tempfile
 import openmesh as om
+
+import inkex
+from inkex import Group, Circle, Color
+from inkex.utils import pairwise
+from inkex.paths import Move, Line
 
 
 def draw_circle(r, cx, cy, width, fill, name, parent):
@@ -78,7 +78,7 @@ def draw_line(x1, y1, x2, y2, width, name, parent):
 def draw_poly(pts, face, st, name, parent):
     """Draw polygone"""
     style = {'stroke': '#000000', 'stroke-width': str(st.th), 'stroke-linejoin': st.linejoin,
-             'stroke-opacity': st.s_opac, 'fill': st.fill, 'fill-opacity': st.f_opac}
+             'stroke-opacity': st.s_opac, 'fill': st.fill, 'fill-opacity': st.fill_opacity}
     path = inkex.Path()
     for facet in face:
         if not path:  # for first point
@@ -168,8 +168,8 @@ class Style(object):  # container for style information
         self.fill = '#ff0000'
         self.col = '#000000'
         self.r = 2
-        self.f_opac = str(options.f_opac / 100.0)
         self.s_opac = str(options.s_opac / 100.0)
+        self.fill_opacity = options.fill_color.alpha
         self.linecap = 'round'
         self.linejoin = 'round'
 
@@ -275,10 +275,7 @@ class Poly3D(inkex.GenerateExtension):
         # STYLE SETTINGS
         pars.add_argument("--show", type=self.arg_method('gen'))
         pars.add_argument("--shade", type=inkex.Boolean, default=True)
-        pars.add_argument("--f_r", type=int, default=255)
-        pars.add_argument("--f_g", type=int, default=0)
-        pars.add_argument("--f_b", type=int, default=0)
-        pars.add_argument("--f_opac", type=int, default=100)
+        pars.add_argument("--fill_color", type=Color, default='1943148287', help="Fill color")
         pars.add_argument("--s_opac", type=int, default=100)
         pars.add_argument("--th", type=float, default=2)
         pars.add_argument("--lv_x", type=float, default=1)
@@ -347,7 +344,6 @@ class Poly3D(inkex.GenerateExtension):
         """Generate face"""
         so = self.options
         # colour tuple for the face fill
-        fill_col = (so.f_r, so.f_g, so.f_b)
         # unit light vector
         lighting = normalise((so.lv_x, -so.lv_y, so.lv_z))
         # we have a face list
@@ -368,7 +364,7 @@ class Poly3D(inkex.GenerateExtension):
                     z_list.append((z_sort_param, angle, norm, i))
 
             z_list.sort(key=lambda x: x[0])  # sort by ascending sort parameter of the face
-            draw_faces(z_list, transformed_pts, obj, so.shade, fill_col, st, poly)
+            draw_faces(z_list, transformed_pts, obj, so.shade, self.options.fill_color, st, poly)
 
         else:  # we cannot generate a list of faces from the edges without a lot of computation
             raise inkex.AbortExtension("Face data not found.")
