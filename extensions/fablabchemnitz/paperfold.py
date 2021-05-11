@@ -513,19 +513,19 @@ class Unfold(inkex.EffectExtension):
                 centroid = mesh.calc_face_centroid(face) 
                 textFaceGroup = inkex.Group(id=uniqueMainId + "-textFace-" + str(face.idx()))
                 
-                circle = textFaceGroup.add(Circle(cx=str(centroid[0]), cy=str(centroid[1]), r=str(fontsize)))
+                circle = textFaceGroup.add(Circle(cx="{:0.6f}".format(centroid[0]), cy="{:0.6f}".format(centroid[1]), r="{:0.6f}".format(fontsize)))
                 circle.set('id', uniqueMainId + "-textFaceCricle-" + str(face.idx()))
-                circle.set("style", "stroke:#000000;stroke-width {:0.6f}".format(strokewidth/2) + ";fill:none")
+                circle.set("style", "stroke:#000000;stroke-width:{:0.6f}".format(strokewidth/2) + ";fill:none")
                 
                 text = textFaceGroup.add(TextElement(id=uniqueMainId + "-textFaceNumber-" + str(face.idx())))
-                text.set("x", str(centroid[0]))
-                text.set("y", str(centroid[1] + fontsize / 3))
-                text.set("font-size", str(fontsize))
+                text.set("x", "{:0.6f}".format(centroid[0]))
+                text.set("y", "{:0.6f}".format(centroid[1] + fontsize / 3))
+                text.set("font-size", "{:0.6f}".format(fontsize))
                 text.set("style", "stroke-width {:0.6f}".format(textStrokeWidth) + ";text-anchor:middle;text-align:center")
                 
                 tspan = text.add(Tspan(id=uniqueMainId + "-textFaceNumberTspan-" + str(face.idx())))
-                tspan.set("x", str(centroid[0]))
-                tspan.set("y", str(centroid[1] + fontsize / 3))
+                tspan.set("x", "{:0.6f}".format(centroid[0]))
+                tspan.set("y", "{:0.6f}".format(centroid[1] + fontsize / 3))
                 tspan.set("style", "stroke-width {:0.6f}".format(textStrokeWidth) + ";text-anchor:middle;text-align:center")
                 tspan.text = str(face.idx())
                 textFacesGroup.append(textFaceGroup)
@@ -542,7 +542,7 @@ class Unfold(inkex.EffectExtension):
     
             # Write a straight line between the two corners
             line = edgesGroup.add(inkex.PathElement())
-            line.set('d', "M " + str(vertex0[0]) + "," + str(vertex0[1]) + " " + str(vertex1[0]) + "," + str(vertex1[1]))
+            line.set('d', "M {:0.6f},{:0.6f} {:0.6f},{:0.6f}".format(vertex0[0], vertex0[1], vertex1[0], vertex1[1]))
             # Colour depending on folding direction
             lineStyle = {"fill": "none"}
     
@@ -559,7 +559,7 @@ class Unfold(inkex.EffectExtension):
             # Dotted lines for folding edges    
             if isFoldingEdge[edge.idx()]:
                 if self.options.dashes is True:
-                    lineStyle.update({"stroke-dasharray":(str(dashLength) + ", " + str(spaceLength))})
+                    lineStyle.update({"stroke-dasharray":"{:0.6f}, {:0.6f}".format(dashLength, spaceLength)})
                 if dihedralAngle > 0:
                     lineStyle.update({"stroke": self.options.colorMountainFolds})
                     line.set("id", uniqueMainId + "-mountain-fold-" + str(edge.idx()))
@@ -620,15 +620,15 @@ class Unfold(inkex.EffectExtension):
                 rotation += 180
     
             text = textEdgesGroup.add(TextElement(id=uniqueMainId + "-edgeNumber-" + str(edge.idx())))
-            text.set("x", str(position[0]))
-            text.set("y", str(position[1]))
-            text.set("font-size", str(fontsize))
+            text.set("x", "{:0.6f}".format(position[0]))
+            text.set("y", "{:0.6f}".format(position[1]))
+            text.set("font-size", "{:0.6f}".format(fontsize))
             text.set("style", "stroke-width {:0.6f}".format(textStrokeWidth) + ";text-anchor:middle;text-align:center")
-            text.set("transform", "rotate(" + str(rotation) + "," + str(position[0]) + "," + str(position[1]) + ")")
+            text.set("transform", "rotate({:0.6f} {:0.6f} {:0.6f})".format(rotation, position[0], position[1]))
             
             tspan = text.add(Tspan())
-            tspan.set("x", str(position[0]))
-            tspan.set("y", str(position[1]))
+            tspan.set("x", "{:0.6f}".format(position[0]))
+            tspan.set("y", "{:0.6f}".format(position[1]))
             tspan.set("style", "stroke-width {:0.6f}".format(textStrokeWidth) + ";text-anchor:middle;text-align:center")
             tspanText = []
             if self.options.printGluePairNumbers is True and not isFoldingEdge[edge.idx()]:
@@ -651,7 +651,7 @@ class Unfold(inkex.EffectExtension):
         if len(textFacesGroup) == 0:
             textFacesGroup.delete() #delete if empty set
             
-        if len(textFacesGroup) == 0:
+        if len(textEdgesGroup) == 0:
             textEdgesGroup.delete() #delete if empty set
             
         if len(textGroup) == 0:
@@ -731,15 +731,6 @@ class Unfold(inkex.EffectExtension):
             if boxSize > maxSize:
                 maxSize = boxSize
                      
-        #generate random colors; used to identify glue tab pairs
-        randomColorSet = []
-        if self.options.separateGluePairsByColor:
-            while len(randomColorSet) < len(mesh.edges()):
-                r = lambda: random.randint(0,255)
-                newColor = '#%02X%02X%02X' % (r(),r(),r())
-                if newColor not in randomColorSet:
-                    randomColorSet.append(newColor)   
-    
         #########################################################
         # mode config for joinery:
         #########################################################
@@ -775,6 +766,15 @@ class Unfold(inkex.EffectExtension):
             self.options.colorCoplanarEdges = "#ffff00" #yellow
             self.options.colorMountainFolds = "#ff0000" #red
             self.options.colorValleyFolds = "#0000ff" #blue
+ 
+        #generate random colors; used to identify glue tab pairs
+        randomColorSet = []
+        if self.options.separateGluePairsByColor:
+            while len(randomColorSet) < len(mesh.edges()):
+                r = lambda: random.randint(0,255)
+                newColor = '#%02X%02X%02X' % (r(),r(),r())
+                if newColor not in randomColorSet:
+                    randomColorSet.append(newColor)
                   
         # Create a new container group to attach all paperfolds
         paperfoldMainGroup = self.document.getroot().add(inkex.Group(id=self.svg.get_unique_id("paperfold-"))) #make a new group at root level
@@ -787,7 +787,7 @@ class Unfold(inkex.EffectExtension):
             if i != 0:
                 previous_bbox = paperfoldMainGroup[i-1].bounding_box()
                 this_bbox = paperfoldPageGroup.bounding_box()
-                paperfoldPageGroup.set("transform","translate(" + str(previous_bbox.left + previous_bbox.width - this_bbox.left) + ", 0.0)")
+                paperfoldPageGroup.set("transform","translate({:0.6f}, 0.0)".format(previous_bbox.left + previous_bbox.width - this_bbox.left))
             paperfoldMainGroup.append(paperfoldPageGroup) 
 
         
@@ -803,8 +803,8 @@ class Unfold(inkex.EffectExtension):
             root = self.svg.getElement('//svg:svg');
             offset = self.svg.unittouu(str(self.options.extraborder) + self.options.extraborderUnits)
             root.set('viewBox', '%f %f %f %f' % (bbox.left - offset, bbox.top - offset, bbox.width + 2 * offset, bbox.height + 2 * offset))
-            root.set('width', str(bbox.width + 2 * offset) + self.svg.unit)
-            root.set('height', str(bbox.height + 2 * offset) + self.svg.unit)
+            root.set('width', "{:0.6f}{}".format(bbox.width + 2 * offset, self.svg.unit))
+            root.set('height', "{:0.6f}{}".format(bbox.height + 2 * offset, self.svg.unit))
 
         #if set, we move all edges (path elements) to the top level
         if self.options.joineryMode is True:
