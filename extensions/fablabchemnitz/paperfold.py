@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import openmesh as om
 import math
 import inkex
 import tempfile
