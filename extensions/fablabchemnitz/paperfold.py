@@ -41,6 +41,7 @@ todo:
 - fstl preview
 - fix line: dualGraph.add_edge(face1.idx(), face2.idx(), idx=edge.idx(), weight=edgeweight) # #might fail without throwing any error (silent aborts) ...
 - option to set fill color per face
+- add some way to merge coplanar triangles (tri-faces) to polygons and keep those polygons (facets) intact. At the moment facets are getting destroyed. Not good for some papercrafts
 """
 
 class Unfold(inkex.EffectExtension):
@@ -317,11 +318,19 @@ class Unfold(inkex.EffectExtension):
             # The two sides adjacent to the edge
             face1 = mesh.face_handle(mesh.halfedge_handle(edge, 0))
             face2 = mesh.face_handle(mesh.halfedge_handle(edge, 1))
-    
+        
             # The weight
             edgeweight = 1.0 - (mesh.calc_edge_length(edge) - minLength) / (maxLength - minLength)
+            
+            if self.options.experimentalWeights is True:
+                if round(math.degrees(mesh.calc_dihedral_angle(edge)), self.options.roundingDigits) > 0:
+                    edgeweight = 1.0 - (mesh.calc_edge_length(edge) - minLength) / (maxLength - minLength)
+                if round(math.degrees(mesh.calc_dihedral_angle(edge)), self.options.roundingDigits) < 0:
+                    edgeweight = -(1.0 - (mesh.calc_edge_length(edge) - minLength) / (maxLength - minLength))
+                if round(math.degrees(mesh.calc_dihedral_angle(edge)), self.options.roundingDigits) == 0:
+                    edgeweight = 0.0
+                
             #inkex.utils.debug("edgeweight = " + str(edgeweight))
-    
             # Calculate the centres of the pages (only necessary for visualisation)
             center1 = (0, 0)
             for vertex in mesh.fv(face1):
@@ -335,7 +344,6 @@ class Unfold(inkex.EffectExtension):
             dualGraph.add_node(face2.idx(), pos=center2)
             dualGraph.add_edge(face1.idx(), face2.idx(), idx=edge.idx(), weight=edgeweight) # #might fail without throwing any error ...
            
-        
         # Calculate the minimum spanning tree
         spanningTree = nx.minimum_spanning_tree(dualGraph)
     
@@ -465,8 +473,8 @@ class Unfold(inkex.EffectExtension):
         gluePairs = 0
         cuts = 0
         coplanarEdges = 0
-        mountainPerforations = 0
-        valleyPerforations = 0
+        mountainFolds = 0
+        valleyFolds = 0
         
         # Calculate the bounding box
         [xmin, ymin, boxSize] = self.findBoundingBox(unfolding[0])
@@ -563,11 +571,11 @@ class Unfold(inkex.EffectExtension):
                 if dihedralAngle > 0:
                     lineStyle.update({"stroke": self.options.colorMountainFolds})
                     line.set("id", uniqueMainId + "-mountain-fold-" + str(edge.idx()))
-                    mountainPerforations += 1
+                    mountainFolds += 1
                 if dihedralAngle < 0:
                     lineStyle.update({"stroke": self.options.colorValleyFolds})
                     line.set("id", uniqueMainId + "-valley-fold-" + str(edge.idx()))
-                    valleyPerforations += 1
+                    valleyFolds += 1
                 if dihedralAngle == 0:
                     lineStyle.update({"stroke": self.options.colorCoplanarEdges})
                     line.set("id", uniqueMainId + "-coplanar-edge-" + str(edge.idx()))
@@ -660,8 +668,8 @@ class Unfold(inkex.EffectExtension):
         if self.options.printStats is True:
             inkex.utils.debug(" * Number of cuts: " + str(cuts))
             inkex.utils.debug(" * Number of coplanar edges: " + str(coplanarEdges))
-            inkex.utils.debug(" * Number of mountain folds: " + str(mountainPerforations))
-            inkex.utils.debug(" * Number of valley folds: " + str(valleyPerforations))
+            inkex.utils.debug(" * Number of mountain folds: " + str(mountainFolds))
+            inkex.utils.debug(" * Number of valley folds: " + str(valleyFolds))
             inkex.utils.debug(" * Number of glue pairs: {:0.0f}".format(gluePairs / 2))
             inkex.utils.debug(" * min angle: {:0.2f}".format(self.minAngle))
             inkex.utils.debug(" * max angle: {:0.2f}".format(self.maxAngle))
@@ -684,6 +692,7 @@ class Unfold(inkex.EffectExtension):
         pars.add_argument("--printLengths", type=inkex.Boolean, default=False, help="Print lengths on edges")
         pars.add_argument("--printTriangleNumbers", type=inkex.Boolean, default=False, help="Print triangle numbers on faces")
         pars.add_argument("--importCoplanarEdges", type=inkex.Boolean, default=False, help="Import coplanar edges")
+        pars.add_argument("--experimentalWeights", type=inkex.Boolean, default=False, help="Mess around with algorithm")
         pars.add_argument("--printStats", type=inkex.Boolean, default=False, help="Show some unfold statistics")
         pars.add_argument("--resizetoimport", type=inkex.Boolean, default=True, help="Resize the canvas to the imported drawing's bounding box") 
         pars.add_argument("--extraborder", type=float, default=0.0)
@@ -711,7 +720,7 @@ class Unfold(inkex.EffectExtension):
             inkex.utils.debug("The input file does not exist. Please select a proper file and try again.")
             exit(1)
         mesh = om.read_trimesh(self.options.inputfile)
-        #mesh = om.read_polymesh(self.options.inputfile) #we must work with triangles instead of polygons because the algorithm works with that
+        #mesh = om.read_polymesh(self.options.inputfile) #we must work with triangles instead of polygons because the algorithm works with that ONLY
 
         fullUnfolded, unfoldedComponents = self.unfold(mesh)
         unfoldComponentCount = len(unfoldedComponents)

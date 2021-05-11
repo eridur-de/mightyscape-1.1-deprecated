@@ -18,6 +18,7 @@
                     <param name="printLengths" type="bool" gui-text="Print lengths on edges">false</param>
                     <param name="printTriangleNumbers" type="bool" gui-text="Print triangle numbers on faces">false</param>
                     <param name="importCoplanarEdges" type="bool" gui-text="Import coplanar edges">false</param>
+                    <param name="experimentalWeights" type="bool" gui-text="Mess around with algorithm">false</param>
                     <param name="printStats" type="bool" gui-text="Show some unfold statistics">false</param>
                     <param name="resizetoimport" type="bool" gui-text="Resize the canvas to the imported drawing's bounding box">true</param>
                     <param name="extraborder" type="float" precision="3" gui-text="Add extra border around fitted canvas">0.0</param>
