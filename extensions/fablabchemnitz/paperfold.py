@@ -40,6 +40,7 @@ todo:
 - write tab and slot generator (like joinery/polyhedra extension)
 - fstl preview
 - fix line: dualGraph.add_edge(face1.idx(), face2.idx(), idx=edge.idx(), weight=edgeweight) # #might fail without throwing any error (silent aborts) ...
+- option to set fill color per face
 """
 
 class Unfold(inkex.EffectExtension):
@@ -713,14 +714,14 @@ class Unfold(inkex.EffectExtension):
         #mesh = om.read_polymesh(self.options.inputfile) #we must work with triangles instead of polygons because the algorithm works with that
 
         fullUnfolded, unfoldedComponents = self.unfold(mesh)
- 
+        unfoldComponentCount = len(unfoldedComponents)
  
         #if len(unfoldedComponents) == 0:
         #    inkex.utils.debug("Error: no components were unfolded.")
         #    exit(1)
  
         if self.options.printStats is True:
-            inkex.utils.debug("Unfolding components: {:0.0f}".format(len(unfoldedComponents)))
+            inkex.utils.debug("Unfolding components: {:0.0f}".format(unfoldComponentCount))
         
         # Compute maxSize of the components
         # All components must be scaled to the same size as the largest component
@@ -729,6 +730,8 @@ class Unfold(inkex.EffectExtension):
             [xmin, ymin, boxSize] = self.findBoundingBox(unfolding[0])
             if boxSize > maxSize:
                 maxSize = boxSize
+                   
+        xSpacing = maxSize / unfoldComponentCount * 0.1 # 10% spacing between each component; calculated by max box size
                      
         #########################################################
         # mode config for joinery:
@@ -760,6 +763,10 @@ class Unfold(inkex.EffectExtension):
             self.options.joineryMode = True #we set to true even if false because we need the same flat structure for origami simulator
             self.options.separateGluePairsByColor = False #we need to have no weird random colors in this mode
             self.options.edgeStyle = "opacitiesForAngles" #highly important for simulation
+            self.options.dashes = False
+            self.options.printGluePairNumbers = False
+            self.options.printAngles = False
+            self.options.printLengths = False
             self.options.importCoplanarEdges = True
             self.options.colorCutEdges = "#000000" #black
             self.options.colorCoplanarEdges = "#ffff00" #yellow
@@ -786,12 +793,12 @@ class Unfold(inkex.EffectExtension):
             if i != 0:
                 previous_bbox = paperfoldMainGroup[i-1].bounding_box()
                 this_bbox = paperfoldPageGroup.bounding_box()
-                paperfoldPageGroup.set("transform","translate({:0.6f}, 0.0)".format(previous_bbox.left + previous_bbox.width - this_bbox.left))
+                paperfoldPageGroup.set("transform", "translate({:0.6f}, 0.0)".format(previous_bbox.left + previous_bbox.width - this_bbox.left + xSpacing))
             paperfoldMainGroup.append(paperfoldPageGroup) 
 
         
         #apply scale factor
-        translation_matrix = [[self.options.scalefactor, 0.0, 0.0], [0.0, self.options.scalefactor, 0.0]]            
+        translation_matrix = [[self.options.scalefactor, 0.0, 0.0], [0.0, self.options.scalefactor, 0.0]]
         paperfoldMainGroup.transform = Transform(translation_matrix) * paperfoldMainGroup.transform
         #paperfoldMainGroup.set('transform', 'scale(%f,%f)' % (self.options.scalefactor, self.options.scalefactor))
 

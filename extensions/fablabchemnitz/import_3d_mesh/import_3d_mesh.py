@@ -243,7 +243,7 @@ class WavefrontObj(object):
         edge_list = []
         for face in self.fce:
             for j, edge in enumerate(face):
-                # Ascending order of certices (for duplicate detection)
+                # Ascending order of vertices (for duplicate detection)
                 edge_list.append(sorted([edge, face[(j + 1) % len(face)]]))
         return [list(x) for x in sorted(set(tuple(x) for x in edge_list))]
 
@@ -308,7 +308,7 @@ class Poly3D(inkex.GenerateExtension):
         # we will put all the rotations in the object name, so it can be repeated in
         poly = Group.new(obj.name + ':' + make_rotation_log(so))
         (pos_x, pos_y) = self.svg.namedview.center
-        poly.transform.add_translate(pos_x, pos_y)
+        #poly.transform.add_translate(pos_x, pos_y)
         poly.transform.add_scale(scale)
 
         # TRANSFORMATION OF THE OBJECT (ROTATION, SCALE, ETC)
