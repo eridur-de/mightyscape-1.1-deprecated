@@ -5,7 +5,7 @@
    <param name="tab" type="notebook">
       <page name="splash" gui-text="Paths to OpenSCAD">
          <param type="path" name="fname" gui-text="Ausgabedatei" mode="file_new" filetypes="scad">{NAME}.scad</param>
-         <label>Use '{NAME}.scad' here to use the name from svg.</label>
+         <label>Use "{NAME}.scad" here to use the name from svg.</label>
          <param name="zsize" type="float" min="0" max="1000" precision="2" gui-text="Depth (Z) [mm]">5.0</param>
          <label>Default 3D extrude depth (when no zsize is parsed from an svg object).</label>
          <param name="parsedesc" type="bool" gui-text="Description parsing">true</param>
@@ -48,22 +48,22 @@ Note: the 'Scale: XX %' instruction has no effect in outline mode.</label>
          <spacer/>
       </page>
       <page name="commands" gui-text="Commands">
-         <label>Placeholders: You can use '{NAME}.scad' for the OpenSCAD file to read as specified as 'Output file' in the main tab. You can use '{NAME}.stl' for an STL file to write.</label>
+         <label>Placeholders: You can use "{NAME}.scad" for the OpenSCAD file to read as specified as 'Output file' in the main tab. You can use "{NAME}.stl" for an STL file to write.</label>
          <label>Beware, Windows and Mac users: The shipped defaults are for Linux.</label>
          <label>Mac: /Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD</label>
          <spacer/>
          <!-- CAUTION: keep this command in sync with the default INX_SCADVIEW in paths2openscad.py -->
-         <param name="scadviewcmd" type="string" gui-text="View in OpenSCAD: ">openscad '{NAME}.scad'</param>
+         <param name="scadviewcmd" type="string" gui-text="View in OpenSCAD: ">openscad "{NAME}.scad"</param>
          <label>Is only started, if no command of the same name is running. Always started non-blocking. A running OpenSCAD automatically picks up changed file contents. Defaults:</label>
-         <label>Linux: openscad '{NAME}.scad'</label>
+         <label>Linux: openscad "{NAME}.scad"</label>
          <spacer/>
          <!-- CAUTION: keep this command in sync with the default INX_SCAD2STL in paths2openscad.py -->
-         <param name="scad2stlcmd" type="string" gui-text="Convert to STL: ">openscad '{NAME}.scad' -o '{NAME}.stl'</param>
+         <param name="scad2stlcmd" type="string" gui-text="Convert to STL: ">openscad "{NAME}.scad" -o "{NAME}.stl"</param>
          <label>Automatically run, when STL postprocessing is requested.</label>
          <spacer/>
          <!-- CAUTION: keep this command in sync with the default INX_STL_POSTPROCESSING in paths2openscad.py -->
-         <param name="stlpostcmd" type="string" gui-text="STL postprocessing: ">cura '{NAME}.stl' &amp;</param>
-         <label>Append an '&amp;' for non-blocking.</label>
+         <param name="stlpostcmd" type="string" gui-text="STL postprocessing: ">cura "{NAME}.stl" &amp;</param>
+         <label>Append an "&amp;" for non-blocking.</label>
          <spacer/>
       </page>
       <page name="extrusion" gui-text="Extrusion Syntax">
