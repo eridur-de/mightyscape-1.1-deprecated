@@ -125,6 +125,7 @@ import time
 import string
 import tempfile
 import gettext
+import subprocess
 
 VERSION = "0.27"  # CAUTION: Keep in sync with all *.inx files
 DEFAULT_WIDTH = 100
@@ -147,9 +148,9 @@ RE_AUTO_ZOFFSET_DESC = re.compile(
 DESC_TAGS = ["desc", inkex.addNS("desc", "svg")]
 
 # CAUTION: keep these defaults in sync with paths2openscad.inx
-INX_SCADVIEW = os.getenv("INX_SCADVIEW", "openscad '{NAME}.scad'")
-INX_SCAD2STL = os.getenv("INX_SCAD2STL", "openscad '{NAME}.scad' -o '{NAME}.stl'")
-INX_STL_POSTPROCESSING = os.getenv("INX_STL_POSTPROCESSING", "cura '{NAME}.stl' &")
+INX_SCADVIEW = os.getenv("INX_SCADVIEW", "openscad \"{NAME}.scad\"")
+INX_SCAD2STL = os.getenv("INX_SCAD2STL", "openscad \"{NAME}.scad\" -o \"{NAME}.stl\"")
+INX_STL_POSTPROCESSING = os.getenv("INX_STL_POSTPROCESSING", "cura \"{NAME}.stl\" &")
 
 
 def IsProcessRunning(pid):
@@ -158,19 +159,12 @@ def IsProcessRunning(pid):
     """
     sys_platform = sys.platform.lower()
     if sys_platform.startswith("win"):
-        import subprocess
-
-        ps = subprocess.Popen(
-            r'tasklist.exe /NH /FI "PID eq %d"' % (pid),
-            shell=True,
-            stdout=subprocess.PIPE,
-        )
-        output = ps.stdout.read()
-        ps.stdout.close()
-        ps.wait()
-        if str(pid) in output:
-            return True
-        return False
+        with subprocess.Popen(r'tasklist.exe /NH /FI "PID eq %d"' % (pid),  shell=True, stdout=subprocess.PIPE) as ps:
+            output = ps.stdout.read()
+            ps.wait()
+            if str(pid) in output:
+                return True
+            return False
     else:
         # OSX sys_platform.startswith('darwin'):
         # and Linux
@@ -433,15 +427,15 @@ class OpenSCAD(inkex.EffectExtension):
         pars.add_argument( "--line_fn", type=int, default=int(4), help="Line width precision ($fn when constructing hull)", )
         pars.add_argument( "--force_line", type=inkex.utils.Boolean, default=False, help="Force outline mode.", )
         pars.add_argument( "--fname", default="{NAME}.scad", help="openSCAD output file derived from the svg file name.", )
-        pars.add_argument( "--parsedesc", default="true", help="Parse zsize and other parameters from object descriptions", )
-        pars.add_argument( "--scadview", default="false", help="Open the file with openscad ( details see --scadviewcmd option )", )
+        pars.add_argument( "--parsedesc",  type=inkex.utils.Boolean, default=True, help="Parse zsize and other parameters from object descriptions", )
+        pars.add_argument( "--scadview",  type=inkex.utils.Boolean, default=False, help="Open the file with openscad ( details see --scadviewcmd option )", )
         pars.add_argument( "--scadviewcmd", default=INX_SCADVIEW, help="Command used start an openscad viewer. Use {SCAD} for the openSCAD input.", )
-        pars.add_argument( "--scad2stl", default="false", help="Also convert to STL ( details see --scad2stlcmd option )", )
+        pars.add_argument( "--scad2stl",  type=inkex.utils.Boolean, default=False, help="Also convert to STL ( details see --scad2stlcmd option )", )
         pars.add_argument( "--scad2stlcmd", default=INX_SCAD2STL, help="Command used to convert to STL. You can use {NAME}.scad for the openSCAD file to read and "
         + "{NAME}.stl for the STL file to write.", )
-        pars.add_argument( "--stlpost", default="false", help="Start e.g. a slicer. This implies the --scad2stl option. ( see --stlpostcmd )", )
+        pars.add_argument( "--stlpost",  type=inkex.utils.Boolean, default=False, help="Start e.g. a slicer. This implies the --scad2stl option. ( see --stlpostcmd )", )
         pars.add_argument( "--stlpostcmd", default=INX_STL_POSTPROCESSING, help="Command used for post processing an STL file (typically a slicer). You can use {NAME}.stl for the STL file.", )
-        pars.add_argument( "--stlmodule",default="false", help="Output configured to comment out final rendering line, to create a module file for import.", )
+        pars.add_argument( "--stlmodule", type=inkex.utils.Boolean, default=False, help="Output configured to comment out final rendering line, to create a module file for import.", )
 
         self.userunitsx = 1.0  # Move to pure userunits per mm for v1.0
         self.userunitsy = 1.0
@@ -463,7 +457,7 @@ class OpenSCAD(inkex.EffectExtension):
         self.pathid = int(0)
 
         # Output file
-        self.f = None
+        self.outfile = None
 
         # For handling an SVG viewbox attribute, we will need to know the
         # values of the document's <svg> width and height attributes as well
@@ -793,8 +787,8 @@ class OpenSCAD(inkex.EffectExtension):
                     )
                 polypoints = polypoints[:-1]
                 polypoints += "];\n"
-                self.f.write(polycenter + ";\n")
-                self.f.write(polypoints)
+                self.outfile.write(polycenter + ";\n")
+                self.outfile.write(polypoints)
                 prefix += 1
             else:
                 # This subpath contains other subpaths
@@ -824,22 +818,22 @@ class OpenSCAD(inkex.EffectExtension):
                 polypoints += "];\n"
                 polypaths = polypaths[:-7] + "];\n"
                 # write the polys and paths
-                self.f.write(polycenter + ";\n")
-                self.f.write(polypoints)
-                self.f.write(polypaths)
+                self.outfile.write(polycenter + ";\n")
+                self.outfile.write(polypoints)
+                self.outfile.write(polypaths)
                 prefix += 1
         # #### end global data for msg_*() functions. ####
 
-        self.f.write("module poly_" + id + "(h, w, s, res=line_fn)\n{\n")
+        self.outfile.write("module poly_" + id + "(h, w, s, res=line_fn)\n{\n")
         # Element is transformed to correct size, so scale is now just for the user to
         # tweak after the fact
-        self.f.write("  scale([custom_scale_x, -custom_scale_y, 1]) union()\n  {\n")
+        self.outfile.write("  scale([custom_scale_x, -custom_scale_y, 1]) union()\n  {\n")
 
         # And add the call to the call list
         # Z-size is set by the overall module parameter
         # unless an extrusion zsize is parsed from the description or ID.
         extrusion = {"zsize": "h", "zoffset": "0", "scale": 100.0, "neg": False}
-        if self.options.parsedesc == "true":
+        if self.options.parsedesc is True:
             object_merge_extrusion_values(extrusion, node)
 
         call_item = "translate ([0,0,%s]) poly_%s(%s, min_line_mm(%s), %s);\n" % (
@@ -883,11 +877,11 @@ class OpenSCAD(inkex.EffectExtension):
                     # This subpath contains other subpaths
                     poly = msg_extrude_by_hull_and_paths(id, prefix)
 
-            self.f.write(poly)
+            self.outfile.write(poly)
             prefix += 1
 
         # End the module
-        self.f.write("  }\n}\n")
+        self.outfile.write("  }\n}\n")
 
     def recursivelyTraverseSvg(
         self, aNodeList, matCurrent=Transform(None), parent_visibility="visible"
@@ -1198,11 +1192,7 @@ class OpenSCAD(inkex.EffectExtension):
                 pass
 
     def recursivelyGetEnclosingTransform(self, node):
-
-        """
-        Determine the cumulative transform which node inherits from
-        its chain of ancestors.
-        """
+        # Determine the cumulative transform which node inherits from its chain of ancestors.
         node = node.getparent()
         if node is not None:
             parent_transform = self.recursivelyGetEnclosingTransform(node)
@@ -1250,13 +1240,13 @@ class OpenSCAD(inkex.EffectExtension):
             scad_fname = os.path.expanduser(self.options.fname)
             if "/" != os.sep:
                 scad_fname = scad_fname.replace("/", os.sep)
-            self.f = open(scad_fname, "w")
+            self.outfile = open(scad_fname, "w")
 
-            self.f.write(
+            self.outfile.write(
                 "// Generated by inkscape %s + inkscape-paths2openscad %s\n"
                 % (self.inkscape_version, VERSION)
             )
-            self.f.write('// %s from "%s.svg"\n' % (time.ctime(), self.basename))
+            self.outfile.write('// %s from "%s.svg"\n' % (time.ctime(), self.basename))
 
             # for use in options.fname basename is derived from the sodipodi_docname by
             # stripping the svg extension - or if there is no sodipodi_docname basename is 'inkscape'.
@@ -1264,7 +1254,7 @@ class OpenSCAD(inkex.EffectExtension):
             # options.fname by stripping an scad extension.
             self.basename = re.sub(r"\.scad", "", scad_fname, flags=re.I)
 
-            self.f.write(
+            self.outfile.write(
                 """
 // Module names are of the form poly_<inkscape-path-id>().  As a result,
 // you can associate a polygon in this OpenSCAD program with the corresponding
@@ -1280,32 +1270,32 @@ fudge = 0.1;
             if self.options.chamfer < 0.001:
                 self.options.chamfer = None
 
-            self.f.write("user_unit_scale_x = %s;\n" % (self.userunitsx))
-            self.f.write("user_unit_scale_y = %s;\n" % (self.userunitsy))
-            self.f.write("custom_scale_x = 1;\n")
-            self.f.write("custom_scale_y = 1;\n")
+            self.outfile.write("user_unit_scale_x = %s;\n" % (self.userunitsx))
+            self.outfile.write("user_unit_scale_y = %s;\n" % (self.userunitsy))
+            self.outfile.write("custom_scale_x = 1;\n")
+            self.outfile.write("custom_scale_y = 1;\n")
 
             # writeout users parameters
-            self.f.write("zsize = %s;\n" % (self.options.zsize))
-            self.f.write("line_fn = %d;\n" % (self.options.line_fn))
+            self.outfile.write("zsize = %s;\n" % (self.options.zsize))
+            self.outfile.write("line_fn = %d;\n" % (self.options.line_fn))
             if self.options.chamfer:
-                self.f.write("chamfer = %s;\n" % (self.options.chamfer))
-                self.f.write("chamfer_fn = %d;\n" % (self.options.chamfer_fn))
-            self.f.write("min_line_width = %s;\n" % (self.options.min_line_width))
-            self.f.write(
+                self.outfile.write("chamfer = %s;\n" % (self.options.chamfer))
+                self.outfile.write("chamfer_fn = %d;\n" % (self.options.chamfer_fn))
+            self.outfile.write("min_line_width = %s;\n" % (self.options.min_line_width))
+            self.outfile.write(
                 "line_width_scale = %s;\n" % (self.options.line_width_scale_perc * 0.01)
             )
-            self.f.write(
+            self.outfile.write(
                 "function min_line_mm(w) = max(min_line_width, w * line_width_scale) * %g;\n\n"
                 % self.userunitsx
             )
 
             for key in self.paths:
-                self.f.write("\n")
+                self.outfile.write("\n")
                 self.convertPath(key)
 
             if self.options.chamfer:
-                self.f.write(
+                self.outfile.write(
                     """
 module chamfer_sphere(rad=chamfer, res=chamfer_fn)
 {
@@ -1330,81 +1320,77 @@ module chamfer_sphere(rad=chamfer, res=chamfer_fn)
             badchars = string.punctuation.replace("_", "") + " "
             name = re.sub("[" + badchars + "]", "_", name)
 
-            self.f.write("\nmodule %s(h)\n{\n" % name)
+            self.outfile.write("\nmodule %s(h)\n{\n" % name)
             mi = ""
             if self.options.chamfer:
                 mi = "  "
-                self.f.write("  minkowski()\n  {\n")
+                self.outfile.write("  minkowski()\n  {\n")
 
             # Now output the list of modules to call
-            self.f.write(
+            self.outfile.write(
                 "%s  difference()\n%s  {\n%s    union()\n%s    {\n" % (mi, mi, mi, mi)
             )
             for call in self.call_list:
-                self.f.write("%s      %s" % (mi, call))
-            self.f.write("%s    }\n%s    union()\n%s    {\n" % (mi, mi, mi))
+                self.outfile.write("%s      %s" % (mi, call))
+            self.outfile.write("%s    }\n%s    union()\n%s    {\n" % (mi, mi, mi))
             for call in self.call_list_neg:
-                self.f.write("%s      %s" % (mi, call))
-            self.f.write("%s    }\n%s  }\n" % (mi, mi))
+                self.outfile.write("%s      %s" % (mi, call))
+            self.outfile.write("%s    }\n%s  }\n" % (mi, mi))
             if self.options.chamfer:
-                self.f.write("    chamfer_sphere();\n  }\n")
+                self.outfile.write("    chamfer_sphere();\n  }\n")
 
             # The module that calls all the other ones.
-            if self.options.stlmodule == "true":
-                self.f.write("}\n\n//%s(zsize);\n" % (name))
+            if self.options.stlmodule is True:
+                self.outfile.write("}\n\n//%s(zsize);\n" % (name))
             else:
-                self.f.write("}\n\n%s(zsize);\n" % (name))
-            self.f.close()
+                self.outfile.write("}\n\n%s(zsize);\n" % (name))
 
         except IOError as e:
             inkex.errormsg("Unable to write file " + self.options.fname)
             inkex.errormsg("ERROR: " + str(e))
+            
+        self.outfile.close()
 
-        if self.options.scadview == "true":
+        ################################################################
+        # Call OpenSCAD
+        ################################################################
+        if self.options.scadview is True:
             pidfile = os.path.join(tempfile.gettempdir(), "paths2openscad.pid")
             running = False
-            cmd = self.options.scadviewcmd.format(
-                **{"SCAD": scad_fname, "NAME": self.basename}
-            )
+            cmd = self.options.scadviewcmd.format(**{"SCAD": scad_fname, "NAME": self.basename})
             try:
-                pfile=open(pidfile)
-                m = re.match(r"(\d+)\s+(.*)", pfile.read())
-                pfile.close()
-                oldpid = int(m.group(1))
-                oldcmd = m.group(2)
-                # print >> sys.stderr, "pid {1} seen in {0}".format(pidfile, oldpid)
-                # print >> sys.stderr, "cmd {0},  oldcmd {1}".format(cmd, oldcmd)
-                if cmd == oldcmd:
-                    # we found a pidfile and the cmd in there is still identical.
-                    # If we change the filename in the inkscape extension gui, the cmd differs, and
-                    # the still running openscad would not pick up our changes.
-                    # If the command is identical, we check if the pid in the pidfile is alive.
-                    # If so, we assume, the still running openscad will pick up the changes.
-                    #
-                    # WARNING: too much magic here. We cannot really test, if the last assumption holds.
-                    # Comment out the next line to always start a new instance of openscad.
-                    running = IsProcessRunning(oldpid)
-                    # print >> sys.stderr, "running {0}".format(running)
+                with open(pidfile) as pfile:
+                    m = re.match(r"(\d+)\s+(.*)", pfile.read())
+                    oldpid = int(m.group(1))
+                    oldcmd = m.group(2)
+                    # print >> sys.stderr, "pid {1} seen in {0}".format(pidfile, oldpid)
+                    # print >> sys.stderr, "cmd {0},  oldcmd {1}".format(cmd, oldcmd)
+                    if cmd == oldcmd:
+                        # we found a pidfile and the cmd in there is still identical.
+                        # If we change the filename in the inkscape extension gui, the cmd differs, and
+                        # the still running openscad would not pick up our changes.
+                        # If the command is identical, we check if the pid in the pidfile is alive.
+                        # If so, we assume, the still running openscad will pick up the changes.
+                        #
+                        # WARNING: too much magic here. We cannot really test, if the last assumption holds.
+                        # Comment out the next line to always start a new instance of openscad.
+                        running = IsProcessRunning(oldpid)
+                        # print >> sys.stderr, "running {0}".format(running)
             except Exception:
                 pass
             if not running:
-                import subprocess
-
                 try:
                     tty = open("/dev/tty", "w")
                 except Exception:
                     tty = subprocess.PIPE
                 try:
-                    proc = subprocess.Popen(cmd, shell=True, stdin=tty, stdout=tty, stderr=tty)
-                    proc.wait()
-                    tty.close()
+                    with subprocess.Popen(cmd, shell=True, stdin=tty, stdout=tty, stderr=tty) as proc:
+                        proc.wait()
                 except OSError as e:
                     raise OSError("%s failed: errno=%d %s" % (cmd, e.errno, e.strerror))
                 try:
-                    pfile = open(pidfile, "w")
-                    pfile.write(str(proc.pid) + "\n" + cmd + "\n")
-                    pfile.close()
-                   
+                    with open(pidfile, "w") as pfile:
+                        pfile.write(str(proc.pid) + "\n" + cmd + "\n")
                 except Exception:
                     pass
             else:
@@ -1414,71 +1400,62 @@ module chamfer_sphere(rad=chamfer, res=chamfer_fn)
                 #     pick up the changes. and we have no way to tell the difference if it did.
                 pass
 
-        if self.options.scad2stl == "true" or self.options.stlpost == "true":
+        ################################################################
+        # Call OpenSCAD to STL conversion
+        ################################################################
+        if self.options.scad2stl is True or self.options.stlpost is True:
             stl_fname = self.basename + ".stl"
-            cmd = self.options.scad2stlcmd.format(
-                **{"SCAD": scad_fname, "STL": stl_fname, "NAME": self.basename}
-            )
+            scad2stlcmd = self.options.scad2stlcmd.format(**{"SCAD": scad_fname, "STL": stl_fname, "NAME": self.basename})
             try:
                 os.unlink(stl_fname)
             except Exception:
                 pass
 
-            import subprocess
-
-            try:
-                proc = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            with subprocess.Popen(scad2stlcmd, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as proc:
                 proc.wait()
-            except OSError as e:
-                raise OSError(
-                    "{0} failed: errno={1} {2}".format(cmd, e.errno, e.strerror)
-                )
-            stdout, stderr = proc.communicate()
-
-            len = -1
-            try:
-                len = os.path.getsize(stl_fname)
-            except Exception:
-                pass
-            if len < 1000:
-                inkex.errormsg(
-                    "CMD: {} WARNING: {} is very small: {} bytes.".format(
-                        cmd, stl_fname, len
-                    )
-                )
-                inkex.errormsg("= " * 24)
-                inkex.errormsg("STDOUT:\n{}".format(stdout))
-                inkex.errormsg("= " * 24)
-                inkex.errormsg("STDERR:\n{}".format(stderr))
-                inkex.errormsg("= " * 24)
-                if len <= 0:  # something is wrong. better stop here
-                    self.options.stlpost = "false"
-            proc.wait()
-            if self.options.stlpost == "true":
-                cmd = self.options.stlpostcmd.format(
-                    **{"STL": self.basename + ".stl", "NAME": self.basename}
-                )
-                try:
-                    tty = open("/dev/tty", "w")
-                except Exception:
-                    tty = subprocess.PIPE
-
-                try:
-                    proc = subprocess.Popen(cmd, shell=True, stdin=tty, stdout=tty, stderr=tty)
-                    proc.wait()
-                except OSError as e:
-                    raise OSError("%s failed: errno=%d %s" % (cmd, e.errno, e.strerror))
-
                 stdout, stderr = proc.communicate()
-                if stdout or stderr:
-                    inkex.errmsg("CMD: {}".format(cmd))
+                len = -1
+                try:
+                    len = os.path.getsize(stl_fname)
+                except Exception:
+                    pass
+                if len < 1000:
+                    inkex.errormsg("CMD: {} WARNING: {} is very small: {} bytes.".format(scad2stlcmd, stl_fname, len))
                     inkex.errormsg("= " * 24)
-                if stdout:
-                    inkex.errmsg("STDOUT: {}".format(stdout))
+                    inkex.errormsg("STDOUT:\n{}".format(stdout))
                     inkex.errormsg("= " * 24)
-                if stderr:
-                    inkex.errmsg("STDERR: {}".format(stderr))
+                    inkex.errormsg("STDERR:\n{}".format(stderr))
                     inkex.errormsg("= " * 24)
+                    if len <= 0:  # something is wrong. better stop here
+                        self.options.stlpost = False
+                
+                ################################################################
+                # Call OpenSCAD post processing
+                ################################################################
+                if self.options.stlpost is True:
+                    stlpostcmd = self.options.stlpostcmd.format(
+                        **{"STL": self.basename + ".stl", "NAME": self.basename}
+                    )
+                    try:
+                        tty = open("/dev/tty", "w")
+                    except Exception:
+                        tty = subprocess.PIPE
+    
+                    try:
+                        with subprocess.Popen(stlpostcmd, shell=True, stdin=tty, stdout=tty, stderr=tty) as proc:
+                            proc.wait()
+                            stdout, stderr = proc.communicate()
+                            if stdout or stderr:
+                                inkex.errormsg("CMD: {}".format(stlpostcmd))
+                                inkex.errormsg("= " * 24)
+                            if stdout:
+                                inkex.errormsg("STDOUT: {}".format(stdout))
+                                inkex.errormsg("= " * 24)
+                            if stderr:
+                                inkex.errormsg("STDERR: {}".format(stderr))
+                                inkex.errormsg("= " * 24)
+                    except OSError as e:
+                        raise OSError("%s failed: errno=%d %s" % (stlpostcmd, e.errno, e.strerror))
 
 if __name__ == '__main__':
     OpenSCAD().run()

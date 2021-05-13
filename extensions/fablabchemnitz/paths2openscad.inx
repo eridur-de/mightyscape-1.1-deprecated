@@ -4,27 +4,16 @@
    <id>fablabchemnitz.de.paths2openscad</id>
    <param name="tab" type="notebook">
       <page name="splash" gui-text="Paths to OpenSCAD">
-         <param type="path" name="fname" gui-text="Ausgabedatei" mode="file_new" filetypes="scad">{NAME}.scad</param>
-         <label>Use "{NAME}.scad" here to use the name from svg.</label>
-         <param name="zsize" type="float" min="0" max="1000" precision="2" gui-text="Depth (Z) [mm]">5.0</param>
-         <label>Default 3D extrude depth (when no zsize is parsed from an svg object).</label>
-         <param name="parsedesc" type="bool" gui-text="Description parsing">true</param>
-         <label>Read the extruded zsize, zoffset, scale per svg object from its description or ID. See the Extrusion Syntax tab for details.</label>
-         <spacer/>
-         <param name="scadview" type="bool" gui-text="View in OpenSCAD">false</param>
-         <label>Start OpenSCAD to view the 3D-model.</label>
-         <spacer/>
-         <param name="scad2stl" type="bool" gui-text="Convert to STL">false</param>
-         <label>Also save an .stl file next to the specified output file.</label>
-         <spacer/>
-         <param name="stlpost" type="bool" gui-text="STL postprocessing">false</param>
-         <label>Start e.g. a slicer after converting to STL. See the Commands tab for details.</label>
+         <param type="path" name="fname" gui-text="Output file" mode="file_new" filetypes="scad" gui-description="Use '{NAME}.scad' here to use the name from svg.">{NAME}.scad</param>
+         <param name="zsize" type="float" min="0" max="1000" precision="2" gui-text="Depth (Z) [mm]" gui-description="Default 3D extrude depth (when no zsize is parsed from an svg object).">5.0</param>
+         <param name="parsedesc" type="bool" gui-text="Description parsing" gui-description="Read the extruded zsize, zoffset, scale per svg object from its description or ID. See the Extrusion Syntax tab for details.">true</param>
+         <param name="scadview" type="bool" gui-text="View in OpenSCAD" gui-description="Start OpenSCAD to view the 3D-model.">false</param>
+         <param name="scad2stl" type="bool" gui-text="Convert to STL" gui-description="Also save an .stl file next to the specified output file.">false</param>
+         <param name="stlpost" type="bool" gui-text="STL post processing" gui-description="Start e.g. a slicer after converting to STL. See the Commands tab for details.">false</param>
          <param name="stlmodule" type="bool" gui-text="Only create a module">false</param>
-         <spacer/>
       </page>
       <page name="tuning" gui-text="Tuning">
-         <param name="smoothness" type="float" min="0.0001" max="5" precision="4" gui-text="Smoothing">0.2</param>
-         <label>Used when rendering curves. Smaller values are smoother. Range: 0.0001 to 5</label>
+         <param name="smoothness" type="float" min="0.0001" max="5" precision="4" gui-text="Smoothing" gui-description="Used when rendering curves. Smaller values are smoother. Range: 0.0001 to 5">0.2</param>
          <param type="float" name="chamfer" min="0.0" gui-text="Add chamfer radius [mm]">0</param>
          <param name="chamfer_fn" type="optiongroup" appearance="combo" gui-text="Chamfer precision ($fn)">
             <option value="4">4: Rough (fast)</option>
@@ -33,9 +22,7 @@
             <option value="32">32: Perfekt (slowest)</option>
          </param>
          <label appearance="header">Outline Mode</label>
-         <label xml:space="preserve">Objects are extruded into 3D either in normal mode, or in outline mode. Normally filled areas are extruded, ignoring the line width. Objects with no fill are rendered in outline mode.
-
-Note: the 'Scale: XX %' instruction has no effect in outline mode.</label>
+         <label>Objects are extruded into 3D either in normal mode, or in outline mode. Normally filled areas are extruded, ignoring the line width. Objects with no fill are rendered in outline mode. Note: the 'Scale: XX %' instruction has no effect in outline mode.</label>
          <param name="min_line_width" type="float" min="0.1" max="10" gui-text="Minimum line width [mm]">1.0</param>
          <param type="float" name="line_width_scale_perc" min="1" max="10000" gui-text="Scale line width [%]">100.0</param>
          <param name="line_fn" type="optiongroup" appearance="combo" gui-text="Line width precision ($fn)">
@@ -49,22 +36,9 @@ Note: the 'Scale: XX %' instruction has no effect in outline mode.</label>
       </page>
       <page name="commands" gui-text="Commands">
          <label>Placeholders: You can use "{NAME}.scad" for the OpenSCAD file to read as specified as 'Output file' in the main tab. You can use "{NAME}.stl" for an STL file to write.</label>
-         <label>Beware, Windows and Mac users: The shipped defaults are for Linux.</label>
-         <label>Mac: /Applications/OpenSCAD.app/Contents/MacOS/OpenSCAD</label>
-         <spacer/>
-         <!-- CAUTION: keep this command in sync with the default INX_SCADVIEW in paths2openscad.py -->
-         <param name="scadviewcmd" type="string" gui-text="View in OpenSCAD: ">openscad "{NAME}.scad"</param>
-         <label>Is only started, if no command of the same name is running. Always started non-blocking. A running OpenSCAD automatically picks up changed file contents. Defaults:</label>
-         <label>Linux: openscad "{NAME}.scad"</label>
-         <spacer/>
-         <!-- CAUTION: keep this command in sync with the default INX_SCAD2STL in paths2openscad.py -->
-         <param name="scad2stlcmd" type="string" gui-text="Convert to STL: ">openscad "{NAME}.scad" -o "{NAME}.stl"</param>
-         <label>Automatically run, when STL postprocessing is requested.</label>
-         <spacer/>
-         <!-- CAUTION: keep this command in sync with the default INX_STL_POSTPROCESSING in paths2openscad.py -->
-         <param name="stlpostcmd" type="string" gui-text="STL postprocessing: ">cura "{NAME}.stl" &amp;</param>
-         <label>Append an "&amp;" for non-blocking.</label>
-         <spacer/>
+         <param name="scadviewcmd" type="string" gui-text="View in OpenSCAD:" gui-description="Is only started, if no command of the same name is running. Always started non-blocking. A running OpenSCAD automatically picks up changed file content">openscad "{NAME}.scad"</param>
+         <param name="scad2stlcmd" type="string" gui-text="Convert to STL:" gui-description="Automatically run, when STL postprocessing is requested.">openscad "{NAME}.scad" -o "{NAME}.stl"</param>
+         <param name="stlpostcmd" type="string" gui-text="STL postprocessing:" gui-description="Append an '&amp;' for non-blocking.">cura "{NAME}.stl" &amp;</param>
       </page>
       <page name="extrusion" gui-text="Extrusion Syntax">
          <label xml:space="preserve">The depth (Z-Axis) and other parameters can be defined through an svg object's description. The menu 'Object-&gt;Object Properties ...' (Shift-Ctrl-O) shows details of one selected object.
@@ -95,26 +69,16 @@ Parameters in the objects take precedence over groups.</label>
       </page>
       <page name="info" gui-text="About ...">
          <label xml:space="preserve">
-This extension converts Inkscape paths to
-extruded polygons in OpenSCAD.  Before
-using, some objects must firat be converted to paths
-with the "Path &gt; Object to Path" menu item.
+This extension converts Inkscape paths to extruded polygons in OpenSCAD. Before using, some objects must firat be converted to paths with the "Path &gt; Object to Path" menu item.
 
-Inkscape's units of pixels are converted
-to millimeters using the SVG standard's
-definition of 96 px = 1 inch = 25.4 mm.
-(Before inkscape 0.92 the standard was 90 px per inch,
-Adobe products often use 75 px per inch)
+Inkscape's units of pixels are converted to millimeters using the SVG standard's definition of 96 px = 1 inch = 25.4 mm. (Before inkscape 0.92 the standard was 90 px per inch, Adobe products often use 75 px per inch)
 
-v0.25
 Dan Newman (dan newman @ mtbaldy us)
 Josef Skladanka (jskladan @ redhat com)
 Juergen Weigert (juergen @ fabmail org)
 
-Find updates at https://github.com/fablabnbg/inkscape-paths2openscad/releases
-
-<!-- keep the version numnber in sync with paths2openscad.py header comments and translated copies -->
-</label>
+Find updates at</label>
+<label appearance="url">https://github.com/fablabnbg/inkscape-paths2openscad/releases</label>
       </page>
    </param>
    <effect needs-live-preview="false">
