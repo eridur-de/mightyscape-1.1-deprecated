@@ -13,7 +13,8 @@ License: GNU GPL v3
 
 import inkex
 import os
-from git import Repo
+import warnings
+from git import Repo #requires GitPython lib
 
 class Upgrade(inkex.EffectExtension):
 
@@ -21,6 +22,8 @@ class Upgrade(inkex.EffectExtension):
         pars.add_argument("--stash_untracked", type=inkex.Boolean, default=False, help="Stash untracked files and continue to upgrade")
 
     def effect(self):
+        warnings.simplefilter('ignore', ResourceWarning) #suppress "enable tracemalloc to get the object allocation traceback"
+
         #get the directory of mightyscape
         extension_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), '../', '../') #go up to dir /home/<user>/.config/inkscape/extensions/mightyscape-1.X/
 
@@ -37,15 +40,18 @@ class Upgrade(inkex.EffectExtension):
                         inkex.utils.debug("There are some untracked files in your MightyScape directory. Still trying to pull recent files from git...")
                         
                 origin = repo.remotes.origin
-                fetch_info = origin.fetch()
-    
-                for info in fetch_info:
-                    inkex.utils.debug("Updated %s to %s" % (info.ref, info.commit))
                 
-                #finally pull new data    
-                origin.pull()
+                ssh_executable = 'git'
+                with repo.git.custom_environment(GIT_SSH=ssh_executable):
+                    origin.fetch()
+                    
+                    #hcommit = repo.head.commit
+                    #hcommit.diff()   
+                    fetch_info = origin.pull() #finally pull new data               
+                    for info in fetch_info:
+                        inkex.utils.debug("Updated %s to commit id %s" % (info.ref, str(info.commit)[:7]))
             else:
-                inkex.utils.debug("MightyScape is up to date!")  
+                inkex.utils.debug("Nothing to do! MightyScape is already up to date!")  
                 exit(0)     
 
         else:
