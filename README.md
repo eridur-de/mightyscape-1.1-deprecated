@@ -22,6 +22,7 @@ I think this package is ideal for makers who are travelling around and/or using 
    * Credits for creation of this big package: me (Mario Voigt)
 
 # Used software
+
    * Gitea for hosting this
    * GitEye and SourceTree git frontends for commiting
    * LiClipse and NotePad++ for code
@@ -41,16 +42,23 @@ I think this package is ideal for makers who are travelling around and/or using 
 
   * clean code
   * make more precise documentation with more examples
-  * remove deprecation warnings
   * check out command line handling of extension. This was totally ignored yet
 
-# Documentation and examples
-Please see at https://fablabchemnitz.de/pages/viewpage.action?pageId=73040380
+# Installation, documentation and examples
+
+Please see at https://y.stadtfabrikanten.org/mightyscape-overview
 
 # Donate
+
 We are the Stadtfabrikanten, running the FabLab Chemnitz since 2016. A FabLab is an open workshop that gives people access to machines and digital tools like 3D printers, laser cutters and CNC milling machines.
 
 You like our work and want to support us? You can donate to our non-profit organization by different ways:
 https://y.stadtfabrikanten.org/donate
 
 **Thanks for using our extension and helping us!**
+
+# Locations
+
+This repo has two remotes:
+* https://gitea.fablabchemnitz.de/MarioVoigt/mightyscape-1.X
+* https://github.com/vmario89/mightyscape-1.X
