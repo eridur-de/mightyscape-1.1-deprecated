@@ -50,6 +50,8 @@ class Upgrade(inkex.EffectExtension):
                     fetch_info = origin.pull() #finally pull new data               
                     for info in fetch_info:
                         inkex.utils.debug("Updated %s to commit id %s" % (info.ref, str(info.commit)[:7]))
+                    inkex.utils.debug("Please restart Inkscape to let the changes take effect.")  
+
             else:
                 inkex.utils.debug("Nothing to do! MightyScape is already up to date!")  
                 exit(0)     
