@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """
 Mainly written by Andras Prim github_at_primandras.hu
 
@@ -7,7 +7,11 @@ http://code.google.com/p/core-framework/source/browse/trunk/plugins/svg.js
 written by Angel Kostadinov, with MIT license
 """
 
-from lxml import etree
+try:
+    from lxml import etree as ET
+except Exception:
+    import xml.etree.ElementTree as ET
+
 import re
 import math
 
@@ -33,11 +37,19 @@ def css2dict(css):
     return cssdict
 
 def cssColor2Eps(cssColor, colors='RGB'):
-    """converts css color definition (a hexa code with leading #)
+    """converts css color definition (a hexa code with leading # or 'rgb()')
     to eps color definition"""
-    r = float(int(cssColor[1:3],16)) / 255
-    g = float(int(cssColor[3:5],16)) / 255
-    b = float(int(cssColor[5:7],16)) / 255
+    if '#' == cssColor[0]:
+        r = float(int(cssColor[1:3],16)) / 255
+        g = float(int(cssColor[3:5],16)) / 255
+        b = float(int(cssColor[5:7],16)) / 255
+    else:
+        # assume 'rgb()' color
+        rgb = re.sub('[^0-9]+', ' ', cssColor).strip().split()
+        r = float(int(rgb[0], 10)) / 255
+        g = float(int(rgb[1], 10)) / 255
+        b = float(int(rgb[2], 10)) / 255
+
     if colors == 'RGB':
         return "%f %f %f" % (r, g, b)
     elif colors == 'CMYKRGB':
@@ -116,6 +128,7 @@ class svg2eps:
         matrix[4] = matrix0[0] * matrix2[4] + matrix0[2]*matrix2[5] + matrix0[4]
         matrix[5] = matrix0[1] * matrix2[4] + matrix0[3]*matrix2[5] + matrix0[5]
 
+
     def alert(self, string, elem):
         """adds an alert to the collection"""
         if not string in self.alerts:
@@ -159,6 +172,7 @@ class svg2eps:
         scale = self.toPt['uu']
         self.matrices = [ [scale, 0, 0, -scale, 0, self.docHeight] ]
 
+
     def gradientFill(self, elem, gradientId):
         """constructs a gradient instance definition in self.gradientOp"""
         if gradientId not in self.gradients:
@@ -192,6 +206,7 @@ class svg2eps:
         if 'matrix' in transformGradient:
             self.matrices.pop()
 
+
         if 'linear' == transformGradient['type']:
             #endPathSegment() will substitute appropriate closeOp in %%s
             self.gradientOp = "\nBb 1 (l_%s) %f %f %f %f 1 0 0 1 0 0 Bg %%s 0 BB" % \
@@ -213,7 +228,7 @@ class svg2eps:
         if 'stroke' in css and css['stroke'] != 'none':
             self.closeOp = 's'
             self.pathCloseOp = 's'
-            if '#' == css['stroke'][0]:
+            if '#' == css['stroke'][0] or 'rgb' == css['stroke'][0:3]:
                 self.epspath += ' ' + cssColor2Eps(css['stroke']) + ' XA'
             elif 'url' == css['stroke'][0:3]:
                 self.alert("gradient strokes not supported", elem)
@@ -222,7 +237,7 @@ class svg2eps:
                 self.closeOp = 'b'
             else:
                 self.closeOp = 'f'
-            if '#' == css['fill'][0]:
+            if '#' == css['fill'][0] or 'rgb' == css['fill'][0:3]:
                 self.epspath += ' ' + cssColor2Eps(css['fill']) + ' Xa'
             elif 'url' == css['fill'][0:3]:
                 self.gradientFill(elem, css['fill'][5:-1])
@@ -255,12 +270,15 @@ class svg2eps:
             phase = 0
             if css['stroke-dasharray'] == 'none':
                 dashArray = []
-            else:
-                dashArray = list(map(lambda x: "%f" % (self.lengthConv(float(x)),), css['stroke-dasharray'].split(',')))
+            if css['stroke-dasharray'] != 'none':
+                dashArrayIn = css['stroke-dasharray'].replace(',', ' ').split()
+                dashArray = list(map(lambda x: "%f" % (x,), filter(lambda x: x > 0, map(lambda x: self.lengthConv(float(x)), dashArrayIn))))
                 if 'stroke-dashoffset' in css:
                     phase = float(css['stroke-dashoffset'])
 
             self.epspath += ' [ %s ] %f d' % (' '.join(dashArray), phase)
+
+
 
     def endPathSegment(self, elem):
         """should be called when a path segment end is reached in a <path> element"""
@@ -307,7 +325,9 @@ class svg2eps:
         self.closeOp = 'n' # pathStyle(elem) will modify this
         self.gradientOp = None
         self.pathExplicitClose = False
-        self.epspath += '\n%AI3_Note: ' + elem.get('id') + '\n'
+        if elem.get('id'):
+            self.epspath += '\n%AI3_Note: ' + elem.get('id') + '\n'
+
         self.pathStyle(elem)
 
         tokens = self.rePathDSplit.split(pathData)
@@ -398,22 +418,34 @@ class svg2eps:
                 self.segmentCommands += 1
             elif 'Q' == cmd:
                 #export quadratic Bezier as cubic
-                x, y = self.coordConv(tokens[i], tokens[i+1])
-                self.epspath += ' %f %f %f %f' % (x, y, x, y)
+                qx0, qy0 = self.coordConv(self.curPoint[0], self.curPoint[1])
+                qx1, qy1 = self.coordConv(float(tokens[i]), float(tokens[i+1]))
                 i += 2
                 self.curPoint = (float(tokens[i]), float(tokens[i+1]))
-                x, y = self.coordConv(self.curPoint[0], self.curPoint[1])
-                self.epspath += ' %f %f' % (x, y)
+                qx2, qy2 = self.coordConv(self.curPoint[0], self.curPoint[1])
+                factor = 2.0 / 3.0
+                cx1 = qx0 + factor * (qx1 - qx0)
+                cy1 = qy0 + factor * (qy1 - qy0)
+                cx2 = qx2 - factor * (qx2 - qx1)
+                cy2 = qy2 - factor * (qy2 - qy1)
+                self.epspath += ' %f %f %f %f' % (cx1, cy1, cx2, cy2)
+                self.epspath += ' %f %f' % (qx2, qy2)
                 i += 2
                 self.epspath += ' c'
                 self.segmentCommands += 1
             elif 'q' == cmd:
-                x, y = self.coordConv(self.curPoint[0] + float(tokens[i]), self.curPoint[1] +float(tokens[i+1]))
-                self.epspath += ' %f %f %f %f' % (x, y, x, y)
+                qx0, qy0 = self.coordConv(self.curPoint[0], self.curPoint[1])
+                qx1, qy1 = self.coordConv(self.curPoint[0] + float(tokens[i]), self.curPoint[1] + float(tokens[i+1]))
                 i += 2
                 self.curPoint = (self.curPoint[0] + float(tokens[i]), self.curPoint[1] + float(tokens[i+1]))
-                x, y = self.coordConv(self.curPoint[0], self.curPoint[1])
-                self.epspath += ' %f %f' % (x, y)
+                qx2, qy2 = self.coordConv(self.curPoint[0], self.curPoint[1])
+                factor = 2.0 / 3.0
+                cx1 = qx0 + factor * (qx1 - qx0)
+                cy1 = qy0 + factor * (qy1 - qy0)
+                cx2 = qx2 - factor * (qx2 - qx1)
+                cy2 = qy2 - factor * (qy2 - qy1)
+                self.epspath += ' %f %f %f %f' % (cx1, cy1, cx2, cy2)
+                self.epspath += ' %f %f' % (qx2, qy2)
                 i += 2
                 self.epspath += ' c'
                 self.segmentCommands += 1
@@ -565,6 +597,10 @@ class svg2eps:
             pathData += " L %f %f A %f %f 0 0 1 %f %f z" % (x+rx, y+height, rx,ry, x, y+height-ry)
         self.elemPath(elem, pathData)
 
+    def elemPolygon(self, elem):
+        pathData = 'M ' + elem.get('points').replace(',', ' ').strip() + ' z'
+        self.elemPath(elem, pathData)        
+
     def elemCircle(self, elem):
         r = float(elem.get('r'))
         self.elemEllipseCircleCommon(elem, r, r)
@@ -666,9 +702,19 @@ class svg2eps:
 
     def elemStop(self, elem):
         """handles <stop> (gradient stop) svg element"""
-        style = css2dict(elem.get('style'))
-        color = cssColor2Eps(style['stop-color'], 'CMYKRGB')
-        offset = float(elem.get('offset')) * 100
+        stopColor = elem.get('stop-color')
+        if not stopColor:
+            style = css2dict(elem.get('style'))
+            if 'stop-color' in style:
+                stopColor = style['stop-color']
+            else:
+                stopColor = '#000000'
+        color = cssColor2Eps(stopColor, 'CMYKRGB')
+        offsetString = elem.get('offset').strip()
+        if offsetString[-1] == '%':
+            offset = float(offsetString[:-1])
+        else:
+            offset = float(offsetString) * 100
         self.gradients[self.curGradientId]['stops'].append( (offset, color) )
 
     def gradientSetup(self):
@@ -763,7 +809,7 @@ class svg2eps:
                 return
             if 'display' in css and css['display'] == 'none':
                 return
-            if shortTag in ('path', 'rect', 'circle', 'ellipse'):
+            if shortTag in ('path', 'rect', 'circle', 'ellipse', 'polygon'):
                 if 'opacity' in css and css['opacity'] == '0':
                     return
                 stroke = False
@@ -796,7 +842,11 @@ class svg2eps:
                 self.epsLayers += "\nq\n"
                 clipPathSave= self.clipPath
                 self.clipPath = True
+                # output clip path even if it doesn't have visible style
+                popRemoveInvisible = self.removeInvisible
+                self.removeInvisible = False
                 self.walkElem(clipElem)
+                self.removeInvisible = popRemoveInvisible
                 self.clipPath = clipPathSave
                 self.epsLayers += ' W'
 
@@ -816,6 +866,9 @@ class svg2eps:
         elif 'ellipse' == shortTag:
             if self.section != 'defs':
                 self.elemEllipse(elem)
+        elif 'polygon' == shortTag:
+            if self.section != 'defs':
+                self.elemPolygon(elem)
         elif 'linearGradient' == shortTag:
             self.elemGradient(elem, 'linear')
         elif 'radialGradient' == shortTag:
@@ -835,6 +888,7 @@ class svg2eps:
             self.section = shortTag
         else:
             self.alert("unhandled elem: " + shortTag, elem)
+
 
         for child in list(elem):
             self.walkElem(child)
@@ -1094,7 +1148,8 @@ end
 %%EOF
 """
 
-        self.root = etree.fromstring(self.svg)
+
+        self.root = ET.fromstring(self.svg)
         self.walkElem(self.root)
         self.gradientSetup()
 
@@ -1118,7 +1173,7 @@ end
 import sys
 
 if len(sys.argv) < 2:
-    print("missing filename")
+    raise NameError("missing filename")
     exit(1)
 
 converter = svg2eps(sys.argv[1])

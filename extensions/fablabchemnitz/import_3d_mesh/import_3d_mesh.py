@@ -295,6 +295,10 @@ class Poly3D(inkex.GenerateExtension):
     def generate(self):
         so = self.options
 
+        if not os.path.exists(self.get_filename()):
+            inkex.utils.debug("The input file does not exist.")
+            exit(1)
+
         input_mesh = om.read_polymesh(self.get_filename()) #read input file
         output_obj = os.path.join(tempfile.gettempdir(), "input_mesh.obj")
         om.write_mesh(output_obj, input_mesh)
