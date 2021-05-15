@@ -20,8 +20,8 @@
                     <param name="importCoplanarEdges" type="bool" gui-text="Import coplanar edges">false</param>
                     <param name="experimentalWeights" type="bool" gui-text="Mess around with algorithm">false</param>
                     <param name="printStats" type="bool" gui-text="Show some unfold statistics">false</param>
-                    <param name="resizetoimport" type="bool" gui-text="Resize the canvas to the imported drawing's bounding box">true</param>
-                    <param name="extraborder" type="float" precision="3" gui-text="Add extra border around fitted canvas">0.0</param>
+                    <param name="resizetoimport" type="bool" gui-text="Resize canvas" gui-description="Resize the canvas to the imported drawing's bounding box">true</param>
+                    <param name="extraborder" type="float" precision="3" gui-text="Extra border" gui-description="Add extra border around fitted canvas">0.0</param>
                     <param name="extraborderUnits" type="optiongroup" appearance="combo" gui-text="Border offset units">
                        <option value="mm">mm</option>
                        <option value="cm">cm</option>
