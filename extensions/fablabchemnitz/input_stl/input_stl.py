@@ -30,7 +30,10 @@ For optional(!) rotation support:
  * Make it available through PrusaSlic3r? > this is not possible because no support to slice into SVG layers
 
 #ToDos
- * FIXME: should use svg_pathstats(path_d): to compute bounding boxes.
+ * use svg_pathstats(path_d): to compute bounding boxes.
+ * fix bbox calc: ValueError: b'/tmp/.mount_Slic3rQi5kIt/AppRun: line 65: 10415 Segmentation fault 
+   (core dumped) LD_LIBRARY_PATH="$DIR/usr/lib:${LD_LIBRARY_PATH}" "${DIR}/usr/bin/perl-local" -I"${DIR}/usr/lib/local-lib/lib/perl5" 
+   "${DIR}/usr/bin/slic3r.pl" --gui "$@"\n'
  
 '''
 import sys
@@ -60,10 +63,12 @@ class InputSTL(inkex.EffectExtension):
     def add_arguments(self, pars):
         pars.add_argument('--tab')
 
-        pars.add_argument('--inputfile', help='STL input file to convert to SVG with the same name, but ".svg" suffix.')
+        #Options
+        pars.add_argument('--slic3r_cmd', default="slic3r", help="Command to invoke slic3r.")
+        pars.add_argument('--inputfile', help='Input file (OBJ/OFF/PLY/STL)')
         pars.add_argument('--scalefactor', type=float, default=1.0, help='Scale the model to custom size')
         pars.add_argument("--max_num_faces", type=int, default=200, help="If the STL file has too much detail it contains a large number of faces. This will make processing extremely slow. So we can limit it.")
-        pars.add_argument('-l', '--layer_height', type=float, default=1.000, help='slic3r layer height, probably in mm. Default: per slic3r config')
+        pars.add_argument('--layer_height', type=float, default=1.000, help='slic3r layer height, probably in mm. Default: per slic3r config')
         pars.add_argument('--rx', type=float, default=None, help='Rotate STL object around X-Axis before importing.')
         pars.add_argument('--ry', type=float, default=None, help='Rotate STL object around Y-Axis before importing.')
         pars.add_argument('--rz', type=float, default=None, help='Rotate STL object around Z-Axis before importing.')
@@ -72,14 +77,24 @@ class InputSTL(inkex.EffectExtension):
         pars.add_argument("--resizetoimport", type=inkex.Boolean, default=True, help="Resize the canvas to the imported drawing's bounding box") 
         pars.add_argument("--extraborder", type=float, default=0.0)
         pars.add_argument("--extraborder_units")
-        pars.add_argument("--stroke_width", type=float, default=2.0, help="Stroke width (px)")
-        pars.add_argument('--path_color', type=Color, default='879076607', help="Path color")
-        pars.add_argument("--use_path_color", type=inkex.Boolean, default=True, help="Use path color")
-        pars.add_argument("--fill_color", type=Color, default='1943148287', help="Fill color")
+
+        #Style
         pars.add_argument("--use_fill_color", type=inkex.Boolean, default=False, help="Use fill color")
-        pars.add_argument("--tone_down",  default="regular", help="Town down opacity for each layer")
-      
-        pars.add_argument('-s', '--slic3r-cmd', '--slic3r_cmd', default="slic3r", help="Command to invoke slic3r.")
+        pars.add_argument("--fill_color", type=Color, default='1943148287', help="Fill color")
+        pars.add_argument("--min_fill_opacity", type=float, default=0.0, help="Min fill opacity")
+        pars.add_argument("--max_fill_opacity", type=float, default=1.0, help="Max fill opacity")
+        pars.add_argument("--diffuse_fill_opacity",  default="regular", help="Diffuse fill opacity per layer")
+        
+        pars.add_argument("--use_stroke_color", type=inkex.Boolean, default=True, help="Use stroke color")
+        pars.add_argument('--stroke_color', type=Color, default='879076607', help="Stroke color")
+        
+        pars.add_argument("--min_stroke_width", type=float, default=1.0, help="Min stroke width")
+        pars.add_argument("--max_stroke_width", type=float, default=1.0, help="Max stroke width")
+        pars.add_argument("--diffuse_stroke_width",  default="regular", help="Diffuse stroke width per layer")
+        
+        pars.add_argument("--min_stroke_opacity", type=float, default=0.0, help="Min stroke opacity")
+        pars.add_argument("--max_stroke_opacity", type=float, default=1.0, help="Max stroke opacity")
+        pars.add_argument("--diffuse_stroke_opacity",  default="regular", help="Diffuse stroke opacity per layer") 
 
     def effect(self):             
         args = self.options
@@ -191,7 +206,7 @@ class InputSTL(inkex.EffectExtension):
             cmd = [ slic3r, '--no-gui', '--info', file ]
             p = Popen(cmd, stdout=PIPE, stderr=PIPE)
             out, err = p.communicate()
-            if len(err):
+            if len(err) > 0:
                 raise ValueError(err)
         
             bb = {}
@@ -202,7 +217,7 @@ class InputSTL(inkex.EffectExtension):
                 raise ValueError("slic3r --info did not return 6 elements for bbox")
             return bb
         
-        if args.center is not False:
+        if args.center is True:
             bb = bbox_info(args.slic3r_cmd, args.inputfile)
             # Ouch: bbox info gives us stl coordinates. slic3r translates them into svg px using 75dpi.
             cx = (-bb['min_x'] + bb['max_x']) * 0.5 * 1/scale * magic * 25.4 / 75
@@ -235,6 +250,68 @@ class InputSTL(inkex.EffectExtension):
         # e.tag = '{http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd}namedview'
         # e.attrib['id'] = "base"
         # e.attrib['{http://www.inkscape.org/namespaces/inkscape}document-units'] = "mm"
+            
+        totalPolygoncount = 0
+        for e in doc.iterfind('//{*}polygon'):
+            totalPolygoncount += 1
+            
+        polygoncount = 0
+        
+        if args.use_fill_color is False:
+            fill = "none"
+        else:
+            fill = args.fill_color
+        
+        for e in doc.iterfind('//{*}polygon'):
+            polygoncount += 1
+            
+            
+            # we ignore if min opacity values are larger than max opacity. We just use abs() for fill and stroke opacity
+            if args.diffuse_fill_opacity == "front_to_back":
+                fill_opacity =  (1 - (polygoncount / totalPolygoncount)) * abs(args.max_fill_opacity - args.min_fill_opacity)
+            elif args.diffuse_fill_opacity == "back_to_front":
+                fill_opacity = (polygoncount / totalPolygoncount) * abs(args.max_fill_opacity - args.min_fill_opacity)
+            elif args.diffuse_fill_opacity == "no_diffuse":
+                fill_opacity = args.max_fill_opacity
+            else:
+                inkex.utils.debug("Error: unkown diffuse fill opacity option")
+                exit(1)
+     
+            if args.diffuse_stroke_width == "front_to_back":
+                stroke_width =  (1 - (polygoncount / totalPolygoncount)) * abs(args.max_stroke_width - args.min_stroke_width)
+            elif args.diffuse_stroke_width == "back_to_front":
+                stroke_width = (polygoncount / totalPolygoncount) * abs(args.max_stroke_width - args.min_stroke_width)
+            elif args.diffuse_stroke_width == "no_diffuse":
+                stroke_width = args.max_stroke_width
+            else:
+                inkex.utils.debug("Error: unkown diffuse fill opacity option")
+                exit(1)
+          
+            if args.diffuse_stroke_opacity == "front_to_back":
+                stroke_opacity =  (1 - (polygoncount / totalPolygoncount)) * abs(args.max_stroke_opacity - args.min_stroke_opacity)
+            elif args.diffuse_stroke_opacity == "back_to_front":
+                stroke_opacity = (polygoncount / totalPolygoncount) * abs(args.max_stroke_opacity - args.min_stroke_opacity)
+            elif args.diffuse_stroke_opacity == "no_diffuse":
+                stroke_opacity = args.max_stroke_opacity
+            else:
+                inkex.utils.debug("Error: unkown diffuse fill opacity option")
+                exit(1)
+                
+            if args.use_stroke_color is False:
+                stroke = ""
+            else:
+                stroke = "stroke:{}".format(args.stroke_color)
+            # e.tag = '{http://www.w3.org/2000/svg}polygon'
+            # e.attrib = {'{http://slic3r.org/namespaces/slic3r}type': 'contour', 'points': '276.422496,309.4 260.209984,309.4 260.209984,209.03 276.422496,209.03', 'style': 'fill: white'}
+            e.tag = re.sub('polygon$', 'path', e.tag)
+            e.attrib['id'] = 'polygon%d' % polygoncount
+            e.attrib['{http://www.inkscape.org/namespaces/inkscape}connector-curvature'] = '0'
+            e.attrib['style'] = 'fill:{};fill-opacity:{};{};stroke-opacity:{};stroke-width:{}'.format(fill, fill_opacity, stroke, stroke_opacity, stroke_width)
+            e.attrib['d'] = 'M ' + re.sub(' ', ' L ', scale_points(e.attrib['points'], 1/scale)) + ' Z'
+            del e.attrib['points']
+            if e.attrib.get('{http://slic3r.org/namespaces/slic3r}type') == 'contour':
+                # remove contour, but keep all slic3r:type='hole', whatever it is worth later.
+                del e.attrib['{http://slic3r.org/namespaces/slic3r}type']
         
         layercount = 0
         for e in doc.iterfind('//{*}g'):
@@ -262,45 +339,6 @@ class InputSTL(inkex.EffectExtension):
                     cc.attrib['style'] = 'fill:none;fill-opacity:1;stroke:#0000FF;font-family:FreeSans;font-size:10pt;stroke-opacity:1;stroke-width:0.1'
                     cc.attrib['d'] = 'M %s,%s v 10 M %s,%s h 10 M %s,%s h 4' % (cx, cy-5,  cx-5, cy,  cx-2, cy+5)
                     e.append(cc)
-       
-        totalPolygoncount = 0
-        for e in doc.iterfind('//{*}polygon'):
-            totalPolygoncount += 1
-            
-        polygoncount = 0
-        
-        if args.use_fill_color is False:
-            fill = "none"
-        else:
-            fill = args.fill_color
-        
-        for e in doc.iterfind('//{*}polygon'):
-            polygoncount += 1
-            if args.tone_down == "front_to_back":
-                stroke_and_fill_opacity =  1 - (polygoncount / totalPolygoncount)
-            elif args.tone_down == "back_to_front":
-                stroke_and_fill_opacity = polygoncount / totalPolygoncount
-            elif args.tone_down == "regular":
-                stroke_and_fill_opacity = 1.0
-            else:
-                inkex.utils.debug("Error: unkown town down option")
-                exit(1)
-                
-            if args.use_path_color is False:
-                stroke = ""
-            else:
-                stroke = "stroke:{}".format(args.path_color)
-            # e.tag = '{http://www.w3.org/2000/svg}polygon'
-            # e.attrib = {'{http://slic3r.org/namespaces/slic3r}type': 'contour', 'points': '276.422496,309.4 260.209984,309.4 260.209984,209.03 276.422496,209.03', 'style': 'fill: white'}
-            e.tag = re.sub('polygon$', 'path', e.tag)
-            e.attrib['id'] = 'polygon%d' % polygoncount
-            e.attrib['{http://www.inkscape.org/namespaces/inkscape}connector-curvature'] = '0'
-            e.attrib['style'] = 'fill:{};fill-opacity:{};{};stroke-opacity:{};stroke-width:{}'.format(fill, stroke_and_fill_opacity, stroke, stroke_and_fill_opacity, args.stroke_width)
-            e.attrib['d'] = 'M ' + re.sub(' ', ' L ', scale_points(e.attrib['points'], 1/scale)) + ' Z'
-            del e.attrib['points']
-            if e.attrib.get('{http://slic3r.org/namespaces/slic3r}type') == 'contour':
-                # remove contour, but keep all slic3r:type='hole', whatever it is worth later.
-                del e.attrib['{http://slic3r.org/namespaces/slic3r}type']
         
         etree.cleanup_namespaces(doc.getroot(), top_nsmap={
             'inkscape': 'http://www.inkscape.org/namespaces/inkscape',
