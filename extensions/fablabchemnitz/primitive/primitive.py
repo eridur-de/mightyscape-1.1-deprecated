@@ -96,6 +96,8 @@ class Primitive (inkex.EffectExtension):
                     else:
                         exportfile = "/tmp/Primitive.png"
                         
+                    if image.mode != 'RGB':
+                        image = image.convert('RGB')
                     image.save(exportfile, "png")
            
                     ## Build up Primitive command according to your settings from extension GUI
