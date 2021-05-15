@@ -23,7 +23,7 @@
 # --------------------------------------------------------------------------------------
 
 # Please uncomment (remove the # character) in the following line to disable LaTeX support via textext extension.
-# useLatex=False
+useLatex=False
 
 
 import os

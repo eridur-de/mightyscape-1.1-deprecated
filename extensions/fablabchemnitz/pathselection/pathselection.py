@@ -69,62 +69,70 @@ class Length(inkex.EffectExtension):
   
     def effect(self):
         # loop over all selected paths
-        if self.options.selection=="Path_lengthselection":
-            for id, node in self.svg.selected.items():
-                if node.tag == inkex.addNS('path','svg'):  
-                    l1,l2,l3,l4,l5=[],[],[],[],[]
-                    p = paths.CubicSuperPath(inkex.paths.Path(node.get('d')))
-                    slengths= csplength(p)
-                    b=[slengths, p]
-                    
-                    # path length select
-                    for x in range(0,len(slengths)):
-                        if sum(b[0][x])<self.options.len1:
-                            l1.append(b[1][x])
-                        if self.options.len2>sum(b[0][x])>=self.options.len1 :
-                            l2.append(b[1][x])
-                        if self.options.len3>sum(b[0][x])>=self.options.len2 :
-                            l3.append(b[1][x])
-                        if self.options.len4>sum(b[0][x])>=self.options.len3 :
-                            l4.append(b[1][x])                        
-                        if sum(b[0][x])>=self.options.len4 :
-                            l5.append(b[1][x])
-
-                # make path
-                lensel=[l1,l2,l3,l4,l5]
-                strlen=['#FF0001','#00FF02','#AAFF03','#87CEE4','#000FF5']                        
-                for i,x in zip(strlen,lensel):
-                        s = {'stroke-linejoin': 'miter', 'stroke-width': '0.5px', 
-                            'stroke-opacity': '1.0', 'fill-opacity': '1.0', 
-                            'stroke': i, 'stroke-linecap': 'butt', 'fill': 'none'}
-                        attribs={'style':str(inkex.Style(s)),'d':str(paths.Path(paths.CubicSuperPath(x).to_path().to_arrays()))}
-                        etree.SubElement(node.getparent(),inkex.addNS('path','svg'),attribs)
-
-        if self.options.selection=="Path_slantselection":
-            for id, node in self.svg.selected.items():
-                if node.tag == inkex.addNS('path','svg'):  
-                    hor1,ver2,slan3=[],[],[]
-                    p = paths.CubicSuperPath(inkex.paths.Path(node.get('d')))
-
-                    # path slant select
-                    for i,x in enumerate(p):
-                        tn=roughBBox(x)
-                        if tn<self.options.hor:
-                            hor1.append(p[i])
-                        elif tn>self.options.ver:
-                            ver2.append(p[i])
-                        else:
-                            slan3.append(p[i])
-
-                # make path
-                slnsel=[hor1,ver2,slan3]
-                strsln=['#FF0001','#00FF02','#000FF5']                        
-                for i,x in zip(strsln,slnsel):
-                        s = {'stroke-linejoin': 'miter', 'stroke-width': '0.5px', 
-                            'stroke-opacity': '1.0', 'fill-opacity': '1.0', 
-                            'stroke': i, 'stroke-linecap': 'butt', 'fill': 'none'}
-                        attribs={'style':str(inkex.Style(s)),'d':str(paths.Path(paths.CubicSuperPath(x).to_path().to_arrays()))}
-                        etree.SubElement(node.getparent(),inkex.addNS('path','svg'),attribs)
+        if self.options.selection=="path_lengthselection":
+            if len(self.svg.selected) > 0:
+                for node in self.svg.selected.values():
+                    if node.tag == inkex.addNS('path','svg'):  
+                        l1,l2,l3,l4,l5=[],[],[],[],[]
+                        p = paths.CubicSuperPath(inkex.paths.Path(node.get('d')))
+                        slengths= csplength(p)
+                        b=[slengths, p]
+                        
+                        # path length select
+                        for x in range(0,len(slengths)):
+                            if sum(b[0][x])<self.options.len1:
+                                l1.append(b[1][x])
+                            if self.options.len2>sum(b[0][x])>=self.options.len1 :
+                                l2.append(b[1][x])
+                            if self.options.len3>sum(b[0][x])>=self.options.len2 :
+                                l3.append(b[1][x])
+                            if self.options.len4>sum(b[0][x])>=self.options.len3 :
+                                l4.append(b[1][x])                        
+                            if sum(b[0][x])>=self.options.len4 :
+                                l5.append(b[1][x])
+    
+                    # make path
+                    lensel=[l1,l2,l3,l4,l5]
+                    strlen=['#FF0001','#00FF02','#AAFF03','#87CEE4','#000FF5']                        
+                    for i,x in zip(strlen,lensel):
+                            s = {'stroke-linejoin': 'miter', 'stroke-width': '0.5px', 
+                                'stroke-opacity': '1.0', 'fill-opacity': '1.0', 
+                                'stroke': i, 'stroke-linecap': 'butt', 'fill': 'none'}
+                            attribs={'style':str(inkex.Style(s)),'d':str(paths.Path(paths.CubicSuperPath(x).to_path().to_arrays()))}
+                            etree.SubElement(node.getparent(),inkex.addNS('path','svg'),attribs)
+            else:
+                self.msg('Please select some paths first.')
+                return
+            
+        if self.options.selection=="path_slantselection":
+            if len(self.svg.selected) > 0:
+                for node in self.svg.selected.values():
+                    if node.tag == inkex.addNS('path','svg'):  
+                        hor1,ver2,slan3=[],[],[]
+                        p = paths.CubicSuperPath(inkex.paths.Path(node.get('d')))
+    
+                        # path slant select
+                        for i,x in enumerate(p):
+                            tn=roughBBox(x)
+                            if tn<self.options.hor:
+                                hor1.append(p[i])
+                            elif tn>self.options.ver:
+                                ver2.append(p[i])
+                            else:
+                                slan3.append(p[i])
+    
+                    # make path
+                    slnsel=[hor1,ver2,slan3]
+                    strsln=['#FF0001','#00FF02','#000FF5']                        
+                    for i,x in zip(strsln,slnsel):
+                            s = {'stroke-linejoin': 'miter', 'stroke-width': '0.5px', 
+                                'stroke-opacity': '1.0', 'fill-opacity': '1.0', 
+                                'stroke': i, 'stroke-linecap': 'butt', 'fill': 'none'}
+                            attribs={'style':str(inkex.Style(s)),'d':str(paths.Path(paths.CubicSuperPath(x).to_path().to_arrays()))}
+                            etree.SubElement(node.getparent(),inkex.addNS('path','svg'),attribs)
+            else:
+                self.msg('Please select some paths first.')
+                return
 
 if __name__ == '__main__':
     Length().run()
