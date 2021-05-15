@@ -74,12 +74,12 @@
     </param>
     <effect needs-live-preview="true">
         <object-type>all</object-type>
-        <menu-tip>Generate color harmonies and save as palette file</menu-tip>
         <effects-menu>
             <submenu name="FabLab Chemnitz">
                 <submenu name="Various"/>
             </submenu>
         </effects-menu>
+        <menu-tip>Generate color harmonies and save as palette file</menu-tip>
     </effect>
     <script>
         <command location="inx" interpreter="python">color_harmony.py</command>

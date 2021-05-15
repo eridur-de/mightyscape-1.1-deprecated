@@ -10,22 +10,22 @@
         <param name="space" type="float" precision="2" max="9999" gui-text="space" gui-description="space between cans">10.0</param>
         <param name="numx" type="int" max="9999" gui-text="numx" gui-description="number of cans in a row">5</param>
         <param name="numy" type="int" max="9999" gui-text="numy" gui-description="number of cans in a column">6</param>
-        <param name="in_place_supports" type="bool" max="9999" gui-text="in_place_supports" gui-description="place supports pieces in holes (check for fit yourself)">false</param>
-        <param name="feet" type="bool" max="9999" gui-text="feet" gui-description="add feet so the rack can stand on the ground">false</param>
+        <param name="in_place_supports" type="bool" gui-text="in_place_supports" gui-description="place supports pieces in holes (check for fit yourself)">false</param>
+        <param name="feet" type="bool" gui-text="feet" gui-description="add feet so the rack can stand on the ground">false</param>
     </page>
     <page name="tab_1" gui-text="Default">
         <param name="thickness" type="float" precision="2" max="9999" gui-text="thickness" gui-description="thickness of the material">3.0</param>
         <param name="tabs" type="float" precision="2" max="9999" gui-text="tabs" gui-description="width of tabs holding the parts in place in mm (not supported everywhere)">0.0</param>
-        <param name="debug" type="bool" max="9999" gui-text="debug" gui-description="print surrounding boxes for some structures">false</param>
+        <param name="debug" type="bool" gui-text="debug" gui-description="print surrounding boxes for some structures">false</param>
         <param name="reference" type="float" precision="2" max="9999" gui-text="reference" gui-description="print reference rectangle with given length (zero to disable)">100</param>
         <param name="burn" type="float" precision="2" max="9999" gui-text="burn" gui-description='burn correction in mm (bigger values for tighter fit). Use BurnTest in "Parts and Samples" to find the right value.'>0.1</param>
     </page>
     <page name="tab_2" gui-text="Finger Joints">
         <param name="FingerJoint_angle" type="float" precision="2" max="9999" gui-text="angle" gui-description="angle">90.0</param>
-      <param name="FingerJoint_style" type="optiongroup" appearance="combo" gui-text="style" gui-description="style of the fingers">
-          <option value="rectangular">rectangular</option>
-          <option value="springs">springs</option>
-</param>
+        <param name="FingerJoint_style" type="optiongroup" appearance="combo" gui-text="style" gui-description="style of the fingers">
+            <option value="rectangular">rectangular</option>
+            <option value="springs">springs</option>
+    </param>
         <param name="FingerJoint_surroundingspaces" type="float" precision="2" max="9999" gui-text="surroundingspaces" gui-description="maximum space at the start and end in multiple of normal spaces">1.0</param>
         <param name="FingerJoint_edge_width" type="float" precision="2" max="9999" gui-text="edge_width" gui-description="space below holes of FingerHoleEdge">1.0</param>
         <param name="FingerJoint_finger" type="float" precision="2" max="9999" gui-text="finger" gui-description="width of the fingers">2.0</param>

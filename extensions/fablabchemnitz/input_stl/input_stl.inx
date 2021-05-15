@@ -48,8 +48,8 @@
                         <option value="no_diffuse">no diffuse (use max. opacity)</option>
                         <option value="front_to_back">front to back</option>
                         <option value="back_to_front">back to front</option>
-                    <separator/>
                     </param>
+                    <separator/>
                     <label appearance="header">Stroke Color</label>
                     <param name="use_stroke_color" type="bool" gui-text="Use stroke color">true</param>
                     <param name="stroke_color" type="color" appearance="colorbutton" gui-text="Stroke color">879076607</param>

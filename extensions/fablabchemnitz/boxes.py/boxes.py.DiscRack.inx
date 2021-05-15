@@ -5,7 +5,7 @@
 <param name="generator" type="string" gui-hidden="true">discrack</param>
 <param name="tab" type="notebook">
     <page name="tab_0" gui-text="DiscRack">
-        <param name="sx" type="string" max="9999" gui-text="sx" gui-description="sections left to right in mm. See --sy for format">20*10</param>
+        <param name="sx" type="string" gui-text="sx" gui-description="sections left to right in mm. See --sy for format">20*10</param>
         <param name="disc_diameter" type="float" precision="2" max="9999" gui-text="disc_diameter" gui-description="Disc diameter in mm">150.0</param>
         <param name="disc_thickness" type="float" precision="2" max="9999" gui-text="disc_thickness" gui-description="Thickness of the discs in mm">5.0</param>
         <param name="lower_factor" type="float" precision="2" max="9999" gui-text="lower_factor" gui-description="Position of the lower rack grids along the radius">0.75</param>
@@ -16,16 +16,16 @@
     <page name="tab_1" gui-text="Default">
         <param name="thickness" type="float" precision="2" max="9999" gui-text="thickness" gui-description="thickness of the material">3.0</param>
         <param name="tabs" type="float" precision="2" max="9999" gui-text="tabs" gui-description="width of tabs holding the parts in place in mm (not supported everywhere)">0.0</param>
-        <param name="debug" type="bool" max="9999" gui-text="debug" gui-description="print surrounding boxes for some structures">false</param>
+        <param name="debug" type="bool" gui-text="debug" gui-description="print surrounding boxes for some structures">false</param>
         <param name="reference" type="float" precision="2" max="9999" gui-text="reference" gui-description="print reference rectangle with given length (zero to disable)">100</param>
         <param name="burn" type="float" precision="2" max="9999" gui-text="burn" gui-description='burn correction in mm (bigger values for tighter fit). Use BurnTest in "Parts and Samples" to find the right value.'>0.1</param>
     </page>
     <page name="tab_2" gui-text="Finger Joints">
         <param name="FingerJoint_angle" type="float" precision="2" max="9999" gui-text="angle" gui-description="angle">90.0</param>
-      <param name="FingerJoint_style" type="optiongroup" appearance="combo" gui-text="style" gui-description="style of the fingers">
-          <option value="rectangular">rectangular</option>
-          <option value="springs">springs</option>
-</param>
+        <param name="FingerJoint_style" type="optiongroup" appearance="combo" gui-text="style" gui-description="style of the fingers">
+            <option value="rectangular">rectangular</option>
+            <option value="springs">springs</option>
+    </param>
         <param name="FingerJoint_surroundingspaces" type="float" precision="2" max="9999" gui-text="surroundingspaces" gui-description="maximum space at the start and end in multiple of normal spaces">2.0</param>
         <param name="FingerJoint_edge_width" type="float" precision="2" max="9999" gui-text="edge_width" gui-description="space below holes of FingerHoleEdge">1.0</param>
         <param name="FingerJoint_finger" type="float" precision="2" max="9999" gui-text="finger" gui-description="width of the fingers">2.0</param>

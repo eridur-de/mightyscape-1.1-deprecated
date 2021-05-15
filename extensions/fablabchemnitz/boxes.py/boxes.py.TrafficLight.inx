@@ -9,21 +9,21 @@
         <param name="depth" type="float" precision="2" max="9999" gui-text="depth" gui-description="inner depth not including the shades">100</param>
         <param name="shades" type="float" precision="2" max="9999" gui-text="shades" gui-description="depth of the shaders">50</param>
         <param name="n" type="int" max="9999" gui-text="n" gui-description="number of lights">3</param>
-        <param name="upright" type="bool" max="9999" gui-text="upright" gui-description="stack lights upright (or side by side)">true</param>
+        <param name="upright" type="bool" gui-text="upright" gui-description="stack lights upright (or side by side)">true</param>
     </page>
     <page name="tab_1" gui-text="Default">
         <param name="thickness" type="float" precision="2" max="9999" gui-text="thickness" gui-description="thickness of the material">3.0</param>
         <param name="tabs" type="float" precision="2" max="9999" gui-text="tabs" gui-description="width of tabs holding the parts in place in mm (not supported everywhere)">0.0</param>
-        <param name="debug" type="bool" max="9999" gui-text="debug" gui-description="print surrounding boxes for some structures">false</param>
+        <param name="debug" type="bool" gui-text="debug" gui-description="print surrounding boxes for some structures">false</param>
         <param name="reference" type="float" precision="2" max="9999" gui-text="reference" gui-description="print reference rectangle with given length (zero to disable)">100</param>
         <param name="burn" type="float" precision="2" max="9999" gui-text="burn" gui-description='burn correction in mm (bigger values for tighter fit). Use BurnTest in "Parts and Samples" to find the right value.'>0.1</param>
     </page>
     <page name="tab_2" gui-text="Finger Joints">
         <param name="FingerJoint_angle" type="float" precision="2" max="9999" gui-text="angle" gui-description="angle">90.0</param>
-      <param name="FingerJoint_style" type="optiongroup" appearance="combo" gui-text="style" gui-description="style of the fingers">
-          <option value="rectangular">rectangular</option>
-          <option value="springs">springs</option>
-</param>
+        <param name="FingerJoint_style" type="optiongroup" appearance="combo" gui-text="style" gui-description="style of the fingers">
+            <option value="rectangular">rectangular</option>
+            <option value="springs">springs</option>
+    </param>
         <param name="FingerJoint_surroundingspaces" type="float" precision="2" max="9999" gui-text="surroundingspaces" gui-description="maximum space at the start and end in multiple of normal spaces">2.0</param>
         <param name="FingerJoint_edge_width" type="float" precision="2" max="9999" gui-text="edge_width" gui-description="space below holes of FingerHoleEdge">1.0</param>
         <param name="FingerJoint_finger" type="float" precision="2" max="9999" gui-text="finger" gui-description="width of the fingers">2.0</param>
