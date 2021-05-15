@@ -268,7 +268,7 @@ class InputSTL(inkex.EffectExtension):
             
             # we ignore if min opacity values are larger than max opacity. We just use abs() for fill and stroke opacity
             if args.diffuse_fill_opacity == "front_to_back":
-                fill_opacity =  (1 - (polygoncount / totalPolygoncount)) * abs(args.max_fill_opacity - args.min_fill_opacity)
+                fill_opacity =  1 - (polygoncount / totalPolygoncount) * abs(args.max_fill_opacity - args.min_fill_opacity)
             elif args.diffuse_fill_opacity == "back_to_front":
                 fill_opacity = (polygoncount / totalPolygoncount) * abs(args.max_fill_opacity - args.min_fill_opacity)
             elif args.diffuse_fill_opacity == "no_diffuse":
@@ -278,7 +278,7 @@ class InputSTL(inkex.EffectExtension):
                 exit(1)
      
             if args.diffuse_stroke_width == "front_to_back":
-                stroke_width =  (1 - (polygoncount / totalPolygoncount)) * abs(args.max_stroke_width - args.min_stroke_width)
+                stroke_width =  1 - (polygoncount / totalPolygoncount) * abs(args.max_stroke_width - args.min_stroke_width)
             elif args.diffuse_stroke_width == "back_to_front":
                 stroke_width = (polygoncount / totalPolygoncount) * abs(args.max_stroke_width - args.min_stroke_width)
             elif args.diffuse_stroke_width == "no_diffuse":
@@ -288,7 +288,7 @@ class InputSTL(inkex.EffectExtension):
                 exit(1)
           
             if args.diffuse_stroke_opacity == "front_to_back":
-                stroke_opacity =  (1 - (polygoncount / totalPolygoncount)) * abs(args.max_stroke_opacity - args.min_stroke_opacity)
+                stroke_opacity =  1 - (polygoncount / totalPolygoncount) * abs(args.max_stroke_opacity - args.min_stroke_opacity)
             elif args.diffuse_stroke_opacity == "back_to_front":
                 stroke_opacity = (polygoncount / totalPolygoncount) * abs(args.max_stroke_opacity - args.min_stroke_opacity)
             elif args.diffuse_stroke_opacity == "no_diffuse":
@@ -346,6 +346,14 @@ class InputSTL(inkex.EffectExtension):
     
         #inkex.utils.debug("{0}: {1} polygons in {2} layers converted to paths.".format(svgfile, polygoncount, layercount))
 
+        if layercount == 0:
+            inkex.utils.debug("No layers imported. Try to lower your layer height")
+            exit(1)
+        #inkex.utils.debug(totalPolygoncount)
+        if totalPolygoncount == 0:
+            inkex.utils.debug("No polygons imported (empty groups). Try to lower your layer height")
+            exit(1)
+
         stl_group = self.document.getroot().add(inkex.Group(id=self.svg.get_unique_id("slic3r-stl-input-"))) #make a new group at root level
         for element in doc.getroot().iter("{http://www.w3.org/2000/svg}g"):
             stl_group.append(element)
@@ -356,14 +364,17 @@ class InputSTL(inkex.EffectExtension):
 
         #adjust canvas to the inserted unfolding
         if args.resizetoimport:
-            bbox = stl_group.bounding_box()
-            namedView = self.document.getroot().find(inkex.addNS('namedview', 'sodipodi'))
-            root = self.svg.getElement('//svg:svg');
-            offset = self.svg.unittouu(str(args.extraborder) + args.extraborder_units)
-            root.set('viewBox', '%f %f %f %f' % (bbox.left - offset, bbox.top - offset, bbox.width + 2 * offset, bbox.height + 2 * offset))
-            root.set('width', "{:0.6f}{}".format(bbox.width + 2 * offset, self.svg.unit))
-            root.set('height', "{:0.6f}{}".format(bbox.height + 2 * offset, self.svg.unit))
-
+            bbox = stl_group.bounding_box() #seems the bbox is not calculated if only one element is in the group. Thats a bug of Inkscape!
+            if bbox is not None:
+                namedView = self.document.getroot().find(inkex.addNS('namedview', 'sodipodi'))
+                root = self.svg.getElement('//svg:svg');
+                offset = self.svg.unittouu(str(args.extraborder) + args.extraborder_units)
+                root.set('viewBox', '%f %f %f %f' % (bbox.left - offset, bbox.top - offset, bbox.width + 2 * offset, bbox.height + 2 * offset))
+                root.set('width', "{:0.6f}{}".format(bbox.width + 2 * offset, self.svg.unit))
+                root.set('height', "{:0.6f}{}".format(bbox.height + 2 * offset, self.svg.unit))
+            else:
+                inkex.utils.debug("Error resizing to canvas.")
+ 
 
 if __name__ == '__main__':
     InputSTL().run()
