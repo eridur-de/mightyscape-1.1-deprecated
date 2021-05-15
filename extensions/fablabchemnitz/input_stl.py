@@ -23,9 +23,15 @@ For optional(!) rotation support:
     - moved extension to sub menu structure (allows preview)
     - added different options
 
+#Notes
+ * requires exactly Slic3r-1.3.1-dev
+      -> https://dl.slic3r.org/dev/linux/
+      -> https://dl.slic3r.org/dev/win/
+ * Make it available through PrusaSlic3r? > this is not possible because no support to slice into SVG layers
+
 #ToDos
- * Make it available through PrusaSlic3r
  * FIXME: should use svg_pathstats(path_d): to compute bounding boxes.
+ 
 '''
 import sys
 import os
@@ -34,12 +40,10 @@ import subprocess
 from lxml import etree
 from subprocess import Popen, PIPE
 import inkex
-from inkex import Color
+from inkex import Color, Transform
 import tempfile
 import openmesh as om
-import stl #numpy-stl lib
-import numpy
-import math
+
 
 sys_platform = sys.platform.lower()
 if sys_platform.startswith('win'):
@@ -47,7 +51,7 @@ if sys_platform.startswith('win'):
 elif sys_platform.startswith('darwin'):
   slic3r = 'slic3r'
 else:   # Linux
-  slic3r = os.environ['HOME']+ '/Downloads/Slic3r-1.3.0-x86_64.AppImage'
+  slic3r = os.environ['HOME']+ '/Downloads/Slic3r-1.3.1-dev-x86_64.AppImage'
   if not os.path.exists(slic3r):
     slic3r = 'slic3r'
 
@@ -57,13 +61,20 @@ class InputSTL(inkex.EffectExtension):
         pars.add_argument('--tab')
 
         pars.add_argument('--inputfile', help='STL input file to convert to SVG with the same name, but ".svg" suffix.')
-        pars.add_argument('-l', '--layer_height', default=None, help='slic3r layer height, probably in mm. Default: per slic3r config')
-        pars.add_argument('--rx', default=None, type=float, help='Rotate STL object around X-Axis before importing.')
-        pars.add_argument('--ry', default=None, type=float, help='Rotate STL object around Y-Axis before importing.')
+        pars.add_argument('--scalefactor', type=float, default=1.0, help='Scale the model to custom size')
+        pars.add_argument("--max_num_faces", type=int, default=200, help="If the STL file has too much detail it contains a large number of faces. This will make processing extremely slow. So we can limit it.")
+        pars.add_argument('-l', '--layer_height', type=float, default=1.000, help='slic3r layer height, probably in mm. Default: per slic3r config')
+        pars.add_argument('--rx', type=float, default=None, help='Rotate STL object around X-Axis before importing.')
+        pars.add_argument('--ry', type=float, default=None, help='Rotate STL object around Y-Axis before importing.')
+        pars.add_argument('--rz', type=float, default=None, help='Rotate STL object around Z-Axis before importing.')
         pars.add_argument('--numbers', type=inkex.Boolean, default=False, help='Add layer numbers.')
         pars.add_argument('--center', type=inkex.Boolean, default=False, help='Add center marks.')
+        pars.add_argument("--resizetoimport", type=inkex.Boolean, default=True, help="Resize the canvas to the imported drawing's bounding box") 
+        pars.add_argument("--extraborder", type=float, default=0.0)
+        pars.add_argument("--extraborder_units")
         pars.add_argument("--stroke_width", type=float, default=2.0, help="Stroke width (px)")
         pars.add_argument('--path_color', type=Color, default='879076607', help="Path color")
+        pars.add_argument("--use_path_color", type=inkex.Boolean, default=True, help="Use path color")
         pars.add_argument("--fill_color", type=Color, default='1943148287', help="Fill color")
         pars.add_argument("--use_fill_color", type=inkex.Boolean, default=False, help="Use fill color")
         pars.add_argument("--tone_down",  default="regular", help="Town down opacity for each layer")
@@ -72,41 +83,13 @@ class InputSTL(inkex.EffectExtension):
 
     def effect(self):             
         args = self.options
-        inputfile = args.inputfile    
-        outputfilebase = os.path.splitext(os.path.basename(inputfile))[0]
-        converted_inputfile = os.path.join(tempfile.gettempdir(), outputfilebase + ".stl")
-        if not os.path.exists(inputfile):
-                inkex.utils.debug("The input file does not exist.")
-                exit(1) 
-        om.write_mesh(converted_inputfile, om.read_trimesh(inputfile)) #read + convert     # might throw "[STLWriter] : Warning non-triangle data!"
-        args.inputfile = converted_inputfile #overwrite
-
-        # input-stl.inx advertises use of '$HOME' -- windows has HOMEPATH instead of HOME
-        home = os.environ.get('HOME', os.environ.get('HOMEPATH', 'NO-HOME'))
-        #args.slic3r_cmd = re.sub('^\$HOME(PATH)?', home, args.slic3r_cmd)
         
+        #############################################
+        # test slic3r command
+        #############################################
         if sys_platform.startswith('win'):
             # assert we run the commandline version of slic3r
-            args.slic3r_cmd = re.sub('slic3r(\.exe)?$', 'slic3r-console.exe', args.slic3r_cmd, flags=re.I)
-        
-
-        tmp_inputfile = None
-     
-        if args.rx is not None and abs(args.rx) < 0.01: args.rx = None
-        if args.ry is not None and abs(args.ry) < 0.01: args.ry = None
-        
-        if args.rx or args.ry:
-            try:        
-                mesh = stl.Mesh.from_file(inputfile)
-                if args.rx: mesh.rotate([1.0, 0.0, 0.0], math.radians(float(args.rx)))
-                if args.ry: mesh.rotate([0.0, 1.0, 0.0], math.radians(float(args.ry)))
-                inputfile = tmp_inputfile = tempfile.gettempdir() + os.path.sep + 'ink-stl-' + str(os.getpid()) + '.stl'
-                mesh.save(inputfile)
-            except Exception as e:
-                inkex.utils.debug("Rotate failed: " + str(e))
-            
-        svgfile = re.sub('\.stl', '.svg', args.inputfile, flags=re.IGNORECASE)
-                        
+            args.slic3r_cmd = re.sub('slic3r(\.exe)?$', 'slic3r-console.exe', args.slic3r_cmd, flags=re.I)       
         cmd = [args.slic3r_cmd, '--version']
         try:
             proc = subprocess.Popen(cmd, shell=False, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -116,18 +99,35 @@ class InputSTL(inkex.EffectExtension):
             sys.exit(1)
         stdout, stderr = proc.communicate()
         
+        #############################################
+        # prepare STL input (also accept and convert obj, stl, ply, off)
+        #############################################
+        outputfilebase = os.path.splitext(os.path.basename(args.inputfile))[0]
+        converted_inputfile = os.path.join(tempfile.gettempdir(), outputfilebase + ".stl")
+        if not os.path.exists(args.inputfile):
+            inkex.utils.debug("The input file does not exist.")
+            exit(1)
+        input_mesh = om.read_trimesh(args.inputfile)
+        if input_mesh.n_faces() > args.max_num_faces:
+            inkex.utils.debug("Aborted. Target STL file has " + str(input_mesh.n_faces()) + " faces, but only " + str(args.max_num_faces) + " are allowed.")
+            exit(1)     
+        om.write_mesh(converted_inputfile, input_mesh) #read + convert, might throw errors; warning. output is ASCII but cannot controlled to be set to binary because om.Options() is not available in python binding yet
+        if not os.path.exists(converted_inputfile):
+            inkex.utils.debug("The converted input file does not exist.")
+            exit(1)
+        args.inputfile = converted_inputfile #overwrite
+    
+        #############################################
+        # create the layer slices
+        #############################################
+        svgfile = re.sub('\.stl', '.svg', args.inputfile, flags=re.IGNORECASE)  
         # option --layer-height does not work. We use --scale instead...
-        scale = 1/float(args.layer_height)
-        cmd = [args.slic3r_cmd, '--no-gui']
-        if args.layer_height is not None:
-            cmd += ['--scale', str(scale), '--first-layer-height', '0.1mm']     # args.layer_height+'mm']
-        cmd += ['--export-svg', '-o', svgfile, inputfile]
-        
+        scale = 1.0 / args.layer_height
+        cmd  = [args.slic3r_cmd, '--no-gui', '--scale', str(scale), '--rotate-x', str(args.rx), '--rotate-y', str(args.ry), '--rotate', str(args.rz), '--first-layer-height', '0.1mm', '--export-svg', '-o', svgfile, args.inputfile]
         magic = 10    # layer width seems to be 0.1mm ???
         
         def scale_points(pts, scale):
-            """ str='276.422496,309.4 260.209984,309.4 260.209984,209.03 276.422496,209.03'
-            """
+            """ str='276.422496,309.4 260.209984,309.4 260.209984,209.03 276.422496,209.03' """
             return re.sub('\d*\.\d*', lambda x: str(float(x.group(0))*scale*magic), pts)
         
         
@@ -203,7 +203,7 @@ class InputSTL(inkex.EffectExtension):
             return bb
         
         if args.center is not False:
-            bb = bbox_info(args.slic3r_cmd, inputfile)
+            bb = bbox_info(args.slic3r_cmd, args.inputfile)
             # Ouch: bbox info gives us stl coordinates. slic3r translates them into svg px using 75dpi.
             cx = (-bb['min_x'] + bb['max_x']) * 0.5 * 1/scale * magic * 25.4 / 75
             cy = (-bb['min_y'] + bb['max_y']) * 0.5 * 1/scale * magic * 25.4 / 75  
@@ -213,9 +213,6 @@ class InputSTL(inkex.EffectExtension):
         except OSError as e:
             raise OSError("{0}\nCommand failed: errno={1} {2}".format(' '.join(cmd), e.errno, e.strerror))
         stdout, stderr = proc.communicate()
-        
-        if tmp_inputfile and os.path.exists(tmp_inputfile):
-            os.unlink(tmp_inputfile)
         
         if not b'Done.' in stdout:
             inkex.utils.debug("Command failed: {0}".format(' '.join(cmd)))
@@ -280,20 +277,25 @@ class InputSTL(inkex.EffectExtension):
         for e in doc.iterfind('//{*}polygon'):
             polygoncount += 1
             if args.tone_down == "front_to_back":
-                stroke_and_fill_opacity = polygoncount / totalPolygoncount
+                stroke_and_fill_opacity =  1 - (polygoncount / totalPolygoncount)
             elif args.tone_down == "back_to_front":
-                stroke_and_fill_opacity = 1 - (polygoncount / totalPolygoncount)
+                stroke_and_fill_opacity = polygoncount / totalPolygoncount
             elif args.tone_down == "regular":
                 stroke_and_fill_opacity = 1.0
             else:
                 inkex.utils.debug("Error: unkown town down option")
                 exit(1)
+                
+            if args.use_path_color is False:
+                stroke = ""
+            else:
+                stroke = "stroke:{}".format(args.path_color)
             # e.tag = '{http://www.w3.org/2000/svg}polygon'
             # e.attrib = {'{http://slic3r.org/namespaces/slic3r}type': 'contour', 'points': '276.422496,309.4 260.209984,309.4 260.209984,209.03 276.422496,209.03', 'style': 'fill: white'}
             e.tag = re.sub('polygon$', 'path', e.tag)
             e.attrib['id'] = 'polygon%d' % polygoncount
             e.attrib['{http://www.inkscape.org/namespaces/inkscape}connector-curvature'] = '0'
-            e.attrib['style'] = 'fill:{};fill-opacity:{};stroke:{};stroke-opacity:{};stroke-width:{}'.format(fill, stroke_and_fill_opacity, args.path_color, stroke_and_fill_opacity, args.stroke_width)
+            e.attrib['style'] = 'fill:{};fill-opacity:{};{};stroke-opacity:{};stroke-width:{}'.format(fill, stroke_and_fill_opacity, stroke, stroke_and_fill_opacity, args.stroke_width)
             e.attrib['d'] = 'M ' + re.sub(' ', ' L ', scale_points(e.attrib['points'], 1/scale)) + ' Z'
             del e.attrib['points']
             if e.attrib.get('{http://slic3r.org/namespaces/slic3r}type') == 'contour':
@@ -309,6 +311,21 @@ class InputSTL(inkex.EffectExtension):
         stl_group = self.document.getroot().add(inkex.Group(id=self.svg.get_unique_id("slic3r-stl-input-"))) #make a new group at root level
         for element in doc.getroot().iter("{http://www.w3.org/2000/svg}g"):
             stl_group.append(element)
+
+        #apply scale factor
+        translation_matrix = [[args.scalefactor, 0.0, 0.0], [0.0, args.scalefactor, 0.0]]
+        stl_group.transform = Transform(translation_matrix) * stl_group.transform
+
+        #adjust canvas to the inserted unfolding
+        if args.resizetoimport:
+            bbox = stl_group.bounding_box()
+            namedView = self.document.getroot().find(inkex.addNS('namedview', 'sodipodi'))
+            root = self.svg.getElement('//svg:svg');
+            offset = self.svg.unittouu(str(args.extraborder) + args.extraborder_units)
+            root.set('viewBox', '%f %f %f %f' % (bbox.left - offset, bbox.top - offset, bbox.width + 2 * offset, bbox.height + 2 * offset))
+            root.set('width', "{:0.6f}{}".format(bbox.width + 2 * offset, self.svg.unit))
+            root.set('height', "{:0.6f}{}".format(bbox.height + 2 * offset, self.svg.unit))
+
 
 if __name__ == '__main__':
     InputSTL().run()
