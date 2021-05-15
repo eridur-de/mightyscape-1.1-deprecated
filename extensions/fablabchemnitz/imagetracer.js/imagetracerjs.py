@@ -97,6 +97,9 @@ class Imagetracerjs (inkex.EffectExtension):
                          exportfile = "imagetracerjs.png"
                     else:
                          exportfile ="/tmp/imagetracerjs.png"
+                         
+                    if img.mode != 'RGB':
+                        img = img.convert('RGB')
                     img.save(exportfile, "png")
            
                     nodeclipath = os.path.join("imagetracerjs-master", "nodecli", "nodecli.js")
