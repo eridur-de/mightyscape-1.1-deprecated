@@ -65,7 +65,7 @@
                 <option value="krita">Krita Palette (.kpl)</option>
                 <option value="scribus">Scribus Palette (.xml)</option>
             </param>
-            <param type="path" name="palette_folder" gui-text="Folder to save palette file:" mode="folder" />
+            <param type="path" name="palette_folder" gui-text="Folder to save palette file:" mode="folder"/>
             <param name="palette_name" type="string" gui-text="Palette name">My Palette</param>
         </page>
         <page name="colorize" gui-text="Magic Colors">

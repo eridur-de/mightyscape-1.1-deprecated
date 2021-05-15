@@ -7,7 +7,7 @@
         <object-type>all</object-type>
         <effects-menu>
             <submenu name="FabLab Chemnitz">
-                <submenu name="PathOps" />
+                <submenu name="PathOps"/>
             </submenu>
         </effects-menu>
         <menu-tip>Apply Inkscape 'Intersection' path operation to multiple objects.</menu-tip>

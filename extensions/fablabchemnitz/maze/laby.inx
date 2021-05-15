@@ -17,7 +17,7 @@
         <object-type>path</object-type>
         <effects-menu>
             <submenu name="FabLab Chemnitz">
-                <submenu name="Shape/Pattern from Generator" />
+                <submenu name="Shape/Pattern from Generator"/>
             </submenu>
         </effects-menu>
     </effect>

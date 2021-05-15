@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <name>Slic3r STL Input</name>
+    <id>fablabchemnitz.de.input_stl</id>
+    <param name="tab" type="notebook">
+        <page name="tab_options" gui-text="Options">
+            <label appearance="header">Processor</label>
+            <param name="slic3r_cmd" type="path" mode="file" gui-text="Slic3r command">/path/to/slic3r/v1.3.1-dev</param>
+            <label appearance="header">Input</label>
+            <param name="inputfile" type="path" gui-text="Input file" filetypes="obj,off,ply,stl" mode="file">/your/object/file.stl</param>
+            <param name="max_num_faces" type="int" min="1" max="99999" gui-text="Maximum allowed faces" gui-description="If the STL file has too much detail it contains a large number of faces. This will make processing extremely slow. So we can limit it.">200</param>     
+            <param name="layer_height" type="float" min="0.001" max="99999.000" precision="3" gui-text="Layer height [mm]:">1.000</param>
+            <hbox>
+                <vbox>
+                    <label appearance="header">Transforms</label>
+                    <param name="scalefactor" type="float" precision="3" min="0.0001" max="10000.0" gui-text="Manual scale factor" gui-description="default is 1.0">1.0</param>
+                    <param name="rx" type="float" precision="1" min="-360.0" max="360.0" gui-text="3D-Rotate X-Axis [deg]:">0</param>
+                    <param name="ry" type="float" precision="1" min="-360.0" max="360.0" gui-text="3D-Rotate Y-Axis [deg]:">0</param>
+                    <param name="rz" type="float" precision="1" min="-360.0" max="360.0" gui-text="3D-Rotate Z-Axis [deg]:">0</param>
+                </vbox>
+                <separator/>
+                <vbox>
+                    <label appearance="header">Output</label>
+                    <param name="resizetoimport" type="bool" gui-text="Resize canvas" gui-description="Resize the canvas to the imported drawing's bounding box">true</param>
+                    <param name="extraborder" type="float" precision="3" gui-text="Extra border" gui-description="Add extra border around fitted canvas">0.0</param>
+                    <param name="extraborder_units" type="optiongroup" appearance="combo" gui-text="Border offset units">
+                       <option value="mm">mm</option>
+                       <option value="cm">cm</option>
+                       <option value="in">in</option>
+                       <option value="pt">pt</option>
+                       <option value="px">px</option>
+                    </param>
+                    <param name="numbers" type="bool" gui-text="Add layer numbers">false</param>
+                    <param name="center" type="bool" gui-text="Add center marks">false</param>
+                </vbox>
+                <separator/>
+                <vbox>
+                    <label appearance="header">Style</label> 
+                    <param name="stroke_width" type="float" min="0" max="100" gui-text="Stroke width (px):">2</param>
+                    <param name="path_color" type="color" appearance="colorbutton" gui-text="Path color">879076607</param>
+                    <param name="use_path_color" type="bool" gui-text="Use path color">true</param>
+                    <param name="fill_color" type="color" appearance="colorbutton" gui-text="Fill color">1943148287</param>
+                    <param name="use_fill_color" type="bool" gui-text="Use fill color">false</param>
+                    <param name="tone_down" type="optiongroup" appearance="combo" gui-text="Town down opacity for each layer">
+                       <option value="regular">regular</option>
+                       <option value="front_to_back">front to back</option>
+                       <option value="back_to_front">back to front</option>
+                    </param>
+                </vbox>
+            </hbox>
+        </page>
+        <page name="tab_about" gui-text="About">
+            <label appearance="header">Slic3r STL Input</label>
+            <label>This extension is highly based on the work of Jürgen Weigert. It projects an STL file on the X-Y plane by cutting the objects into "slices". Each "slice" is a group of polygons, with a label indicating it's z position. The polygons are converted to paths for better editing in inkscape. Use Object -&gt; Rows &amp; Columns to distribute the slices in a grid. Possible input files are STL, Wavefront OBJ, PLY and OFF.</label>
+            <label>2021 / written by Mario Voigt (Stadtfabrikanten e.V. / FabLab Chemnitz)</label>
+            <spacer/>
+            <label appearance="header">Online Documentation</label>
+            <label appearance="url">https://y.stadtfabrikanten.org/slic3rstlinput</label>
+            <spacer/>
+            <label appearance="header">Contributing</label>
+            <label appearance="url">https://gitea.fablabchemnitz.de/MarioVoigt/mightyscape-1.X</label>
+            <label appearance="url">mailto:mario.voigt@stadtfabrikanten.org</label>
+            <spacer/>
+            <label appearance="header">Third Party Modules</label>
+            <label appearance="url">https://slic3r.org/download</label>
+            <spacer/>
+            <label appearance="header">MightyScape Extension Collection</label>
+            <label>This piece of software is part of the MightyScape for Inkscape Extension Collection and is licensed under GNU GPL v3</label>
+            <label appearance="url">https://y.stadtfabrikanten.org/mightyscape-overview</label>
+        </page>
+        <page name="tab_donate" gui-text="Donate">
+            <label appearance="header">Coffee + Pizza</label>
+            <label>We are the Stadtfabrikanten, running the FabLab Chemnitz since 2016. A FabLab is an open workshop that gives people access to machines and digital tools like 3D printers, laser cutters and CNC milling machines.</label>
+            <spacer/>           
+            <label>You like our work and want to support us? You can donate to our non-profit organization by different ways:</label>
+            <label appearance="url">https://y.stadtfabrikanten.org/donate</label>
+            <spacer/>
+            <label>Thanks for using our extension and helping us!</label>
+            <image>../000_about_fablabchemnitz.svg</image>
+        </page>
+    </param>
+    <effect>
+        <object-type>all</object-type>
+        <effects-menu>
+            <submenu name="FabLab Chemnitz">
+                <submenu name="Import/Export/Transfer"/>
+            </submenu>
+        </effects-menu>
+    </effect>
+    <script>
+        <command location="inx" interpreter="python">input_stl.py</command>
+    </script>
+</inkscape-extension>

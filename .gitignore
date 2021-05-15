@@ -1,6 +1,8 @@
 *.pyc
 /.project
 /.pydevproject
+/.settings/org.eclipse.core.resources.prefs
+extensions/.project
 *.out
 extensions/fablabchemnitz/animate_order/drawing.svg
 extensions/fablabchemnitz/animate_order/animate_order.html

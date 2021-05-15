@@ -104,7 +104,7 @@
         <object-type>all</object-type>
         <effects-menu>
             <submenu name="FabLab Chemnitz">
-                <submenu name="Import/Export/Transfer" />
+                <submenu name="Import/Export/Transfer"/>
             </submenu>
         </effects-menu>
     </effect>

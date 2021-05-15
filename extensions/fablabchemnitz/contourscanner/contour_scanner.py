@@ -268,7 +268,7 @@ class ContourScanner(inkex.EffectExtension):
         applyTransformAvailable = False
         # at first we apply external extension
         try:
-            sys.path.append("..") # add parent directory to path to allow importing applytransform (vpype extension is encapsulated in sub directory)
+            sys.path.append("../applytransform") # add parent directory to path to allow importing applytransform (vpype extension is encapsulated in sub directory)
             import applytransform
             applyTransformAvailable = True
         except Exception as e:
