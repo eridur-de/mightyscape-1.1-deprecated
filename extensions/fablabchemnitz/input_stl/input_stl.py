@@ -297,7 +297,7 @@ class InputSTL(inkex.EffectExtension):
             polygoncount += 1
             
             if args.diffuse_fill_opacity == "front_to_back":
-                fill_opacity =  (1 - (polygoncount / totalPolygoncount) * (args.max_fill_opacity - args.min_fill_opacity)) + args.min_fill_opacity
+                fill_opacity =  (args.max_fill_opacity - (polygoncount / totalPolygoncount) * (args.max_fill_opacity - args.min_fill_opacity)) + args.min_fill_opacity
             elif args.diffuse_fill_opacity == "back_to_front":
                 fill_opacity = ((polygoncount / totalPolygoncount) * (args.max_fill_opacity - args.min_fill_opacity)) + args.min_fill_opacity
             elif args.diffuse_fill_opacity == "no_diffuse":
@@ -307,7 +307,7 @@ class InputSTL(inkex.EffectExtension):
                 exit(1)
      
             if args.diffuse_stroke_width == "front_to_back":
-                stroke_width =  (1 - (polygoncount / totalPolygoncount) * (args.max_stroke_width - args.min_stroke_width)) + args.min_stroke_width
+                stroke_width =  (args.max_stroke_width - (polygoncount / totalPolygoncount) * (args.max_stroke_width - args.min_stroke_width)) + args.min_stroke_width
             elif args.diffuse_stroke_width == "back_to_front":
                 stroke_width = ((polygoncount / totalPolygoncount) * (args.max_stroke_width - args.min_stroke_width)) + args.min_stroke_width
             elif args.diffuse_stroke_width == "no_diffuse":
@@ -317,7 +317,7 @@ class InputSTL(inkex.EffectExtension):
                 exit(1)
           
             if args.diffuse_stroke_opacity == "front_to_back":
-                stroke_opacity =  (1 - (polygoncount / totalPolygoncount) * (args.max_stroke_opacity - args.min_stroke_opacity)) + args.min_stroke_opacity
+                stroke_opacity =  (args.max_stroke_opacity - (polygoncount / totalPolygoncount) * (args.max_stroke_opacity - args.min_stroke_opacity)) + args.min_stroke_opacity
             elif args.diffuse_stroke_opacity == "back_to_front":
                 stroke_opacity = ((polygoncount / totalPolygoncount) * (args.max_stroke_opacity - args.min_stroke_opacity)) + args.min_stroke_opacity
             elif args.diffuse_stroke_opacity == "no_diffuse":
