@@ -19,15 +19,31 @@ from git import Repo #requires GitPython lib
 class Upgrade(inkex.EffectExtension):
 
     def add_arguments(self, pars):
+        pars.add_argument("--tab")
         pars.add_argument("--stash_untracked", type=inkex.Boolean, default=False, help="Stash untracked files and continue to upgrade")
 
     def effect(self):
         warnings.simplefilter('ignore', ResourceWarning) #suppress "enable tracemalloc to get the object allocation traceback"
 
         #get the directory of mightyscape
-        extension_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), '../', '../../') #go up to main dir /home/<user>/.config/inkscape/extensions/mightyscape-1.X/
+        extension_dir = os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(__file__)), '../')) #go up to main dir /home/<user>/.config/inkscape/extensions/mightyscape-1.X/
+        main_dir = os.path.abspath(os.path.join(extension_dir, '../../')) #go up to main dir /home/<user>/.config/inkscape/extensions/mightyscape-1.X/
 
-        repo = Repo(os.path.join(extension_dir, ".git"))
+        #create some statistics
+        totalFolders = 0
+        for root, folders, files in os.walk(extension_dir):
+            totalFolders += len(folders)                        
+            break #prevent descending into subfolders
+        
+        totalInx = 0
+        for root, folders, files in os.walk(extension_dir):
+            for file in files:    
+                if file.endswith('.inx'):
+                    totalInx += 1
+        
+        inkex.utils.debug("There are {} extension folders with {} .inx files!".format(totalFolders, totalInx))
+
+        repo = Repo(os.path.join(main_dir, ".git"))
         
         #check if it is a non-empty git repository
         if repo.bare is False:
