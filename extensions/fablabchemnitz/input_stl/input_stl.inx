@@ -17,6 +17,8 @@
                     <param name="rx" type="float" precision="1" min="-360.0" max="360.0" gui-text="3D-Rotate X-Axis [deg]">0.0</param>
                     <param name="ry" type="float" precision="1" min="-360.0" max="360.0" gui-text="3D-Rotate Y-Axis [deg]">0.0</param>
                     <param name="rz" type="float" precision="1" min="-360.0" max="360.0" gui-text="3D-Rotate Z-Axis [deg]">0.0</param>
+                    <param name="mirrorx" type="bool" gui-text="Mirror X">false</param>
+                    <param name="mirrory" type="bool" gui-text="Mirror Y">false</param>
                 </vbox>
                 <separator />
                 <vbox>

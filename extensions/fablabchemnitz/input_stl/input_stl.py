@@ -27,13 +27,18 @@ For optional(!) rotation support:
  * requires exactly Slic3r-1.3.1-dev
       -> https://dl.slic3r.org/dev/linux/
       -> https://dl.slic3r.org/dev/win/
- * Make it available through PrusaSlic3r? > this is not possible because no support to slice into SVG layers
+ * Notes to other Slic3r forks
+     * does not work with Slic3r PE (Prusa Edition) (no export-svg option)
+     * does not work with PrusaSlicer (no export-svg option)
+ * does not work with IceSL slicer (https://icesl.loria.fr; no command line options) 
 
 #ToDos
  * use svg_pathstats(path_d): to compute bounding boxes.
- * fix bbox calc: ValueError: b'/tmp/.mount_Slic3rQi5kIt/AppRun: line 65: 10415 Segmentation fault 
+ * fix bbox calc in Linux systems: ValueError: b'/tmp/.mount_Slic3rQi5kIt/AppRun: line 65: 10415 Segmentation fault 
    (core dumped) LD_LIBRARY_PATH="$DIR/usr/lib:${LD_LIBRARY_PATH}" "${DIR}/usr/bin/perl-local" -I"${DIR}/usr/lib/local-lib/lib/perl5" 
    "${DIR}/usr/bin/slic3r.pl" --gui "$@"\n'
+ * add some algorithm to handle fill handling for alternating paths. Issue at the moment: Imagine a char "A" in 3D. 
+   It conatains an outline and a line path. Because those two paths are not combined both get filled but they do not render the char A correctly
  
 '''
 import sys
@@ -63,15 +68,23 @@ class InputSTL(inkex.EffectExtension):
     def add_arguments(self, pars):
         pars.add_argument('--tab')
 
-        #Options
+        #Processor
         pars.add_argument('--slic3r_cmd', default="slic3r", help="Command to invoke slic3r.")
+        
+        #Input
         pars.add_argument('--inputfile', help='Input file (OBJ/OFF/PLY/STL)')
         pars.add_argument('--scalefactor', type=float, default=1.0, help='Scale the model to custom size')
         pars.add_argument("--max_num_faces", type=int, default=200, help="If the STL file has too much detail it contains a large number of faces. This will make processing extremely slow. So we can limit it.")
         pars.add_argument('--layer_height', type=float, default=1.000, help='slic3r layer height, probably in mm. Default: per slic3r config')
+
+        #Transforms
         pars.add_argument('--rx', type=float, default=None, help='Rotate STL object around X-Axis before importing.')
         pars.add_argument('--ry', type=float, default=None, help='Rotate STL object around Y-Axis before importing.')
         pars.add_argument('--rz', type=float, default=None, help='Rotate STL object around Z-Axis before importing.')
+        pars.add_argument('--mirrorx', type=inkex.Boolean, default=False, help='Mirror X')
+        pars.add_argument('--mirrory', type=inkex.Boolean, default=False, help='Mirror Y')
+     
+        #Output
         pars.add_argument('--numbers', type=inkex.Boolean, default=False, help='Add layer numbers.')
         pars.add_argument('--center', type=inkex.Boolean, default=False, help='Add center marks.')
         pars.add_argument("--resizetoimport", type=inkex.Boolean, default=True, help="Resize the canvas to the imported drawing's bounding box") 
@@ -99,6 +112,16 @@ class InputSTL(inkex.EffectExtension):
     def effect(self):             
         args = self.options
         
+        if args.min_fill_opacity > args.max_fill_opacity:
+            inkex.utils.debug("Min fill opacity may not be larger than max fill opacity. Adjust and try again!")
+            exit(1)
+        if args.min_stroke_width > args.max_stroke_width:
+            inkex.utils.debug("Min stroke width may not be larger than max stroke width. Adjust and try again!")
+            exit(1)
+        if args.min_stroke_opacity > args.max_stroke_opacity:
+            inkex.utils.debug("Min stroke opacity may not be larger than max stroke opacity. Adjust and try again!")
+            exit(1)
+   
         #############################################
         # test slic3r command
         #############################################
@@ -138,12 +161,20 @@ class InputSTL(inkex.EffectExtension):
         svgfile = re.sub('\.stl', '.svg', args.inputfile, flags=re.IGNORECASE)  
         # option --layer-height does not work. We use --scale instead...
         scale = 1.0 / args.layer_height
-        cmd  = [args.slic3r_cmd, '--no-gui', '--scale', str(scale), '--rotate-x', str(args.rx), '--rotate-y', str(args.ry), '--rotate', str(args.rz), '--first-layer-height', '0.1mm', '--export-svg', '-o', svgfile, args.inputfile]
-        magic = 10    # layer width seems to be 0.1mm ???
+        cmd  = [
+            args.slic3r_cmd, 
+            '--no-gui', 
+            '--scale', str(scale), 
+            '--rotate-x', str(args.rx),
+            '--rotate-y', str(args.ry), 
+            '--rotate', str(args.rz), 
+            '--first-layer-height', '0.1mm', 
+            '--export-svg', '-o', svgfile, args.inputfile]
+        
         
         def scale_points(pts, scale):
             """ str='276.422496,309.4 260.209984,309.4 260.209984,209.03 276.422496,209.03' """
-            return re.sub('\d*\.\d*', lambda x: str(float(x.group(0))*scale*magic), pts)
+            return re.sub('\d*\.\d*', lambda x: str(float(x.group(0))*scale), pts)
         
         
         ## CAUTION: keep svg_pathstats() in sync with inkscape-centerlinetrace
@@ -220,8 +251,8 @@ class InputSTL(inkex.EffectExtension):
         if args.center is True:
             bb = bbox_info(args.slic3r_cmd, args.inputfile)
             # Ouch: bbox info gives us stl coordinates. slic3r translates them into svg px using 75dpi.
-            cx = (-bb['min_x'] + bb['max_x']) * 0.5 * 1/scale * magic * 25.4 / 75
-            cy = (-bb['min_y'] + bb['max_y']) * 0.5 * 1/scale * magic * 25.4 / 75  
+            cx = (-bb['min_x'] + bb['max_x']) * 0.5 * 1/scale * 25.4 / 75
+            cy = (-bb['min_y'] + bb['max_y']) * 0.5 * 1/scale * 25.4 / 75  
 
         try:
             proc = subprocess.Popen(cmd, shell=False, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -265,12 +296,10 @@ class InputSTL(inkex.EffectExtension):
         for e in doc.iterfind('//{*}polygon'):
             polygoncount += 1
             
-            
-            # we ignore if min opacity values are larger than max opacity. We just use abs() for fill and stroke opacity
             if args.diffuse_fill_opacity == "front_to_back":
-                fill_opacity =  1 - (polygoncount / totalPolygoncount) * abs(args.max_fill_opacity - args.min_fill_opacity)
+                fill_opacity =  (1 - (polygoncount / totalPolygoncount) * (args.max_fill_opacity - args.min_fill_opacity)) + args.min_fill_opacity
             elif args.diffuse_fill_opacity == "back_to_front":
-                fill_opacity = (polygoncount / totalPolygoncount) * abs(args.max_fill_opacity - args.min_fill_opacity)
+                fill_opacity = ((polygoncount / totalPolygoncount) * (args.max_fill_opacity - args.min_fill_opacity)) + args.min_fill_opacity
             elif args.diffuse_fill_opacity == "no_diffuse":
                 fill_opacity = args.max_fill_opacity
             else:
@@ -278,9 +307,9 @@ class InputSTL(inkex.EffectExtension):
                 exit(1)
      
             if args.diffuse_stroke_width == "front_to_back":
-                stroke_width =  1 - (polygoncount / totalPolygoncount) * abs(args.max_stroke_width - args.min_stroke_width)
+                stroke_width =  (1 - (polygoncount / totalPolygoncount) * (args.max_stroke_width - args.min_stroke_width)) + args.min_stroke_width
             elif args.diffuse_stroke_width == "back_to_front":
-                stroke_width = (polygoncount / totalPolygoncount) * abs(args.max_stroke_width - args.min_stroke_width)
+                stroke_width = ((polygoncount / totalPolygoncount) * (args.max_stroke_width - args.min_stroke_width)) + args.min_stroke_width
             elif args.diffuse_stroke_width == "no_diffuse":
                 stroke_width = args.max_stroke_width
             else:
@@ -288,9 +317,9 @@ class InputSTL(inkex.EffectExtension):
                 exit(1)
           
             if args.diffuse_stroke_opacity == "front_to_back":
-                stroke_opacity =  1 - (polygoncount / totalPolygoncount) * abs(args.max_stroke_opacity - args.min_stroke_opacity)
+                stroke_opacity =  (1 - (polygoncount / totalPolygoncount) * (args.max_stroke_opacity - args.min_stroke_opacity)) + args.min_stroke_opacity
             elif args.diffuse_stroke_opacity == "back_to_front":
-                stroke_opacity = (polygoncount / totalPolygoncount) * abs(args.max_stroke_opacity - args.min_stroke_opacity)
+                stroke_opacity = ((polygoncount / totalPolygoncount) * (args.max_stroke_opacity - args.min_stroke_opacity)) + args.min_stroke_opacity
             elif args.diffuse_stroke_opacity == "no_diffuse":
                 stroke_opacity = args.max_stroke_opacity
             else:
@@ -308,6 +337,18 @@ class InputSTL(inkex.EffectExtension):
             e.attrib['{http://www.inkscape.org/namespaces/inkscape}connector-curvature'] = '0'
             e.attrib['style'] = 'fill:{};fill-opacity:{};{};stroke-opacity:{};stroke-width:{}'.format(fill, fill_opacity, stroke, stroke_opacity, stroke_width)
             e.attrib['d'] = 'M ' + re.sub(' ', ' L ', scale_points(e.attrib['points'], 1/scale)) + ' Z'
+
+            if args.mirrorx is True:
+                mx = -1
+            else:
+                mx = +1
+            if args.mirrory is True:
+                my = -1
+            else:
+                my = +1
+                
+            if args.mirrorx is True or args.mirrory is True:
+                e.attrib['transform'] = 'scale({},{})'.format(mx, my)
             del e.attrib['points']
             if e.attrib.get('{http://slic3r.org/namespaces/slic3r}type') == 'contour':
                 # remove contour, but keep all slic3r:type='hole', whatever it is worth later.
