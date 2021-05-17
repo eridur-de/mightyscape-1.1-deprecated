@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <name>Unwind Paths (Hlines)</name>
+    <id>fablabchemnitz.de.hlines</id>
+    <param name="extrude" type="bool" gui-text="Extrude">false</param>
+    <param name="extrude_height" type="float" min="0.000" max="99999.000" precision="3" gui-text="Extrude height">10.000</param>
+    <param name="unit" gui-text="Unit" type="optiongroup" appearance="combo">
+        <option value="mm">mm</option>
+        <option value="cm">cm</option>
+        <option value="m">m</option>
+        <option value="in">in</option>
+        <option value="pt">pt</option>
+        <option value="px">px</option>
+    </param>
+    <effect>
+        <object-type>all</object-type>
+        <effects-menu>
+            <submenu name="FabLab Chemnitz">
+                <submenu name="Shape/Pattern from existing Path(s)"/>
+            </submenu>
+        </effects-menu>
+    </effect>
+    <script>
+        <command location="inx" interpreter="python">hlines.py</command>
+    </script>
+</inkscape-extension>
