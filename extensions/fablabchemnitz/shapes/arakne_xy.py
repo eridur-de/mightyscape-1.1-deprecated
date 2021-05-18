@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 
 '''
-import os, sys, tempfile, webbrowser, math, inkex, simplestyle, simpletransform
+import os, sys, tempfile, math, inkex
 from lxml import etree
 
 def info(s, newLine="\n"):

@@ -23,7 +23,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 import inkex
 from inkex import bezier
 from inkex.paths import CubicSuperPath
-import simpletransform
 import copy
 from math import ceil
 

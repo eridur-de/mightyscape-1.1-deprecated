@@ -9,7 +9,6 @@ import subprocess
 import tempfile
 import shutil
 import copy
-import simplepath, simpletransform
 
 from simplestyle import *
 from copy import deepcopy

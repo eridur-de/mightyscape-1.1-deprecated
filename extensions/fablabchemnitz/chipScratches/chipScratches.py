@@ -2,7 +2,6 @@
 
 import math
 import inkex
-from simplestyle import *
 import random
 from lxml import etree
 
