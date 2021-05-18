@@ -62,6 +62,10 @@ class AnimateOrder (inkex.EffectExtension):
 
         target_html = os.path.join(extension_dir, "animate_order.html")
         
+        if os.path.exists(target_html) is False:
+            inkex.utils.debug("Error. Target file does not exist!")
+            exit(1)
+        
         docTitle = self.document.getroot().get("{http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd}docname")
         if docTitle is None:
             title = "Animate Order - Vivus JS"
@@ -97,7 +101,11 @@ class AnimateOrder (inkex.EffectExtension):
 
         #now open firefox
         args = [self.options.browser, target_html]
-        self.spawnIndependentProcess(args)
+        try:
+            self.spawnIndependentProcess(args)
+        except FileNotFoundError as e:
+            inkex.utils.debug("Error. Check for correct browser installation and try again!")
+            exit(1)
 
 if __name__ == '__main__':
     AnimateOrder().run()
