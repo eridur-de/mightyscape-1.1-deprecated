@@ -41,13 +41,13 @@ class UnwindPaths(inkex.EffectExtension):
         pars.add_argument('--tab')
         pars.add_argument('--keep_original', type=inkex.Boolean, default=False, help="If selected, the original paths get deleted")
         pars.add_argument('--break_apart', type=inkex.Boolean, default=False)
-        pars.add_argument('--render_vertical_dividers', type=inkex.Boolean, default=False)
-        pars.add_argument('--render_with_dashes', type=inkex.Boolean, default=False)
+        pars.add_argument('--colorize', type=inkex.Boolean, default=False, help="Requires enabled 'Break apart' option")
         pars.add_argument('--extrude', type=inkex.Boolean, default=False)
         pars.add_argument('--extrude_height', type=float, default=10.000)
         pars.add_argument('--unit', default="mm")
-        pars.add_argument('--colorize', type=inkex.Boolean, default=False, help="Requires enabled 'Break apart' option")
-
+        pars.add_argument('--render_vertical_dividers', type=inkex.Boolean, default=False)
+        pars.add_argument('--render_with_dashes', type=inkex.Boolean, default=False)
+        
     #if multiple curves are inside the path we split (break apart)
     def breakContours(self, element, breakelements = None): #this does the same as "CTRL + SHIFT + K"
         if breakelements == None:
@@ -81,6 +81,10 @@ class UnwindPaths(inkex.EffectExtension):
 
     def effect(self):
         shifting = self.svg.unittouu(str(self.options.extrude_height) + self.options.unit)
+
+        #some mode handling
+        if self.options.colorize is True:
+            self.options.break_apart = True #required to make it work
 
         if len(self.svg.selected) > 0:
             #we break apart combined paths to get distinct contours
@@ -122,7 +126,7 @@ class UnwindPaths(inkex.EffectExtension):
                         newOriginalPathGroup = self.svg.get_current_layer().add(inkex.Group(id="new-original-" + element.get('id')))
                         elemGroup.append(topLineGroup)      
                         elemGroup.append(bottomLineGroup)
-                        elemGroup.append(newOriginalPathGroup)
+                        self.svg.get_current_layer().append(newOriginalPathGroup) #we want this to be one level above unwound stuff
                 
                     if self.options.extrude is True:
                         vlinesGroup = self.svg.get_current_layer().add(inkex.Group(id="vlines-" + element.get('id')))

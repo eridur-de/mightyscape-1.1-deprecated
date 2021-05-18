@@ -6,9 +6,9 @@
         <page name="tab_settings" gui-text="Paperfold for Inkscape">
             <label appearance="header">Settings</label>
             <param name="keep_original" type="bool" gui-text="Keep original paths" gui-description="If selected, the original paths get deleted">false</param>
-            <param name="break_apart" type="bool" gui-text="Break apart" gui-description="Split each path into single curve segments">false</param>
-            <param name="render_vertical_dividers" type="bool" gui-text="Render vertical dividers">true</param>
-            <param name="render_with_dashes" type="bool" gui-text="Use dash style for dividers">true</param>
+            <param name="break_apart" type="bool" gui-text="Break apart paths" gui-description="Split each path into single curve segments">false</param>
+            <param name="colorize" type="bool" gui-text="Colorize glue pairs" gui-description="Requires enabled 'Break apart' option">false</param>
+            <label appearance="header">Extrude Options</label>
             <param name="extrude" type="bool" gui-text="Extrude">false</param>
             <param name="extrude_height" type="float" min="0.000" max="99999.000" precision="3" gui-text="Extrude height">10.000</param>
             <param name="unit" gui-text="Unit" type="optiongroup" appearance="combo">
@@ -19,7 +19,8 @@
                 <option value="pt">pt</option>
                 <option value="px">px</option>
             </param>
-            <param name="colorize" type="bool" gui-text="Colorize glue pairs" gui-description="Requires enabled 'Break apart' option">false</param>
+            <param name="render_vertical_dividers" type="bool" gui-text="Render vertical dividers">true</param>
+            <param name="render_with_dashes" type="bool" gui-text="Use dash style for dividers">true</param>
         </page>
         <page name="tab_about" gui-text="About">
             <label appearance="header">Unwind Paths</label>
