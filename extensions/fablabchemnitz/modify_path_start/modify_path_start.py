@@ -9,7 +9,6 @@ Last patch: 19.05.2021
 License: GNU GPL v3
 
 ToDo:
-add group id like path id 
 link for usage: plotting/laser cutting, path unwinding plugin > startpunkt für anwicklung
 '''
 
@@ -123,7 +122,7 @@ class ModifyStartDirection(inkex.EffectExtension):
     
     def visualizeFirstTwo(self, element):
         """Add a dot label for this path element"""
-        group = element.getparent().add(inkex.Group())
+        group = element.getparent().add(inkex.Group(id="visualize-group-" + element.get('id')))
         dot_group = group.add(inkex.Group(id="dot-group-" + element.get('id')))
         num_group = group.add(inkex.Group(id="num-group-" + element.get('id')))
         group.transform = element.transform
@@ -132,10 +131,10 @@ class ModifyStartDirection(inkex.EffectExtension):
         count = 0
         for step, (x, y) in enumerate(element.path.end_points):
             count += 1
-            circle = Circle(cx=str(x), cy=str(y), r=str(radius))
+            circle = Circle(cx=str(x), cy=str(y), r=str(radius), id="circle-" + element.get('id') + "-" + str(count))
             circle.style = inkex.Style({'stroke': 'none', 'fill': '#000'})
 
-            text = TextElement(x=str(x + radius), y=str(y - radius))
+            text = TextElement(x=str(x + radius), y=str(y - radius), id="text-" + element.get('id') + "-" + str(count))
             text.text = str(count) #we start with #1
             text.style = inkex.Style({'font-size': self.svg.unittouu(self.options.fontsize), 'fill-opacity': '1.0', 'stroke': 'none', 
                       'font-weight': 'normal', 'font-style': 'normal', 'fill': '#999'})
