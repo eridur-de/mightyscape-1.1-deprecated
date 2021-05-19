@@ -13,8 +13,11 @@ Features
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 09.08.2020
-Last patch: 14.04.2021
+Last patch: 19.05.2021
 License: GNU GPL v3
+
+ToDo:
+- add option to replace last segment of closed paths by 'Z' or 'z' in case the first and last segment touch each other (coincident point)
 """
 
 import sys
@@ -131,9 +134,13 @@ class ContourScanner(inkex.EffectExtension):
             subPaths.append(raw[prev:])
             
             for simpath in subPaths:
+
                 closed = False
-                if simpath[-1][0] == 'Z':
-                    closed = True
+                if simpath[-1][0] == 'Z' or \
+                    (simpath[-1][0] == 'L' and simpath[0][1] == simpath[-1][1]) or \
+                    (simpath[-1][0] == 'C' and simpath[0][1] == [simpath[-1][1][-2], simpath[-1][1][-1]]) :  #if first is last point the path is also closed. The "Z" command is not required
+                    closed = True   
+                    
                     if simpath[-2][0] == 'L': simpath[-1][1] = simpath[0][1]
                     else: simpath.pop()
                 points = []

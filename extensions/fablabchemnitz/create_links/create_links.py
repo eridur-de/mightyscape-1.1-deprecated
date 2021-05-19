@@ -93,11 +93,14 @@ class LinksCreator(inkex.EffectExtension):
     def effect(self):
         def createLinks(element):   
             elementParent = element.getparent()
-
-            pathIsClosed = False
             path = element.path.to_arrays() #to_arrays() is deprecated. How to make more modern?
-            if path[-1][0] == 'Z' or path[0][1] == path[-1][1]:  #if first is last point the path is also closed. The "Z" command is not required
+            pathIsClosed = False
+            if path[-1][0] == 'Z' or \
+                (path[-1][0] == 'L' and path[0][1] == path[-1][1]) or \
+                (path[-1][0] == 'C' and path[0][1] == [path[-1][1][-2], path[-1][1][-1]]) \
+                :  #if first is last point the path is also closed. The "Z" command is not required
                 pathIsClosed = True
+                
             if self.options.path_types == 'open_paths' and pathIsClosed is True:
                 return #skip this loop iteration
             elif self.options.path_types == 'closed_paths' and pathIsClosed is False:
