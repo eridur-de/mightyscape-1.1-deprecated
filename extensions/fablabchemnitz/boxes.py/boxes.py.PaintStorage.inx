@@ -11,6 +11,7 @@
         <param name="candiameter" type="int" max="9999" gui-text="candiameter" gui-description="Diameter of the paintcans">30</param>
         <param name="minspace" type="int" max="9999" gui-text="minspace" gui-description="Minimum space between the paintcans">10</param>
         <param name="hexpattern" type="bool" gui-text="hexpattern" gui-description="Use hexagonal arrangement for the holes instead of orthogonal">false</param>
+        <param name="drawer" type="bool" gui-text="drawer" gui-description="Create a stackable drawer instead">false</param>
     </page>
     <page name="tab_1" gui-text="Default">
         <param name="thickness" type="float" precision="2" max="9999" gui-text="thickness" gui-description="thickness of the material">3.0</param>
