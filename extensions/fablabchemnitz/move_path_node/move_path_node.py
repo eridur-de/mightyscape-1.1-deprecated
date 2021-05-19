@@ -1,22 +1,18 @@
 #!/usr/bin/env python3
 
 '''
-
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 19.05.2021
 Last patch: 19.05.2021
 License: GNU GPL v3
-
-ToDo:
-link for usage: plotting/laser cutting, path unwinding plugin > startpunkt für anwicklung
 '''
 
 import copy
 import inkex
 from inkex import Circle, TextElement, Path, PathElement, CubicSuperPath
 
-class ModifyStartDirection(inkex.EffectExtension):
+class MovePathNode(inkex.EffectExtension):
   
     def modify(self, element):
         raw = element.path.to_arrays()
@@ -27,7 +23,10 @@ class ModifyStartDirection(inkex.EffectExtension):
                 prev = i
         subpaths.append(raw[prev:])
         if self.options.debug is True:
-            self.msg("Element {} has {} subpath(s)".format(element.get('id'), len(subpaths)))
+            if len(subpaths) == 0:
+                self.msg("{} has no subpaths").format(element.get('id')) 
+            else:
+                self.msg("{} has {} subpath(s)".format(element.get('id'), len(subpaths)))
             
         subpathNr = 0
         for path in subpaths:
@@ -43,9 +42,13 @@ class ModifyStartDirection(inkex.EffectExtension):
     
             if self.options.debug is True:
                 self.msg("pathIsClosed = " + str(pathIsClosed))
-    
+                self.msg("nodes = " + str(len(path)))
+
             if self.options.closed_only is True and pathIsClosed is False:
-                self.msg("Path {}/subpath {} is not closed!".format(element.get('id'), subpathNr))
+                if len(subpaths) == 0:
+                    self.msg("{}/subpath {} is not closed! Skipping ...".format(element.get('id'), subpathNr))
+                else:
+                    self.msg("{} is not closed! Skipping ...".format(element.get('id'))) 
                 continue #skip this open path
     
             if path[-1][0] == 'Z': #replace Z with another L command (which moves to the coordinates of the first M command in path) to have better overview
@@ -53,31 +56,31 @@ class ModifyStartDirection(inkex.EffectExtension):
                 path[-1][1] = path[0][1]
     
             #adjust if entered move number is higher than actual node count. We handle as infinite looping
-            moves = self.options.movenode % len(path)
+            moves = (self.options.movenode - 1) % len(path)
             if pathIsClosed is True: #if closed start and end collapse and "duplicate"
-                moves = self.options.movenode % (len(path) - 1)
-            
+                moves = (self.options.movenode - 1) % (len(path) - 1)
+            if self.options.movenode == 0: #special handling for 0 is required
+                moves = 0
+
             if self.options.debug is True:
+                self.msg("moves to perform = " + str(moves))
                 self.msg("root path:")
                 self.msg(path)
                 self.msg("-"*25)
 
-            if self.options.debug is True:
-                self.msg("moves = " + str(moves))
-
             for i in range(moves):
-                if len(path) > 2: #the path needs at least more than two nodes
-                    #we move the first node to the end of the list
+                if len(path) > 2: #the path needs at least more than two segments
+                    
+                    #we move the first segment to the end of the list
                     move = path[0]
                     del path[0]
                     path.append(move)
-                    
+                    oldseg = copy.deepcopy(path[0]) #if we assign like "oldseg = path[0]", it will get overwritten. So we need copy
+                        
                     if self.options.debug is True:
-                        self.msg("moved path:")
+                        self.msg("moved path (move no. {}):".format(i+1))
                         self.msg(path)
                         self.msg("-"*25)
-                    
-                    oldseg = copy.deepcopy(path[0]) #if we assign like "oldseg = path[0]", it will get overwritten. So we need copy
                     
                     #Now we messed the integrity of the path. It does not begin with 'M' now. But we need an 'M'. 
                     #It now either starts with L or C. H, V, Z cannot occure here.
@@ -108,9 +111,9 @@ class ModifyStartDirection(inkex.EffectExtension):
                         self.msg("-"*25)
                         
                     newSubpaths[subpathNr - 1] = path
-                #else:
-                #    inkex.utils.debug("More moves entered than possible to apply")
-               
+                else:
+                    inkex.utils.debug("More moves entered than possible to apply")
+                
         composedPath = inkex.Path()
         for newSubpath in newSubpaths:
             composedPath.extend(newSubpath)
@@ -173,4 +176,4 @@ class ModifyStartDirection(inkex.EffectExtension):
             return
         
 if __name__ == '__main__':
-    ModifyStartDirection().run()
+    MovePathNode().run()
