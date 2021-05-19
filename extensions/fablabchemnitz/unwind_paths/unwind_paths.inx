@@ -3,7 +3,7 @@
     <name>Unwind Paths</name>
     <id>fablabchemnitz.de.unwind_paths</id>
     <param name="tab" type="notebook">
-        <page name="tab_settings" gui-text="Paperfold for Inkscape">
+        <page name="tab_settings" gui-text="Unwind Paths">
             <label appearance="header">Settings</label>
             <param name="keep_original" type="bool" gui-text="Keep original paths" gui-description="If selected, the original paths get deleted">false</param>
             <param name="break_apart" type="bool" gui-text="Break apart paths" gui-description="Split each path into single curve segments">false</param>
