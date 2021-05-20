@@ -25,7 +25,7 @@ ToDos:
 """
 import copy
 import inkex
-from inkex import bezier, Path, CubicSuperPath
+from inkex import Color, bezier, Path, CubicSuperPath
 from lxml import etree
 import math
 import random
@@ -41,7 +41,10 @@ class UnwindPaths(inkex.EffectExtension):
         pars.add_argument('--tab')
         pars.add_argument('--keep_original', type=inkex.Boolean, default=False, help="If selected, the original paths get deleted")
         pars.add_argument('--break_apart', type=inkex.Boolean, default=False, help="Split each path into single curve segments")
-        pars.add_argument('--colorize', type=inkex.Boolean, default=False, help="Requires enabled 'Break apart' option")
+        pars.add_argument('--break_only', type=inkex.Boolean, default=False, help="Only splits root paths into segments (no unwinding)")
+        pars.add_argument('--colorize', type=inkex.Boolean, default=False, help="Colorize original paths and glue pairs")
+        pars.add_argument('--color_increment', type=int, default=10000, help="For each segment we count up n colors. Does not apply if 'Randomize colors' is enabled.")
+        pars.add_argument('--randomize_colors', type=inkex.Boolean, default=False, help="Randomize colors")
         pars.add_argument('--extrude', type=inkex.Boolean, default=False)
         pars.add_argument('--extrude_height', type=float, default=10.000)
         pars.add_argument('--unit', default="mm")
@@ -79,6 +82,14 @@ class UnwindPaths(inkex.EffectExtension):
                 self.breakContours(child, breakelements)
         return breakelements
 
+    def rgb(self, minimum, maximum, value):
+        minimum, maximum = float(minimum), float(maximum)
+        ratio = 2 * (value-minimum) / (maximum - minimum)
+        b = int(max(0, 255 * (1 - ratio)))
+        r = int(max(0, 255 * (ratio - 1)))
+        g = 255 - b - r
+        return r, g, b
+
     def effect(self):
         shifting = self.svg.unittouu(str(self.options.extrude_height) + self.options.unit)
 
@@ -106,12 +117,16 @@ class UnwindPaths(inkex.EffectExtension):
                     
                     #generate random colors; used to identify glue tab pairs
                     if self.options.colorize is True:
-                        randomColorSet = []
-                        while len(randomColorSet) < subCount - 1:
-                            r = lambda: random.randint(0,255)
-                            newColor = '#%02X%02X%02X' % (r(),r(),r())
-                            if newColor not in randomColorSet:
-                                randomColorSet.append(newColor)                        
+                        colorSet = []
+                        if self.options.randomize_colors is True:
+                            while len(colorSet) < subCount - 1:
+                                    r = lambda: random.randint(0,255)
+                                    newColor = '#%02X%02X%02X' % (r(),r(),r())
+                                    if newColor not in colorSet:
+                                        colorSet.append(newColor)
+                        else:
+                            for i in range(subCount):
+                                colorSet.append(Color(self.rgb(0, i+self.options.color_increment, 1*i)))        
                     
                     for sub in csp:
                         #generate new horizontal line data by measuring each segment
@@ -125,58 +140,60 @@ class UnwindPaths(inkex.EffectExtension):
                         if self.options.break_apart is True:
                             topLineGroup = self.svg.get_current_layer().add(inkex.Group(id="hline-top-" + element.get('id')))
                             bottomLineGroup = self.svg.get_current_layer().add(inkex.Group(id="hline-bottom-" + element.get('id')))
-                            newOriginalPathGroup = self.svg.get_current_layer().add(inkex.Group(id="new-original-" + element.get('id')))
                             elemGroup.append(topLineGroup)      
                             elemGroup.append(bottomLineGroup)
+                            
+                            newOriginalPathGroup = self.svg.get_current_layer().add(inkex.Group(id="new-original-" + element.get('id')))
                             self.svg.get_current_layer().append(newOriginalPathGroup) #we want this to be one level above unwound stuff
                     
                         if self.options.extrude is True:
                             vlinesGroup = self.svg.get_current_layer().add(inkex.Group(id="vlines-" + element.get('id')))
                             elemGroup.append(vlinesGroup)
                         
-                        while i <= len(sub) - 1:
-                            stroke_color = '#000000'
-                            if self.options.colorize is True and self.options.break_apart is True:
-                                stroke_color =randomColorSet[i-1]
-    
-                            horizontal_line_style = {'stroke':stroke_color,'stroke-width':'1px','fill':'none'}
-    
-                            length = bezier.cspseglength(new[-1][-1], sub[i]) #sub path length
-                            segment = "h {:0.6f} ".format(length)
-                            topPathData += segment
-                            bottomPathData += segment
-                            new[-1].append(sub[i]) #important line!
-                            if self.options.break_apart is True:
-                                self.drawline("m {:0.6f},{:0.0f} ".format(xmin + sum([length for length in lengths]), ymax) + segment, 
-                                              "segmented-top-{}-{}".format(element.get('id'), i), topLineGroup, horizontal_line_style)
+                        
+                        if self.options.break_only is False:
+                            while i <= len(sub) - 1:
+                                stroke_color = '#000000'
+                                if self.options.colorize is True and self.options.break_apart is True:
+                                    stroke_color =colorSet[i-1]
+        
+                                horizontal_line_style = {'stroke':stroke_color,'stroke-width':'1px','fill':'none'}
+        
+                                length = bezier.cspseglength(new[-1][-1], sub[i]) #sub path length
+                                segment = "h {:0.6f} ".format(length)
+                                topPathData += segment
+                                bottomPathData += segment
+                                new[-1].append(sub[i]) #important line!
+                                if self.options.break_apart is True:
+                                    self.drawline("m {:0.6f},{:0.0f} ".format(xmin + sum([length for length in lengths]), ymax) + segment, 
+                                                  "segmented-top-{}-{}".format(element.get('id'), i), topLineGroup, horizontal_line_style)
+                                    if self.options.extrude is True:
+                                        self.drawline("m {:0.6f},{:0.0f} ".format(xmin + sum([length for length in lengths]), ymax + shifting) + segment, 
+                                                      "segmented-bottom-{}-{}".format(element.get('id'), i), bottomLineGroup, horizontal_line_style)
+                                lengths.append(length) 
+                                i += 1
+                         
+                            if self.options.break_apart is False:  
+                                self.drawline(topPathData, "combined-top-{0}".format(element.get('id')), elemGroup, horizontal_line_style)
                                 if self.options.extrude is True:
-                                    self.drawline("m {:0.6f},{:0.0f} ".format(xmin + sum([length for length in lengths]), ymax + shifting) + segment, 
-                                                  "segmented-bottom-{}-{}".format(element.get('id'), i), bottomLineGroup, horizontal_line_style)
-                            lengths.append(length) 
-                            i += 1
-                     
-    
-                        if self.options.break_apart is False:  
-                            self.drawline(topPathData, "combined-top-{0}".format(element.get('id')), elemGroup, horizontal_line_style)
+                                    self.drawline(bottomPathData, "combined-bottom-{0}".format(element.get('id')), elemGroup, horizontal_line_style)
+        
+                            #draw as much vertical lines as segments in bezier + start + end vertical line
+                            vertical_end_lines_style = {'stroke':'#000000','stroke-width':'1px','fill':'none'}
                             if self.options.extrude is True:
-                                self.drawline(bottomPathData, "combined-bottom-{0}".format(element.get('id')), elemGroup, horizontal_line_style)
-    
-                        #draw as much vertical lines as segments in bezier + start + end vertical line
-                        vertical_end_lines_style = {'stroke':'#000000','stroke-width':'1px','fill':'none'}
-                        if self.options.extrude is True:
-                            #render start line
-                            self.drawline("m {:0.6f},{:0.6f} v {:0.6f}".format(xmin, ymax, shifting),"vline-{}-start".format(element.get('id')), vlinesGroup, vertical_end_lines_style)
-                            #render divider lines
-                            if self.options.render_vertical_dividers is True:
-                                vertical_mid_lines_style = {'stroke':'#000000','stroke-width':'1px','fill':'none'}
-                                if self.options.render_with_dashes is True:
-                                    vertical_mid_lines_style = {'stroke':'#000000','stroke-width':'1px',"stroke-dasharray":"2 2", 'fill':'none'}
-                                x = 0
-                                for n in range(0, i-2):           
-                                    x += lengths[n]
-                                    self.drawline("m {:0.6f},{:0.6f} v {:0.6f}".format(xmin + x, ymax, shifting),"vline-{}-{}".format(element.get('id'), n + 1), vlinesGroup, vertical_mid_lines_style)
-                            #render end line
-                            self.drawline("m {:0.6f},{:0.6f} v {:0.6f}".format(xmin + sum([length for length in lengths]), ymax, shifting),"vline-{}-end".format(element.get('id')), vlinesGroup, vertical_end_lines_style)
+                                #render start line
+                                self.drawline("m {:0.6f},{:0.6f} v {:0.6f}".format(xmin, ymax, shifting),"vline-{}-start".format(element.get('id')), vlinesGroup, vertical_end_lines_style)
+                                #render divider lines
+                                if self.options.render_vertical_dividers is True:
+                                    vertical_mid_lines_style = {'stroke':'#000000','stroke-width':'1px','fill':'none'}
+                                    if self.options.render_with_dashes is True:
+                                        vertical_mid_lines_style = {'stroke':'#000000','stroke-width':'1px',"stroke-dasharray":"2 2", 'fill':'none'}
+                                    x = 0
+                                    for n in range(0, i-2):           
+                                        x += lengths[n]
+                                        self.drawline("m {:0.6f},{:0.6f} v {:0.6f}".format(xmin + x, ymax, shifting),"vline-{}-{}".format(element.get('id'), n + 1), vlinesGroup, vertical_mid_lines_style)
+                                #render end line
+                                self.drawline("m {:0.6f},{:0.6f} v {:0.6f}".format(xmin + sum([length for length in lengths]), ymax, shifting),"vline-{}-end".format(element.get('id')), vlinesGroup, vertical_end_lines_style)
     
                     if self.options.break_apart is True:
                         # Split (already broken apart) paths into detached segments
@@ -204,12 +221,12 @@ class UnwindPaths(inkex.EffectExtension):
                        
                                 stroke_color = '#000000'
                                 if self.options.colorize is True:
-                                    stroke_color =randomColorSet[i-1]
+                                    stroke_color =colorSet[i-1]
                                 new_original_line_style = {'stroke':stroke_color,'stroke-width':'1px','fill':'none'}
                                 self.drawline(d, "segmented-" + element.get('id'), newOriginalPathGroup, new_original_line_style)
     
                     if self.options.keep_original is False:
-                        element.delete()      
+                        element.delete() 
 
         else:
             self.msg('Please select some paths first.')
