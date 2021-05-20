@@ -8,7 +8,6 @@ import os
 import sys
 import subprocess
 from subprocess import Popen, PIPE
-import shlex
 import warnings
 import inkex
 import inkex.command
@@ -47,9 +46,7 @@ class ExportObject(inkex.EffectExtension):
         if os.name == 'nt':
             Popen(["inkscape", file], close_fds=True, creationflags=DETACHED_PROCESS)
         else:
-            cmd = "nohup inkscape " + file + " &"
-            cmds = shlex.split(cmd)
-            subprocess.Popen(cmds, start_new_session=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            subprocess.Popen(["inkscape", file], start_new_session=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         warnings.simplefilter("default", ResourceWarning)
 
     def effect(self):

@@ -6,7 +6,6 @@ import shutil
 import os
 import sys
 import warnings
-import shlex
 
 """
 Extension for InkScape 1.X
@@ -41,9 +40,7 @@ class AnimateOrder (inkex.EffectExtension):
         if os.name == 'nt':
             subprocess.Popen(args, close_fds=True, creationflags=DETACHED_PROCESS)
         else:
-            cmd = "nohup " + " ".join(args) + " &"
-            cmds = shlex.split(cmd)
-            subprocess.Popen(cmds, start_new_session=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            subprocess.Popen(args, start_new_session=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         warnings.simplefilter("default", ResourceWarning)
 
     def add_arguments(self, pars):
