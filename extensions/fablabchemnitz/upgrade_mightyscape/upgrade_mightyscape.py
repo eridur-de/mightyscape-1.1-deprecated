@@ -14,6 +14,7 @@ License: GNU GPL v3
 import inkex
 import os
 import warnings
+import git
 from git import Repo #requires GitPython lib
 
 class Upgrade(inkex.EffectExtension):
@@ -47,22 +48,22 @@ class Upgrade(inkex.EffectExtension):
         
         #check if it is a non-empty git repository
         if repo.bare is False:
-            
             if repo.is_dirty(untracked_files=True) is False:        
                 if len(repo.untracked_files) > 0:
                     if self.options.stash_untracked is True:
                         repo.git.stash('save')
                     else:
                         inkex.utils.debug("There are some untracked files in your MightyScape directory. Still trying to pull recent files from git...")
+        
+            origin = repo.remotes.origin
                         
-                origin = repo.remotes.origin
-                
+            latestRemoteCommit = git.cmd.Git().ls_remote("https://gitea.fablabchemnitz.de/MarioVoigt/mightyscape-1.X.git", heads=True).replace('refs/heads/master','').strip()
+            localCommit = str(repo.head.commit)
+            if localCommit != latestRemoteCommit:
                 ssh_executable = 'git'
                 with repo.git.custom_environment(GIT_SSH=ssh_executable):
                     origin.fetch()
-                    
-                    #hcommit = repo.head.commit
-                    #hcommit.diff()   
+                      
                     fetch_info = origin.pull() #finally pull new data               
                     for info in fetch_info:
                         inkex.utils.debug("Updated %s to commit id %s" % (info.ref, str(info.commit)[:7]))
