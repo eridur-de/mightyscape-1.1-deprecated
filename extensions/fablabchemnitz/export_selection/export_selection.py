@@ -16,6 +16,9 @@ from inkex.command import inkscape, inkscape_command
 from lxml import etree
 from scour.scour import scourString
 
+'''
+ToDo: work with temporary SVG file in temp dir instead handling deletion stuff at the end / valide that the file exists when spawning new instance
+'''
 
 logger = logging.getLogger(__name__)
 
@@ -158,7 +161,7 @@ class ExportObject(inkex.EffectExtension):
                 self.msg("Inkscape returned the following output when trying to run the file export; the file export may still have worked:")
                 self.msg(cli_output)
                 
-        if svg_export is False:
+        if svg_export is False and self.options.newwindow is False: #we need the SVG file in case we open in new window because we spawn a new instance
             os.remove(os.path.join(export_dir, svg_filename)) #remove SVG if not enabled to export. Might delete existing SVG accidently!
       
     def create_document(self):
