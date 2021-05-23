@@ -27,9 +27,10 @@ def points_to_svgd(p, close=False):
 class Recursive(inkex.EffectExtension):
 
     def add_arguments(self, pars):
-        pars.add_argument("--verti", type=int, default=20, help="Height")
-        pars.add_argument("--horiz", type=int, default=20, help="Length")
-        pars.add_argument("--size",  type=float, default=10.0, help="Cell Size")
+        pars.add_argument("--verti", type=int, default=20, help="Height (cells)")
+        pars.add_argument("--horiz", type=int, default=20, help="Length (cells)")
+        pars.add_argument("--size",  type=float, default=10.0, help="Cell size")
+        pars.add_argument("--cell_units", default="mm", help="Units")  
         pars.add_argument("--algo", default=1, help="Algorithm")
         pars.add_argument("--width", type=float, default=10.0, help="Line width")
 
@@ -39,7 +40,7 @@ class Recursive(inkex.EffectExtension):
         # my group of paths
         topgroup = etree.SubElement(self.svg.get_current_layer(), 'g' )
 
-        lc = self.options.size
+        lc = self.svg.unittouu (str(self.options.size) + self.options.cell_units)
         X = self.options.verti
         Y = self.options.horiz
         
