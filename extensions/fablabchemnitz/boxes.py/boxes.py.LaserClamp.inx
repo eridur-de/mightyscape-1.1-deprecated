@@ -33,6 +33,7 @@
         <image>./LaserClamp-thumb.jpg</image>
     </page>
 </param>
+<label appearance="url">https://www.festi.info/boxes.py/LaserClamp</label>
 <effect>
     <object-type>all</object-type>
     <effects-menu>

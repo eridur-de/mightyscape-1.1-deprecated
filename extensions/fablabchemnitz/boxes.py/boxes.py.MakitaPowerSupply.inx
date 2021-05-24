@@ -32,6 +32,7 @@
         <image>./MakitaPowerSupply-thumb.jpg</image>
     </page>
 </param>
+<label appearance="url">https://www.festi.info/boxes.py/MakitaPowerSupply</label>
 <effect>
     <object-type>all</object-type>
     <effects-menu>

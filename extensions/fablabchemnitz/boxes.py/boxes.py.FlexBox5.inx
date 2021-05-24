@@ -42,6 +42,7 @@
         <image>./FlexBox5-thumb.jpg</image>
     </page>
 </param>
+<label appearance="url">https://www.festi.info/boxes.py/FlexBox5</label>
 <effect>
     <object-type>all</object-type>
     <effects-menu>

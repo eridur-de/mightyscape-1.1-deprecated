@@ -41,6 +41,7 @@
         <image>./NemaMount-thumb.jpg</image>
     </page>
 </param>
+<label appearance="url">https://www.festi.info/boxes.py/NemaMount</label>
 <effect>
     <object-type>all</object-type>
     <effects-menu>
