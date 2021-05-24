@@ -14,8 +14,7 @@ License: GNU GPL v3
 import inkex
 import os
 import warnings
-import git
-from git import Repo #requires GitPython lib
+
 
 class Upgrade(inkex.EffectExtension):
 
@@ -25,6 +24,13 @@ class Upgrade(inkex.EffectExtension):
 
     def effect(self):
         warnings.simplefilter('ignore', ResourceWarning) #suppress "enable tracemalloc to get the object allocation traceback"
+
+        try:
+            import git
+            from git import Repo #requires GitPython lib
+        except:
+            inkex.utils.debug("Error. GitPython was not installed but is required to run the upgrade process!")
+            return
 
         #get the directory of mightyscape
         extension_dir = os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(__file__)), '../')) #go up to main dir /home/<user>/.config/inkscape/extensions/mightyscape-1.X/
@@ -59,14 +65,30 @@ class Upgrade(inkex.EffectExtension):
                         
             latestRemoteCommit = git.cmd.Git().ls_remote("https://gitea.fablabchemnitz.de/MarioVoigt/mightyscape-1.X.git", heads=True).replace('refs/heads/master','').strip()
             localCommit = str(repo.head.commit)
+            logs = repo.head.reference.log()
+            self.msg("Local commit id is: " + localCommit[:7])
+            self.msg("Latest remote commit is: " + latestRemoteCommit[:7])
+            self.msg("There are {} remote commits at the moment.".format(len(logs)))
+            logList = []
+            for log in logs:
+                logList.append(log)
+            logList.reverse()
+            #show last 10 entries
+            self.msg("*"*40)
+            self.msg("Latest 10 log entries are:")
+            for i in range(0, 10):
+                self.msg(" - {}: {}".format(logList[i].newhexsha[:7], logList[i].message))   
+            self.msg("*"*40)
+
             if localCommit != latestRemoteCommit:
                 ssh_executable = 'git'
                 with repo.git.custom_environment(GIT_SSH=ssh_executable):
                     origin.fetch()
                       
                     fetch_info = origin.pull() #finally pull new data               
-                    for info in fetch_info:
-                        inkex.utils.debug("Updated %s to commit id %s" % (info.ref, str(info.commit)[:7]))
+                    for info in fetch_info: #should return only one line in total
+                        inkex.utils.debug("Updated %s to commit id %s" % (info.ref, str(info.commit)[:7])) 
+                    
                     inkex.utils.debug("Please restart Inkscape to let the changes take effect.")  
 
             else:
