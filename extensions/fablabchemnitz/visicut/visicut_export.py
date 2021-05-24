@@ -292,6 +292,7 @@ except:
 
 # Try to start own VisiCut instance
 try:
+    daemonize = True
     creationflags = 0
     close_fds = False
     if os.name == "nt":
@@ -303,9 +304,12 @@ try:
             import daemonize
             daemonize.createDaemon()
         except:
-            sys.stderr.write("Could not daemonize. Sorry, but Inkscape was blocked until VisiCut is closed")
+            daemonize = False
     cmd = [VISICUTBIN] + arguments + [dest_filename]
-    Popen(cmd, creationflags=creationflags, close_fds=close_fds)
+    if daemonize is True:
+        Popen(cmd, creationflags=creationflags, close_fds=close_fds)
+    else:
+        Popen(cmd, start_new_session=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, creationflags=creationflags, close_fds=close_fds)
 except:
     sys.stderr.write("Can not start VisiCut (" + str(sys.exc_info()[0]) + "). Please start manually or change the VISICUTDIR variable in the Inkscape-Extension script\n")
 # TODO (complicated, probably WONTFIX): cleanup temporary directories -- this is really difficult because we need to make sure that visicut no longer needs the file, even for reloading!

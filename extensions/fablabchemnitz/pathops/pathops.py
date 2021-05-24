@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-pathops.py - Inkscape extension to apply multiple path operations
+"""pathops.py - Inkscape extension to apply multiple path operations
 
 This extension takes a selection of path and a group of paths, or several
 paths, and applies a path operation with the top-most path in the z-order, and
@@ -14,7 +13,8 @@ Copyright (C) 2014  Ryan Lerch (multiple difference)
                     improve performance (support groups, z-sort ids with python
                     instead of external query), and to extend GUI options.
               2020  Maren Hachmann <marenhachmann@yahoo.com>
-                    Update to make it work with Inkscape 1.0's new inx scheme, extensions API and command line API.
+                    Update to make it work with Inkscape 1.0's new inx scheme,
+                    extensions API and command line API.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
 """
 # pylint: disable=too-many-ancestors
 
@@ -41,9 +42,9 @@ from lxml import etree
 
 # local library
 import inkex
-from inkex.command import inkscape
+import inkex.command
 
-__version__ = '0.4'
+__version__ = '1.1'
 
 
 # Global "constants"
@@ -60,6 +61,16 @@ def timed(f):
     elapsed = time.time() - start
     return ret, elapsed
 
+def get_inkscape_version():
+    ink = inkex.command.INKSCAPE_EXECUTABLE_NAME
+    ink_version = inkex.command.call(ink, '--version').decode("utf-8")
+    pos = ink_version.find("Inkscape ")
+    if pos != -1:
+        pos += 9
+    else:
+        return None
+    v_num = ink_version[pos:pos+3]
+    return(v_num)
 
 # ----- SVG element helper functions
 
@@ -190,14 +201,14 @@ def chunks(alist, max_len):
 # ----- PathOps() class, methods
 
 class PathOps(inkex.EffectExtension):
-    
-    def add_arguments(self, pars):
-        pars.add_argument("--ink_verb", default="SelectionDiff", help="Inkscape verb for path op")
-        pars.add_argument("--max_ops", type=int, default=500, help="Max ops per external run")
-        pars.add_argument("--recursive_sel", type=inkex.Boolean, help="Recurse beyond one group level")
-        pars.add_argument("--keep_top", type=inkex.Boolean, help="Keep top element when done")
-        pars.add_argument("--dry_run", type=inkex.Boolean, default=False, help="Dry-run without exec")
 
+    def add_arguments(self, pars):
+       pars.add_argument("--ink_verb", default="SelectionDiff", help="Inkscape verb for path op")
+       pars.add_argument("--max_ops", type=int, default=500, help="Max ops per external run")
+       pars.add_argument("--recursive_sel", type=inkex.Boolean, help="Recurse beyond one group level")
+       pars.add_argument("--keep_top", type=inkex.Boolean, help="Keep top element when done")
+       pars.add_argument("--dry_run", type=inkex.Boolean, default=False, help="Dry-run without exec")
+            
     def get_selected_ids(self):
         """Return a list of valid ids for inkscape path operations."""
         id_list = []
@@ -232,6 +243,9 @@ class PathOps(inkex.EffectExtension):
     def run_pathops(self, svgfile, top_path, id_list, ink_verb, dry_run=False):
         """Run path ops with top_path on a list of other object ids."""
         # build list with command line arguments
+        ink_version = get_inkscape_version()
+        # Version-dependent. This one is for Inkscape 1.1 (else it crashes, see https://gitlab.com/inkscape/inbox/-/issues/4905)
+        extra_param = "--batch-process" 
         actions_list = []
         for node_id in id_list:
             actions_list.append("select-by-id:" + top_path)
@@ -240,13 +254,16 @@ class PathOps(inkex.EffectExtension):
             actions_list.append(ink_verb)
             actions_list.append("EditDeselect")
         actions_list.append("FileSave")
-        actions_list.append("FileQuit")
+        if ink_version == "1.0":
+            actions_list.append("FileQuit")
+            extra_param = "--with-gui"
         actions = ";".join(actions_list)
+
         # process command list
         if dry_run:
-             inkex.utils.debug(" ".join(["inkscape", "--with-gui", "--actions=" + "\"" + actions + "\"", svgfile]))
+            inkex.utils.debug(" ".join(["inkscape", extra_param, "--actions=" + "\"" + actions + "\"", svgfile]))
         else:
-            inkscape(svgfile, "--with-gui", actions=actions)
+            inkex.command.inkscape(svgfile, extra_param, actions=actions)
 
     def loop_pathops(self, top_path, other_paths):
         """Loop through selected items and run external command(s)."""
@@ -271,12 +288,12 @@ class PathOps(inkex.EffectExtension):
             count += 1
             if dry_run:
                 inkex.utils.debug("\n# Processing {}. chunk ".format(count) +
-                            "with {} objects ...".format(len(chunk)))
+                                  "with {} objects ...".format(len(chunk)))
             self.run_pathops(tempfile, top_path, chunk, ink_verb, dry_run)
         # finish up
         if dry_run:
             inkex.utils.debug("\n# {} chunks processed, ".format(count) +
-                        "with {} total objects.".format(len(other_paths)))
+                              "with {} total objects.".format(len(other_paths)))
         else:
             # replace current document with content of temp copy file
             self.document = inkex.load_svg(tempfile)
@@ -304,7 +321,7 @@ class PathOps(inkex.EffectExtension):
         """Main entry point to process current document."""
         if self.has_tagrefs():
             # unsafe to use with extensions ...
-            inkex.errormsg("This document uses Inkscape selection sets. " +
+            inkex.utils.errormsg("This document uses Inkscape selection sets. " +
                            "Modifying the content with a PathOps extension " +
                            "may cause Inkscape to crash on reload or close. " +
                            "Please delete the selection sets, " +
@@ -381,6 +398,7 @@ class PathOps(inkex.EffectExtension):
     def getdocids(self):
         """Overload Effect() method."""
         pass
+
 
 if __name__ == '__main__':
     PathOps().run()

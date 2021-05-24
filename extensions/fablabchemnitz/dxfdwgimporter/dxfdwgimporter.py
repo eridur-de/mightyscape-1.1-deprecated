@@ -23,6 +23,7 @@ Module licenses
 
 ToDos:
 - change copy commands to movefile commands (put into temp. sub directories where the input file is located). We need to copy files in this script because ODA File Converter will process whole dirs instead of single files only.DXF files can be really large, which slows the process)
+- vpype will crash because inkscape(ObjectToPath) fails -> lines have missing style attribute?
 """
 
 import inkex
@@ -50,7 +51,6 @@ from ezdxf.addons import Importer
 class DXFDWGImport(inkex.EffectExtension):
     
     def add_arguments(self, pars):
-
         #blank tabs
         pars.add_argument("--tab")
         
@@ -131,7 +131,7 @@ class DXFDWGImport(inkex.EffectExtension):
         #get input file and copy it to some new temporary directory
         inputfile = self.options.inputfile
         if not os.path.exists(inputfile):
-            inkex.utils.debug("The input file does not exist. Please select a *.dxf or *.dwg file and try again.")
+            self.msg("The input file does not exist. Please select a *.dxf or *.dwg file and try again.")
             exit(1)
         temp_input_dir = os.path.join(tempfile.gettempdir(),"dxfdwg_input") 
         shutil.rmtree(temp_input_dir, ignore_errors=True) #remove the input directory before doing new job
@@ -206,7 +206,7 @@ class DXFDWGImport(inkex.EffectExtension):
                 ezdxf_autocad_format = oe[1]
                 break
         if ezdxf_autocad_format is None:
-            inkex.errormsg("ezdxf conversion format version unknown")    
+            self.msg("ezdxf conversion format version unknown")    
        
         #Prepare DXF and SVG paths
         dxf_file = os.path.join(temp_output_dir, outputfilebase + ".dxf")
@@ -216,10 +216,10 @@ class DXFDWGImport(inkex.EffectExtension):
         if self.options.oda_skip_dxf_to_dxf == False or inputfile_ending == ".dwg":
             # Executable test (check for proper configuration by checking mime type. Should return octet stream for a binary executable)
             if os.name == "nt" and "application/octet-stream" not in str(MimeTypes().guess_type(urllib.pathname2url(self.options.oda_fileconverter))):
-                inkex.utils.debug("You selected to use ODA File Converter but it is not configured properly. Check for installation and path location or select 'Skip conversion from DXF to DXF'. You can download ODA Converter from 'https://www.opendesign.com/guestfiles/oda_file_converter'. You need to install it in order to use it.")
+                self.msg("You selected to use ODA File Converter but it is not configured properly. Check for installation and path location or select 'Skip conversion from DXF to DXF'. You can download ODA Converter from 'https://www.opendesign.com/guestfiles/oda_file_converter'. You need to install it in order to use it.")
                 exit(1)
             elif os.path.isfile(self.options.oda_fileconverter) == False:
-                inkex.utils.debug("You selected to use ODA File Converter but it is not configured properly. Check for installation and path location or select 'Skip conversion from DXF to DXF'. You can download ODA Converter from 'https://www.opendesign.com/guestfiles/oda_file_converter'. You need to install it in order to use it.")
+                self.msg("You selected to use ODA File Converter but it is not configured properly. Check for installation and path location or select 'Skip conversion from DXF to DXF'. You can download ODA Converter from 'https://www.opendesign.com/guestfiles/oda_file_converter'. You need to install it in order to use it.")
                 exit(1)
             else:
                 # Build and run ODA File Converter command
@@ -233,18 +233,18 @@ class DXFDWGImport(inkex.EffectExtension):
                         proc = subprocess.Popen(oda_cmd, shell=False, stdout=PIPE, stderr=PIPE)
                 stdout, stderr = proc.communicate()
                 if proc.returncode != 0 or (len(stderr) > 0 and stderr != b"Quit (core dumped)\n"): 
-                   inkex.utils.debug("ODAFileConverter failed: %d %s %s" % (proc.returncode, stdout, stderr))
+                   self.msg("ODAFileConverter failed: %d %s %s" % (proc.returncode, stdout, stderr))
                    if os.name != 'nt':
-                       inkex.utils.debug("If the error message above contains a warning about wrong/missing Qt version please install the required version. You can get the installer from 'https://download.qt.io/archive/qt/'. Sadly you will need to create a free account to install. After installation please configure the shell script '/usr/bin/ODAFileConverter' to add a preceding line with content similar to 'LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/Qt5.14.2/5.14.2/gcc_64/lib/'.")
+                       self.msg("If the error message above contains a warning about wrong/missing Qt version please install the required version. You can get the installer from 'https://download.qt.io/archive/qt/'. Sadly you will need to create a free account to install. After installation please configure the shell script '/usr/bin/ODAFileConverter' to add a preceding line with content similar to 'LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/Qt5.14.2/5.14.2/gcc_64/lib/'.")
                    exit(1)
             # check if ODA converted successfully. This is the case if no error file was created
             oda_errorfile = os.path.join(temp_output_dir, Path(inputfile).name + ".err")
             if os.path.exists(oda_errorfile):
-                inkex.utils.debug("ODA File Converter failed to process the file. Cannot continue DXF/DWG import. The error message is:")
+                self.msg("ODA File Converter failed to process the file. Cannot continue DXF/DWG import. The error message is:")
                 errormessage = open(oda_errorfile, 'r')
                 errorlines = errormessage.readlines() 
                 for errorline in errorlines: 
-                    inkex.utils.debug(errorline.strip())
+                    self.msg(errorline.strip())
                 errormessage.close()
                 exit(1)
         
@@ -266,8 +266,8 @@ class DXFDWGImport(inkex.EffectExtension):
             if query_string != "":
                 for e in modelspace.query(query_string):
                     allowed_entities.append(e)
-            #inkex.utils.debug(ezdxf_autocad_format)
-            #inkex.utils.debug(self.options.ezdxf_output_version)
+            #self.msg(ezdxf_autocad_format)
+            #self.msg(self.options.ezdxf_output_version)
             if self.options.ezdxf_output_version == "SAME":                
                 doc = ezdxf.new(ezdxf_autocad_format)
             else:
@@ -282,42 +282,42 @@ class DXFDWGImport(inkex.EffectExtension):
         # Make SVG from DXF
         if self.options.dxf_to_svg_parser == "sk1":         
             if os.name != "nt":
-                inkex.utils.debug("You selected sk1 UniConvertor but you are not running on a Windows platform. On Linux uniconverter 1.1.X can be installed using the now obsolete Python 2.7, but it will not run correctly because you finally will fail at installing liblcms1-dev library on newer systems. That leads to uncompilable sk1libs package. Unfortunately sk1 UniConvertor 2.X does not support dxf format. So please use another DXF to SVG converter.")
+                self.msg("You selected sk1 UniConvertor but you are not running on a Windows platform. On Linux uniconverter 1.1.X can be installed using the now obsolete Python 2.7, but it will not run correctly because you finally will fail at installing liblcms1-dev library on newer systems. That leads to uncompilable sk1libs package. Unfortunately sk1 UniConvertor 2.X does not support dxf format. So please use another DXF to SVG converter.")
                 exit(1)
             sk1_command_ending = os.path.splitext(os.path.splitext(os.path.basename(self.options.sk1_uniconverter))[1])[0]
             if sk1_command_ending != ".cmd":
-                inkex.utils.debug("You selected sk1 UniConverter but it was not configured properly. Check the path to the executable.")
+                self.msg("You selected sk1 UniConverter but it was not configured properly. Check the path to the executable.")
                 exit(1)
             uniconverter_cmd = [self.options.sk1_uniconverter, dxf_file, svg_file]
-            #inkex.utils.debug(uniconverter_cmd)
+            #self.msg(uniconverter_cmd)
             proc = subprocess.Popen(uniconverter_cmd, shell=False, stdout=PIPE, stderr=PIPE)
             stdout, stderr = proc.communicate()
             if proc.returncode != 0: 
-               inkex.errormsg("UniConverter failed: %d %s %s" % (proc.returncode, stdout, stderr))
+               self.msg("UniConverter failed: %d %s %s" % (proc.returncode, stdout, stderr))
                if self.options.opendironerror:
                    self.openExplorer(temp_output_dir)
                                     
         elif self.options.dxf_to_svg_parser == "bjnortier":
             if which("node") is None:
-                inkex.utils.debug("NodeJS executable not found on path. Please check your installation.")
+                self.msg("NodeJS executable not found on path. Please check your installation.")
                 exit(1)
             else:
                 bjnortier_cmd = ["node", os.path.join("node_modules","dxf","lib","cli.js"), dxf_file, svg_file]
-                #inkex.utils.debug(bjnortier_cmd)
+                #self.msg(bjnortier_cmd)
                 proc = subprocess.Popen(bjnortier_cmd, shell=False, stdout=PIPE, stderr=PIPE)
                 stdout, stderr = proc.communicate()
                 if proc.returncode != 0: 
-                   inkex.errormsg("node.js DXF to SVG conversion failed: %d %s %s" % (proc.returncode, stdout, stderr))
+                   self.msg("node.js DXF to SVG conversion failed: %d %s %s" % (proc.returncode, stdout, stderr))
                    if self.options.opendironerror:
                        self.openExplorer(temp_output_dir)
                        
         elif self.options.dxf_to_svg_parser == "kabeja":         
             wd = os.path.join(os.getcwd(), "kabeja")
-            #inkex.utils.debug(wd)
+            #self.msg(wd)
             proc = subprocess.Popen("java -jar launcher.jar -nogui -pipeline svg " + dxf_file + " " + svg_file, cwd=wd, shell=True, stdout=PIPE, stderr=PIPE)
             stdout, stderr = proc.communicate()
             if proc.returncode != 0: 
-               inkex.errormsg("kabeja failed: %d %s %s" % (proc.returncode, stdout, stderr))  
+               self.msg("kabeja failed: %d %s %s" % (proc.returncode, stdout, stderr))  
                if self.options.opendironerror:
                    self.openExplorer(temp_output_dir)
         
@@ -327,7 +327,7 @@ class DXFDWGImport(inkex.EffectExtension):
                 import vpype
                 from vpype_cli import execute
             except Exception as e:
-                inkex.errormsg("Error importing vpype. Did you properly install the vpype and vpype-dxf python modules?")
+                self.msg("Error importing vpype. Did you properly install the vpype and vpype-dxf python modules?")
                 exit(1)
             doc = vpype.Document() #create new vpype document
             command = "dread  --quantization " + str(self.options.vpype_quantization)
@@ -338,10 +338,10 @@ class DXFDWGImport(inkex.EffectExtension):
             #command += " '" + inputfile + "'"
             command += " '" + dxf_file + "'"
                 
-            #inkex.errormsg(command)   
+            #self.msg(command)   
             doc = execute(command, doc)
             if doc.length() == 0:
-                inkex.errormsg('No lines left after vpype conversion. Conversion result is empty. Cannot continue')
+                self.msg('No lines left after vpype conversion. Conversion result is empty. Cannot continue')
                 exit(1)
             # save the vpype document to new svg file and close it afterwards
             output_fileIO = open(svg_file, "w", encoding="utf-8")
@@ -358,10 +358,10 @@ class DXFDWGImport(inkex.EffectExtension):
                 doc = ezdxf.readfile(dxf_file)           
                 msp = doc.modelspace()
                 #for e in msp: #loop through entities
-                #    inkex.errormsg(e)
+                #    self.msg(e)
                 #doc.header['$DIMSCALE'] = 0.2 does not apply to the plot :-(
-                #inkex.utils.debug(doc.header['$DIMSCALE'])
-                #inkex.utils.debug(doc.header['$MEASUREMENT'])
+                #self.msg(doc.header['$DIMSCALE'])
+                #self.msg(doc.header['$MEASUREMENT'])
                 auditor = doc.audit() #audit & repair DXF document before rendering
                 # The auditor.errors attribute stores severe errors, which *may* raise exceptions when rendering.
                 if len(auditor.errors) == 0:
@@ -380,30 +380,41 @@ class DXFDWGImport(inkex.EffectExtension):
                     #fig.savefig(os.path.join(temp_output_dir, outputfilebase + ".png"), dpi=300)  
                     fig.savefig(svg_file) #see https://matplotlib.org/3.1.1/api/_as_gen/matplotlib.pyplot.savefig.html
             except IOError:
-                inkex.errormsg("Not a DXF file or a generic I/O error.")
+                self.msg("Not a DXF file or a generic I/O error.")
                 exit(1)
             except ezdxf.DXFStructureError:
-                inkex.errormsg("Invalid or corrupted DXF file.")
+                self.msg("Invalid or corrupted DXF file.")
                 exit(1)
             
         elif self.options.dxf_to_svg_parser == "legacy":
-            inkex.utils.debug("The selected legacy DXF to SVG parser is not supported by this extension yet. Use File > Import > *.dxf. This calls the \"dxf_input.inx\" extension.")
+            self.msg("The selected legacy DXF to SVG parser is not supported by this extension yet. Use File > Import > *.dxf. This calls the \"dxf_input.inx\" extension.")
             exit(1)
         else:
-            inkex.utils.debug("undefined parser")
+            self.msg("undefined parser")
             exit(1)
         
         # Write the generated SVG into InkScape's canvas
         try:
             stream = open(svg_file, 'r')
         except FileNotFoundError as e:
-            inkex.utils.debug("There was no SVG output generated. Cannot continue")
+            self.msg("There was no SVG output generated. Cannot continue")
             exit(1)
         p = etree.XMLParser(huge_tree=True)
         doc = etree.parse(stream, parser=etree.XMLParser(huge_tree=True)).getroot()
         stream.close()
-        doc.set('id', self.svg.get_unique_id("dxf_dwg_import-" + self.options.dxf_to_svg_parser + "-"))
-        self.document.getroot().append(doc)
+        docGroup = self.document.getroot().add(inkex.Group(id=self.svg.get_unique_id("dxf_dwg_import-" + self.options.dxf_to_svg_parser + "-")))
+
+        if self.options.dxf_to_svg_parser == "ezdxf":
+            parent = doc.xpath("//svg:g[@id = 'axes_1']", namespaces=inkex.NSS)[0]
+            for element in parent:
+                docGroup.append(element)
+        elif self.options.dxf_to_svg_parser == "kabeja":
+            parent = doc.xpath("//svg:g[@id = 'draft']", namespaces=inkex.NSS)[0]
+            for element in parent:
+                docGroup.append(element)
+        else:
+            for element in doc.getchildren():
+                docGroup.append(element)
 
         #get children of the doc and move them one group above - we don't do this for bjnortier tool because this has different structure which we don't want to disturb
         if self.options.dxf_to_svg_parser == "sk1":
@@ -421,22 +432,17 @@ class DXFDWGImport(inkex.EffectExtension):
             if emptyGroup is not None:
                  emptyGroup.getparent().remove(emptyGroup)
              
-        #empty the following vals because they destroy the size aspects of the import / make viewbox looking wrong       
-        if self.options.dxf_to_svg_parser == "bjnortier" or self.options.dxf_to_svg_parser == "kabeja":        
-            doc.set('width','')
-            doc.set('height','')
-            doc.set('viewBox','')
-            doc.getchildren()[0].set('transform','')
-            
         #adjust viewport and width/height to have the import at the center of the canvas
-        if self.options.resizetoimport: 
-            bbox = inkex.elements._selected.ElementList.bounding_box(doc.getchildren()[0])
+        if self.options.resizetoimport:
+            bbox = docGroup.bounding_box()
             if bbox is not None:
-                root = self.svg.getElement('//svg:svg');
+                root = self.document.getroot();
                 offset = self.svg.unittouu(str(self.options.extraborder) + self.options.extraborder_units)
                 root.set('viewBox', '%f %f %f %f' % (bbox.left - offset, bbox.top - offset, bbox.width + 2 * offset, bbox.height + 2 * offset))
                 root.set('width', bbox.width + 2 * offset)
                 root.set('height', bbox.height + 2 * offset)
+            else:
+                self.msg("Error finding bounding box. Skipped that step ...")
         
 if __name__ == '__main__':
     DXFDWGImport().run()
