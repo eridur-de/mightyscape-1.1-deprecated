@@ -290,13 +290,13 @@ class ContourScanner(inkex.EffectExtension):
         if self.options.apply_transformations is True and applyTransformAvailable is True:
             applytransform.ApplyTransform().recursiveFuseTransform(self.document.getroot())
     
-        if self.options.breakapart:    
+        if self.options.breakapart is True:    
             if len(self.svg.selected) == 0:
                  self.breakContours(self.document.getroot())
                  self.scanContours(self.document.getroot())  
             else:
                 newContourSet = []
-                for element in self.svg.selected.items():
+                for element in self.svg.selected.values():
                     self.breakContours(element)
                 for newContours in self.replacedNodes:
                     self.scanContours(newContours) 
