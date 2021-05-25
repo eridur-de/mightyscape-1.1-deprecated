@@ -5,7 +5,7 @@
     <param name="tab" type="notebook">
         <page name="tab_settings" gui-text="Modify Path Start Node">
             <param name="closed_only" type="bool" gui-text="Handle closed paths only" gui-description="If disabled we also apply on open (sub)paths. Warning: This REMOVES segments!">true</param>       
-            <param name="movenode" type="int" min="-99999" max="99999" gui-text="Move node n nodes further">0</param>
+            <param name="movenode" appearance="full" type="int" min="-9999" max="9999" gui-text="Move node n nodes further">0</param>
             <param name="visualize_result" type="bool" gui-text="Visualize first two nodes" gui-description="If enabled first two nodes get a number and a dot">false</param>
             <param name="fontsize" type="string" gui-text="Font size:">10px</param>
             <param name="dotsize" type="string" gui-text="Dot size:">10px</param>

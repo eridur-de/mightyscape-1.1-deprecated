@@ -69,7 +69,7 @@ class MovePathNode(inkex.EffectExtension):
                 self.msg("-"*25)
 
             for i in range(moves):
-                if len(path) > 2: #the path needs at least more than two segments
+                if len(path) > 2: #the path needs at least more than two segments, else we might just get a "pointy path" on an open path
                     
                     #we move the first segment to the end of the list
                     move = path[0]
@@ -112,7 +112,8 @@ class MovePathNode(inkex.EffectExtension):
                         
                     newSubpaths[subpathNr - 1] = path
                 else:
-                    inkex.utils.debug("More moves entered than possible to apply")
+                    inkex.utils.debug("More moves entered than possible to apply. Path result would be a point, not a line")
+                    #return
                 
         composedPath = inkex.Path()
         for newSubpath in newSubpaths:

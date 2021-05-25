@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 line animator - create CSS3 animations that look as if someone is drawing them by hand
 
