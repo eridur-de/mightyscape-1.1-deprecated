@@ -4,14 +4,14 @@
     <id>fablabchemnitz.de.line_animator</id>
     <param name="action" type="notebook">
         <page name="add_anim" gui-text="Add Animation">
-            <param name="add_desc" type="description">Animate the selected objects as if they were drawn with a pencil.</param>
+            <label>Animate the selected objects as if they were drawn with a pencil.</label>
             <param name="identifier" type="string" gui-description="Only letters A-Z and a-z, numbers and underscores." gui-text="Unique name:">animation_1</param>
             <param name="duration" type="float" precision="3" min="0.001" max="1000.000" gui-description="Duration of the animation in seconds." gui-text="Duration (seconds):">10.000</param>
             <param name="repeat" type="int" min="0" max="1000" gui-description="Number of times the animation should be played. 0 means infinite repetition." gui-text="Number of repetitions (0 = infinite):">1</param>
             <param name="delay" type="float" precision="3" min="0.000" max="1000.000" gui-description="Time to wait until the animation starts. Can be used to chain animations with different speed, or to create parallel animations." gui-text="Delay (seconds):">0.000</param>
         </page>
         <page name="advanced" gui-text="Advanced options">
-            <param name="timing" type="optiongroup" gui-description="Select the timing profile of the animation" gui-text="Timing function">
+            <param name="timing"  appearance="combo" type="optiongroup" gui-description="Select the timing profile of the animation" gui-text="Timing function">
                 <option value="ease">ease</option>
                 <option value="ease-in">ease-in</option>
                 <option value="ease-out">ease-out</option>
@@ -20,9 +20,9 @@
             </param>
         </page>
         <page name="remove_anim" gui-text="Remove Animation">
-            <param name="remove_from" type="enum" gui-description="Remove all traces of animations from the file or only remove animations from selected objects." gui-text="Remove animations:">
-                <item value="selected">from selected objects</item>
-                <item value="all">from the whole document</item>
+            <param name="remove_from"  appearance="combo" type="optiongroup" gui-description="Remove all traces of animations from the file or only remove animations from selected objects." gui-text="Remove animations:">
+                <option value="selected">from selected objects</option>
+                <option value="all">from the whole document</option>
             </param>
         </page>
         <page name="help" gui-text="Help">
@@ -42,6 +42,6 @@
         </effects-menu>
     </effect>
     <script>
-        <command reldir="inx" interpreter="python">line-animator.py</command>
+        <command location="inx" interpreter="python">line-animator.py</command>
     </script>
 </inkscape-extension>
