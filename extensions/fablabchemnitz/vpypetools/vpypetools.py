@@ -39,7 +39,6 @@ vpypetools allows to enable some important adjusters and debugging settings to g
 
 vpypetools is based on 
  - Aaron Spike's "Flatten Bezier" extension, licensed by GPL v2
- - Mark Riedesel's "Apply Transform" extension (https://github.com/Klowner/inkscape-applytransforms), licensed by GPL v2
  - a lot of other extensions to rip off the required code pieces ;-)
  - used (tested) version of vpype: commit id https://github.com/abey79/vpype/commit/0b0dc8dd7e32998dbef639f9db578c3bff02690b (29.03.2021)
  - used (tested) version of vpype occult: commit id https://github.com/LoicGoulefert/occult/commit/2d04ca57d69078755c340066c226fd6cd927d41e (04.02.2021)
@@ -119,7 +118,6 @@ class vpypetools (inkex.EffectExtension):
         pars.add_argument("--decimals", type=int, default=3, help="Accuracy for imported lines' coordinates into vpype. Does not work for 'Multilayer/document'")
         pars.add_argument("--simplify", type=inkex.Boolean, default=False, help="Reduces significantly the number of segments used to approximate the curve while still guaranteeing an accurate conversion, but may increase the execution time. Does not work for 'Singlelayer/paths'")
         pars.add_argument("--parallel", type=inkex.Boolean, default=False, help="Enables multiprocessing for the SVG conversion. This is recommended ONLY when using 'Simplify geometry' on large SVG files with many curved elements. Does not work for 'Singlelayer/paths'")
-        pars.add_argument("--apply_transformations", type=inkex.Boolean, default=False, help="Run 'Apply Transformations' extension before running vpype. Helps avoiding geometry shifting")
         pars.add_argument("--output_show", type=inkex.Boolean, default=False, help="This will open a separate window showing the finished SVG data. If enabled, output is not applied to InkScape canvas (only for preview)!")
         pars.add_argument("--output_show_points", type=inkex.Boolean, default=False, help="Enable point display in viewer")
         pars.add_argument("--output_stats", type=inkex.Boolean, default=False, help="Show output statistics before/after conversion")
@@ -134,19 +132,9 @@ class vpypetools (inkex.EffectExtension):
         lc = vpype.LineCollection() # create a new array of LineStrings consisting of Points. We convert selected paths to polylines and grab their points
         elementsToWork = [] # we make an array of all collected nodes to get the boundingbox of that array. We need it to place the vpype converted stuff to the correct XY coordinates
           
-        applyTransformAvailable = False
-        
-        # at first we apply external extension
-        try:
-            sys.path.append("../applytransform") # add parent directory to path to allow importing applytransform (vpype extension is encapsulated in sub directory)
-            import applytransform
-            applyTransformAvailable = True
-        except Exception as e:
-            # inkex.utils.debug(e)
-            inkex.utils.debug("Calling 'Apply Transformations' extension failed. Maybe the extension is not installed. You can download it from official InkScape Gallery. Skipping this step")
-
         def flatten(node):
-            path = node.path.to_superpath()
+            #path = node.path.to_superpath()
+            path = node.path.transform(node.composed_transform()).to_superpath()
             bezier.cspsubdiv(path, self.options.flatness)
             newpath = []
             for subpath in path:
@@ -199,13 +187,6 @@ class vpypetools (inkex.EffectExtension):
         if self.options.input_handling == "paths":
             # getting the bounding box of the current selection. We use to calculate the offset XY from top-left corner of the canvas. This helps us placing back the elements
             input_bbox = None
-            if self.options.apply_transformations is True and applyTransformAvailable is True:
-                '''
-                we need to apply transfoms to the complete document even if there are only some single paths selected. 
-                If we apply it to selected nodes only the parent groups still might contain transforms. 
-                This messes with the coordinates and creates hardly controllable behaviour
-                '''
-                applytransform.ApplyTransform().recursiveFuseTransform(self.document.getroot())
             if len(self.svg.selected) == 0:
                 elementsToWork = convertPath(self.document.getroot())
                 for element in elementsToWork:
@@ -436,8 +417,6 @@ class vpypetools (inkex.EffectExtension):
             if self.options.input_handling == "layers":
                 if self_viewBox is not None:
                     element.set('transform', 'scale(' + str(scaleX) + ',' + str(scaleY) + ')') #imported groups need to be transformed. Or they have wrong size. Reason: different viewBox sizes/units in namedview definitions
-                if self.options.apply_transformations is True and applyTransformAvailable is True and self.options.strokes_to_paths is True: #we apply the transforms directly after adding them, but we need to have strokes_to_paths enabled!
-                    applytransform.ApplyTransform().recursiveFuseTransform(element) 
 
         # Delete the temporary file again because we do not need it anymore
         if os.path.exists(output_file):

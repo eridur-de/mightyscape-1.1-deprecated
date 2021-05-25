@@ -10,9 +10,6 @@
 			<param name="reloop_tolerance" type="float" min="0.000"  max="99999.000" precision="3" gui-text="tolerance (mm)" gui-description="Controls how close the path beginning and end must be to consider it closed (default 0.500 mm)">0.500</param>   
 		</page>
 		<page name="tab_settings_general" gui-text="General Settings">
-			<label appearance="header">Preprocessing</label>
-		    <param name="apply_transformations" type="bool" gui-text="Use 'Apply Transformations' extension" gui-description="Run 'Apply Transformations' extension before running vpype. Helps avoiding geometry shifting. Disabled for 'Multilayer/document'">false</param>
-			<spacer/>
 			<label appearance="header">Input (InkScape to vpype)</label>
 			<param name="input_handling" type="optiongroup" appearance="radio" gui-text="Input/Layer handling">
 			   <option value="layers">Multilayer/document (all layers/complete document)</option>
