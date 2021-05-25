@@ -89,6 +89,19 @@ class Primitive (inkex.EffectExtension):
                         image = Image.open(BytesIO(base64.b64decode(image_string[i + 1:len(image_string)])))
                     else:
                         image = Image.open(self.path)
+                                      
+                    if node.get('width')[-1].isdigit() is False or node.get('height')[-1].isdigit() is False:
+                        inkex.utils.debug("Image seems to have some weird dimensions in XML structure. Please remove units from width and height attributes at <svg:image>")
+                        return
+                    
+                    parent = node.getparent()
+                    if parent is not None and parent != self.document.getroot():
+                        tpc = parent.composed_transform()
+                        x_offset = tpc.e
+                        y_offset = tpc.f
+                    else:
+                        x_offset = 0.0
+                        y_offset = 0.0    
                     
                     # Write the embedded or linked image to temporary directory
                     if os.name == "nt":
@@ -130,16 +143,16 @@ class Primitive (inkex.EffectExtension):
                         # Delete the temporary png file again because we do not need it anymore
                         if os.path.exists(exportfile):
                             os.remove(exportfile)
-                        
+ 
                         # new parse the SVG file and insert it as new group into the current document tree
                         doc = etree.parse(exportfile + ".svg").getroot()
-                        newGroup = self.document.getroot().add(inkex.Group())
-                        newGroup.attrib['transform'] = "matrix(" + \
-                            str(float(node.get('width')) / float(doc.get('width'))) + \
-                            ", 0, 0 , " + \
-                            str(float(node.get('height')) / float(doc.get('height'))) + \
-                            "," + node.get('x') + \
-                            "," + node.get('y') + ")"
+                        newGroup = self.document.getroot().add(inkex.Group())          
+                        newGroup.attrib['transform'] = "matrix({:0.6f}, 0, 0, {:0.6f}, {:0.6f}, {:0.6f})".format(
+                            float(node.get('width')) / float(doc.get('width')),
+                            float(node.get('height')) / float(doc.get('height')),
+                            float(node.get('x')) + x_offset,
+                            float(node.get('y')) + y_offset
+                            )
                         newGroup.append(doc)
 
                         # Delete the temporary svg file

@@ -160,13 +160,28 @@ class Imagetracerjs (inkex.EffectExtension):
                             trace_height = viewBox.split(' ')[3]
                         
                         # add transformation to fit previous XY coordinates and width/height
+                        # image might also be influenced by other transformations from parent:
+                        parent = image.getparent()
+                        if parent is not None and parent != self.document.getroot():
+                            tpc = parent.composed_transform()
+                            x_offset = tpc.e
+                            y_offset = tpc.f
+                        else:
+                            x_offset = 0.0
+                            y_offset = 0.0              
                         img_w = image.get('width')
                         img_h = image.get('height')
                         img_x = image.get('x')
-                        img_y = image.get('y')
+                        img_y = image.get('y')                                        
                         if img_w is not None and img_h is not None and img_x is not None and img_y is not None:
+                            #if width/height are not unitless but end with px, mm, in etc. we have to convert to a float number
+                            if img_w[-1].isdigit() is False:
+                                img_w = self.svg.uutounit(img_w)
+                            if img_h[-1].isdigit() is False:
+                                img_h = self.svg.uutounit(img_h)
+                            
                             transform = "matrix({:1.6f}, 0, 0, {:1.6f}, {:1.6f}, {:1.6f})"\
-                            .format(float(img_w) / float(trace_width), float(img_h) / float(trace_height), float(img_x), float(img_y))
+                            .format(float(img_w) / float(trace_width), float(img_h) / float(trace_height), float(img_x) + x_offset, float(img_y) + y_offset)
                             newGroup.attrib['transform'] = transform
                         else:
                             t = image.composed_transform()
@@ -175,7 +190,7 @@ class Imagetracerjs (inkex.EffectExtension):
                             img_x = t.e
                             img_y = t.f
                             transform = "matrix({:1.6f}, 0, 0, {:1.6f}, {:1.6f}, {:1.6f})"\
-                            .format(float(img_w) / float(trace_width), float(img_h) / float(trace_height), float(img_x), float(img_y))
+                            .format(float(img_w) / float(trace_width), float(img_h) / float(trace_height), float(img_x) + x_offset, float(img_y) + y_offset)
                             newGroup.attrib['transform'] = transform
            
                         for child in doc.getchildren():
