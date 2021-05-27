@@ -36,8 +36,7 @@ class ExportObject(inkex.EffectExtension):
         pars.add_argument("--export_svg", type=inkex.Boolean, default=False, help="Create a svg file")
         pars.add_argument("--export_dxf", type=inkex.Boolean, default=False, help="Create a dxf file")
         pars.add_argument("--export_pdf", type=inkex.Boolean, default=False, help="Create a pdf file")
-        pars.add_argument("--newwindow", type=inkex.Boolean, default=False, help="Open file in new Inkscape window")
-        
+        pars.add_argument("--newwindow", type=inkex.Boolean, default=False, help="Open file in new Inkscape window")      
 
     def openExplorer(self, dir):
         if os.name == 'nt':
