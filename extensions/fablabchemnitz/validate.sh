@@ -8,3 +8,6 @@ find ./ -type f -name "*.inx" | wc -l
 
 echo "Count of extension folders:"
 ls -d */ | wc -l
+
+echo "Removing unrequired pyc cache files"
+find . -type d -name "__pycache__" -exec rm -rf {} \;

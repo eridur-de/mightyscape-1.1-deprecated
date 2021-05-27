@@ -34,7 +34,6 @@ class ContourScanner(inkex.EffectExtension):
     def add_arguments(self, pars):
         pars.add_argument("--main_tabs")
         pars.add_argument("--breakapart", type=inkex.Boolean, default=False, help="Break apart selection into single contours")
-        pars.add_argument("--apply_transformations", type=inkex.Boolean, default=False, help="Run 'Apply Transformations' extension before running to avoid IndexErrors in calculation.")
         pars.add_argument("--removefillsetstroke", type=inkex.Boolean, default=False, help="Remove fill and define stroke")
         pars.add_argument("--strokewidth", type=float, default=1.0, help="Stroke width (px)")
         pars.add_argument("--highlight_opened", type=inkex.Boolean, default=True, help="Highlight opened contours")
@@ -98,7 +97,9 @@ class ContourScanner(inkex.EffectExtension):
             parent = node.getparent()
             idx = parent.index(node)
             idSuffix = 0    
-            raw = Path(node.get("d")).to_arrays()
+            #raw = Path(node.get("d")).to_arrays()
+            #raw = node.path.transform(node.composed_transform()).to_superpath()
+            raw = node.path.transform(node.composed_transform()).to_arrays()
             subPaths, prev = [], 0
             for i in range(len(raw)): # Breaks compound paths into simple paths
                 if raw[i][0] == 'M' and i != 0:
@@ -125,7 +126,9 @@ class ContourScanner(inkex.EffectExtension):
       
             intersectionGroup = node.getparent().add(inkex.Group())
 
-            raw = (Path(node.get('d')).to_arrays())
+            #raw = (Path(node.get('d')).to_arrays())
+            raw = node.path.transform(node.composed_transform()).to_arrays()
+            
             subPaths, prev = [], 0
             for i in range(len(raw)): # Breaks compound paths into simple paths
                 if raw[i][0] == 'M' and i != 0:
@@ -271,25 +274,6 @@ class ContourScanner(inkex.EffectExtension):
                 self.scanContours(child) 
  
     def effect(self):
-    
-        applyTransformAvailable = False
-        # at first we apply external extension
-        try:
-            sys.path.append("../applytransform") # add parent directory to path to allow importing applytransform (vpype extension is encapsulated in sub directory)
-            import applytransform
-            applyTransformAvailable = True
-        except Exception as e:
-            #inkex.utils.debug(e)
-            inkex.utils.debug("Calling 'Apply Transformations' extension failed. Maybe the extension is not installed. You can download it from official InkScape Gallery. Skipping this step")
-    
-        '''
-        we need to apply transfoms to the complete document even if there are only some single paths selected. 
-        If we apply it to selected nodes only the parent groups still might contain transforms. 
-        This messes with the coordinates and creates hardly controllable behaviour
-        '''
-        if self.options.apply_transformations is True and applyTransformAvailable is True:
-            applytransform.ApplyTransform().recursiveFuseTransform(self.document.getroot())
-    
         if self.options.breakapart is True:    
             if len(self.svg.selected) == 0:
                  self.breakContours(self.document.getroot())
