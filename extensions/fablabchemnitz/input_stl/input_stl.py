@@ -170,13 +170,11 @@ class InputSTL(inkex.EffectExtension):
             '--rotate', str(args.rz), 
             '--first-layer-height', '0.1mm', 
             '--export-svg', '-o', svgfile, args.inputfile]
-        
-        
+              
         def scale_points(pts, scale):
             """ str='276.422496,309.4 260.209984,309.4 260.209984,209.03 276.422496,209.03' """
             return re.sub('\d*\.\d*', lambda x: str(float(x.group(0))*scale), pts)
-        
-        
+             
         ## CAUTION: keep svg_pathstats() in sync with inkscape-centerlinetrace
         def svg_pathstats(path_d):
             """ calculate statistics from an svg path:

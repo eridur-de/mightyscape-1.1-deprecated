@@ -12,13 +12,10 @@ import warnings
 import inkex
 import inkex.command
 from inkex.command import inkscape, inkscape_command
+import tempfile
 
 from lxml import etree
 from scour.scour import scourString
-
-'''
-ToDo: work with temporary SVG file in temp dir instead handling deletion stuff at the end / valide that the file exists when spawning new instance
-'''
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +25,7 @@ GROUP_ID = 'export_selection_transform'
 class ExportObject(inkex.EffectExtension):
     
     def add_arguments(self, pars):
+        pars.add_argument("--tab")
         pars.add_argument("--wrap_transform", type=inkex.Boolean, default=False, help="Wrap final document in transform")
         pars.add_argument("--border_offset", type=float, default=1.000, help="Add border offset around selection")
         pars.add_argument("--export_dir", default="~/inkscape_export/",    help="Location to save exported documents")
@@ -45,6 +43,9 @@ class ExportObject(inkex.EffectExtension):
             Popen(["xdg-open", dir], close_fds=True, start_new_session=True).wait()
 
     def spawnIndependentInkscape(self, file): #function to spawn non-blocking inkscape instance. the inkscape command is available because it is added to ENVIRONMENT when Inkscape main instance is started
+        if not os.path.exists(file):
+            inkex.utils.debug("Error. {} does not exist!".format(file))
+            exit(1)
         warnings.simplefilter('ignore', ResourceWarning) #suppress "enable tracemalloc to get the object allocation traceback"
         if os.name == 'nt':
             Popen(["inkscape", file], close_fds=True, creationflags=DETACHED_PROCESS)
@@ -62,9 +63,7 @@ class ExportObject(inkex.EffectExtension):
             self.options.newwindow is False:
             inkex.utils.debug("You must select at least one option to continue!")
             return
-        else:
-            self.options.export_svg = True #required for all other options!
-        
+
         if not self.svg.selected:
             inkex.errormsg("Selection is empty. Please select some objects first!")
             return
@@ -130,6 +129,8 @@ class ExportObject(inkex.EffectExtension):
                 if child.tag == '{http://www.w3.org/2000/svg}metadata':
                     template.remove(child)
 
+        self.save_document(template, os.path.join(tempfile.gettempdir(), svg_filename)) # save one into temp dir to access for dxf/pdf/new window instance
+
         if self.options.export_svg is True:
             self.save_document(template, export_dir / svg_filename)
         
@@ -138,7 +139,7 @@ class ExportObject(inkex.EffectExtension):
             
         if self.options.newwindow is True:
             #inkscape(os.path.join(export_dir, svg_filename)) #blocking cmd
-            self.spawnIndependentInkscape(os.path.join(export_dir, svg_filename)) #non-blocking
+            self.spawnIndependentInkscape(os.path.join(tempfile.gettempdir(), svg_filename)) #non-blocking
             
         if self.options.export_dxf is True:
             #ensure that python command is available #we pass 25.4/96 which stands for unit mm. See inkex.units.UNITS and dxf_outlines.inx
@@ -147,7 +148,7 @@ class ExportObject(inkex.EffectExtension):
                 self.options.dxf_exporter_path, 
                 '--output=' + os.path.join(export_dir, filename_base + '.dxf'), 
                 r'--units=25.4/96', 
-                os.path.join(export_dir, svg_filename)
+                os.path.join(tempfile.gettempdir(), svg_filename)
                 ]
             proc = Popen(cmd, shell=False, stdout=PIPE, stderr=PIPE)
             stdout, stderr = proc.communicate()
@@ -155,14 +156,11 @@ class ExportObject(inkex.EffectExtension):
                 inkex.utils.debug("%d %s %s" % (proc.returncode, stdout, stderr))
             
         if self.options.export_pdf is True:    
-            cli_output = inkscape(os.path.join(export_dir, svg_filename), actions='export-pdf-version:1.5;export-text-to-path;export-filename:{file_name};export-do;FileClose'.format(file_name=os.path.join(export_dir, filename_base + '.pdf')))
+            cli_output = inkscape(os.path.join(tempfile.gettempdir(), svg_filename), actions='export-pdf-version:1.5;export-text-to-path;export-filename:{file_name};export-do;FileClose'.format(file_name=os.path.join(export_dir, filename_base + '.pdf')))
             if len(cli_output) > 0:
                 self.msg("Inkscape returned the following output when trying to run the file export; the file export may still have worked:")
                 self.msg(cli_output)
                 
-        if svg_export is False and self.options.newwindow is False: #we need the SVG file in case we open in new window because we spawn a new instance
-            os.remove(os.path.join(export_dir, svg_filename)) #remove SVG if not enabled to export. Might delete existing SVG accidently!
-      
     def create_document(self):
         document = self.svg.copy()
         for child in document.getchildren():
