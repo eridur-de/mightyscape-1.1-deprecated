@@ -65,12 +65,16 @@ class Upgrade(inkex.EffectExtension):
                         
             latestRemoteCommit = git.cmd.Git().ls_remote("https://gitea.fablabchemnitz.de/MarioVoigt/mightyscape-1.X.git", heads=True).replace('refs/heads/master','').strip()
             localCommit = str(repo.head.commit)
-            logs = repo.head.reference.log()
+            ref_logs = repo.head.reference.log()
+            
+            #commits = list(repo.iter_commits("master", max_count=5))
+            commits = list(repo.iter_commits("master"))
             self.msg("Local commit id is: " + localCommit[:7])
             self.msg("Latest remote commit is: " + latestRemoteCommit[:7])
-            self.msg("There are {} remote commits at the moment.".format(len(logs)))
+            self.msg("There are {} remote commits at the moment.".format(len(commits)))
+            self.msg("There are {} remote ref logs at the moment.".format(len(ref_logs)))
             logList = []
-            for log in logs:
+            for log in ref_logs:
                 logList.append(log)
             logList.reverse()
             #show last 10 entries
