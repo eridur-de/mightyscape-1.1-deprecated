@@ -51,14 +51,17 @@ class MovePathNode(inkex.EffectExtension):
                     self.msg("{} is not closed! Skipping ...".format(element.get('id'))) 
                 continue #skip this open path
     
+            if len(path) == 2:
+                continue #skip this open path (special case of straight line segment)
+
             if path[-1][0] == 'Z': #replace Z with another L command (which moves to the coordinates of the first M command in path) to have better overview
                 path[-1][0] = 'L'
                 path[-1][1] = path[0][1]
     
             #adjust if entered move number is higher than actual node count. We handle as infinite looping
-            moves = (self.options.movenode - 1) % len(path)
+            moves = (self.options.movenode) % len(path)
             if pathIsClosed is True: #if closed start and end collapse and "duplicate"
-                moves = (self.options.movenode - 1) % (len(path) - 1)
+                moves = (self.options.movenode) % (len(path) - 1)
             if self.options.movenode == 0: #special handling for 0 is required
                 moves = 0
 
