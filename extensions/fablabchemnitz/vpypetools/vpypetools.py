@@ -50,6 +50,7 @@ CLI / API docs:
 Todo's
 - find some python code to auto-convert strokes and objects to paths (for input and for output again)
 - remove fill property of converted lines (because there is no fill anymore) without crashing Inkscape ...
+- as we use flatten() we modify the original path. rewrite to avoid modifications to original path
 """
 
 class vpypetools (inkex.EffectExtension):
