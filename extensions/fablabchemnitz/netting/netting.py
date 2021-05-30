@@ -51,13 +51,21 @@ class Netting(inkex.EffectExtension):
         
             if self.options.netting_type == "allwithall":
                 allnet_group = inkex.Group(id="g" + element.get('id'))
+                pathsCollection = []
                 self.svg.get_current_layer().append(allnet_group)
                 for segment1 in range(0, len(old_segments)):
                     for segment2 in range(1, len(old_segments)):
-                        allnet_path = inkex.PathElement()
-                        allnet_path.style = style
-                        allnet_path.path = Path('M' + old_segments[segment1] + ' L' + old_segments[segment2])
-                        allnet_group.append(allnet_path)
+                        if old_segments[segment1] != old_segments[segment2]:
+                            pathVariant1 = Path('M' + old_segments[segment1] + ' L' + old_segments[segment2])
+                            pathVariant2 = Path('M' + old_segments[segment2] + ' L' + old_segments[segment1]) #the reversed one  
+                            if pathVariant1 not in pathsCollection and pathVariant2 not in pathsCollection:
+                                pathsCollection.append(pathVariant1)
+                        
+                for p in pathsCollection:
+                    allnet_path = inkex.PathElement()
+                    allnet_path.style = style
+                    allnet_path.path = p
+                    allnet_group.append(allnet_path)
 
             elif self.options.netting_type == "alternatingly":
                 #build up the net path between the path points alternatingly

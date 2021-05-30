@@ -87,11 +87,6 @@ class Polygon(inkex.EffectExtension):
         widthDoc  = self.svg.unittouu(svg.get('width'))
         heightDoc = self.svg.unittouu(svg.get('height'))
         
-        # Create a new layer.
-        layer = etree.SubElement(svg, 'g')
-        layer.set(inkex.addNS('label', 'inkscape'), 'newlayer')
-        layer.set(inkex.addNS('groupmode', 'inkscape'), 'layer')
-        
         parent=self.svg.get_current_layer()
         
         # Get script's option values.
@@ -166,6 +161,11 @@ class Polygon(inkex.EffectExtension):
         groupdraw(s,[color1,color2])
         
         if self.options.displaylasertag:
+            # Create a new layer.
+            layer = etree.SubElement(svg, 'g')
+            layer.set(inkex.addNS('label', 'inkscape'), 'lasertag')
+            layer.set(inkex.addNS('groupmode', 'inkscape'), 'layer')
+        
             tag_1=lasertag
             tag_1=tag_1.replace("%n",str(pass_offset+1)).replace("%s",str(speed)).replace("%i",str(intensity)).replace("%c",str(color2))
             tag_2=lasertag
