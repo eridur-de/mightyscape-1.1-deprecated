@@ -31,30 +31,46 @@ from inkex.paths import Path, CubicSuperPath
 class Netting(inkex.EffectExtension):
     
     def add_arguments(self, pars):
-        pars.add_argument("--s_width", type=float, default=1.0, help="stroke width")
-        pars.add_argument("--title")
-
+        pars.add_argument("--tab")
+        pars.add_argument("--netting_type", default="allwithall", help="Netting type")
+        pars.add_argument("--stroke_width", type=float, default=1.0, help="stroke width")
+        
     def effect(self):
-        path_strings = []
-        net_strings= ["M"]
-        my_path = etree.Element(inkex.addNS('path','svg'))
-        s = {'stroke-width': self.options.s_width, 'stroke': '#000000', 'fill': 'none' }
-        my_path.set('style', str(inkex.Style(s)))
-        for id, node in self.svg.selected.items():
-            if node.tag == inkex.addNS('path','svg'):
-                d = node.get('d')
-                p = CubicSuperPath(Path(d))
-                for subpath in p:
-                    for i, csp in enumerate(subpath):
-                        path_strings.append("%f,%f" % ( csp[1][0], csp[1][1]))
-                node.set('d',str(Path(p)))
-                
-                while len(path_strings)>0 :
-                    net_strings.append(path_strings.pop(0))
-                    if len(path_strings)>0 :
-                        net_strings.append(path_strings.pop())
-                my_path.set('d', " ".join(net_strings))
-                self.svg.get_current_layer().append( my_path )
-                    
+        #static
+        style = {'stroke-width': str(self.options.stroke_width) +'px', 'stroke': '#000000', 'fill': 'none'}  
+        old_segments = []
+        new_segments = ["M"] #begin with blank M
+        
+        #get complete path data from all selected paths
+        for element in self.svg.selected.filter(inkex.PathElement).values():
+            d = element.get('d')
+            p = CubicSuperPath(Path(d))
+            for subpath in p:
+                for i, csp in enumerate(subpath):
+                    old_segments.append("%f,%f" % (csp[1][0], csp[1][1]))
+        
+            if self.options.netting_type == "allwithall":
+                allnet_group = inkex.Group(id="g" + element.get('id'))
+                self.svg.get_current_layer().append(allnet_group)
+                for segment1 in range(0, len(old_segments)):
+                    for segment2 in range(1, len(old_segments)):
+                        allnet_path = inkex.PathElement()
+                        allnet_path.style = style
+                        allnet_path.path = Path('M' + old_segments[segment1] + ' L' + old_segments[segment2])
+                        allnet_group.append(allnet_path)
+
+            elif self.options.netting_type == "alternatingly":
+                #build up the net path between the path points alternatingly
+                while len(old_segments) > 0:
+                    new_segments.append(old_segments.pop(0))
+                    if len(old_segments) > 0:
+                        new_segments.append(old_segments.pop())
+                   
+                #create the path and add it to the current layer 
+                net_path = inkex.PathElement()
+                net_path.style = style
+                net_path.path = Path(" ".join(new_segments))
+                self.svg.get_current_layer().append(net_path)
+                       
 if __name__ == '__main__':
     Netting().run()
