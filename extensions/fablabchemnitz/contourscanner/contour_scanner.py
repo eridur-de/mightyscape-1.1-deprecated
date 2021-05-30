@@ -43,7 +43,7 @@ class ContourScanner(inkex.EffectExtension):
         pars.add_argument("--highlight_selfintersecting", type=inkex.Boolean, default=True, help="Highlight self-intersecting contours")
         pars.add_argument("--highlight_intersectionpoints", type=inkex.Boolean, default=True, help="Highlight self-intersecting points")
         pars.add_argument("--color_selfintersecting", type=Color, default='1923076095', help="Color closed contours")
-        pars.add_argument("--color_intersectionpoints", type=Color, default='4239343359', help="Color closed contours")
+        pars.add_argument("--color_intersectionpoints", type=Color, default='4239343359', help="self-intersecting points")
         pars.add_argument("--addlines", type=inkex.Boolean, default=True, help="Add closing lines for self-crossing contours")
         pars.add_argument("--polypaths", type=inkex.Boolean, default=True, help="Add polypath outline for self-crossing contours")
         pars.add_argument("--dotsize", type=int, default=10, help="Dot size (px) for self-intersecting points")
@@ -83,7 +83,7 @@ class ContourScanner(inkex.EffectExtension):
                 else:
                     polypath.append(['L', [x,y]])
                     if i == 1 and polypath[len(polypath)-2][1] == polypath[len(polypath)-1][1]:
-                        polypath.pop(len(polypath)-1) #special handling for the seconds point after M command
+                        polypath.pop(len(polypath)-1) #special handling for the second point after M command
                     elif polypath[len(polypath)-2] == polypath[len(polypath)-1]: #get the previous point
                         polypath.pop(len(polypath)-1)
                 i += 1
