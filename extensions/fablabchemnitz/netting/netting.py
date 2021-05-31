@@ -33,13 +33,14 @@ class Netting(inkex.EffectExtension):
     def add_arguments(self, pars):
         pars.add_argument("--tab")
         pars.add_argument("--netting_type", default="allwithall", help="Netting type")
+        pars.add_argument("--node_shifting", type=int, default=0, help="Does not apply for 'all with all' type.")
         pars.add_argument("--stroke_width", type=float, default=1.0, help="stroke width")
-        
+    
     def effect(self):
         #static
         style = {'stroke-width': str(self.options.stroke_width) +'px', 'stroke': '#000000', 'fill': 'none'}  
         old_segments = []
-        new_segments = ["M"] #begin with blank M
+        new_segments = []
         
         #get complete path data from all selected paths
         for element in self.svg.selected.filter(inkex.PathElement).values():
@@ -69,11 +70,32 @@ class Netting(inkex.EffectExtension):
 
             elif self.options.netting_type == "alternatingly":
                 #build up the net path between the path points alternatingly
+                first = True
                 while len(old_segments) > 0:
+                    if first is True:
+                        new_segments.append('M')
+                        first = False
+                    else:
+                        new_segments.append('L')
                     new_segments.append(old_segments.pop(0))
                     if len(old_segments) > 0:
+                        new_segments.append('L')
                         new_segments.append(old_segments.pop())
-                   
+            
+                shift = self.options.node_shifting
+                if shift < 0:
+                    counter = -1
+                else:
+                    counter = +1     
+                for i in range(0, self.options.node_shifting, counter):
+                    for i in range(4):
+                        shifting = new_segments[0]
+                        if new_segments[0] == 'M':
+                            shifting = 'L' #overwrite possible 'M' with 'L'
+                        del new_segments[0]
+                        new_segments.append(shifting)
+                new_segments[0] = 'M' #let's begin the path with 'M' again
+
                 #create the path and add it to the current layer 
                 net_path = inkex.PathElement()
                 net_path.style = style
