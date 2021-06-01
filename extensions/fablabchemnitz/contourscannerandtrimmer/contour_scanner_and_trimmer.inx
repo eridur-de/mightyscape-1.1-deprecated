@@ -116,7 +116,9 @@ Tips:
     <effect needs-live-preview="true">
         <object-type>all</object-type>
         <effects-menu>
-         <submenu name="Contour Scanner And Trimmer"/>
+            <submenu name="FabLab Chemnitz">
+                <submenu name="Modify existing Path(s)"/>
+            </submenu>
         </effects-menu>
     </effect>
     <script>
