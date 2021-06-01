@@ -14,7 +14,7 @@ License: GNU GPL v3
 import inkex
 import os
 import warnings
-
+from datetime import datetime
 
 class Upgrade(inkex.EffectExtension):
 
@@ -65,23 +65,28 @@ class Upgrade(inkex.EffectExtension):
                         
             latestRemoteCommit = git.cmd.Git().ls_remote("https://gitea.fablabchemnitz.de/MarioVoigt/mightyscape-1.X.git", heads=True).replace('refs/heads/master','').strip()
             localCommit = str(repo.head.commit)
-            ref_logs = repo.head.reference.log()
+            #ref_logs = repo.head.reference.log()
             
             #commits = list(repo.iter_commits("master", max_count=5))
             commits = list(repo.iter_commits("master"))
             self.msg("Local commit id is: " + localCommit[:7])
             self.msg("Latest remote commit is: " + latestRemoteCommit[:7])
             self.msg("There are {} remote commits at the moment.".format(len(commits)))
-            self.msg("There are {} remote ref logs at the moment.".format(len(ref_logs)))
-            logList = []
-            for log in ref_logs:
-                logList.append(log)
-            logList.reverse()
+            #self.msg("There are {} remote ref logs at the moment.".format(len(ref_logs)))
+            commitList = []
+            for commit in commits:
+                commitList.append(commit)
+            #commitList.reverse()
             #show last 10 entries
             self.msg("*"*40)
-            self.msg("Latest 10 log entries are:")
+            self.msg("Latest 10 commits are:")
             for i in range(0, 10):
-                self.msg(" - {}: {}".format(logList[i].newhexsha[:7], logList[i].message))   
+                self.msg("{} | {} : {}".format(
+                    datetime.utcfromtimestamp(commitList[i].committed_date).strftime('%Y-%m-%d %H:%M:%S'),
+                    commitList[i].name_rev[:7],
+                    commitList[i].message.strip())
+                    )   
+                #self.msg(" - {}: {}".format(commitList[i].newhexsha[:7], commitList[i].message))   
             self.msg("*"*40)
 
             if localCommit != latestRemoteCommit:
