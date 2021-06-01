@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <name>Split And Break Bezier At t</name>
+    <id>fablabchemnitz.de.split_and_break_bezier_at_t</id>
+    <param name="target_t" type="float" min="0.0000" max="1.0000" precision="4" appearance="full" gui-text="t">0.5000</param>
+    <label xml:space="preserve">Splits a path at value t=0..1 (t=0.5 means 50%)
+Applies independently for each sub path in selection.</label>
+    <effect>
+        <object-type>path</object-type>
+        <effects-menu>
+            <submenu name="FabLab Chemnitz">
+                <submenu name="Modify existing Path(s)"/>
+            </submenu>
+        </effects-menu>
+    </effect>
+    <script>
+        <command location="inx" interpreter="python">split_and_break_bezier_at_t.py</command>
+    </script>
+</inkscape-extension>
