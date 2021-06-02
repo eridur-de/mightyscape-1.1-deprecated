@@ -57,6 +57,9 @@ class SplitAndBreakBezierAtT(inkex.EffectExtension):
         pars.add_argument('--unit', default="mm")
         pars.add_argument('--target_length', type=float, default=0.5)
         pars.add_argument('--target_t', type=float, default=0.5)
+        pars.add_argument('--keep_start', type=inkex.Boolean, default=True)
+        pars.add_argument('--keep_end', type=inkex.Boolean, default=True)
+        pars.add_argument('--keep_seg', type=inkex.Boolean, default=False)
 
     def effect(self):   
         breakApartElements = None
@@ -80,11 +83,13 @@ class SplitAndBreakBezierAtT(inkex.EffectExtension):
                     self.options.target_t = length_at_target_t / totalLength #override
 
                 new = []
+                keep = [] #some copy for the segment where the split applies
                 lengthSum = 0
-                segOfTOccurence = None   
-                for seg in csp:        
+                segOfTOccurence = None
+                for seg in csp:  
                     new.append([seg[0][:]])      
                     for i in range(1,len(seg)):
+                        aSeg = seg[i][0]
                         segLength = bezier.cspseglength(new[-1][-1], seg[i])
                         lengthSum += segLength
                         current_t = lengthSum / totalLength
@@ -97,17 +102,46 @@ class SplitAndBreakBezierAtT(inkex.EffectExtension):
                                 better_result = [[list(el) for el in elements] for elements in result]
                                 new[-1][-1], nxt, seg[i] = better_result
                                 new[-1].append(nxt[:])
-                        new[-1].append(seg[i])                
-                newpath = CubicSuperPath(new).to_path(curves_only=True).to_arrays()
-                #insert the splitting at the occurence (we add "m 0,0") to break the path
-                newpath.insert(segOfTOccurence + 1, ['m', [0, 0]])
-                element.path = Path(newpath)
-                breakAparts = self.breakContours(element)
+                                if self.options.keep_start is True and self.options.keep_end is False:
+                                    if segOfTOccurence == 1:
+                                        keep.append([seg[i-1][0], seg[i-1][0], seg[i-1][0]])
+                                    else:
+                                        keep.append([seg[i-1][1], seg[i-1][1], seg[i-1][1]])
+                                    keep.append([better_result[0][2], nxt[0], nxt[1]])
+                                elif self.options.keep_start is False and self.options.keep_end is True:
+                                    keep.append([better_result[0][2], nxt[0], nxt[1]])
+                                    keep.append([better_result[1][2], better_result[2][0], seg[i][1]])                               
+                                elif self.options.keep_start is True and self.options.keep_end is True:
+                                    if segOfTOccurence == 1:
+                                        keep.append([seg[i-1][0], seg[i-1][0], seg[i-1][0]])
+                                    else:
+                                        keep.append([seg[i-1][1], seg[i-1][1], seg[i-1][1]])
+                                    keep.append([seg[i-1][2], aSeg, seg[i][1]])
+
+                        new[-1].append(seg[i])
                 
-                #print the breaking point coordinate
-                #for step, (x, y) in enumerate(breakAparts[1].path.end_points):
-                #    self.msg("x={},y={}".format(x, y))
-                #    break
+                if self.options.keep_seg is False:     
+                    newpath = CubicSuperPath(new).to_path(curves_only=True).to_arrays()
+                    #insert the splitting at the occurence (we add "m 0,0") to break the path
+                    newpath.insert(segOfTOccurence + 1, ['m', [0, 0]])
+                    element.path = Path(newpath)
+
+                    breakAparts = self.breakContours(element)
+                  
+                    pathStart = breakAparts[0]
+                    pathEnd = breakAparts[1]
+                    if self.options.keep_start is False:
+                        pathStart.delete()
+                    if self.options.keep_end is False:
+                        pathEnd.delete()
+    
+                else:
+                    element.path = CubicSuperPath(keep)
+                    
+                    #print the breaking point coordinate
+                    #for step, (x, y) in enumerate(breakAparts[1].path.end_points):
+                    #    self.msg("x={},y={}".format(x, y))
+                    #    break
         else:
             inkex.utils.debug("Selection seems to be empty!")
             return
