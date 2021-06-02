@@ -70,11 +70,13 @@ class UnwindPaths(inkex.EffectExtension):
                 for subpath in subPaths:
                     replacedelement = copy.copy(element)
                     oldId = replacedelement.get('id')
-                    replacedelement.set('d', CubicSuperPath(subpath))
-                    replacedelement.set('id', oldId + str(idSuffix).zfill(5))
-                    parent.insert(idx, replacedelement)
-                    idSuffix += 1
-                    breakelements.append(replacedelement)
+                    csp = CubicSuperPath(subpath)
+                    if len(subpath) > 1 and csp[0][0] != csp[0][1]: #avoids pointy paths like M "31.4794 57.6024 Z"
+                        replacedelement.set('d', csp)
+                        replacedelement.set('id', oldId + str(idSuffix))
+                        parent.insert(idx, replacedelement)
+                        idSuffix += 1
+                        breakelements.append(replacedelement)
                 parent.remove(element)
             else:
                 breakelements.append(element)

@@ -2,9 +2,23 @@
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
     <name>Split And Break Bezier At t</name>
     <id>fablabchemnitz.de.split_and_break_bezier_at_t</id>
+    <param name="split_select" type="optiongroup" appearance="radio" gui-text="Split by" gui-description="Choose to split by length or percentage">
+        <option value="length">length</option>
+        <option value="t">percentage (t)</option>
+    </param>
+    <param name="unit" type="optiongroup" appearance="combo" gui-text="Units">
+        <option value="mm">mm</option>
+        <option value="cm">cm</option>
+        <option value="m">m</option>
+        <option value="in">in</option>
+        <option value="pt">pt</option>
+        <option value="px">px</option>
+        <option value="pc">pc</option>
+    </param>
+    <param name="target_length" type="float" min="0.0" precision="4" gui-text="Length">0.5000</param>
     <param name="target_t" type="float" min="0.0000" max="1.0000" precision="4" appearance="full" gui-text="t">0.5000</param>
-    <label xml:space="preserve">Splits a path at value t=0..1 (t=0.5 means 50%)
-Applies independently for each sub path in selection.</label>
+    <label xml:space="preserve">Splits a path at value t=0..1 (t=0.5 means 50%) or at a defined length with unit.
+Applies independently for each sub path in selection. Use 'Path > Reverse' to change the cutting direction.</label>
     <effect>
         <object-type>path</object-type>
         <effects-menu>

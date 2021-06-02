@@ -34,11 +34,11 @@ class PurgeInvalidPaths(inkex.EffectExtension):
                     elif len(commandsCoords) == 2 and commandsCoords[0][1] == commandsCoords[1][1]:
                         element.delete()
                     # "m 45.250809,91.692739 l 45.250809,91.692739" - this path contains two commands, 
-                    # but the first and second coordinate are the same. It will render als point
+                    # but the first and second coordinate are the same. It will render as point
                     elif len(commandsCoords) == 2 and commandsCoords[-1][0] == 'Z':
                         element.delete()
                     # "m 45.250809,91.692739 l 45.250809,91.692739 z" - this path contains three commands, 
-                    # but the first and second coordinate are the same. It will render als point, the path is closed by a Z command
+                    # but the first and second coordinate are the same. It will render as point, the path is closed by a Z command
                     elif len(commandsCoords) == 3 and commandsCoords[0][1] == commandsCoords[1][1] and commandsCoords[2][1] == 'Z':
                         element.delete()
         else:

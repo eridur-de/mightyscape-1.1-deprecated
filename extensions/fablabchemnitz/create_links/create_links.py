@@ -80,11 +80,13 @@ class LinksCreator(inkex.EffectExtension):
             for subpath in subPaths:
                 replacedelement = copy.copy(element)
                 oldId = replacedelement.get('id')
-                replacedelement.set('d', CubicSuperPath(subpath))
-                replacedelement.set('id', oldId + str(idSuffix).zfill(5))
-                parent.insert(idx, replacedelement)
-                idSuffix += 1
-                breakelements.append(replacedelement)
+                csp = CubicSuperPath(subpath)
+                if len(subpath) > 1 and csp[0][0] != csp[0][1]: #avoids pointy paths like M "31.4794 57.6024 Z"
+                    replacedelement.set('d', csp)
+                    replacedelement.set('id', oldId + str(idSuffix))
+                    parent.insert(idx, replacedelement)
+                    idSuffix += 1
+                    breakelements.append(replacedelement)
             parent.remove(element)
         for child in element.getchildren():
             self.breakContours(child, breakelements)
@@ -298,25 +300,6 @@ class LinksCreator(inkex.EffectExtension):
                         breakApartGroup.append(breakOutputelement)
                         #self.msg(replacedelement.get('id'))
                         #self.svg.selection.set(replacedelement.get('id')) #update selection to split paths segments (does not work, so commented out)
-
-                        #cleanup useless points
-                        p = breakOutputelement.path
-                        commandsCoords = p.to_arrays()
-                        # "m 45.250809,91.692739" - this path contains onyl one command - a single point
-                        if len(commandsCoords) == 1:
-                            breakOutputelement.delete()
-                        # "m 45.250809,91.692739 z"  - this path contains two commands, but only one coordinate. 
-                        # It's a single point, the path is closed by a Z command
-                        elif len(commandsCoords) == 2 and commandsCoords[0][1] == commandsCoords[1][1]:
-                            breakOutputelement.delete()
-                        # "m 45.250809,91.692739 l 45.250809,91.692739" - this path contains two commands, 
-                        # but the first and second coordinate are the same. It will render als point
-                        elif len(commandsCoords) == 2 and commandsCoords[-1][0] == 'Z':
-                            breakOutputelement.delete()
-                        # "m 45.250809,91.692739 l 45.250809,91.692739 z" - this path contains three commands, 
-                        # but the first and second coordinate are the same. It will render als point, the path is closed by a Z command
-                        elif len(commandsCoords) == 3 and commandsCoords[0][1] == commandsCoords[1][1] and commandsCoords[2][1] == 'Z':
-                            breakOutputelement.delete()
                         
         if len(self.svg.selected) > 0:
             for element in self.svg.selection.values():
