@@ -24,18 +24,18 @@ from lxml import etree
 
 SVG_URI = u'http://www.w3.org/2000/svg'
 
-class InsertRegmark(inkex.Effect):
-	def __init__(self):
-		inkex.Effect.__init__(self)
-		
+class SilhouetteCameoRegistrationMarks(inkex.EffectExtension):
+
+	def add_arguments(self, pars):
+		# Define string option "--what" with "-w" shortcut and default value "World".
 		# Layer name static, since self.document.getroot() not available on initialization
 		self.layername = 'silhouette-regmark'
 		
 		# Parse arguments
-		self.arg_parser.add_argument("-X", "--reg-x", "--regwidth",	type = float, dest = "regwidth", default = 180.0, help="X mark distance [mm]")
-		self.arg_parser.add_argument("-Y", "--reg-y", "--reglength", type = float, dest = "reglength", default = 230.0, help="Y mark distance [mm]")
-		self.arg_parser.add_argument("--rego-x",  "--regoriginx", type = float, dest = "regoriginx", default = 15.0, help="X mark origin from left [mm]")
-		self.arg_parser.add_argument("--rego-y", "--regoriginy", type = float, dest = "regoriginy", default = 20.0, help="X mark origin from top [mm]")
+		pars.add_argument("-X", "--reg-x", "--regwidth",	type = float, dest = "regwidth", default = 180.0, help="X mark distance [mm]")
+		pars.add_argument("-Y", "--reg-y", "--reglength", type = float, dest = "reglength", default = 230.0, help="Y mark distance [mm]")
+		pars.add_argument("--rego-x",  "--regoriginx", type = float, dest = "regoriginx", default = 15.0, help="X mark origin from left [mm]")
+		pars.add_argument("--rego-y", "--regoriginy", type = float, dest = "regoriginy", default = 20.0, help="X mark origin from top [mm]")
 	
 	#SVG rect element generation routine
 	def drawRect(self, size, pos, name):
@@ -98,4 +98,4 @@ class InsertRegmark(inkex.Effect):
 		layer.set(inkex.addNS('insensitive', 'sodipodi'), 'true') 
 		
 if __name__ == '__main__':
-	InsertRegmark().run()
+	SilhouetteCameoRegistrationMarks().run()

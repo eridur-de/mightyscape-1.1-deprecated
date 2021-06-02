@@ -11,7 +11,7 @@ def addPathCommand(a, cmd):
     for x in cmd:
         a.append(str(x))
 
-class SheriffStarEffect(inkex.EffectExtension):
+class SheriffStar(inkex.EffectExtension):
 
     def add_arguments(self, pars):
         pars.add_argument('--tab')
@@ -145,4 +145,4 @@ class SheriffStarEffect(inkex.EffectExtension):
             inkex.errormsg('Selection must contain a circle or ellipse.')
 
 if __name__ == '__main__':
-    effect = SheriffStarEffect().run()
+    SheriffStar().run()

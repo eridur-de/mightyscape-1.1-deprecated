@@ -15,7 +15,7 @@ def error(message):
     inkex.errormsg(message)
     exit()
 
-class MultiCutEffect(inkex.EffectExtension):
+class MutualCutLine(inkex.EffectExtension):
 
     def effect(self):
         if len(self.svg.selected.items()) != 2:
@@ -88,4 +88,4 @@ class MultiCutEffect(inkex.EffectExtension):
         segb2.set('style', bstyle)
 
 if __name__ == '__main__':
-    MultiCutEffect().run()
+    MutualCutLine().run()

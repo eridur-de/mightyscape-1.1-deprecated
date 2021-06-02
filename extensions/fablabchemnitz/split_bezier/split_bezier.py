@@ -63,7 +63,7 @@ def floatCmpWithMargin(float1, float2, margin = DEF_ERR_MARGIN):
     return abs(float1 - float2) < margin 
         
 
-class SubdividePathEffect(inkex.EffectExtension):
+class SplitBezier(inkex.EffectExtension):
 
     def add_arguments(self, pars):
         pars.add_argument('--maxLength', type = float, default = '10', help = 'Maximum Length of New Segments')
@@ -164,4 +164,4 @@ class SubdividePathEffect(inkex.EffectExtension):
                     pass
                            
 if __name__ == '__main__':
-    SubdividePathEffect().run()
+    SplitBezier().run()

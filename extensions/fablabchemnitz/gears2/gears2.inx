@@ -39,7 +39,7 @@ Latest version:  www.arc.id.au/gearDrawing.html
     <object-type>all</object-type>
     <effects-menu>
             <submenu name="FabLab Chemnitz">
-				<submenu name="Gears"/>
+				<submenu name="Gear Generators"/>
 			</submenu>
     </effects-menu>						    		
   </effect>

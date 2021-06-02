@@ -18,7 +18,7 @@ License: GNU GPL v3
 import inkex
 from lxml import etree
 
-class PurgeInvalidPaths(inkex.EffectExtension):
+class PurgePointyPaths(inkex.EffectExtension):
 
     def effect(self):
         if len(self.svg.selected) > 0:
@@ -46,4 +46,4 @@ class PurgeInvalidPaths(inkex.EffectExtension):
             return
 
 if __name__ == '__main__':
-    PurgeInvalidPaths().run()
+    PurgePointyPaths().run()

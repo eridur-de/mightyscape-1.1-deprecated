@@ -11,7 +11,7 @@ def addPathCommand(a, cmd):
     for x in cmd:
         a.append(str(x))
 
-class XGramEffect(inkex.EffectExtension):
+class XAgram(inkex.EffectExtension):
 
     def add_arguments(self, pars):
         pars.add_argument('--tab')
@@ -141,4 +141,4 @@ class XGramEffect(inkex.EffectExtension):
             inkex.errormsg('Selection must contain a circle or ellipse.')
 
 if __name__ == '__main__':
-    XGramEffect().run()
+    XAgram().run()

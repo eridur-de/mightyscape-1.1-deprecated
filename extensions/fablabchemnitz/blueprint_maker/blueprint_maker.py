@@ -56,7 +56,7 @@ class bluePrintMakerData():
 				self.allowed_ids.append(current_id)
 				self.allowed_nodes.append(node)
 
-class bluePrintMaker(inkex.EffectExtension):
+class BluePrintMaker(inkex.EffectExtension):
 	
 	def __init__(self):
 		inkex.Effect.__init__(self)
@@ -114,4 +114,4 @@ class bluePrintMaker(inkex.EffectExtension):
 		return None
 
 if __name__ == '__main__':
-	program=bluePrintMaker().run()
+	BluePrintMaker().run()

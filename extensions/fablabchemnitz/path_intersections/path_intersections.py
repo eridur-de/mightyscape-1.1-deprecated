@@ -384,7 +384,7 @@ class ErrorVisualization(object):
         self.convert(geom)
 
 
-class Precut(inkex.Effect):
+class PathIntersections(inkex.Effect):
     def __init__(self, *args, **kwargs):
         self.check_result = []
         self.checkers = [ElemBlacklistChecker(), StyleChecker(), IntersectionChecker()]
@@ -420,4 +420,4 @@ class Precut(inkex.Effect):
 
 if __name__ == "__main__":
     logging.basicConfig(stream=sys.stderr, level=logging.WARNING, format="%(levelname)s %(message)s")
-    Precut().run()
+    PathIntersections().run()

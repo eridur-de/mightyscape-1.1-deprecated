@@ -46,16 +46,14 @@ _ = gettext.gettext
 
 from lxml import etree
 
-class HingeCuts(inkex.Effect):
-  def __init__(self):
-      # Call the base class constructor.
-      inkex.Effect.__init__(self)
-      # Define options - Must match to the <param> elements in the .inx file
-      self.arg_parser.add_argument('--direction',default='y',help='cuts direction')
-      self.arg_parser.add_argument('--unit',default='mm',help='units of measurement')
-      self.arg_parser.add_argument('--cut_length',type=float, default=0,help='length of the cuts for the hinge.')
-      self.arg_parser.add_argument('--gap_length',type=float, default=0,help='separation distance between successive hinge cuts.')
-      self.arg_parser.add_argument('--sep_distance',type=float, default=0,help='distance between successive lines of hinge cuts.')
+class LivingHinge(inkex.EffectExtension):
+    
+  def add_arguments(self, pars):
+      pars.add_argument('--direction',default='y',help='cuts direction')
+      pars.add_argument('--unit',default='mm',help='units of measurement')
+      pars.add_argument('--cut_length',type=float, default=0,help='length of the cuts for the hinge.')
+      pars.add_argument('--gap_length',type=float, default=0,help='separation distance between successive hinge cuts.')
+      pars.add_argument('--sep_distance',type=float, default=0,help='distance between successive lines of hinge cuts.')
 
   def effect(self):
     
@@ -261,4 +259,4 @@ class HingeCuts(inkex.Effect):
     return (ret, l, d, dd)
 
 if __name__ == '__main__':
-    HingeCuts().run()
+    LivingHinge().run()

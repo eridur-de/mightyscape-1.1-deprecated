@@ -12,7 +12,7 @@ from inkex.paths import Path
 import sys
 def pout(t): sys.exit((gettext.gettext(t)))
 
-class root(inkex.EffectExtension):
+class FlevoBezier(inkex.EffectExtension):
 
     def effect(self):
         if len(self.svg.selected) == 0: pout("Please select at least one path.")
@@ -238,4 +238,4 @@ def project(curve, node):
     return node - projection
     
 if __name__ == '__main__':
-    root().run()
+    FlevoBezier().run()

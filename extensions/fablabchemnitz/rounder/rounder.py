@@ -26,7 +26,7 @@ import inkex
 from inkex.paths import Path, CubicSuperPath
 import re
 
-class svgRounder(inkex.EffectExtension):
+class Rounder(inkex.EffectExtension):
     
     def add_arguments(self, pars):
         pars.add_argument("--precision", type=int, default=3, help="Precision")
@@ -162,4 +162,4 @@ class svgRounder(inkex.EffectExtension):
             return 
 
 if __name__ == '__main__':
-    svgRounder().run()
+    Rounder().run()

@@ -56,15 +56,15 @@ import inkex
 from inkex import Transform, Style, units
 from inkex.elements import load_svg, Group, TextElement, FlowPara, FlowSpan, Tspan, FlowRoot, Rectangle, Use, PathElement, Defs
 
-class Hershey( inkex.Effect ):
-    def __init__( self ):
-        super(Hershey, self).__init__()
-        self.arg_parser.add_argument( "--tab", dest="mode", default="render", help="The active tab or mode when Apply was pressed" )
-        self.arg_parser.add_argument( "--fontface", dest="fontface", default="HersheySans1", help="The selected font face when Apply was pressed" )
-        self.arg_parser.add_argument( "--otherfont", dest="otherfont", default="", help="Optional other font name or path to use" )
-        self.arg_parser.add_argument( "--preserve", type=inkex.Boolean, dest="preserve_text", default=False,  help="Preserve original text")
-        self.arg_parser.add_argument("--action", dest="util_mode",  default="sample", help="The utility option selected")
-        self.arg_parser.add_argument("--text", dest="sample_text", default="sample", help="Text to use for font table")
+class HersheyTextAlternative(inkex.EffectExtension):
+
+    def add_arguments(self, pars):
+        pars.add_argument( "--tab", dest="mode", default="render", help="The active tab or mode when Apply was pressed" )
+        pars.add_argument( "--fontface", dest="fontface", default="HersheySans1", help="The selected font face when Apply was pressed" )
+        pars.add_argument( "--otherfont", dest="otherfont", default="", help="Optional other font name or path to use" )
+        pars.add_argument( "--preserve", type=inkex.Boolean, dest="preserve_text", default=False,  help="Preserve original text")
+        pars.add_argument("--action", dest="util_mode",  default="sample", help="The utility option selected")
+        pars.add_argument("--text", dest="sample_text", default="sample", help="Text to use for font table")
 
     PX_PER_INCH = 96.0
 
@@ -1875,4 +1875,4 @@ Evil Mad Scientist Laboratories
                 )
 
 if __name__ == '__main__':
-    Hershey().run()
+    HersheyTextAlternative().run()

@@ -4,7 +4,7 @@ import math
 import inkex
 from inkex import Transform
 
-class IsometricProjectionTools(inkex.Effect):
+class IsometricProjection(inkex.EffectExtension):
     """
     Convert a flat 2D projection to one of the three visible sides in an
     isometric projection, and vice versa.
@@ -61,10 +61,9 @@ class IsometricProjectionTools(inkex.Effect):
                          [tan_30,       1,          0]]
     }
 
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument('--conversion', default='top', help='Conversion to perform: (top|left|right)')
-        self.arg_parser.add_argument('--reverse', default="false", help='Reverse the transformation from isometric projection to flat 2D')
+    def add_arguments(self, pars):
+        pars.add_argument('--conversion', default='top', help='Conversion to perform: (top|left|right)')
+        pars.add_argument('--reverse', default="false", help='Reverse the transformation from isometric projection to flat 2D')
 
     def getTransformCenter(self, midpoint, node):
         """
@@ -159,4 +158,4 @@ class IsometricProjectionTools(inkex.Effect):
             self.moveTransformationCenter(node, midpoint, center_new)
 
 if __name__ == '__main__':
-    IsometricProjectionTools().run()
+    IsometricProjection().run()

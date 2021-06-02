@@ -29,7 +29,7 @@ import inkex
 
 from inkex import turtle as pturtle
 
-class parabola(inkex.GenerateExtension):
+class Parabola(inkex.GenerateExtension):
     
     container_label = 'Parabola'
     def add_arguments(self, pars):
@@ -237,5 +237,4 @@ class parabola(inkex.GenerateExtension):
         return inkex.PathElement(d=tur.getPath(), style=str(style))
 
 if __name__ == "__main__":
-    # execute only if run as a script
-    parabola().run()
+    Parabola().run()

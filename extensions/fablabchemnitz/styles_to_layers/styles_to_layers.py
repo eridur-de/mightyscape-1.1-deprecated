@@ -19,8 +19,8 @@ import math
 from operator import itemgetter
 from inkex.colors import Color
 
-sys.path.append("../cleangroups")
-sys.path.append("../applytransform")
+sys.path.append("../remove_empty_groups")
+sys.path.append("../apply_transformations")
 
 class StylesToLayers(inkex.EffectExtension):
 
@@ -67,10 +67,10 @@ class StylesToLayers(inkex.EffectExtension):
                 return float(Color(stroke_value).to_hsl()[2])
             return None
     
-        applyTransformAvailable = False # at first we apply external extension
+        applyTransformationsAvailable = False # at first we apply external extension
         try:
-            import applytransform
-            applyTransformAvailable = True
+            import apply_transformations
+            applyTransformationsAvailable = True
         except Exception as e:
             # self.msg(e)
             self.msg("Calling 'Apply Transformations' extension failed. Maybe the extension is not installed. You can download it from official InkScape Gallery. Skipping ...")
@@ -88,8 +88,8 @@ class StylesToLayers(inkex.EffectExtension):
         for element in selected:
         
             # additional option to apply transformations. As we clear up some groups to form new layers, we might lose translations, rotations, etc.
-            if self.options.apply_transformations is True and applyTransformAvailable is True:
-                applytransform.ApplyTransform().recursiveFuseTransform(element) 
+            if self.options.apply_transformations is True and applyTransformationsAvailable is True:
+                apply_transformations.ApplyTransformations().recursiveFuseTransform(element) 
         
             if isinstance(element, inkex.ShapeElement): # Elements which have a visible representation on the canvas (even without a style attribute but by their type); if we do not use that ifInstance Filter we provokate unkown InkScape fatal crashes
                            
@@ -289,8 +289,8 @@ class StylesToLayers(inkex.EffectExtension):
         
         if self.options.cleanup == True:
             try:
-                import cleangroups
-                cleangroups.CleanGroups.effect(self)
+                import remove_empty_groups
+                remove_empty_groups.RemoveEmptyGroups.effect(self)
             except:
                 self.msg("Calling 'Remove Empty Groups' extension failed. Maybe the extension is not installed. You can download it from official InkScape Gallery. Skipping ...")
             

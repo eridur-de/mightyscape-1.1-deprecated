@@ -44,7 +44,7 @@ todo:
 - add some way to merge coplanar triangles (tri-faces) to polygons and keep those polygons (facets) intact. At the moment facets are getting destroyed. Not good for some papercrafts
 """
 
-class Unfold(inkex.EffectExtension):
+class Paperfold(inkex.EffectExtension):
 
     angleRangeCalculated = False #set to true after first calculation iteration (needed globally)
     minAngle = 0
@@ -833,4 +833,4 @@ class Unfold(inkex.EffectExtension):
 
 
 if __name__ == '__main__':
-    Unfold().run()
+    Paperfold().run()

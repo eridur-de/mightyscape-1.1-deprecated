@@ -38,7 +38,7 @@ import re
 import inkex
 from lxml import etree
 
-class BouwkampCodeExtension(inkex.EffectExtension):
+class BouwkampCode(inkex.EffectExtension):
     """
     This Inkscape extension allows you to generate squared squares and squared rectangles from
     Bouwkamp codes and table codes.
@@ -160,4 +160,4 @@ class BouwkampCodeExtension(inkex.EffectExtension):
         etree.SubElement(parent, inkex.addNS('rect', 'svg'), rectangle_attributes)
 
 if __name__ == '__main__':
-    BouwkampCodeExtension().run()
+    BouwkampCode().run()

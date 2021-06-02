@@ -30,7 +30,7 @@ def contains(outer, inner):
            inner.br.x <= outer.br.x and inner.br.y <= outer.br.y
 
 
-class DeleteAboveEffect(inkex.EffectExtension):
+class DeleteAbove(inkex.EffectExtension):
     """ Delete the selected node and everything above it """
     node_info = None
 
@@ -120,4 +120,4 @@ if __name__ == '__main__':
         FMT = PPRINTER.pformat
         DUMP = lambda obj: inkex.debug(FMT(obj))
 
-    DeleteAboveEffect().run()
+    DeleteAbove().run()

@@ -247,7 +247,8 @@ class WavefrontObj(object):
                 edge_list.append(sorted([edge, face[(j + 1) % len(face)]]))
         return [list(x) for x in sorted(set(tuple(x) for x in edge_list))]
 
-class Poly3D(inkex.GenerateExtension):
+class Import3DMesh(inkex.GenerateExtension):
+    
     """Generate a polyhedron from a wavefront 3d model file"""
     def add_arguments(self, pars):
         pars.add_argument("--tab", default="object")
@@ -389,4 +390,4 @@ class Poly3D(inkex.GenerateExtension):
         return sum([pts[facet - 1][2] for facet in face]) / len(face)
 
 if __name__ == '__main__':
-    Poly3D().run()
+    Import3DMesh().run()

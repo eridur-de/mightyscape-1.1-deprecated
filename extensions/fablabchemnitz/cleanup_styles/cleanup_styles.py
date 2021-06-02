@@ -32,7 +32,7 @@ Notes:
 import inkex
 import re
 
-class Cleanup(inkex.EffectExtension):
+class CleanupStyles(inkex.EffectExtension):
 
     groups = []
     
@@ -184,4 +184,4 @@ class Cleanup(inkex.EffectExtension):
             self.groups.append(node)
 
 if __name__ == '__main__':
-    Cleanup().run()
+    CleanupStyles().run()

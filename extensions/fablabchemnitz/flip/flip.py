@@ -13,7 +13,7 @@ def svg_matrix_order(mat):
     ((a, c, e), (b, d, f)) = mat
     return a, b, c, d, e, f
 
-class FlipPath(EffectExtension):
+class Flip(EffectExtension):
     """Extension to flip a path about the line from the start to end node"""
 
     def effect(self):
@@ -35,4 +35,4 @@ class FlipPath(EffectExtension):
             node.path = node.path.transform(mat)
 
 if __name__ == '__main__':
-    FlipPath().run()
+    Flip().run()

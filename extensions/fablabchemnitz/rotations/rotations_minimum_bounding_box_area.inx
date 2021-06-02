@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+  <name>Rotations - Minimum Bounding Box Area</name>
+  <id>fablabchemnitz.de.rotations_minimum_bounding_box_area</id>
+  <effect>
+    <object-type>all</object-type>
+      <effects-menu>
+            <submenu name="FabLab Chemnitz">
+			    <submenu name="Nesting/Cut Optimization"/>
+			</submenu>
+      </effects-menu>
+  </effect>
+  <script>
+    <command location="inx" interpreter="python">rotations_minimum_bounding_box_area.py</command>
+  </script>
+</inkscape-extension>

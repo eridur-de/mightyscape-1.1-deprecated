@@ -40,7 +40,7 @@ import locale
 import inkex
 from inkex.command import inkscape
 
-class Guillotine(inkex.EffectExtension):
+class GuillotinePlus(inkex.EffectExtension):
     
     """Exports slices made using guides"""
     def add_arguments(self, pars):
@@ -181,4 +181,4 @@ class Guillotine(inkex.EffectExtension):
         self.export_slices(self.get_slices())
 
 if __name__ == '__main__':
-    Guillotine().run()
+    GuillotinePlus().run()

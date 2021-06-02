@@ -39,7 +39,7 @@ class Point:
         return "("+str(self.x)+","+str(self.y)+")"
 
 
-class Voronoi2svg(inkex.Effect):
+class LowPoly2(inkex.Effect):
     def __init__(self):
         inkex.Effect.__init__(self)
 
@@ -298,4 +298,4 @@ class Voronoi2svg(inkex.Effect):
             groupDelaunay.append(path)
 
 if __name__ == '__main__':
-    Voronoi2svg().run()
+    LowPoly2().run()

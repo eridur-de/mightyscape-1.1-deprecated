@@ -33,7 +33,7 @@ ToDo:
 """
 DETACHED_PROCESS = 0x00000008
 
-class AnimateOrder (inkex.EffectExtension):
+class AnimateOrder(inkex.EffectExtension):
 
     def spawnIndependentProcess(self, args): #function to spawn non-blocking inkscape instance. the inkscape command is available because it is added to ENVIRONMENT when Inkscape main instance is started
         warnings.simplefilter('ignore', ResourceWarning) #suppress "enable tracemalloc to get the object allocation traceback"

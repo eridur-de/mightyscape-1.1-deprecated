@@ -7,7 +7,7 @@ import inkex
 import random
 from lxml import etree
 
-class blobsEffect(inkex.EffectExtension):
+class Blobs(inkex.EffectExtension):
     """
 Creates a random blob from a convex hull over n points.
 The expected degree of the polygon is sqrt(n).  The corners
@@ -166,4 +166,4 @@ def findall(a, f):
     return r
 
 if __name__ == '__main__':
-    blobsEffect().run()
+    Blobs().run()

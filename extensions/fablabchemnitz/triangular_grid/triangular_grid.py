@@ -48,7 +48,7 @@ def colorString(pickerColor):
     return '#' + format(longcolor >> 8, '06X')
 
 
-class Grid_Triangular(inkex.EffectExtension):
+class TriangularGrid(inkex.EffectExtension):
     
     def add_arguments(self, pars):
         pars.add_argument("--tabs")
@@ -263,4 +263,4 @@ class Grid_Triangular(inkex.EffectExtension):
 
 
 if __name__ == '__main__':
-    Grid_Triangular().run()
+    TriangularGrid().run()

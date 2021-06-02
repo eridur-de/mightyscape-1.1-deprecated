@@ -4,7 +4,7 @@ rr = random.randint(1,10)
 import inkex
 from lxml import etree
 
-class StreaksEffect(inkex.EffectExtension):
+class Streaks(inkex.EffectExtension):
     
     def add_arguments(self, pars):
         pars.add_argument('--blur', type = int, default = 2)
@@ -154,4 +154,4 @@ class StreaksEffect(inkex.EffectExtension):
         layer.append(path)
 
 if __name__ == '__main__':
-    StreaksEffect().run()
+    Streaks().run()

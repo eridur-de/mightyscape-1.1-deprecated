@@ -29,7 +29,7 @@ import math
 import inkex
 from lxml import etree
 
-class Printing_Marks (inkex.EffectExtension):
+class PrintingMarksDotted(inkex.EffectExtension):
 
     # Default parameters
     stroke_width = 0.25
@@ -472,4 +472,4 @@ class Printing_Marks (inkex.EffectExtension):
 
 
 if __name__ == '__main__':
-    Printing_Marks().run()
+    PrintingMarksDotted().run()

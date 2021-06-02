@@ -11,18 +11,18 @@ from datetime import datetime, time, timedelta
 from math import * 
 from lxml import etree
  
-class SunDial(inkex.Effect):
-    def __init__(self):
-        inkex.Effect.__init__(self)       
-        self.arg_parser.add_argument("--latitude", type=float, dest="latitude", default="50.3515")
-        self.arg_parser.add_argument("--longitude", type=float, dest="longitude", default="15.7512")
-        self.arg_parser.add_argument("--timezone", type=int, dest="timezone", default="0")
-        self.arg_parser.add_argument("--summer_time", type=inkex.Boolean, dest="summer_time", default='False')
-        self.arg_parser.add_argument("--gnom", type=float, dest="gnom", default="30")
-        self.arg_parser.add_argument("--decl", type=float, dest="decl", default="0")
-        self.arg_parser.add_argument("--incl", type=float, dest="incl", default="0")
-        self.arg_parser.add_argument("--DL", type=float, dest="DL", default="0")
-        self.arg_parser.add_argument("--tab")
+class sundialDeclining(inkex.EffectExtension):
+    
+    def add_arguments(self, pars):     
+        pars.add_argument("--latitude", type=float, dest="latitude", default="50.3515")
+        pars.add_argument("--longitude", type=float, dest="longitude", default="15.7512")
+        pars.add_argument("--timezone", type=int, dest="timezone", default="0")
+        pars.add_argument("--summer_time", type=inkex.Boolean, dest="summer_time", default='False')
+        pars.add_argument("--gnom", type=float, dest="gnom", default="30")
+        pars.add_argument("--decl", type=float, dest="decl", default="0")
+        pars.add_argument("--incl", type=float, dest="incl", default="0")
+        pars.add_argument("--DL", type=float, dest="DL", default="0")
+        pars.add_argument("--tab")
 
     def effect(self):
         def draw_SVG_line(x1, y1, x2, y2, width, stroke, name, parent):
@@ -325,4 +325,4 @@ class SunDial(inkex.Effect):
           draw_SVG_polyline(TL, 0.5,'#008000', 'none', 'Time line '+str(Time[i]), loz)
               
 if __name__ == '__main__':
-    SunDial().run()
+    sundialDeclining().run()

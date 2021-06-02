@@ -72,7 +72,7 @@ debug = False                   # True: babble on controlling tty
 max_trim_factor = 0.90          # 0.5: can cut half of a segment length or handle length away for rounding a corner
 max_trim_factor_single = 0.98   # 0.98: we can eat up almost everything, as there are no neighbouring trims to be expected.
 
-class RoundedCorners(inkex.EffectExtension):
+class RoundCorners(inkex.EffectExtension):
 
     def add_arguments(self, pars):              # an __init__ in disguise ...
       try:
@@ -509,7 +509,7 @@ class RoundedCorners(inkex.EffectExtension):
     def clean_up(self):         # __fini__
       if self.tty is not None:
         self.tty.close()
-      super(RoundedCorners, self).clean_up()
+      super(RoundCorners, self).clean_up()
       if self.skipped_degenerated:
         print("Warning: Skipped %d degenerated nodes (180° turn or end of path?).\n" % self.skipped_degenerated, file=sys.stderr)
       if self.skipped_small_count:
@@ -517,4 +517,4 @@ class RoundedCorners(inkex.EffectExtension):
 
 
 if __name__ == '__main__':
-    RoundedCorners().run()
+    RoundCorners().run()

@@ -28,7 +28,7 @@ import inkex
 import re
 from inkex.paths import Path
 			
-class CloseCurves(inkex.EffectExtension):
+class ClosePaths(inkex.EffectExtension):
 
 	def effect(self):
 		for id, node in self.svg.selected.items():
@@ -40,4 +40,4 @@ class CloseCurves(inkex.EffectExtension):
 				node.set('d', d)	
 
 if __name__ == '__main__':
-    CloseCurves().run()
+    ClosePaths().run()

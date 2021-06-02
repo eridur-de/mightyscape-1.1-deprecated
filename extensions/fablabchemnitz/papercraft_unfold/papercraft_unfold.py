@@ -75,7 +75,7 @@ Module licenses
 - fstl            -                (https://github.com/fstl-app/fstl)                    - MIT License
 """
 
-class Unfold(inkex.EffectExtension):
+class PapercraftUnfold(inkex.EffectExtension):
     
     def add_arguments(self, pars):
         pars.add_argument("--tab")
@@ -202,4 +202,4 @@ class Unfold(inkex.EffectExtension):
                 root.set('height', bbox.height + 2 * offset)
               
 if __name__ == '__main__':
-    Unfold().run()
+    PapercraftUnfold().run()

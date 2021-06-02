@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
 	<name>Flip</name>
-	<id>fablabchemnitz.de.Flip</id>
+	<id>fablabchemnitz.de.flip</id>
 	<effect>
 		<object-type>path</object-type>
 		<effects-menu>

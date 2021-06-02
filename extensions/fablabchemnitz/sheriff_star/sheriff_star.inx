@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
    <name>Sheriff Star</name>
-   <id>fablabchemnitz.de.sheriff-star</id>
+   <id>fablabchemnitz.de.sheriff_star</id>
    <param name="tab" type="notebook">
       <page name="settings" gui-text="Settings">
          <param name="points" type="int" min="5" max="10" gui-text="Num Points">6</param>

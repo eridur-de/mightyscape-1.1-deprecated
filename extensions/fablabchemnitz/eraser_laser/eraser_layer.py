@@ -130,7 +130,7 @@ class EraserLayer(inkex.EffectExtension):
             if filterElement == []:
                 xpathStr = '//svg:g[@id="'+idLayer+'"]'
                 layer = svg.xpath(xpathStr, namespaces=inkex.NSS)
-                if layer[0] is not None and layer[0].get("{http://www.inkscape.org/namespaces/inkscape}label") is not None:
+                if len(layer) > 0 and layer[0] is not None and layer[0].get("{http://www.inkscape.org/namespaces/inkscape}label") is not None:
                     self.insertFilter(svg)
                     self.insertMask(idLayer, svg)
                     self.createEraserLayer(layer,idLayer)

@@ -34,7 +34,7 @@ def punkte_erstellen(punkte, x, y):
     ###Schreibt die aktuellen Koordinaten in die Punkteliste
     punkte.append((x, y))
 
-class Dose(inkex.EffectExtension): 
+class CanGenerator(inkex.EffectExtension): 
 
     def add_arguments(self, pars):
         pars.add_argument("--height", type=int, default = 50, help="Höhe der Dose")
@@ -368,4 +368,4 @@ class Dose(inkex.EffectExtension):
         branding_line.text = 'Die Einschnitte nur zu 70 Prozent in das Material lasern'
         
 if __name__ == '__main__':
-    Dose().run()
+    CanGenerator().run()

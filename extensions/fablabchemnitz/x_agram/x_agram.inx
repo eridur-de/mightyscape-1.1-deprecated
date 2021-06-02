@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
     <name>X-Agram</name>
-    <id>fablabchemnitz.de.x-agram</id>
+    <id>fablabchemnitz.de.x_agram</id>
     <param name="tab" type="notebook">
         <page name="settings" gui-text="Settings">
             <param name="points" type="int" min="3" max="15" gui-text="Num Points (Sides)">5</param>

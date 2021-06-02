@@ -45,7 +45,7 @@
         <object-type>path</object-type>
         <effects-menu>
             <submenu name="FabLab Chemnitz">
-				<submenu name="Gears"/>
+				<submenu name="Gear Generators"/>
 			</submenu>
         </effects-menu>
     </effect>

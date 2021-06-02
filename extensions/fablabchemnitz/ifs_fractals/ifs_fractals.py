@@ -23,7 +23,7 @@ Perform fixed-depth IFS repeated duplicate-and-transform.
 
 import inkex
 
-class IFS(inkex.EffectExtension):
+class IFSFractals(inkex.EffectExtension):
     NXFORM = 5
     XFORM_PARAMS = list("ABCDEF")
 
@@ -69,4 +69,4 @@ class IFS(inkex.EffectExtension):
         return True
 
 if __name__ == '__main__':
-    IFS().run()
+    IFSFractals().run()
