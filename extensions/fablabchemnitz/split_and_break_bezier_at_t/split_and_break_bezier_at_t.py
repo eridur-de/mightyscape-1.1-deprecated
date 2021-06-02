@@ -1,5 +1,19 @@
 #!/usr/bin/env python3
 
+"""
+Extension for InkScape 1.0
+
+Author: Mario Voigt / FabLab Chemnitz
+Mail: mario.voigt@stadtfabrikanten.org
+Date: 01.06.2021
+Last patch: 02.06.2021
+License: GNU GPL v3
+
+Splits a path at value t=0..1 (t=0.5 means 50%) or at a defined length with unit.
+Applies independently for each sub path in selection. Use 'Path > Reverse' to change the cutting direction.
+
+"""
+
 import copy
 import inkex
 from inkex import bezier, CubicSuperPath, PathElement, Path
@@ -38,6 +52,7 @@ class SplitAndBreakBezierAtT(inkex.EffectExtension):
         return breakelements
 
     def add_arguments(self, pars):
+        pars.add_argument('--tab')
         pars.add_argument('--split_select', default="t")
         pars.add_argument('--unit', default="mm")
         pars.add_argument('--target_length', type=float, default=0.5)
