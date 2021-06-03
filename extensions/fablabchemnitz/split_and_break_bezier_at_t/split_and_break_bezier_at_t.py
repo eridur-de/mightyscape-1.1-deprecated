@@ -61,7 +61,14 @@ class SplitAndBreakBezierAtT(inkex.EffectExtension):
         pars.add_argument('--keep_end', type=inkex.Boolean, default=True)
         pars.add_argument('--keep_seg', type=inkex.Boolean, default=False)
 
-    def effect(self):   
+    def effect(self):    
+        #if self.options.split_select == "t" and self.options.target_t == 0.0:
+        #    inkex.utils.debug("You have seleted 'percentage (t)' but your t parameter is 0.0. It would simply result in element deletion!")
+        #    return
+        #if self.options.split_select == "t" and self.options.target_t == 1.0:
+        #    inkex.utils.debug("You have seleted 'percentage (t)' but your t parameter is 1.0. It would'nt exist any trim result!")
+        #    return
+               
         breakApartElements = None
         for element in self.svg.selection.filter(PathElement):
             breakApartElements = self.breakContours(element, breakApartElements)
@@ -125,7 +132,6 @@ class SplitAndBreakBezierAtT(inkex.EffectExtension):
                     #insert the splitting at the occurence (we add "m 0,0") to break the path
                     newpath.insert(segOfTOccurence + 1, ['m', [0, 0]])
                     element.path = Path(newpath)
-
                     breakAparts = self.breakContours(element)
                   
                     if len(breakAparts) > 0:
