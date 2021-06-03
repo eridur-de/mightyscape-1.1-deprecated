@@ -128,11 +128,13 @@ class SplitAndBreakBezierAtT(inkex.EffectExtension):
 
                     breakAparts = self.breakContours(element)
                   
-                    pathStart = breakAparts[0]
-                    pathEnd = breakAparts[1]
-                    if self.options.keep_start is False:
+                    if len(breakAparts) > 0:
+                        pathStart = breakAparts[0]
+                    if len(breakAparts) > 1:    
+                        pathEnd = breakAparts[1]
+                    if self.options.keep_start is False and len(breakAparts) > 0:
                         pathStart.delete()
-                    if self.options.keep_end is False:
+                    if self.options.keep_end is False and len(breakAparts) > 1:
                         pathEnd.delete()
     
                 else:
