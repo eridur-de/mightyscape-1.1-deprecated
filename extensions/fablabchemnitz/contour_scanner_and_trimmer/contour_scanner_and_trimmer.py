@@ -4,7 +4,14 @@
 Extension for InkScape 1.0+
  - WARNING: HORRIBLY SLOW CODE. PLEASE HELP TO MAKE IT USEFUL FOR LARGE AMOUNT OF PATHS
  - add options:
-    - find line parts which are included in other lines and perform intersections/splittings (overlapping colinear lines)
+    - efficiently find overlapping colinear lines by checking their slope/gradient
+        - get all lines and sort by slope; kick out all slopes which are unique. We only want re-occuring slopes
+        - intersects() is equivalent to the OR-ing of contains(), crosses(), equals(), touches(), and within().
+          So there might be some cases where two lines intersect eachother without crossing, 
+          in particular when one line contains another or when two lines are equals.
+        - crosses() returns True if the dimension of the intersection is less than the dimension of the one or the other.
+          So if two lines overlap, they won't be considered as "crossing". intersection() will return a geometric object.
+
     - replace trimmed paths by bezier paths (calculating lengths and required t parameter)
     - find more duplicates
         - overlapping lines in sub splits
@@ -25,6 +32,7 @@ Extension for InkScape 1.0+
       each other line (line1.intersection(line2) using two for-loops) because this 
       kind of logic is really really slow for huge amount. You could use that only 
       for ~50-100 elements. So we use special algorihm (Bentley-Ottmann)
+    - Cool tool to visualize sweep line algorithm Bentley-Ottmann: https://bl.ocks.org/1wheel/464141fe9b940153e636
 
 - things to look at more closely:
     - https://gis.stackexchange.com/questions/203048/split-lines-at-points-using-shapely
@@ -39,23 +47,8 @@ Extension for InkScape 1.0+
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 09.08.2020 (extension originally called "Contour Scanner")
-Last patch: 01.06.2021
+Last patch: 04.06.2021
 License: GNU GPL v3
-
-
-efficiently find overlapping lines
-- loope durch alle straihgt lines und berechne deren steigung -< einsortieren der linien nach steigung
-- wenn die steigung noch nicht erfasst wurde, dann adde die line in eine collection aller in frage kommenden linien
-- loope durch die vorfilterung und check für shapely 
-
-    intersects() is equivalent to the OR-ing of contains(), crosses(), equals(), touches(), and within().
-So there might be some cases where two lines intersect eachother without crossing, 
-in particular when one line contains another or when two lines are equals.
-More specifically:
-    crosses() returns True [...] if the dimension of the intersection is less than the dimension of the one or the other.
-So if two lines overlap, they won't be considered as "crossing".
-    intersection() will return a geometric object.
-
 
 '''
 
@@ -306,13 +299,12 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
 
     def combine_nonintersects(self, allTrimGroups, apply_original_style):
         ''' 
-            combine and chain all non intersected sub split lines which were trimmed at intersection points before.
-            - At first we sort out all lines by their id: 
-                - if the lines id contains intersectedVerb, we ignore it
-                - we combine all lines which do not contain intersectedVerb
-            - Then we loop through that combined structure and chain their segments which touch each other
-            Changes the style according to user setting.
-        
+        combine and chain all non intersected sub split lines which were trimmed at intersection points before.
+        - At first we sort out all lines by their id: 
+            - if the lines id contains intersectedVerb, we ignore it
+            - we combine all lines which do not contain intersectedVerb
+        - Then we loop through that combined structure and chain their segments which touch each other
+        Changes the style according to user setting.
         '''
         
         nonTrimLineStyle = {'stroke': str(self.options.color_nonintersected), 'fill': 'none', 'stroke-width': self.options.strokewidth}
@@ -412,12 +404,20 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         pars.add_argument("--decimals", type=int, default=3, help="Accuracy for sub split lines / lines trimmed by shapely")
         pars.add_argument("--snap_tolerance", type=float, default=0.1, help="Snap tolerance for intersection points")
 
-       #Settings - Scanning
+       #Scanning - Removing
+        pars.add_argument("--remove_relative", type=inkex.Boolean, default=False, help="Remove original relative cmd paths")
+        pars.add_argument("--remove_absolute", type=inkex.Boolean, default=False, help="Remove original absolute cmd paths")
+        pars.add_argument("--remove_mixed", type=inkex.Boolean, default=False, help="Remove original mixed cmd (relative + absolute) paths")
         pars.add_argument("--remove_polylines", type=inkex.Boolean, default=False, help="Remove original polyline paths")
         pars.add_argument("--remove_beziers", type=inkex.Boolean, default=False, help="Remove original bezier paths")
         pars.add_argument("--remove_opened", type=inkex.Boolean, default=False, help="Remove original opened paths")
         pars.add_argument("--remove_closed", type=inkex.Boolean, default=False, help="Remove original closed paths")
         pars.add_argument("--remove_self_intersecting", type=inkex.Boolean, default=False, help="Remove original self-intersecting paths")
+
+       #Scanning - Highlighting
+        pars.add_argument("--highlight_relative", type=inkex.Boolean, default=False, help="Highlight relative cmd paths")
+        pars.add_argument("--highlight_absolute", type=inkex.Boolean, default=False, help="Highlight absolute cmd paths")
+        pars.add_argument("--highlight_mixed", type=inkex.Boolean, default=False, help="Highlight mixed cmd (relative + absolute) paths")
         pars.add_argument("--highlight_polylines", type=inkex.Boolean, default=False, help="Highlight polyline paths")
         pars.add_argument("--highlight_beziers", type=inkex.Boolean, default=False, help="Highlight bezier paths")
         pars.add_argument("--highlight_opened", type=inkex.Boolean, default=False, help="Highlight opened paths")
@@ -442,12 +442,15 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         pars.add_argument("--apply_original_style", type=inkex.Boolean, default=True, help="Apply original path style to trimmed lines")
      
         #Style - Scanning Colors
+        pars.add_argument("--color_subsplit", type=Color, default='1630897151', help="Color for sub split lines")
+        pars.add_argument("--color_relative", type=Color, default='3419879935', help="Color for relative cmd paths")
+        pars.add_argument("--color_absolute", type=Color, default='1592519679', help="Color for absolute cmd paths")
+        pars.add_argument("--color_mixed", type=Color, default='3351636735', help="Color for mixed cmd (relative + absolute) paths")
         pars.add_argument("--color_polyline", type=Color, default='4289703935', help="Color for polyline paths")
         pars.add_argument("--color_bezier", type=Color, default='258744063', help="Color for bezier paths")
         pars.add_argument("--color_opened", type=Color, default='4012452351', help="Color for opened paths")
         pars.add_argument("--color_closed", type=Color, default='2330080511', help="Color for closed paths")
         pars.add_argument("--color_self_intersecting_paths", type=Color, default='2593756927', help="Color for self-intersecting contours")
-        pars.add_argument("--color_subsplit", type=Color, default='1630897151', help="Color for sub split lines")
         pars.add_argument("--color_self_intersections", type=Color, default='6320383', help="Color for self-intersecting line points")
         pars.add_argument("--color_global_intersections", type=Color, default='4239343359', help="Color for global intersection points")
        
@@ -458,11 +461,13 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
 
 
     def effect(self):
-        
         so = self.options
 
         #some dependent configuration for drawing modes
         if \
+            so.highlight_relative is True or \
+            so.highlight_absolute is True or \
+            so.highlight_mixed is True or \
             so.highlight_beziers is True or \
             so.highlight_polylines is True or \
             so.highlight_opened is True or \
@@ -470,13 +475,22 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
             so.highlight_self_intersecting is True:
                 so.draw_subsplit = True
         if so.draw_subsplit is False:
+            so.highlight_relative = False
+            so.highlight_absolute = False
+            so.highlight_mixed = False
             so.highlight_beziers = False
             so.highlight_polylines = False
             so.highlight_open = False
             so.highlight_closed = False
             so.highlight_self_intersecting = False
 
+        if so.break_apart is True and so.show_debug is True:
+            self.msg("Warning: 'Break apart input' setting is enabled. Cannot check for relative, absolute or mixed paths!")
+
         #some constant stuff / styles
+        relativePathStyle = {'stroke': str(so.color_relative), 'fill': 'none', 'stroke-width': so.strokewidth}
+        absolutePathStyle = {'stroke': str(so.color_absolute), 'fill': 'none', 'stroke-width': so.strokewidth}
+        mixedPathStyle = {'stroke': str(so.color_mixed), 'fill': 'none', 'stroke-width': so.strokewidth}
         polylinePathStyle = {'stroke': str(so.color_polyline), 'fill': 'none', 'stroke-width': so.strokewidth}
         bezierPathStyle = {'stroke': str(so.color_bezier), 'fill': 'none', 'stroke-width': so.strokewidth}
         openPathStyle = {'stroke': str(so.color_opened), 'fill': 'none', 'stroke-width': so.strokewidth}
@@ -484,14 +498,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         selfIntersectingPathStyle = {'stroke': str(so.color_self_intersecting_paths), 'fill': 'none', 'stroke-width': so.strokewidth}
         basicSubSplitLineStyle = {'stroke': str(so.color_subsplit), 'fill': 'none', 'stroke-width': so.strokewidth}
 
-        ''' 1 //
-            get all paths which are within selection or in document and generate sub split lines
-            If flatten is enabled, we do the best approximation into a set of fine line segments.
-            To quickly find all intersections we use Bentley-Ottmann algorithm.
-            To use it we have to split all paths into subpaths and each sub path's will puzzled into single straight lines
-            Cool tool to visualize: https://bl.ocks.org/1wheel/464141fe9b940153e636
-        '''
-        
+        #get all paths which are within selection or in document and generate sub split lines
         pathElements = self.getPathElements()
 
         allSubSplitLines = []
@@ -510,7 +517,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         for pathElement in pathElements:
             path = pathElement.path.transform(pathElement.composed_transform())
             #path = pathElement.path
-
+                
             '''
             Some original path checkings for analysis/highlighting purposes
             Note: highlighting open/closed/self-intersecting contours does work best if you break apart 
@@ -536,6 +543,33 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
             if so.path_types == 'open_paths' and isClosed is True: continue #skip this loop iteration
             elif so.path_types == 'closed_paths' and isClosed is False: continue #skip this loop iteration
             elif so.path_types == 'both': pass
+
+            #check for relative or absolute paths. Does not work if break apart is enabled
+            isRelative = False
+            isAbsolute = False
+            isMixed = False
+            relCmds = ['m', 'l', 'h', 'v', 'c', 's', 'q', 't', 'a', 'z']
+            if any(relCmd in pathElement.attrib['d'] for relCmd in relCmds):
+                isRelative = True
+            if any(relCmd.upper() in pathElement.attrib['d'] for relCmd in relCmds):
+                isAbsolute = True
+            if isRelative is True and isAbsolute is True:
+                isMixed = True
+                isRelative = False
+                isAbsolute = False
+            #self.msg("isRelative = {}".format(isRelative))
+            #self.msg("isAbsolute = {}".format(isAbsolute))
+            #self.msg("isMixed = {}".format(isMixed))
+            
+            if so.remove_absolute is True and isAbsolute is True:
+                pathElement.delete()
+                continue #skip this loop iteration
+            if so.remove_relative is True and isRelative is True:
+                pathElement.delete()
+                continue #skip this loop iteration
+            if so.remove_mixed is True and isMixed is True:
+                pathElement.delete()
+                continue #skip this loop iteration
 
             #adjust the style of original paths if desired. Has influence to the finally trimmed lines style results too!
             if so.removefillsetstroke:
@@ -609,8 +643,11 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                         if pathElement.getparent() != self.svg.root:
                             line.path = line.path.transform(-pathElement.getparent().composed_transform())
                         line.style = basicSubSplitLineStyle
-                        line.attrib['isBezier'] = str(isBezier)     
-                        line.attrib['isClosed'] = str(isClosed)     
+                        line.attrib['isRelative'] = str(isRelative)
+                        line.attrib['isAbsolute'] = str(isAbsolute)
+                        line.attrib['isMixed'] = str(isMixed)
+                        line.attrib['isBezier'] = str(isBezier)
+                        line.attrib['isClosed'] = str(isClosed)
                         subSplitTrimLineGroup.add(line)
 
                     subSplitLines.append([(x1, y1), (x2, y2)])
@@ -630,6 +667,18 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                     #    subPathIsClosed = True
                      
                     for subSplitLine in subSplitTrimLineGroup:
+                        if subSplitLine.attrib['isRelative'] == 'True':
+                            if so.highlight_relative is True:
+                                subSplitLine.style = relativePathStyle
+                  
+                        if subSplitLine.attrib['isAbsolute'] == 'True':
+                            if so.highlight_absolute is True:
+                                subSplitLine.style = absolutePathStyle
+                             
+                        if subSplitLine.attrib['isMixed'] == 'True':
+                            if so.highlight_mixed is True:
+                                subSplitLine.style = mixedPathStyle
+                        
                         if subSplitLine.attrib['isBezier'] == 'True':
                             if so.highlight_beziers is True:
                                 subSplitLine.style = bezierPathStyle
@@ -643,9 +692,9 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                                 subSplitLine.style = closedPathStyle
                         else:
                             if so.highlight_opened is True:
-                                subSplitLine.style = openPathStyle      
+                                subSplitLine.style = openPathStyle
 
-                #check for self intersections
+                #check for self intersections using Bentley-Ottmann algorithm.
                 selfIntersectionPoints = isect_segments(subSplitLines, validate=True)
                 if len(selfIntersectionPoints) > 0:
                     if so.show_debug is True:
@@ -689,8 +738,8 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         if so.show_debug is True:
             self.msg("sub split line count: {}".format(len(allSubSplitLines)))   
 
-        ''' 2 //
-            now we intersect the sub split lines to find the global intersection points (contains self-intersections too!)
+        '''
+        now we intersect the sub split lines to find the global intersection points using Bentley-Ottmann algorithm (contains self-intersections too!)
         '''
         try:
             globalIntersectionPoints = MultiPoint(isect_segments(allSubSplitData[0], validate=True))
@@ -700,9 +749,9 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                 if so.visualize_global_intersections is True:
                     self.visualize_global_intersections(globalIntersectionPoints)
 
-                ''' 3 //
-                    now we trim the sub split lines at all calculated intersection points. 
-                    We do this path by path to keep the logic between original paths, sub split lines and the final output
+                '''
+                now we trim the sub split lines at all calculated intersection points. 
+                We do this path by path to keep the logic between original paths, sub split lines and the final output
                 '''
                 if so.draw_trimmed is True:
                     allTrimGroups = [] #container to collect all trim groups for later on processing
