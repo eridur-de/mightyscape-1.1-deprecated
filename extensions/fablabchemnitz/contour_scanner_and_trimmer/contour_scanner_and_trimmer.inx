@@ -87,7 +87,7 @@
             </hbox>
         </page>
         <page name="tab_tips" gui-text="Tips">
-            <label xml:space="preserve">- Helps to find duplicate lines and to visualize intersections
+            <label xml:space="preserve"> - Helps to find duplicate lines and to visualize intersections
  - Works for self-intersecting paths too
  - Uses Bentley-Ottmann algorithm to detect intersections
  - Allows to separate different contour types by colors

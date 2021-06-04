@@ -227,7 +227,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
 
 
     def buildTrimLineGroups(self, allSubSplitData, subSplitIndex, globalIntersectionPoints, 
-            trimLineIndex, snap_tolerance, apply_original_style): 
+            snap_tolerance, apply_original_style): 
         ''' make a group containing trimmed lines'''      
         
         #Check if we should skip or process the path anyway   
@@ -257,7 +257,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         splitAt = [] #if the sub split line was split by an intersecting line we receive two trim lines with same assigned original path id!
         prevLine = None
         for j in range(len(trimLines)):
-            trimLineId = trimGroupId + "-" + str(trimLineIndex)
+            trimLineId = trimGroupId + "-" + str(subSplitIndex)
             splitAt.append(trimGroupId)
             if splitAt.count(trimGroupId) > 1: #we detected a lines with intersection on
                 trimLineId = trimLineId + self.svg.get_unique_id(intersectedVerb)
@@ -266,7 +266,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                 (left side and right side of cut) - note: updating element 
                 id sometimes seems not to work if the id was used before in Inkscape
                 '''
-                prevLine.attrib['id'] = trimGroupId + "-" + str(trimLineIndex) + self.svg.get_unique_id(intersectedVerb)
+                prevLine.attrib['id'] = trimGroupId + "-" + str(subSplitIndex) + self.svg.get_unique_id(intersectedVerb)
                 prevLine.attrib['intersected'] = 'True' #some dirty flag we need
             prevLine = trimLine = inkex.PathElement(id=trimLineId)
             #if so.show_debug is True:
@@ -761,15 +761,13 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                 We do this path by path to keep the logic between original paths, sub split lines and the final output
                 '''
                 if so.draw_trimmed is True:
-                    allTrimGroups = [] #container to collect all trim groups for later on processing
-                    trimLineIndex = 1  
+                    allTrimGroups = [] #container to collect all trim groups for later on processing 
                     for subSplitIndex in range(len(allSubSplitData[0])):
                         trimGroup = self.buildTrimLineGroups(allSubSplitData, subSplitIndex, 
-                            globalIntersectionPoints, trimLineIndex, so.snap_tolerance, so.apply_original_style)
+                            globalIntersectionPoints, so.snap_tolerance, so.apply_original_style)
                         if trimGroup is not None:
                             if trimGroup not in allTrimGroups:
                                 allTrimGroups.append(trimGroup)
-                            trimLineIndex += 1
                  
                     if so.show_debug is True: self.msg("trim groups count: {}".format(len(allTrimGroups)))
                     if len(allTrimGroups) == 0:
