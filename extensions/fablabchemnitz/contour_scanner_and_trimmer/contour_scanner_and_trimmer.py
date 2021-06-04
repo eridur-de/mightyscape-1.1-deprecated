@@ -41,6 +41,22 @@ Mail: mario.voigt@stadtfabrikanten.org
 Date: 09.08.2020 (extension originally called "Contour Scanner")
 Last patch: 01.06.2021
 License: GNU GPL v3
+
+
+efficiently find overlapping lines
+- loope durch alle straihgt lines und berechne deren steigung -< einsortieren der linien nach steigung
+- wenn die steigung noch nicht erfasst wurde, dann adde die line in eine collection aller in frage kommenden linien
+- loope durch die vorfilterung und check für shapely 
+
+    intersects() is equivalent to the OR-ing of contains(), crosses(), equals(), touches(), and within().
+So there might be some cases where two lines intersect eachother without crossing, 
+in particular when one line contains another or when two lines are equals.
+More specifically:
+    crosses() returns True [...] if the dimension of the intersection is less than the dimension of the one or the other.
+So if two lines overlap, they won't be considered as "crossing".
+    intersection() will return a geometric object.
+
+
 '''
 
 import sys
@@ -122,7 +138,6 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         if len(pathElements) == 0:
             self.msg('Selection appears to be empty or does not contain any valid svg:path nodes. Try to cast your objects to paths using CTRL + SHIFT + C or strokes to paths using CTRL + ALT + C')
             return
-        return pathElements
 
         if self.options.break_apart is True:
             breakApartElements = None
@@ -133,6 +148,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         if self.options.show_debug is True:
             self.msg("total processing paths count: {}".format(len(pathElements)))
 
+        return pathElements
 
     def findGroup(self, groupId):
         ''' check if a group with a given id exists or not. Returns None if not found, else returns the group element '''
@@ -279,8 +295,12 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                 if element.path not in totalTrimPaths:
                     totalTrimPaths.append(element.path)
                 else:
+                    if self.options.show_debug is True:
+                        self.msg("Deleting {}".format(element.get('id')))
                     element.delete()
             if len(trimGroup) == 0:
+                if self.options.show_debug is True:
+                    self.msg("Deleting {}".format(trimGroup.get('id')))
                 trimGroup.delete()
                                 
 
@@ -384,20 +404,24 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         
         #Settings - General
         pars.add_argument("--show_debug", type=inkex.Boolean, default=False, help="Show debug infos")
-        pars.add_argument("--path_types", default="closed_paths", help="Apply for closed paths, open paths or both")
         pars.add_argument("--break_apart", type=inkex.Boolean, default=False, help="Break apart input paths into sub paths")
         pars.add_argument("--handle_groups", type=inkex.Boolean, default=False, help="Also looks for paths in groups which are in the current selection")
+        pars.add_argument("--path_types", default="closed_paths", help="Process open paths by other open paths, closed paths by other closed paths, or all paths by all other paths")
         pars.add_argument("--flattenbezier", type=inkex.Boolean, default=True, help="Flatten bezier curves to polylines")
         pars.add_argument("--flatness", type=float, default=0.1, help="Minimum flatness = 0.001. The smaller the value the more fine segments you will get (quantization). Large values might destroy the line continuity.")
         pars.add_argument("--decimals", type=int, default=3, help="Accuracy for sub split lines / lines trimmed by shapely")
         pars.add_argument("--snap_tolerance", type=float, default=0.1, help="Snap tolerance for intersection points")
 
        #Settings - Scanning
+        pars.add_argument("--remove_polylines", type=inkex.Boolean, default=False, help="Remove original polyline paths")
+        pars.add_argument("--remove_beziers", type=inkex.Boolean, default=False, help="Remove original bezier paths")
         pars.add_argument("--remove_opened", type=inkex.Boolean, default=False, help="Remove original opened paths")
         pars.add_argument("--remove_closed", type=inkex.Boolean, default=False, help="Remove original closed paths")
         pars.add_argument("--remove_self_intersecting", type=inkex.Boolean, default=False, help="Remove original self-intersecting paths")
-        pars.add_argument("--highlight_opened", type=inkex.Boolean, default=False, help="Highlight opened contours")
-        pars.add_argument("--highlight_closed", type=inkex.Boolean, default=False, help="Highlight closed contours")
+        pars.add_argument("--highlight_polylines", type=inkex.Boolean, default=False, help="Highlight polyline paths")
+        pars.add_argument("--highlight_beziers", type=inkex.Boolean, default=False, help="Highlight bezier paths")
+        pars.add_argument("--highlight_opened", type=inkex.Boolean, default=False, help="Highlight opened paths")
+        pars.add_argument("--highlight_closed", type=inkex.Boolean, default=False, help="Highlight closed paths")
         pars.add_argument("--highlight_self_intersecting", type=inkex.Boolean, default=False, help="Highlight self-intersecting contours")
         pars.add_argument("--draw_subsplit", type=inkex.Boolean, default=False, help="Draw sub split lines (polylines)")
         pars.add_argument("--visualize_self_intersections", type=inkex.Boolean, default=False, help="Visualize self-intersecting path points")
@@ -418,8 +442,10 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         pars.add_argument("--apply_original_style", type=inkex.Boolean, default=True, help="Apply original path style to trimmed lines")
      
         #Style - Scanning Colors
-        pars.add_argument("--color_opened", type=Color, default='4012452351', help="Color for opened contours")
-        pars.add_argument("--color_closed", type=Color, default='2330080511', help="Color for closed contours")
+        pars.add_argument("--color_polyline", type=Color, default='4289703935', help="Color for polyline paths")
+        pars.add_argument("--color_bezier", type=Color, default='258744063', help="Color for bezier paths")
+        pars.add_argument("--color_opened", type=Color, default='4012452351', help="Color for opened paths")
+        pars.add_argument("--color_closed", type=Color, default='2330080511', help="Color for closed paths")
         pars.add_argument("--color_self_intersecting_paths", type=Color, default='2593756927', help="Color for self-intersecting contours")
         pars.add_argument("--color_subsplit", type=Color, default='1630897151', help="Color for sub split lines")
         pars.add_argument("--color_self_intersections", type=Color, default='6320383', help="Color for self-intersecting line points")
@@ -434,35 +460,29 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
     def effect(self):
         
         so = self.options
-        
-        #warn if there is nothing to visualize
-        if \
-            so.keep_original_after_trim is False and \
-            so.remove_opened is True and \
-            so.remove_closed is True and \
-            so.visualize_self_intersections is False and \
-            so.visualize_global_intersections is False and \
-            so.draw_subsplit is False and \
-            so.draw_trimmed is False:
-                self.msg("Nothing to draw. Select at least one visualization option.")
-                return
 
         #some dependent configuration for drawing modes
         if \
+            so.highlight_beziers is True or \
+            so.highlight_polylines is True or \
             so.highlight_opened is True or \
             so.highlight_closed is True or \
             so.highlight_self_intersecting is True:
                 so.draw_subsplit = True
         if so.draw_subsplit is False:
+            so.highlight_beziers = False
+            so.highlight_polylines = False
             so.highlight_open = False
             so.highlight_closed = False
             so.highlight_self_intersecting = False
 
         #some constant stuff / styles
-        keepOpenPathStyle = {'stroke': str(so.color_opened), 'fill': 'none', 'stroke-width': so.strokewidth}
-        keepClosedPathStyle = {'stroke': str(so.color_closed), 'fill': 'none', 'stroke-width': so.strokewidth}
-        keepSelfIntersectingPathStyle = {'stroke': str(so.color_self_intersecting_paths), 'fill': 'none', 'stroke-width': so.strokewidth}
-        subSplitLineStyle = {'stroke': str(so.color_subsplit), 'fill': 'none', 'stroke-width': so.strokewidth}
+        polylinePathStyle = {'stroke': str(so.color_polyline), 'fill': 'none', 'stroke-width': so.strokewidth}
+        bezierPathStyle = {'stroke': str(so.color_bezier), 'fill': 'none', 'stroke-width': so.strokewidth}
+        openPathStyle = {'stroke': str(so.color_opened), 'fill': 'none', 'stroke-width': so.strokewidth}
+        closedPathStyle = {'stroke': str(so.color_closed), 'fill': 'none', 'stroke-width': so.strokewidth}
+        selfIntersectingPathStyle = {'stroke': str(so.color_self_intersecting_paths), 'fill': 'none', 'stroke-width': so.strokewidth}
+        basicSubSplitLineStyle = {'stroke': str(so.color_subsplit), 'fill': 'none', 'stroke-width': so.strokewidth}
 
         ''' 1 //
             get all paths which are within selection or in document and generate sub split lines
@@ -496,25 +516,25 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
             Note: highlighting open/closed/self-intersecting contours does work best if you break apart 
             combined paths before.
             '''
-            pathIsClosed = False
+            isClosed = False
             path_arrays = path.to_arrays()
             if path_arrays[-1][0] == 'Z' or \
                 (path_arrays[-1][0] == 'L' and path_arrays[0][1] == path_arrays[-1][1]) or \
                 (path_arrays[-1][0] == 'C' and path_arrays[0][1] == [path_arrays[-1][1][-2], path_arrays[-1][1][-1]]) \
                 :  #if first is last point the path is also closed. The "Z" command is not required
-                pathIsClosed = True
+                isClosed = True
              
             #Check if we should delete the path or not
-            if so.remove_opened is True and pathIsClosed is False:
+            if so.remove_opened is True and isClosed is False:
                 pathElement.delete()
                 continue #skip this loop iteration
-            if so.remove_closed is True and pathIsClosed is True:
+            if so.remove_closed is True and isClosed is True:
                 pathElement.delete()
                 continue #skip this loop iteration
             
             #Check if we should skip or process the path anyway   
-            if so.path_types == 'open_paths' and pathIsClosed is True: continue #skip this loop iteration
-            elif so.path_types == 'closed_paths' and pathIsClosed is False: continue #skip this loop iteration
+            if so.path_types == 'open_paths' and isClosed is True: continue #skip this loop iteration
+            elif so.path_types == 'closed_paths' and isClosed is False: continue #skip this loop iteration
             elif so.path_types == 'both': pass
 
             #adjust the style of original paths if desired. Has influence to the finally trimmed lines style results too!
@@ -544,6 +564,12 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                 if so.show_debug is True:
                     self.msg("sub path in {} is bezier: {}".format(originalPathId, isBezier))          
                 
+                deleteFlag = False
+                if so.remove_beziers is True and isBezier is True:
+                    deleteFlag = True
+                if so.remove_polylines is True and isBezier is False:
+                    deleteFlag = True
+                      
                 #self.msg("sub path in {} = {}".format(element.get('id'), subPath))
                 #flatten the subpath if wanted
                 subPathData = CubicSuperPath(subPath)
@@ -582,7 +608,9 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                         line.path = [['M', [x1, y1]], ['L', [x2, y2]]]
                         if pathElement.getparent() != self.svg.root:
                             line.path = line.path.transform(-pathElement.getparent().composed_transform())
-                        line.style = subSplitLineStyle
+                        line.style = basicSubSplitLineStyle
+                        line.attrib['isBezier'] = str(isBezier)     
+                        line.attrib['isClosed'] = str(isClosed)     
                         subSplitTrimLineGroup.add(line)
 
                     subSplitLines.append([(x1, y1), (x2, y2)])
@@ -591,19 +619,32 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                     subSplitIsBezier.append(isBezier) #some dirty flag we need
                     subSplitOriginalPathIds.append(originalPathId) #some dirty flag we need
 
+                if deleteFlag is True:
+                    pathElement.delete()
+                    continue #skip the subPath loop
+
                 if so.draw_subsplit is True:
                     #check for open/closed again (at first we checked for the <maybe> combined path. Now we can do for each sub path too!
-                    subPathIsClosed = False
-                    if subSplitLines[0][0] == subSplitLines[-1][1]:
-                        subPathIsClosed = True
+                    #subPathIsClosed = False
+                    #if subSplitLines[0][0] == subSplitLines[-1][1]:
+                    #    subPathIsClosed = True
+                     
                     for subSplitLine in subSplitTrimLineGroup:
-                        if subPathIsClosed is True:
+                        if subSplitLine.attrib['isBezier'] == 'True':
+                            if so.highlight_beziers is True:
+                                subSplitLine.style = bezierPathStyle
+                        else:
+                            if so.highlight_polylines is True:
+                                subSplitLine.style = polylinePathStyle
+
+                        if subSplitLine.attrib['isClosed'] == 'True':
+                        #if subPathIsClosed is True:
                             if so.highlight_closed is True:
-                                 subSplitLine.style = keepClosedPathStyle
+                                subSplitLine.style = closedPathStyle
                         else:
                             if so.highlight_opened is True:
-                                subSplitLine.style = keepOpenPathStyle
-      
+                                subSplitLine.style = openPathStyle      
+
                 #check for self intersections
                 selfIntersectionPoints = isect_segments(subSplitLines, validate=True)
                 if len(selfIntersectionPoints) > 0:
@@ -612,7 +653,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                     if so.draw_subsplit is True:
                         if so.highlight_self_intersecting is True:
                             for subSplitLine in subSplitTrimLineGroup:
-                                subSplitLine.style = keepSelfIntersectingPathStyle #adjusts line color
+                                subSplitLine.style = selfIntersectingPathStyle #adjusts line color
                         #delete cosmetic sub split lines if desired
                         if so.remove_self_intersecting:
                             subSplitTrimLineGroup.delete()

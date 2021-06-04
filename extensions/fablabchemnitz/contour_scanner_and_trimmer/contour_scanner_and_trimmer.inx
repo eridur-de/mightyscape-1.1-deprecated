@@ -8,17 +8,30 @@
             <param name="show_debug" type="bool" gui-text="Show debug infos">false</param>
             <param name="break_apart" type="bool" gui-text="Break apart input" gui-description="Break apart input paths into sub paths. Modifies original paths">false</param>   
             <param name="handle_groups" type="bool" gui-text="Handle groups" gui-description="Also looks for paths in groups which are in the current selection. Note: The generated results have a different structure (less granularity due to grouping) than directly selected paths. The colorization for non-intersected paths will be different too.">false</param> 
+            <param name="path_types" type="optiongroup" appearance="combo" gui-text="Scanning selection" gui-description="Process open paths by other open paths, closed paths by other closed paths, or all paths by all other paths">
+                <option value="both">all:all paths</option>
+                <option value="open_paths">open:open paths</option>
+                <option value="closed_paths">closed:closed paths</option>
+            </param>
             <param name="flattenbezier" type="bool" gui-text="Quantization (flatten bezier curves to polylines)" gui-description="Convert bezier curves to polylines.">true</param>  
             <param name="flatness" type="float" min="0.001" max="99999.000" precision="3" gui-text="Flatness (tolerance)" gui-description="Minimum flatness = 0.001. The smaller the value the more fine segments you will get (quantization). Large values might destroy the line continuity.">0.100</param>
             <param name="decimals" type="int" min="0" max="16" gui-text="Decimals" gui-description="Accuracy for sub split lines / lines trimmed by shapely (default: 3)">3</param>
             <param name="snap_tolerance" type="float" min="0.01" max="10.0" gui-text="Snap tolerance" gui-description="Snap tolerance for intersection points on paths (default: 0.1)">0.1</param>
-            <param name="draw_subsplit" type="bool" gui-text="Draw sub split lines (for debugging purposes)" gui-description="Draws polylines">false</param> 
+            <param name="draw_subsplit" type="bool" gui-text="Draw sub split lines (for debugging purposes)" gui-description="Draws polylines. Will be automatically enabled if any highlighting below is activated.">false</param> 
+        </page>
+        <page name="tab_scanning" gui-text="Scanning and Trimming">
             <hbox>
                 <vbox>
-                    <label appearance="header">Scanning</label>
+                    <label appearance="header">Removing</label>
+                    <param name="remove_polylines" type="bool" gui-text="Remove original polylines paths">false</param>
+                    <param name="remove_beziers" type="bool" gui-text="Remove original beziers paths">false</param>     
                     <param name="remove_opened" type="bool" gui-text="Remove original opened paths">false</param>
                     <param name="remove_closed" type="bool" gui-text="Remove original closed paths">false</param>
                     <param name="remove_self_intersecting" type="bool" gui-text="Remove original self-intersecting paths">false</param>
+                <separator/>
+                    <label appearance="header">Highlighting</label>
+                    <param name="highlight_polylines" type="bool" gui-text="Highlight polyline paths">false</param>
+                    <param name="highlight_beziers" type="bool" gui-text="Highlight bezier paths">false</param>
                     <param name="highlight_opened" type="bool" gui-text="Highlight opened paths">false</param>
                     <param name="highlight_closed" type="bool" gui-text="Highlight closed paths">false</param>
                     <param name="highlight_self_intersecting" type="bool" gui-text="Highlight self-intersecting paths" gui-description="Requires to draw sub split lines. Will override highlighting colors for open and closed paths (if those options are enabled)">false</param>
@@ -28,11 +41,6 @@
                 <separator/>
                 <vbox>
                     <label appearance="header">Trimming</label>
-                    <param name="path_types" type="optiongroup" appearance="combo" gui-text="Trimming selection" gui-description="Trim open paths by other open paths, closed paths by other closed paths, or all paths by all other paths">
-                        <option value="both">all:all paths</option>
-                        <option value="open_paths">open:open paths</option>
-                        <option value="closed_paths">closed:closed paths</option>
-                    </param>
                     <param name="draw_trimmed" type="bool" gui-text="Draw trimmed lines">false</param> 
                     <param name="combine_nonintersects" type="bool" gui-text="Chain + combine non-intersected lines">true</param> 
                     <param name="remove_duplicates" type="bool" gui-text="Remove duplicate trim lines">true</param>
@@ -51,8 +59,10 @@
                     <param name="removefillsetstroke" type="bool" gui-text="Remove fill and define stroke" gui-description="Modifies original path style">false</param>
                     <param name="apply_original_style" type="bool" gui-text="Original style for trimmed lines" gui-description="Apply original path style to trimmed lines.">true</param>  
                     <label appearance="header">Scanning Colors</label>
-                    <param name="color_opened" type="color" appearance="colorbutton" gui-text="Color for opened contours">4012452351</param>
-                    <param name="color_closed" type="color" appearance="colorbutton" gui-text="Color for closed contours">2330080511</param>
+                    <param name="color_polyline" type="color" appearance="colorbutton" gui-text="Color for polyline paths">4289703935</param>
+                    <param name="color_bezier" type="color" appearance="colorbutton" gui-text="Color for bezier paths">258744063</param>
+                    <param name="color_opened" type="color" appearance="colorbutton" gui-text="Color for opened paths">4012452351</param>
+                    <param name="color_closed" type="color" appearance="colorbutton" gui-text="Color for closed paths">2330080511</param>
                     <param name="color_self_intersecting_paths" type="color" appearance="colorbutton" gui-text="Color for self-intersecting contours">2593756927</param>
                     <param name="color_subsplit" type="color" appearance="colorbutton" gui-text="Color for sub split lines">1630897151</param>
                     <param name="color_self_intersections" type="color" appearance="colorbutton" gui-text="Color for self-intersecting line points">6320383</param>
@@ -76,6 +86,7 @@
  - Does not find overlapping colinear lines (sweep line algorithm does not intersect them)
 
 Tips:
+ - If nothings is selected, the whole document will be processed, regardless of groups. In contrast, if you made a custom selection, check to handle or not to handle groups.
  - Convert your strokes and objects to paths before
  - Does not work for clones. You will need to unlink them before
  - Use extensions to filter short/unrequired lines
