@@ -75,31 +75,34 @@ intersectedVerb = "-intersected-"
 class ContourScannerAndTrimmer(inkex.EffectExtension):
 
     def breakContours(self, element, breakelements = None):
-        ''' this does the same as "CTRL + SHIFT + K" '''
+        ''' 
+        this does the same as "CTRL + SHIFT + K"
+        This functions honors the fact of absolute or relative paths!
+         '''
         if breakelements == None:
             breakelements = []
         if element.tag == inkex.addNS('path','svg'):
             parent = element.getparent()
             idx = parent.index(element)
-            idSuffix = 0    
-            raw = element.path.to_arrays()
+            idSuffix = 0
+            raw = str(element.path).split()
             subPaths, prev = [], 0
             for i in range(len(raw)): # Breaks compound paths into simple paths
-                if raw[i][0] == 'M' and i != 0:
+                if raw[i][0].upper() == 'M' and i != 0:
                     subPaths.append(raw[prev:i])
                     prev = i
             subPaths.append(raw[prev:])
             for subpath in subPaths:
                 replacedelement = copy.copy(element)
                 oldId = replacedelement.get('id')
-                csp = CubicSuperPath(subpath)
+                csp = CubicSuperPath(Path(" ".join(subpath)))
                 if len(subpath) > 1 and csp[0][0] != csp[0][1]: #avoids pointy paths like M "31.4794 57.6024 Z"
-                    replacedelement.set('d', csp)
+                    replacedelement.set('d', " ".join(subpath))
                     replacedelement.set('id', oldId + str(idSuffix))
                     parent.insert(idx, replacedelement)
                     idSuffix += 1
                     breakelements.append(replacedelement)
-            parent.remove(element)
+            element.delete()
         for child in element.getchildren():
             self.breakContours(child, breakelements)
         return breakelements

@@ -30,7 +30,7 @@ Extension for InkScape 1.X
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 02.04.2021
-Last patch: 24.04.2021
+Last patch: 05.06.2021
 License: GNU GPL v3
 
 This piece of spaghetti-code, called "vpypetools", is a wrapper to pass (pipe) line elements from InkScape selection (or complete canvas) to vpype. 
@@ -410,7 +410,7 @@ class vpypetools (inkex.EffectExtension):
             if self.options.strokes_to_paths is True:     
                 for line in element.iter("{http://www.w3.org/2000/svg}line"):
                     newLine = PathElement()
-                    newLine.path = Path("M {},{}L {},{}".format(line.attrib['x1'], line.attrib['y1'], line.attrib['x2'], line.attrib['y2']))
+                    newLine.path = Path("M {},{} L {},{}".format(line.attrib['x1'], line.attrib['y1'], line.attrib['x2'], line.attrib['y2']))
                     element.append(newLine)
                     line.delete()
             
