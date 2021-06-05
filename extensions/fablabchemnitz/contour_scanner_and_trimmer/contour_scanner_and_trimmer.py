@@ -19,6 +19,11 @@ Extension for InkScape 1.0+
         - duplicates in split bezier
         - ...
     - refactor subSplitData stuff by some clean mapping/structure instead having a lot of useless arays
+    - maybe option: convert abs path to rel path
+    - maybe option: convert rel path to abs path
+        replacedelement.path = replacedelement.path.to_absolute().to_superpath().to_path()
+    - maybe option: break apart while keeping relative/absolute commands (more complex and not sure if we have a great advantage having this)
+
     
 - important to notice
     - this algorithm might be really slow. Reduce flattening quality to speed up
@@ -47,7 +52,7 @@ Extension for InkScape 1.0+
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 09.08.2020 (extension originally called "Contour Scanner")
-Last patch: 04.06.2021
+Last patch: 05.06.2021
 License: GNU GPL v3
 
 '''
@@ -85,19 +90,24 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
             parent = element.getparent()
             idx = parent.index(element)
             idSuffix = 0
-            raw = str(element.path).split()
-            subPaths, prev = [], 0
+            #raw = str(element.path).split()
+            raw = element.path.to_arrays() 
+            subPaths = []
+            prev = 0
             for i in range(len(raw)): # Breaks compound paths into simple paths
-                if raw[i][0].upper() == 'M' and i != 0:
-                    subPaths.append(raw[prev:i])
+                #if raw[i][0].upper() == 'M' and i != 0:
+                if raw[i][0] == 'M' and i != 0:
+                    subPath = raw[prev:i]
+                    subPaths.append(Path(subPath))
                     prev = i
-            subPaths.append(raw[prev:])
-            for subpath in subPaths:
+            subPaths.append(Path(raw[prev:])) #finally add the last path
+
+            for subPath in subPaths:
                 replacedelement = copy.copy(element)
                 oldId = replacedelement.get('id')
-                csp = CubicSuperPath(Path(" ".join(subpath)))
-                if len(subpath) > 1 and csp[0][0] != csp[0][1]: #avoids pointy paths like M "31.4794 57.6024 Z"
-                    replacedelement.set('d', " ".join(subpath))
+                csp = CubicSuperPath(subPath)
+                if len(subPath) > 1 and csp[0][0] != csp[0][1]: #avoids pointy paths like M "31.4794 57.6024 Z"
+                    replacedelement.path = subPath
                     replacedelement.set('id', oldId + str(idSuffix))
                     parent.insert(idx, replacedelement)
                     idSuffix += 1
@@ -146,6 +156,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
 
         return pathElements
 
+
     def findGroup(self, groupId):
         ''' check if a group with a given id exists or not. Returns None if not found, else returns the group element '''
         groups = self.document.xpath('//svg:g', namespaces=inkex.NSS)
@@ -154,8 +165,6 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
             if group.get('id') == groupId:
                 return group
         return None
-
-    #function to refine the style of the lines  
 
 
     def adjustStyle(self, element):
@@ -230,7 +239,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
 
 
     def buildTrimLineGroups(self, allSubSplitData, subSplitIndex, globalIntersectionPoints, 
-            snap_tolerance, apply_original_style): 
+            snap_tolerance, apply_style_to_trimmed): 
         ''' make a group containing trimmed lines'''      
         
         #Check if we should skip or process the path anyway   
@@ -279,7 +288,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
             trimLine.path = [['M', [x[0],y[0]]], ['L', [x[1],y[1]]]]
             if trimGroupParentTransform is not None:
                 trimLine.path = trimLine.path.transform(-trimGroupParentTransform)
-            if apply_original_style is False:
+            if apply_style_to_trimmed is False:
                 trimLine.style = trimLineStyle
             else:
                 trimLine.style = allSubSplitData[2][subSplitIndex]
@@ -306,7 +315,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                 trimGroup.delete()
                                 
 
-    def combine_nonintersects(self, allTrimGroups, apply_original_style):
+    def combine_nonintersects(self, allTrimGroups, apply_style_to_trimmed):
         ''' 
         combine and chain all non intersected sub split lines which were trimmed at intersection points before.
         - At first we sort out all lines by their id: 
@@ -349,7 +358,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                     self.msg("trim group {} has {} combinable segments:".format(trimGroup.get('id'), len(newPathData)))     
                     self.msg("{}".format(newPathData))
                 combinedPath.path = Path(newPathData)              
-                if apply_original_style is False:
+                if apply_style_to_trimmed is False:
                     combinedPath.style = trimNonIntersectedStyle         
                     if totalIntersectionsAtPath == 0:
                         combinedPath.style = nonTrimLineStyle
@@ -448,7 +457,8 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         pars.add_argument("--dotsize_intersections", type=int, default=30, help="Dot size (px) for self-intersecting and global intersection points")
         pars.add_argument("--removefillsetstroke", type=inkex.Boolean, default=False, help="Remove fill and define stroke for original paths")
         pars.add_argument("--bezier_trimming", type=inkex.Boolean, default=False, help="If true we try to use the calculated t parameters from intersection points to receive splitted bezier curves")
-        pars.add_argument("--apply_original_style", type=inkex.Boolean, default=True, help="Apply original path style to trimmed lines")
+        pars.add_argument("--apply_style_to_subsplits", type=inkex.Boolean, default=True, help="Apply highlighting styles to sub split lines.")
+        pars.add_argument("--apply_style_to_trimmed", type=inkex.Boolean, default=True, help="Apply original path style to trimmed lines")
      
         #Style - Scanning Colors
         pars.add_argument("--color_subsplit", type=Color, default='1630897151', help="sub split lines")
@@ -470,32 +480,12 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
 
 
     def effect(self):
+
         so = self.options
 
-        #some dependent configuration for drawing modes
-        if \
-            so.highlight_relative is True or \
-            so.highlight_absolute is True or \
-            so.highlight_mixed is True or \
-            so.highlight_beziers is True or \
-            so.highlight_polylines is True or \
-            so.highlight_opened is True or \
-            so.highlight_closed is True or \
-            so.highlight_self_intersecting is True:
-                so.draw_subsplit = True
-        if so.draw_subsplit is False:
-            so.highlight_relative = False
-            so.highlight_absolute = False
-            so.highlight_mixed = False
-            so.highlight_beziers = False
-            so.highlight_polylines = False
-            so.highlight_open = False
-            so.highlight_closed = False
-            so.highlight_self_intersecting = False
-
         if so.break_apart is True and so.show_debug is True:
-            self.msg("Warning: 'Break apart input' setting is enabled. Cannot check for relative, absolute or mixed paths!")
-
+            self.msg("Warning: 'Break apart input' setting is enabled. Cannot check accordingly for relative, absolute or mixed paths for breaked elements (they are always absolute)!")
+     
         #some constant stuff / styles
         relativePathStyle = {'stroke': str(so.color_relative), 'fill': 'none', 'stroke-width': so.strokewidth}
         absolutePathStyle = {'stroke': str(so.color_absolute), 'fill': 'none', 'stroke-width': so.strokewidth}
@@ -509,7 +499,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
 
         #get all paths which are within selection or in document and generate sub split lines
         pathElements = self.getPathElements()
-
+        
         allSubSplitLines = []
         allSubSplitIds = []
         allSubSplitStyles = []
@@ -526,47 +516,25 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         allSubSplitData.append(allSubSplitIsClosed) #column 5
 
         for pathElement in pathElements:
+            originalPathId = pathElement.attrib["id"]
             path = pathElement.path.transform(pathElement.composed_transform())
             #path = pathElement.path
                 
             '''
-            Some original path checkings for analysis/highlighting purposes
-            Note: highlighting open/closed/self-intersecting contours does work best if you break apart 
-            combined paths before.
+            check for relative or absolute paths
             '''
-            isClosed = False
-            path_arrays = path.to_arrays()
-            if path_arrays[-1][0] == 'Z' or \
-                (path_arrays[-1][0] == 'L' and path_arrays[0][1] == path_arrays[-1][1]) or \
-                (path_arrays[-1][0] == 'C' and path_arrays[0][1] == [path_arrays[-1][1][-2], path_arrays[-1][1][-1]]) \
-                :  #if first is last point the path is also closed. The "Z" command is not required
-                isClosed = True
-             
-            #Check if we should delete the path or not
-            if so.remove_opened is True and isClosed is False:
-                pathElement.delete()
-                continue #skip this loop iteration
-            if so.remove_closed is True and isClosed is True:
-                pathElement.delete()
-                continue #skip this loop iteration
-
-            #check for relative or absolute paths. Does not work if break apart is enabled
             isRelative = False
             isAbsolute = False
             isMixed = False
             relCmds = ['m', 'l', 'h', 'v', 'c', 's', 'q', 't', 'a', 'z']
-            if any(relCmd in pathElement.attrib['d'] for relCmd in relCmds):
+            if any(relCmd in str(path) for relCmd in relCmds):
                 isRelative = True
-            if any(relCmd.upper() in pathElement.attrib['d'] for relCmd in relCmds):
+            if any(relCmd.upper() in str(path) for relCmd in relCmds):
                 isAbsolute = True
             if isRelative is True and isAbsolute is True:
                 isMixed = True
                 isRelative = False
                 isAbsolute = False
-            #self.msg("isRelative = {}".format(isRelative))
-            #self.msg("isAbsolute = {}".format(isAbsolute))
-            #self.msg("isMixed = {}".format(isMixed))
-            
             if so.remove_absolute is True and isAbsolute is True:
                 pathElement.delete()
                 continue #skip this loop iteration
@@ -577,17 +545,43 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                 pathElement.delete()
                 continue #skip this loop iteration
 
-            #adjust the style of original paths if desired. Has influence to the finally trimmed lines style results too!
-            if so.removefillsetstroke:
-                self.adjustStyle(pathElement)   
-  
-            originalPathId = pathElement.attrib["id"]
+            '''
+            check for bezier or polyline paths
+            '''
+            isBezier = False
+            if 'c' in str(path) or 'C' in str(path):
+                isBezier = True
+            if so.show_debug is True:
+                self.msg("sub path in {} is bezier: {}".format(originalPathId, isBezier))                   
+            if so.remove_beziers is True and isBezier is True:
+                pathElement.delete()
+                continue #skip this loop iteration
+            if so.remove_polylines is True and isBezier is False:
+                pathElement.delete()
+                continue #skip this loop iteration
 
+
+            '''
+            check for closed or open paths
+            '''
+            isClosed = False
+            raw = path.to_arrays()
+            if raw[-1][0] == 'Z' or \
+                (raw[-1][0] == 'L' and raw[0][1] == raw[-1][1]) or \
+                (raw[-1][0] == 'C' and raw[0][1] == [raw[-1][1][-2], raw[-1][1][-1]]) \
+                :  #if first is last point the path is also closed. The "Z" command is not required
+                isClosed = True
+            if so.remove_opened is True and isClosed is False:
+                pathElement.delete()
+                continue #skip this loop iteration
+            if so.remove_closed is True and isClosed is True:
+                pathElement.delete()
+                continue #skip this loop iteration
+  
             if so.draw_subsplit is True:
                 subSplitTrimLineGroup = pathElement.getparent().add(inkex.Group(id="{}-{}".format(idPrefix, pathElement.attrib["id"])))
            
             #get all sub paths for the path of the element
-            raw = path.to_arrays()
             subPaths, prev = [], 0
             for i in range(len(raw)): # Breaks compound paths into simple paths
                 if raw[i][0] == 'M' and i != 0:
@@ -596,22 +590,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
             subPaths.append(raw[prev:])
 
             #now loop through all sub paths (and flatten if desired) to build up single lines
-            for subPath in subPaths:
-                #set to True if the sub path is a bezier, else we assume it only has straight lines inside
-                isBezier = False
-                if 'C' in str(subPath):
-                    isBezier = True
-                if so.show_debug is True:
-                    self.msg("sub path in {} is bezier: {}".format(originalPathId, isBezier))          
-                
-                deleteFlag = False
-                if so.remove_beziers is True and isBezier is True:
-                    deleteFlag = True
-                if so.remove_polylines is True and isBezier is False:
-                    deleteFlag = True
-                      
-                #self.msg("sub path in {} = {}".format(element.get('id'), subPath))
-                #flatten the subpath if wanted
+            for subPath in subPaths:                     
                 subPathData = CubicSuperPath(subPath)
 
                 #flatten bezier curves. If it was already a straight line do nothing! Otherwise we would split straight lines into a lot more straight lines
@@ -664,16 +643,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                     subSplitOriginalPathIds.append(originalPathId) #some dirty flag we need
                     subSplitIsClosed.append(isClosed) #some dirty flag we need
 
-                if deleteFlag is True:
-                    pathElement.delete()
-                    continue #skip the subPath loop
-
-                if so.draw_subsplit is True:
-                    #check for open/closed again (at first we checked for the <maybe> combined path. Now we can do for each sub path too!
-                    #subPathIsClosed = False
-                    #if subSplitLines[0][0] == subSplitLines[-1][1]:
-                    #    subPathIsClosed = True
-                     
+                if so.draw_subsplit is True and so.apply_style_to_subsplits is True:
                     for subSplitLine in subSplitTrimLineGroup:
                         if subSplitLine.attrib['isRelative'] == 'True':
                             if so.highlight_relative is True:
@@ -741,6 +711,37 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                     allSubSplitOriginalPathIds.extend(subSplitOriginalPathIds)
                     allSubSplitIsClosed.extend(subSplitIsClosed)
 
+            #adjust the style of original paths if desired. Has influence to the finally trimmed lines style results too!
+            if so.removefillsetstroke is True:
+                self.adjustStyle(pathElement)
+
+            #apply styles to original paths
+            if isRelative is True:
+                if so.highlight_relative is True:
+                    pathElement.style = relativePathStyle
+      
+            if isAbsolute is True:
+                if so.highlight_absolute is True:
+                    pathElement.style = absolutePathStyle
+                 
+            if isMixed is True:
+                if so.highlight_mixed is True:
+                    pathElement.style = mixedPathStyle
+            
+            if isBezier is True:
+                if so.highlight_beziers is True:
+                    pathElement.style = bezierPathStyle
+            else:
+                if so.highlight_polylines is True:
+                    pathElement.style = polylinePathStyle
+
+            if isClosed is True:
+                if so.highlight_closed is True:
+                    pathElement.style = closedPathStyle
+            else:
+                if so.highlight_opened is True:
+                    pathElement.style = openPathStyle
+
             if so.draw_subsplit is True:
                 if subSplitTrimLineGroup is not None: #might get deleted before so we need to check this first
                     subSplitTrimLineGroup = reversed(subSplitTrimLineGroup) #reverse the order to match the original path segment placing
@@ -751,23 +752,24 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         '''
         now we intersect the sub split lines to find the global intersection points using Bentley-Ottmann algorithm (contains self-intersections too!)
         '''
-        try:
-            globalIntersectionPoints = MultiPoint(isect_segments(allSubSplitData[0], validate=True))
-            if so.show_debug is True:
-                self.msg("global intersection points count: {}".format(len(globalIntersectionPoints)))     
-            if len(globalIntersectionPoints) > 0:
-                if so.visualize_global_intersections is True:
-                    self.visualize_global_intersections(globalIntersectionPoints)
-
-                '''
-                now we trim the sub split lines at all calculated intersection points. 
-                We do this path by path to keep the logic between original paths, sub split lines and the final output
-                '''
-                if so.draw_trimmed is True:
+        if so.draw_trimmed is True:     
+            try:
+                globalIntersectionPoints = MultiPoint(isect_segments(allSubSplitData[0], validate=True))
+                if so.show_debug is True:
+                    self.msg("global intersection points count: {}".format(len(globalIntersectionPoints)))     
+                if len(globalIntersectionPoints) > 0:
+                    if so.visualize_global_intersections is True:
+                        self.visualize_global_intersections(globalIntersectionPoints)
+    
+                    '''
+                    now we trim the sub split lines at all calculated intersection points. 
+                    We do this path by path to keep the logic between original paths, sub split lines and the final output
+                    '''
+                
                     allTrimGroups = [] #container to collect all trim groups for later on processing 
                     for subSplitIndex in range(len(allSubSplitData[0])):
                         trimGroup = self.buildTrimLineGroups(allSubSplitData, subSplitIndex, 
-                            globalIntersectionPoints, so.snap_tolerance, so.apply_original_style)
+                            globalIntersectionPoints, so.snap_tolerance, so.apply_style_to_trimmed)
                         if trimGroup is not None:
                             if trimGroup not in allTrimGroups:
                                 allTrimGroups.append(trimGroup)
@@ -783,15 +785,15 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                     if so.remove_duplicates is True: self.remove_duplicates(allTrimGroups, so.reverse_removal_order)
                                     
                     #glue together all non-intersected sub split lines to larger path structures again (cleaning up).
-                    if so.combine_nonintersects is True: self. combine_nonintersects(allTrimGroups, so.apply_original_style)
+                    if so.combine_nonintersects is True: self. combine_nonintersects(allTrimGroups, so.apply_style_to_trimmed)
 
                     #clean original paths if selected. This option is explicitely independent from remove_open, remove_closed
                     if so.keep_original_after_trim is False:
                         for pathElement in pathElements:
                             pathElement.delete()
         
-        except AssertionError as e:
-            self.msg("Error calculating global intersections.\n\
+            except AssertionError as e:
+                self.msg("Error calculating global intersections.\n\
 See https://github.com/ideasman42/isect_segments-bentley_ottmann.\n\n\
 You can try to fix this by:\n\
 - reduce or raise the 'decimals' setting (default is 3 but try to set to 6 for example)\n\

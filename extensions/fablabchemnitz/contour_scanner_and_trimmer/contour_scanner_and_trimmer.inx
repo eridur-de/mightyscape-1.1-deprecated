@@ -59,11 +59,6 @@
         <page name="tab_style" gui-text="Style">
             <hbox>
                 <vbox>
-                    <label appearance="header">General Style</label>
-                    <param name="strokewidth" min="0.0" max="10000.0" gui-text="Stroke width (px)" gui-description="Applies For sub split lines and trimmed lines" type="float">1.0</param>
-                    <param name="dotsize_intersections" type="int" min="0" max="10000" gui-text="Dot size (px)" gui-description="For self-intersecting and global intersection points">30</param>
-                    <param name="removefillsetstroke" type="bool" gui-text="Remove fill and define stroke" gui-description="Modifies original path style">false</param>
-                    <param name="apply_original_style" type="bool" gui-text="Original style for trimmed lines" gui-description="Apply original path style to trimmed lines.">true</param>  
                     <label appearance="header">Scanning Colors</label>
                     <param name="color_subsplit" type="color" appearance="colorbutton" gui-text="sub split lines">1630897151</param>
                     <param name="color_relative" type="color" appearance="colorbutton" gui-text="relative cmd paths">3419879935</param>
@@ -83,6 +78,13 @@
                     <param name="color_trimmed" type="color" appearance="colorbutton" gui-text="trimmed lines">3227634687</param>
                     <param name="color_combined" type="color" appearance="colorbutton" gui-text="non-intersected lines" gui-description="Colorize non-trimmed lines differently than the trimmed ones. Does not apply if 'Original style for trimmed lines' is enabled">1923076095</param>
                     <param name="color_nonintersected" type="color" appearance="colorbutton" gui-text="non-intersected paths" gui-description="Colorize the complete path in case it does not contain any trim. Does not apply if 'Original style for trimmed lines' is enabled">3045284607</param>
+                    <label appearance="header">General Style</label>
+                    <param name="strokewidth" min="0.0" max="10000.0" precision="3" gui-text="Stroke width (px)" gui-description="Applies For sub split lines and trimmed lines" type="float">1.0</param>
+                    <param name="dotsize_intersections" type="int" min="0" max="10000" gui-text="Dot size (px)" gui-description="For self-intersecting and global intersection points">30</param>
+                    <param name="removefillsetstroke" type="bool" gui-text="Remove fill and define stroke" gui-description="Modifies original path style">false</param>
+                    <param name="apply_style_to_subsplits" type="bool" gui-text="Highlighting styles for sub split lines" gui-description="Apply highlighting styles to sub split lines.">true</param>  
+                    <param name="apply_style_to_trimmed" type="bool" gui-text="Original style for trimmed lines" gui-description="Apply original path style to trimmed lines.">true</param>  
+ 
                 </vbox>
             </hbox>
         </page>
