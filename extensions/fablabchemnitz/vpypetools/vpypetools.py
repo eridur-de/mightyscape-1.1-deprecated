@@ -9,8 +9,8 @@ import os
 from lxml import etree
 
 import inkex
-from inkex import transforms, bezier
-from inkex.paths import CubicSuperPath
+from inkex import transforms, bezier, PathElement
+from inkex.paths import CubicSuperPath, Path
 from inkex.command import inkscape
 
 import vpype
@@ -345,19 +345,6 @@ class vpypetools (inkex.EffectExtension):
         #vpype.write_svg(output_fileIO, doc, page_size=(self.svg.unittouu(self.document.getroot().get('width')), self.svg.unittouu(self.document.getroot().get('height'))), center=False, source_string='', layer_label_format='%d', show_pen_up=self.options.output_trajectories, color_mode='layer')       
         output_fileIO.close()
         
-        # convert vpype polylines/lines/polygons to regular paths again. We need to use "--with-gui" to respond to "WARNING: ignoring verb FileSave - GUI required for this verb."
-        if self.options.strokes_to_paths is True:
-            cli_output = inkscape(output_file, "--with-gui", actions="EditSelectAllInAllLayers;EditUnlinkClone;ObjectToPath;FileSave;FileQuit") #we do not use StrokeToPath because it will convert svg:line to a svg:path, but as closed path with four points
-            if len(cli_output) > 0:
-                self.debug(_("Inkscape returned the following output when trying to run the vpype object to path back-conversion:"))
-                self.debug(cli_output)
-        
-        # this does not work because line, polyline and polygon have no base class to execute replace_with
-        #if self.options.strokes_to_paths is True:
-        #    for lineLayer in lineLayers:
-        #        for element in lineLayer:
-        #                element.replace_with(element.to_path_element())
-               
         # parse the SVG file
         try:
             stream = open(output_file, 'r')
@@ -404,7 +391,7 @@ class vpypetools (inkex.EffectExtension):
                     lineLayer.set('style', 'stroke:' + color + ';stroke-width:{:0.2f}px;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;fill:none'.format(self.options.lines_stroke_width))
                     lineLayer.attrib.pop('stroke') # remove unneccesary stroke attribute
                     lineLayer.attrib.pop('fill') # remove unneccesary fill attribute
-
+                 
         import_viewBox = import_doc.getroot().get('viewBox').split(" ")
         self_viewBox = self.document.getroot().get('viewBox')
         
@@ -414,10 +401,30 @@ class vpypetools (inkex.EffectExtension):
             scaleY = self.svg.unittouu(self_viewBoxValues[3]) / self.svg.unittouu(import_viewBox[3])
 
         for element in import_doc.getroot().iter("{http://www.w3.org/2000/svg}g"):
-            self.document.getroot().append(element)
+            e = self.document.getroot().append(element)
             if self.options.input_handling == "layers":
                 if self_viewBox is not None:
                     element.set('transform', 'scale(' + str(scaleX) + ',' + str(scaleY) + ')') #imported groups need to be transformed. Or they have wrong size. Reason: different viewBox sizes/units in namedview definitions
+       
+            # convert vpype polylines/lines/polygons to regular paths again (strokes to paths)
+            if self.options.strokes_to_paths is True:     
+                for line in element.iter("{http://www.w3.org/2000/svg}line"):
+                    newLine = PathElement()
+                    newLine.path = Path("M {},{}L {},{}".format(line.attrib['x1'], line.attrib['y1'], line.attrib['x2'], line.attrib['y2']))
+                    element.append(newLine)
+                    line.delete()
+            
+                for polyline in element.iter("{http://www.w3.org/2000/svg}polyline"):
+                    newPolyLine = PathElement()
+                    newPolyLine.path = Path('M' + polyline.attrib['points'])
+                    element.append(newPolyLine)
+                    polyline.delete()
+    
+                for polygon in element.iter("{http://www.w3.org/2000/svg}polygon"):
+                    newPolygon = PathElement()
+                    newPolygon.path = Path('M' + " ".join(polygon.attrib['points'].split(' ')[:-1]) + ' Z') #remove the last point of the points string by splitting at whitespace, converting to array and removing the last item. then converting back to string
+                    element.append(newPolygon)
+                    polygon.delete()
 
         # Delete the temporary file again because we do not need it anymore
         if os.path.exists(output_file):
