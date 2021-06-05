@@ -48,7 +48,7 @@ class AboutUpgradeMightyScape(inkex.EffectExtension):
                 if file.endswith('.inx'):
                     totalInx += 1
         
-        inkex.utils.debug("There are {} extension folders with {} .inx files!".format(totalFolders, totalInx))
+        inkex.utils.debug("Locally there are {} extension folders with {} .inx files!".format(totalFolders, totalInx))
 
         repo = Repo(os.path.join(main_dir, ".git"))
         
@@ -62,48 +62,52 @@ class AboutUpgradeMightyScape(inkex.EffectExtension):
                         inkex.utils.debug("There are some untracked files in your MightyScape directory. Still trying to pull recent files from git...")
         
             origin = repo.remotes.origin
+            try:
+                latestRemoteCommit = git.cmd.Git().ls_remote("https://gitea.fablabchemnitz.de/MarioVoigt/mightyscape-1.X.git", heads=True).replace('refs/heads/master','').strip()
+                localCommit = str(repo.head.commit)
+                #ref_logs = repo.head.reference.log()
+                
+                #commits = list(repo.iter_commits("master", max_count=5))
+                commits = list(repo.iter_commits("master"))
+                self.msg("Local commit id is: " + localCommit[:7])
+                self.msg("Latest remote commit is: " + latestRemoteCommit[:7])
+                self.msg("There are {} remote commits at the moment.".format(len(commits)))
+                #self.msg("There are {} remote ref logs at the moment.".format(len(ref_logs)))
+                commitList = []
+                for commit in commits:
+                    commitList.append(commit)
+                #commitList.reverse()
+                #show last 10 entries
+                self.msg("*"*40)
+                self.msg("Latest 10 commits are:")
+                for i in range(0, 10):
+                    self.msg("{} | {} : {}".format(
+                        datetime.utcfromtimestamp(commitList[i].committed_date).strftime('%Y-%m-%d %H:%M:%S'),
+                        commitList[i].name_rev[:7],
+                        commitList[i].message.strip())
+                        )   
+                    #self.msg(" - {}: {}".format(commitList[i].newhexsha[:7], commitList[i].message))   
+                self.msg("*"*40)
+    
+                if localCommit != latestRemoteCommit:
+                    ssh_executable = 'git'
+                    with repo.git.custom_environment(GIT_SSH=ssh_executable):
+                        origin.fetch()
+                          
+                        fetch_info = origin.pull() #finally pull new data               
+                        for info in fetch_info: #should return only one line in total
+                            inkex.utils.debug("Updated %s to commit id %s" % (info.ref, str(info.commit)[:7])) 
                         
-            latestRemoteCommit = git.cmd.Git().ls_remote("https://gitea.fablabchemnitz.de/MarioVoigt/mightyscape-1.X.git", heads=True).replace('refs/heads/master','').strip()
-            localCommit = str(repo.head.commit)
-            #ref_logs = repo.head.reference.log()
+                        inkex.utils.debug("Please restart Inkscape to let the changes take effect.")  
+    
+                else:
+                    inkex.utils.debug("Nothing to do! MightyScape is already up to date!")  
+                    exit(0)  
+                       
+            except git.exc.GitCommandError:
+                self.msg("Error receiving latest remote commit from git. Are you offline? Cannot continue!")
+                return
             
-            #commits = list(repo.iter_commits("master", max_count=5))
-            commits = list(repo.iter_commits("master"))
-            self.msg("Local commit id is: " + localCommit[:7])
-            self.msg("Latest remote commit is: " + latestRemoteCommit[:7])
-            self.msg("There are {} remote commits at the moment.".format(len(commits)))
-            #self.msg("There are {} remote ref logs at the moment.".format(len(ref_logs)))
-            commitList = []
-            for commit in commits:
-                commitList.append(commit)
-            #commitList.reverse()
-            #show last 10 entries
-            self.msg("*"*40)
-            self.msg("Latest 10 commits are:")
-            for i in range(0, 10):
-                self.msg("{} | {} : {}".format(
-                    datetime.utcfromtimestamp(commitList[i].committed_date).strftime('%Y-%m-%d %H:%M:%S'),
-                    commitList[i].name_rev[:7],
-                    commitList[i].message.strip())
-                    )   
-                #self.msg(" - {}: {}".format(commitList[i].newhexsha[:7], commitList[i].message))   
-            self.msg("*"*40)
-
-            if localCommit != latestRemoteCommit:
-                ssh_executable = 'git'
-                with repo.git.custom_environment(GIT_SSH=ssh_executable):
-                    origin.fetch()
-                      
-                    fetch_info = origin.pull() #finally pull new data               
-                    for info in fetch_info: #should return only one line in total
-                        inkex.utils.debug("Updated %s to commit id %s" % (info.ref, str(info.commit)[:7])) 
-                    
-                    inkex.utils.debug("Please restart Inkscape to let the changes take effect.")  
-
-            else:
-                inkex.utils.debug("Nothing to do! MightyScape is already up to date!")  
-                exit(0)     
-
         else:
             inkex.utils.debug("No \".git\" directory found. Seems your MightyScape was not installed with git clone. Please see documentation on how to do that.")  
             exit(1)
