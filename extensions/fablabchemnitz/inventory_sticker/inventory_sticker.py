@@ -441,6 +441,8 @@ class InventorySticker(inkex.Effect):
             
             with open(inventoryCSV, 'r', encoding="utf-8") as csv_file:
                 csv_reader = csv.reader(csv_file, delimiter=",")
+                
+                totalOutputs = 0
                 for row in csv_reader:
                     internal_id = row[0]
                     doc_title   = row[1]
@@ -449,10 +451,11 @@ class InventorySticker(inkex.Effect):
                     zone        = row[4]
                     
                     if sticker_ids is None or sticker_id in sticker_ids:
+                        totalOutputs += 1
                         #create new sub directories for each non-existent FabLab zone (if flat export is disabled)
                         if self.options.flat_export == False:
                             if not zone:
-                                zoneDir = os.path.join(inventoryCSVParent, "Keinem Bereich zugeordnet")
+                                zoneDir = os.path.join(inventoryCSVParent, get_valid_filename("Keinem Bereich zugeordnet"))
                             else:
                                 zoneDir = os.path.join(inventoryCSVParent, get_valid_filename(zone)) #remove invalid charaters from zone
                             if not os.path.exists(zoneDir):
@@ -587,8 +590,13 @@ class InventorySticker(inkex.Effect):
                                         p = Popen(command, shell=True, stdout=PIPE, stderr=PIPE) #forr Windows: shell=False
                                         stdout, stderr = p.communicate()
                                         p.wait()
-                                        if p.returncode != 0: 
-                                            inkex.errormsg("brother_ql returned: %d %s %s" % (p.returncode, stdout, stderr))
+                                        if p.returncode != 0:
+                                            std_out = stdout.decode('utf-8')
+                                            std_err = stderr.decode('utf-8')
+                                            if std_err.endswith("ValueError: Device not found\n") is True:
+                                                self.msg("Printer device not found or offline. Check for power, cables and entered printer interface ID")
+                                            else:
+                                                inkex.errormsg("brother_ql returned errors:\nError code {:d}\n{}\n{}".format(p.returncode, std_out, std_err))
 
                             if self.options.export_svg != True: #If user selected PNG only we need to remove SVG again
                                 os.remove(export_file_path + ".svg")
@@ -596,7 +604,9 @@ class InventorySticker(inkex.Effect):
                             self.document.getroot().remove(stickerGroup) #remove the stickerGroup again
                         else: #create preview by just breaking the for loop without executing remove(stickerGroup)
                             break
-                csv_file.close()        
+                csv_file.close() 
+                if totalOutputs == 0:
+                    self.msg("No output was generated. Check if your entered IDs are valid!")
         except Exception as e:
             inkex.errormsg(e)
             #inkex.errormsg("Wrong inventory.csv URL or invalid credentials for Basic Auth")
