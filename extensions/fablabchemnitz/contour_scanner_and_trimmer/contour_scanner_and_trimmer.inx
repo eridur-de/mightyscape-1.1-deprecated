@@ -8,11 +8,6 @@
             <param name="show_debug" type="bool" gui-text="Show debug infos">false</param>
             <param name="break_apart" type="bool" gui-text="Break apart input" gui-description="Break apart input paths into sub paths. Modifies original paths: converts to absolute paths and might create additional new path elements.">false</param>   
             <param name="handle_groups" type="bool" gui-text="Handle groups" gui-description="Also looks for paths in groups which are in the current selection. Note: The generated results have a different structure (less granularity due to grouping) than directly selected paths. The colorization for non-intersected paths will be different too.">false</param> 
-            <param name="path_types" type="optiongroup" appearance="combo" gui-text="Scanning selection" gui-description="Process open paths by other open paths, closed paths by other closed paths, or all paths by all other paths">
-                <option value="both">all:all paths</option>
-                <option value="open_paths">open:open paths</option>
-                <option value="closed_paths">closed:closed paths</option>
-            </param>
             <param name="flattenbezier" type="bool" gui-text="Quantization (flatten bezier curves to polylines)" gui-description="Convert bezier curves to polylines.">true</param>  
             <param name="flatness" type="float" min="0.001" max="99999.000" precision="3" gui-text="Flatness (tolerance)" gui-description="Minimum flatness = 0.001. The smaller the value the more fine segments you will get (quantization). Large values might destroy the line continuity.">0.100</param>
             <param name="decimals" type="int" min="0" max="16" gui-text="Decimals" gui-description="Accuracy for sub split lines / lines trimmed by shapely (default: 3)">3</param>
@@ -30,7 +25,7 @@
                     <param name="remove_beziers" type="bool" gui-text="beziers">false</param>     
                     <param name="remove_opened" type="bool" gui-text="opened">false</param>
                     <param name="remove_closed" type="bool" gui-text="closed">false</param>
-                    <param name="remove_self_intersecting" type="bool" gui-text="Remove original self-intersecting paths">false</param>
+                    <param name="remove_self_intersecting" type="bool" gui-text="self-intersecting">false</param>
                 <separator/>
                     <label appearance="header">Highlighting</label>
                     <param name="highlight_relative" type="bool" gui-text="relative cmd paths">false</param>
@@ -47,6 +42,11 @@
                 <separator/>
                 <vbox>
                     <label appearance="header">Trimming</label>
+                <param name="trimming_path_types" type="optiongroup" appearance="combo" gui-text="Trimming selection" gui-description="Process open paths by other open paths, closed paths by other closed paths, or all paths by all other paths. This selection does not apply for paths which intersect themselves!">
+                    <option value="both">all:all paths</option>
+                    <option value="open_paths">open:open paths</option>
+                    <option value="closed_paths">closed:closed paths</option>
+                </param>
                     <param name="draw_trimmed" type="bool" gui-text="Draw trimmed lines">false</param> 
                     <param name="combine_nonintersects" type="bool" gui-text="Chain + combine non-intersected lines">true</param> 
                     <param name="remove_duplicates" type="bool" gui-text="Remove duplicate trim lines">true</param>
@@ -73,8 +73,8 @@
                     <param name="color_bezier" type="color" appearance="colorbutton" gui-text="bezier paths">258744063</param>
                     <param name="color_opened" type="color" appearance="colorbutton" gui-text="opened paths">4012452351</param>
                     <param name="color_closed" type="color" appearance="colorbutton" gui-text="closed paths">2330080511</param>
-                    <param name="color_self_intersecting_paths" type="color" appearance="colorbutton" gui-text="self-intersecting contours">2593756927</param>
-                    <param name="color_self_intersections" type="color" appearance="colorbutton" gui-text="self-intersecting line points">6320383</param>
+                    <param name="color_self_intersecting_paths" type="color" appearance="colorbutton" gui-text="self-intersecting paths">2593756927</param>
+                    <param name="color_self_intersections" type="color" appearance="colorbutton" gui-text="self-intersecting paths points">6320383</param>
                     <param name="color_global_intersections" type="color" appearance="colorbutton" gui-text="global intersection points">4239343359</param>
                 </vbox>
                 <separator/>
@@ -87,8 +87,8 @@
             </hbox>
         </page>
         <page name="tab_tips" gui-text="Tips">
-            <label xml:space="preserve">- Helps to find duplicate lines and to visualize intersections
- - Works for self-intersecting lines too
+            <label xml:space="preserve"> - Helps to find duplicate lines and to visualize intersections
+ - Works for self-intersecting paths too
  - Uses Bentley-Ottmann algorithm to detect intersections
  - Allows to separate different contour types by colors
  - Works with paths which have Live Path Effects (LPE)
@@ -98,7 +98,7 @@ Tips:
  - If nothings is selected, the whole document will be processed, regardless of groups. In contrast, if you made a custom selection, check to handle or not to handle groups.
  - Convert your strokes and objects to paths before
  - Does not work for clones. You will need to unlink them before
- - Use extensions to filter short/unrequired lines
+ - Use extensions to filter short/unrequired paths
  - Use extensions to purge or repair invalid paths
  - Use 'Path > Simplify' or hit 'CTRL + L' to simplify the trimmed result. With a fine quantization setting the simplified paths will be nearly identical to the original path (except the position of control points)</label>
             <label appearance="header">Do not select too much paths at once if you have got a fine settings for quantization. This extension is slow and might calculate hours on ultra high configurations.</label>
