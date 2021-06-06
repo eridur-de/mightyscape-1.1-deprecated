@@ -30,7 +30,7 @@ Extension for InkScape 1.X
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 02.04.2021
-Last patch: 05.06.2021
+Last patch: 06.06.2021
 License: GNU GPL v3
 
 This piece of spaghetti-code, called "vpypetools", is a wrapper to pass (pipe) line elements from InkScape selection (or complete canvas) to vpype. 
@@ -326,7 +326,7 @@ class vpypetools (inkex.EffectExtension):
             inkex.utils.debug('Total traveling length optimized: ' + str('{:0.2f}'.format(traveling_length_saving)) + ' %')
          
         if tooling_length_after == 0:
-            inkex.errormsg('No lines left after vpype conversion. Conversion result is empty. Cannot continue')
+            inkex.errormsg('No lines left after vpype conversion. Conversion result is empty. Cannot continue. Check your document about containing any svg:path elements. You will need to convert objects and strokes to paths first!')
             return
          
         # show the vpype document visually
@@ -422,7 +422,8 @@ class vpypetools (inkex.EffectExtension):
     
                 for polygon in element.iter("{http://www.w3.org/2000/svg}polygon"):
                     newPolygon = PathElement()
-                    newPolygon.path = Path('M' + " ".join(polygon.attrib['points'].split(' ')[:-1]) + ' Z') #remove the last point of the points string by splitting at whitespace, converting to array and removing the last item. then converting back to string
+                    #newPolygon.path = Path('M' + " ".join(polygon.attrib['points'].split(' ')[:-1]) + ' Z') #remove the last point of the points string by splitting at whitespace, converting to array and removing the last item. then converting back to string
+                    newPolygon.path = Path('M' + " ".join(polygon.attrib['points'].split(' ')) + ' Z')
                     element.append(newPolygon)
                     polygon.delete()
 
