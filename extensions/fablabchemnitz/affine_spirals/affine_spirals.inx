@@ -4,9 +4,9 @@
    <id>fablabchemnitz.de.affine_spirals</id>
    <param name="active-tab" type="notebook">
       <page name="title" gui-text="Settings">
-         <param name="num_lines" type="int" min="1" max="6" gui-text="Depth">3</param>
-         <param name="num_petals" type="int" min="2" max="8" gui-text="petals">2</param>
-         <param name="shrink_ratio" type="float" min="0.1" max="0.9" precision="2" gui-text="shrink factor">0.8</param>
+         <param name="num_lines" type="int" min="1" max="100" gui-text="Depth">3</param>
+         <param name="num_petals" type="int" min="2" max="100" gui-text="petals">2</param>
+         <param name="shrink_ratio" type="float" min="0.01" max="0.99" precision="2" gui-text="shrink factor">0.8</param>
       </page>
    </param>
    <effect>

@@ -13,23 +13,29 @@ def cplxs2pts(zs):
     return tt
 
 def draw_SVG_circle(parent, r, cx, cy, name):
-    " structre an SVG circle entity under parent "
+    " structure an SVG circle entity under parent "
     circ_attribs = { 'cx': str(cx), 'cy': str(cy), 
                     'r': str(r),
                     inkex.addNS('label','inkscape'): name}
-    
-    
-    circle = etree.SubElement(parent, inkex.addNS('circle','svg'), circ_attribs )
+    circle = etree.SubElement(parent, inkex.addNS('circle','svg'), circ_attribs)
+
+def draw_SVG_circleAsPath(parent, r, cx, cy, name):
+    circ_attribs = {
+        "d": "M {:0.6f}, {:0.6f} a {:0.6f},{:0.6f} 0 1,0 {:0.6f},0 a {:0.6f},{:0.6f} 0 1,0 {:0.6f},0".format(
+            cx - r, cy, r, r, 2*r, r, r, -2*r),
+        inkex.addNS('label','inkscape'): name}
+    circle = etree.SubElement(parent, inkex.addNS('path','svg'), circ_attribs)
 
 class Gasket(inkex.EffectExtension): # choose a better name
     
     def add_arguments(self, pars):
-        pars.add_argument("--depth",type=int, default=3, help="command line help")
-        pars.add_argument("--c1", type=float, default=2.0, help="command line help")
-        pars.add_argument("--c2", type=float, default=3.0, help="command line help")
-        pars.add_argument("--c3", type=float, default=3.0, help="command line help")
-        pars.add_argument("--shrink", type=inkex.Boolean, default=True, help="command line help")
-        pars.add_argument("--active_tab", default='title', help="Active tab.")
+        pars.add_argument("--active_tab")
+        pars.add_argument("--depth",type=int, default=3)
+        pars.add_argument("--c1", type=float, default=2.0)
+        pars.add_argument("--c2", type=float, default=3.0)
+        pars.add_argument("--c3", type=float, default=3.0)
+        pars.add_argument("--shrink", type=inkex.Boolean, default=True)
+        pars.add_argument("--as_paths", type=inkex.Boolean, default=True)
               
     def calc_unit_factor(self):
         unit_factor = self.svg.unittouu(str(1.0) + self.options.units)
@@ -86,7 +92,10 @@ class Gasket(inkex.EffectExtension): # choose a better name
             
             #rescale and add circle to document
             cx, cy, r  = scale_factor * cx , scale_factor * cy, scale_factor * r
-            draw_SVG_circle(topgroup, r, cx, cy, 'apo')          
+            if self.options.as_paths is False:
+                draw_SVG_circle(topgroup, r, cx, cy, 'apollian')
+            else:
+                draw_SVG_circleAsPath(topgroup, r, cx, cy, 'apollian')                    
                          
 if __name__ == '__main__':
     Gasket().run()

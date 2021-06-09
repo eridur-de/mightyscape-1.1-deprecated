@@ -406,7 +406,7 @@ class vpypetools (inkex.EffectExtension):
                 if self_viewBox is not None:
                     element.set('transform', 'scale(' + str(scaleX) + ',' + str(scaleY) + ')') #imported groups need to be transformed. Or they have wrong size. Reason: different viewBox sizes/units in namedview definitions
        
-            # convert vpype polylines/lines/polygons to regular paths again (strokes to paths)
+            # convert vpype polylines/lines/polygons to regular paths again (objects to paths)
             if self.options.strokes_to_paths is True:     
                 for line in element.iter("{http://www.w3.org/2000/svg}line"):
                     newLine = PathElement()
