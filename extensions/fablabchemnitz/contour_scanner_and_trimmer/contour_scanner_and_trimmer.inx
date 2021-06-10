@@ -37,7 +37,7 @@
                     <param name="highlight_closed" type="bool" gui-text="closed paths">false</param>
                     <param name="highlight_self_intersecting" type="bool" gui-text="self-intersecting paths" gui-description="Requires to draw sub split lines. Will override highlighting colors for open and closed paths (if those options are enabled)">false</param>
                     <param name="visualize_self_intersections" type="bool" gui-text="self-intersecting path points">false</param> 
-                    <param name="visualize_global_intersections" type="bool" gui-text="global intersection points" gui-description="Will also contain self-intersecting points!">false</param> 
+                    <param name="visualize_global_intersections" type="bool" gui-text="global intersection points" gui-description="Will also contain self-intersecting points! Global intersections will only show if 'Draw trimmed lines' is enabled!">false</param> 
                 </vbox>
                 <separator/>
                 <vbox>
