@@ -4,9 +4,13 @@
 Based on 
 - https://github.com/TimeTravel-0/ofsplot
 
+ToDo's
+- break apart combined paths
+- option to handle groups 
+
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
-Last Patch: 22.04.2021
+Last Patch: 10.06.2021
 License: GNU GPL v3
 
 """
@@ -33,7 +37,7 @@ class OffsetPaths(inkex.EffectExtension):
         pars.add_argument("--clipperscale", type=int, default=1024, help="Scaling factor. Should be a multiplicator of 2, like 2^4=16 or 2^10=1024. The higher the scale factor the higher the quality.")
         pars.add_argument("--copy_org", type=inkex.Boolean, default=True, help="copy original path")
         pars.add_argument("--individual", type=inkex.Boolean, default=True, help="Separate into individual paths")
-
+        pars.add_argument("--path_types", default="both", help="Process open, closed or all paths!")
         
         
     def effect(self):
@@ -46,12 +50,26 @@ class OffsetPaths(inkex.EffectExtension):
             exit()
         for pathElement in pathElements:
             csp = CubicSuperPath(pathElement.get('d'))
-
+            
+            '''
+            check for closed or open paths
+            '''
+            isClosed = False
+            raw = pathElement.path.to_arrays()
+            if raw[-1][0] == 'Z' or \
+                (raw[-1][0] == 'L' and raw[0][1] == raw[-1][1]) or \
+                (raw[-1][0] == 'C' and raw[0][1] == [raw[-1][1][-2], raw[-1][1][-1]]) \
+                :  #if first is last point the path is also closed. The "Z" command is not required
+                isClosed = True
+            if self.options.path_types == "open_paths" and isClosed is True:
+                continue #skip this loop iteration
+            elif self.options.path_types == "closed_paths" and isClosed is False:
+                continue #skip this loop iteration
+                        
             scale_factor = self.options.clipperscale # 2 ** 32 = 1024 - see also https://github.com/fonttools/pyclipper/wiki/Deprecating-SCALING_FACTOR
-
             pco = pyclipper.PyclipperOffset(self.options.miterlimit)
             
-            JT = None
+            JT = None #join types
             if self.options.jointype == "0":
                 JT = pyclipper.JT_SQUARE
             elif self.options.jointype == "1":
@@ -59,7 +77,7 @@ class OffsetPaths(inkex.EffectExtension):
             elif self.options.jointype == "2":
                 JT = pyclipper.JT_MITER
                 
-            ET = None
+            ET = None #end types
             if self.options.endtype == "0":
                 ET = pyclipper.ET_CLOSEDPOLYGON
             elif self.options.endtype == "1":
@@ -94,7 +112,7 @@ class OffsetPaths(inkex.EffectExtension):
             for offset in offset_list:
                 solution = pco.Execute(offset * scale_factor)
                 solutions.append(solution)
-                if len(solution)<=0:
+                if len(solution) <= 0:
                     continue # no more loops to go, will provide no results.
 
             # re-arrange solutions to fit expected format & add to array
@@ -107,16 +125,18 @@ class OffsetPaths(inkex.EffectExtension):
                         newPaths.append(sol_p)
 
             if self.options.individual is True:
+                parentGroup = pathElement.getparent().add(inkex.Group(id="g-offset-{}".format(pathElement.attrib["id"])))
                 parent = pathElement.getparent()
-                idx = parent.index(pathElement)
+                idx = parent.index(pathElement) + 1
                 idSuffix = 0
                 for newPath in newPaths:
                     copyElement = copy.copy(pathElement)
                     elementId = copyElement.get('id')
                     copyElement.path = CubicSuperPath(newPath)
                     copyElement.set('id', elementId + str(idSuffix))
-                    parent.insert(idx, copyElement)
+                    parentGroup.append(copyElement)
                     idSuffix += 1
+                parent.insert(idx, parentGroup)
                 if self.options.copy_org is False:
                     pathElement.delete()
             else:
