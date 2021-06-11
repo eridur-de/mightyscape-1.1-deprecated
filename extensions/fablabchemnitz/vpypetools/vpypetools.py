@@ -199,7 +199,7 @@ class vpypetools (inkex.EffectExtension):
                 #input_bbox = inkex.elements._selected.ElementList.bounding_box(self.svg.selected) # get BoundingBox for selection
                 input_bbox = self.svg.selection.bounding_box() # get BoundingBox for selection
             if len(lc) == 0:
-                inkex.errormsg('Selection appears to be empty or does not contain any valid svg:path nodes. Try to cast your objects to paths using CTRL + SHIFT + C or strokes to paths using CTRL + ALT+ C')
+                self.msg('Selection appears to be empty or does not contain any valid svg:path nodes. Try to cast your objects to paths using CTRL + SHIFT + C or strokes to paths using CTRL + ALT+ C')
                 return  
             # find the first object in selection which has a style attribute (skips groups and other things which have no style)
             firstElementStyle = None
@@ -261,7 +261,7 @@ class vpypetools (inkex.EffectExtension):
                 self.options.filter_not_closed is False and \
                 self.options.filter_min_length_enabled is False and \
                 self.options.filter_max_length_enabled is False:
-                inkex.errormsg('No filters to apply. Please select at least one filter.')
+                self.msg('No filters to apply. Please select at least one filter.')
                 return
 
         # Plugin Occult
@@ -292,17 +292,17 @@ class vpypetools (inkex.EffectExtension):
                 self.options.freemode_cmd3_enabled is False and \
                 self.options.freemode_cmd4_enabled is False and \
                 self.options.freemode_cmd5_enabled is False:
-                inkex.utils.debug("Warning: empty vpype pipeline. With this you are just getting read-write layerset/lineset.")
+                self.msg("Warning: empty vpype pipeline. With this you are just getting read-write layerset/lineset.")
             else:
                 if self.options.freemode_show_cmd is True:
-                    inkex.utils.debug("Your command pipe will be the following:")
-                    inkex.utils.debug(command)
+                    self.msg("Your command pipe will be the following:")
+                    self.msg(command)
 
-        # inkex.utils.debug(command)
+        # self.msg(command)
         try:
             doc = execute(command, doc)
         except Exception as e:
-            inkex.utils.debug("Error in vpype:" + str(e))
+            self.msg("Error in vpype:" + str(e))
             return
 
         ##########################################
@@ -318,15 +318,16 @@ class vpypetools (inkex.EffectExtension):
         else:
             traveling_length_saving = 0.0  
         if self.options.output_stats is True:
-            inkex.utils.debug('Total tooling length before vpype conversion: '   + str('{:0.2f}'.format(tooling_length_before))   + ' mm')
-            inkex.utils.debug('Total traveling length before vpype conversion: ' + str('{:0.2f}'.format(traveling_length_before)) + ' mm')
-            inkex.utils.debug('Total tooling length after vpype conversion: '    + str('{:0.2f}'.format(tooling_length_after))    + ' mm')
-            inkex.utils.debug('Total traveling length after vpype conversion: '  + str('{:0.2f}'.format(traveling_length_after))  + ' mm')
-            inkex.utils.debug('Total tooling length optimized: '   + str('{:0.2f}'.format(tooling_length_saving))   + ' %')
-            inkex.utils.debug('Total traveling length optimized: ' + str('{:0.2f}'.format(traveling_length_saving)) + ' %')
+            self.msg('Total tooling length before vpype conversion: '   + str('{:0.2f}'.format(tooling_length_before))   + ' mm')
+            self.msg('Total traveling length before vpype conversion: ' + str('{:0.2f}'.format(traveling_length_before)) + ' mm')
+            self.msg('Total tooling length after vpype conversion: '    + str('{:0.2f}'.format(tooling_length_after))    + ' mm')
+            self.msg('Total traveling length after vpype conversion: '  + str('{:0.2f}'.format(traveling_length_after))  + ' mm')
+            self.msg('Total tooling length optimized: '   + str('{:0.2f}'.format(tooling_length_saving))   + ' %')
+            self.msg('Total traveling length optimized: ' + str('{:0.2f}'.format(traveling_length_saving)) + ' %')
          
         if tooling_length_after == 0:
-            inkex.errormsg('No lines left after vpype conversion. Conversion result is empty. Cannot continue. Check your document about containing any svg:path elements. You will need to convert objects and strokes to paths first!')
+            self.msg('No lines left after vpype conversion. Conversion result is empty. Cannot continue. Check your document about containing any svg:path elements. You will need to convert objects and strokes to paths first! Vpype command chain was:')
+            self.msg(command)
             return
          
         # show the vpype document visually
@@ -349,7 +350,7 @@ class vpypetools (inkex.EffectExtension):
         try:
             stream = open(output_file, 'r')
         except FileNotFoundError as e:
-            inkex.utils.debug("There was no SVG output generated by vpype. Cannot continue")
+            self.msg("There was no SVG output generated by vpype. Cannot continue")
             exit(1)
         p = etree.XMLParser(huge_tree=True)
         import_doc = etree.parse(stream, parser=etree.XMLParser(huge_tree=True))
