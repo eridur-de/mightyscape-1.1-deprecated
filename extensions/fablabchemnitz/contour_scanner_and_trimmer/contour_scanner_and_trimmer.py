@@ -78,7 +78,7 @@ intersectedVerb = "-intersected-"
 
 class ContourScannerAndTrimmer(inkex.EffectExtension):
 
-    def breakContours(self, element, breakelements = None):
+    def break_contours(self, element, breakelements = None):
         ''' 
         this does the same as "CTRL + SHIFT + K"
         This functions honors the fact of absolute or relative paths!
@@ -113,22 +113,22 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                     breakelements.append(replacedelement)
             element.delete()
         for child in element.getchildren():
-            self.breakContours(child, breakelements)
+            self.break_contours(child, breakelements)
         return breakelements
 
 
-    def getChildPaths(self, element, elements = None):
+    def get_child_paths(self, element, elements = None):
         ''' a function to get child paths from elements (used by "handling groups" option) '''
         if elements == None:
             elements = []
         if element.tag == inkex.addNS('path','svg'):
                 elements.append(element)
         for child in element.getchildren():
-            self.getChildPaths(child, elements)
+            self.get_child_paths(child, elements)
         return elements
 
 
-    def getPathElements(self):
+    def get_path_elements(self):
         ''' get all path elements, either from selection or from whole document. Uses options '''
         pathElements = []
         if len(self.svg.selected) == 0: #if nothing selected we search for the complete document
@@ -138,7 +138,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                 pathElements = list(self.svg.selection.filter(PathElement).values())
             else:
                 for element in self.svg.selection.values():
-                    pathElements = self.getChildPaths(element, pathElements)
+                    pathElements = self.get_child_paths(element, pathElements)
 
         if len(pathElements) == 0:
             self.msg('Selection appears to be empty or does not contain any valid svg:path nodes. Try to cast your objects to paths using CTRL + SHIFT + C or strokes to paths using CTRL + ALT + C')
@@ -147,7 +147,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         if self.options.break_apart is True:
             breakApartElements = None
             for pathElement in pathElements:
-                breakApartElements = self.breakContours(pathElement, breakApartElements)
+                breakApartElements = self.break_contours(pathElement, breakApartElements)
             pathElements = breakApartElements
 
         if self.options.show_debug is True:
@@ -156,7 +156,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         return pathElements
 
 
-    def findGroup(self, groupId):
+    def find_group(self, groupId):
         ''' check if a group with a given id exists or not. Returns None if not found, else returns the group element '''
         groups = self.document.xpath('//svg:g', namespaces=inkex.NSS)
         for group in groups:
@@ -166,7 +166,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         return None
 
 
-    def adjustStyle(self, element):
+    def adjust_style(self, element):
         ''' Replace some style attributes of the given element '''
         if element.attrib.has_key('style'):
             style = element.get('style')
@@ -186,7 +186,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
             element.set('style', 'stroke:#000000;stroke-opacity:1.0')
 
 
-    def lineFromSegments(self, segs, i, decimals):
+    def line_from_segments(self, segs, i, decimals):
         '''builds a straight line for the segment i and the next segment i+2. Returns both point XY coordinates'''
         pseudoPath = Path(segs[i:i+2]).to_arrays()
         x1 = round(pseudoPath[0][1][-2], decimals)
@@ -237,8 +237,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                 globalIntersectionGroup.add(globalIntersectionPointCircle)
 
 
-    def buildTrimLineGroups(self, subSplitLineArray, subSplitIndex, globalIntersectionPoints, 
-            snap_tolerance, apply_style_to_trimmed): 
+    def build_trim_line_group(self, subSplitLineArray, subSplitIndex, globalIntersectionPoints): 
         ''' make a group containing trimmed lines'''      
         
         #Check if we should skip or process the path anyway   
@@ -252,12 +251,12 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         
         trimLineStyle = {'stroke': str(self.options.color_trimmed), 'fill': 'none', 'stroke-width': self.options.strokewidth}
            
-        linesWithSnappedIntersectionPoints = snap(ls, globalIntersectionPoints, snap_tolerance)
+        linesWithSnappedIntersectionPoints = snap(ls, globalIntersectionPoints, self.options.snap_tolerance)
         trimGroupId = 'shapely-' + subSplitLineArray[subSplitIndex].attrib['id'].split("_")[0] #split at "_" (_ from subSplitId)
         trimGroupParentId = subSplitLineArray[subSplitIndex].attrib['id'].split(idPrefix+"-")[1].split("_")[0]
         trimGroupParent = self.svg.getElementById(trimGroupParentId)
         trimGroupParentTransform = trimGroupParent.composed_transform()
-        trimGroup = self.findGroup(trimGroupId)
+        trimGroup = self.find_group(trimGroupId)
         if trimGroup is None:
             trimGroup = trimGroupParent.getparent().add(inkex.Group(id=trimGroupId))
           
@@ -271,7 +270,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         splitAt = [] #if the sub split line was split by an intersecting line we receive two trim lines with same assigned original path id!
         prevLine = None
         for j in range(len(trimLines)):
-            trimLineId = trimGroupId + "-" + str(subSplitIndex)
+            trimLineId = "{}-{}".format(trimGroupId, subSplitIndex)
             splitAt.append(trimGroupId)
             if splitAt.count(trimGroupId) > 1: #we detected a lines with intersection on
                 trimLineId = trimLineId + self.svg.get_unique_id(intersectedVerb)
@@ -287,7 +286,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
             trimLine.path = [['M', [x[0],y[0]]], ['L', [x[1],y[1]]]]
             if trimGroupParentTransform is not None:
                 trimLine.path = trimLine.path.transform(-trimGroupParentTransform)
-            if apply_style_to_trimmed is False:
+            if self.options.apply_style_to_trimmed is False:
                 trimLine.style = trimLineStyle
             else:
                 trimLine.style = subSplitLineArray[subSplitIndex].attrib['originalPathStyle']
@@ -295,10 +294,10 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         return trimGroup
 
 
-    def remove_duplicates(self, allTrimGroups, reverse_removal_order):
+    def remove_duplicates(self, allTrimGroups):
         ''' find duplicate lines in a given array [] of groups '''
         totalTrimPaths = []
-        if reverse_removal_order is True:
+        if self.options.reverse_removal_order is True:
             allTrimGroups = allTrimGroups[::-1]
         for trimGroup in allTrimGroups:
             for element in trimGroup:
@@ -314,7 +313,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                 trimGroup.delete()
                                 
 
-    def combine_nonintersects(self, allTrimGroups, apply_style_to_trimmed):
+    def combine_nonintersects(self, allTrimGroups):
         ''' 
         combine and chain all non intersected sub split lines which were trimmed at intersection points before.
         - At first we sort out all lines by their id: 
@@ -357,7 +356,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                     self.msg("trim group {} has {} combinable segments:".format(trimGroup.get('id'), len(newPathData)))     
                     self.msg("{}".format(newPathData))
                 combinedPath.path = Path(newPathData)              
-                if apply_style_to_trimmed is False:
+                if self.options.apply_style_to_trimmed is False:
                     combinedPath.style = trimNonIntersectedStyle         
                     if totalIntersectionsAtPath == 0:
                         combinedPath.style = nonTrimLineStyle
@@ -372,7 +371,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         This function does not work yet.
         '''  
         for trimGroup in allTrimGroups:
-            if trimGroup.attrib.has_key('isBezier') and trimGroup.attrib['isBezier'] == "True":
+            if trimGroup.attrib.has_key('originalPathIsBezier') and trimGroup.attrib['originalPathIsBezier'] == "True":
                 globalTParameters = []
                 if self.options.show_debug is True:
                     self.msg("{}: count of trim lines = {}".format(trimGroup.get('id'), len(trimGroup)))
@@ -497,7 +496,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         basicSubSplitLineStyle = {'stroke': str(so.color_subsplit), 'fill': 'none', 'stroke-width': so.strokewidth}
 
         #get all paths which are within selection or in document and generate sub split lines
-        pathElements = self.getPathElements()
+        pathElements = self.get_path_elements()
 
         subSplitLineArray = []
         
@@ -565,7 +564,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                 continue #skip this loop iteration
   
             if so.draw_subsplit is True:
-                subSplitLineGroup = pathElement.getparent().add(inkex.Group(id="{}-{}".format(idPrefix, pathElement.attrib["id"])))
+                subSplitLineGroup = pathElement.getparent().add(inkex.Group(id="{}-{}".format(idPrefix, originalPathId)))
            
             #get all sub paths for the path of the element
             subPaths, prev = [], 0
@@ -600,7 +599,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                 #build polylines from segment data
                 subSplitLines = []
                 for i in range(len(segs) - 1): #we could do the same routine to build up polylines using "for x, y in node.path.end_points". See "number nodes" extension
-                    x1, y1, x2, y2 = self.lineFromSegments(segs, i, so.decimals)
+                    x1, y1, x2, y2 = self.line_from_segments(segs, i, so.decimals)
                     #self.msg("(y1 = {},y2 = {},x1 = {},x2 = {})".format(x1, y1, x2, y2))
                     subSplitId = "{}-{}_{}".format(idPrefix, originalPathId, i)
                     line = inkex.PathElement(id=subSplitId)
@@ -674,7 +673,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
 
             #adjust the style of original paths if desired. Has influence to the finally trimmed lines style results too!
             if so.removefillsetstroke is True:
-                self.adjustStyle(pathElement)
+                self.adjust_style(pathElement)
 
             #apply styles to original paths
             if isRelative is True:
@@ -738,8 +737,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                     '''                            
                     allTrimGroups = [] #container to collect all trim groups for later on processing 
                     for subSplitIndex in range(len(subSplitLineArray)):
-                        trimGroup = self.buildTrimLineGroups(subSplitLineArray, subSplitIndex, 
-                            globalIntersectionPoints, so.snap_tolerance, so.apply_style_to_trimmed)
+                        trimGroup = self.build_trim_line_group(subSplitLineArray, subSplitIndex, globalIntersectionPoints)
                         if trimGroup is not None:
                             if trimGroup not in allTrimGroups:
                                 allTrimGroups.append(trimGroup)
@@ -752,10 +750,10 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                     if so.bezier_trimming is True: self.trim_bezier(allTrimGroups)  
                    
                     #check for duplicate trim lines and delete them if desired
-                    if so.remove_duplicates is True: self.remove_duplicates(allTrimGroups, so.reverse_removal_order)
+                    if so.remove_duplicates is True: self.remove_duplicates(allTrimGroups)
                                     
                     #glue together all non-intersected sub split lines to larger path structures again (cleaning up).
-                    if so.combine_nonintersects is True: self. combine_nonintersects(allTrimGroups, so.apply_style_to_trimmed)
+                    if so.combine_nonintersects is True: self. combine_nonintersects(allTrimGroups)
 
                     #clean original paths if selected. This option is explicitely independent from remove_open, remove_closed
                     if so.keep_original_after_trim is False:
