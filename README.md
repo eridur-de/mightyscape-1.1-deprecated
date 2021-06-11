@@ -66,5 +66,5 @@ https://y.stadtfabrikanten.org/donate
 # Locations
 
 This repo has two remotes:
-* https://gitea.fablabchemnitz.de/MarioVoigt/mightyscape-1.X (root repo origin)
+* https://gitea.fablabchemnitz.de/FabLab_Chemnitz/mightyscape-1.X (root repo origin)
 * https://github.com/vmario89/mightyscape-1.X (repo for collaboration. You can create your issues here. Active since May 2021)

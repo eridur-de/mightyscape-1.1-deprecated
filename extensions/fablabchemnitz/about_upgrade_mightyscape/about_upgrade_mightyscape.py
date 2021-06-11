@@ -63,7 +63,7 @@ class AboutUpgradeMightyScape(inkex.EffectExtension):
         
             origin = repo.remotes.origin
             try:
-                latestRemoteCommit = git.cmd.Git().ls_remote("https://gitea.fablabchemnitz.de/MarioVoigt/mightyscape-1.X.git", heads=True).replace('refs/heads/master','').strip()
+                latestRemoteCommit = git.cmd.Git().ls_remote("https://gitea.fablabchemnitz.de/FabLab_Chemnitz/mightyscape-1.X.git", heads=True).replace('refs/heads/master','').strip()
                 localCommit = str(repo.head.commit)
                 #ref_logs = repo.head.reference.log()
                 

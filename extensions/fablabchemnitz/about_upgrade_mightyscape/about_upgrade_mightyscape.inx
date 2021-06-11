@@ -12,7 +12,7 @@
             <label appearance="url">https://y.stadtfabrikanten.org/mightyscape-overview</label>
             <spacer />
             <label appearance="header">Contributing</label>
-            <label appearance="url">https://gitea.fablabchemnitz.de/MarioVoigt/mightyscape-1.X</label>
+            <label appearance="url">https://gitea.fablabchemnitz.de/FabLab_Chemnitz/mightyscape-1.X</label>
             <label appearance="url">mailto:mario.voigt@stadtfabrikanten.org</label>
             <spacer />
             <label appearance="header">Click "Apply" to upgrade MightyScape to recent version!</label>
