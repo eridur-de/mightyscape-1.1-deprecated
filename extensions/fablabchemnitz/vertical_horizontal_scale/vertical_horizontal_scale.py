@@ -476,7 +476,7 @@ class VerticalHorizontalScale(inkex.EffectExtension):
                 y = self.bbox[2] + half
                 centre = (x, y)
 
-        grp_transform = 'translate' + str( centre )
+        grp_transform = 'translate(' + str(centre) + ')'
 
         grp_name = 'Label line'
         grp_attribs = {inkex.addNS('label','inkscape'):grp_name, 'transform':grp_transform }
