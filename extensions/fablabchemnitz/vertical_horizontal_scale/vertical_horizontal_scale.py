@@ -50,6 +50,7 @@ from lxml import etree
 
 class VerticalHorizontalScale(inkex.EffectExtension):
 
+
     def add_arguments(self, pars):
         # Define string option "--what" with "-w" shortcut and default value "World".
         pars.add_argument('-f', '--scalefrom', type = int, default = '0', help = 'Number from...')
@@ -92,6 +93,7 @@ class VerticalHorizontalScale(inkex.EffectExtension):
         pars.add_argument('--tab', default = 'global', help = '')
         pars.add_argument("--perpline", type=inkex.Boolean, default=True, help="Perpendicular line")
         pars.add_argument('--perplineoffset', type = float, default = '0', help = 'Offset')
+
 
     def addLabel(self, n, x, y, group, fontsize, phi = 0.0):
         mathexpression = self.options.mathexpression
@@ -151,6 +153,7 @@ class VerticalHorizontalScale(inkex.EffectExtension):
             text.set('x', str(float(x)))
             text.set('y', str(float(y)))
             group.append(text)
+
 
     def addLine(self, i, scalefrom, scaleto, group, grpLabel, type=2):
         reverse = self.options.reverse
@@ -263,8 +266,6 @@ class VerticalHorizontalScale(inkex.EffectExtension):
 
         line_attribs = {'style' : str(inkex.Style(line_style)), inkex.addNS('label','inkscape') : name, 'd' : 'M '+x1+','+y1+' L '+x2+','+y2}
         line = etree.SubElement(group, inkex.addNS('path','svg'), line_attribs )
-
-
 
 
     def addLineRad(self, i, scalefrom, scaleto, group, grpLabel, type=2, ishorizontal=True):
@@ -408,6 +409,7 @@ class VerticalHorizontalScale(inkex.EffectExtension):
 
         line = etree.SubElement(group, inkex.addNS('path','svg'), line_attribs )
 
+
     def skipfunc(self, i, markArray, groups):
 
         skip = True
@@ -439,18 +441,9 @@ class VerticalHorizontalScale(inkex.EffectExtension):
     def effect(self):
         scalefrom = self.options.scalefrom
         scaleto = self.options.scaleto
-        labellinelength = self.options.labellinelength
-        scaletype = self.options.type
-        insidetf = self.options.insidetf
-        ishorizontal = self.options.ishorizontal
-        useref = self.options.useref
-        perpline = self.options.perpline
-        drawalllabels = self.options.drawalllabels
-        perpline = self.options.perpline
-        mark1 = self.options.mark1
-        mark2 = self.options.mark2
 
-        groups = ['0', '0', '0', '0']
+        scaleGroup = self.svg.get_current_layer().add(inkex.Group())
+        groups = [None, None, None, None]
         markArray = [self.options.mark0, self.options.mark1, self.options.mark2]
 
         # Get access to main SVG document element and get its dimensions.
@@ -462,7 +455,7 @@ class VerticalHorizontalScale(inkex.EffectExtension):
 
         centre = self.svg.namedview.center   #Put in in the centre of the current view
 
-        if useref==True:
+        if self.options.useref is True:
             self.bbox = sum([node.bounding_box() for node in self.svg.selected.values() ])
             try:
                 test = self.bbox[0]
@@ -482,17 +475,17 @@ class VerticalHorizontalScale(inkex.EffectExtension):
         grp_attribs = {inkex.addNS('label','inkscape'):grp_name, 'transform':grp_transform }
         groups[0] = etree.SubElement(self.svg.get_current_layer(), 'g', grp_attribs)
 
-        if mark1 > 0:
+        if self.options.mark1 > 0:
             grp_name = 'Long line'
             grp_attribs = {inkex.addNS('label','inkscape'):grp_name, 'transform':grp_transform }
             groups[1] = etree.SubElement(self.svg.get_current_layer(), 'g', grp_attribs)
 
-        if mark2 > 0:
+        if self.options.mark2 > 0:
             grp_name = 'Short line'
             grp_attribs = {inkex.addNS('label','inkscape'):grp_name, 'transform':grp_transform }
             groups[2] = etree.SubElement(self.svg.get_current_layer(), 'g', grp_attribs)
 
-        if drawalllabels==True:
+        if self.options.drawalllabels is True:
             grp_name = 'Labels'
             grp_attribs = {inkex.addNS('label','inkscape'):grp_name, 'transform':grp_transform }
             groups[3] = etree.SubElement(self.svg.get_current_layer(), 'g', grp_attribs)
@@ -505,7 +498,7 @@ class VerticalHorizontalScale(inkex.EffectExtension):
             scaleto = scalefrom+1
             scalefrom = temp
 
-        if scaletype == 'straight':
+        if self.options.type == 'straight':
 
             for i in range(scalefrom, scaleto):
                 skip, group, type = self.skipfunc(i, markArray, groups)
@@ -513,19 +506,19 @@ class VerticalHorizontalScale(inkex.EffectExtension):
                     self.addLine(i, scalefrom, scaleto, group, groups[3], type) # addLabel is called from inside
 
             #add the perpendicular line
-            if perpline==True:
+            if self.options.perpline is True:
                 self.addLine(0, scalefrom, scaleto, groups[0], groups[3], 3)
 
-        elif scaletype == 'circular':
+        elif self.options.type == 'circular':
 
             for i in range(scalefrom, scaleto):
                 skip, group, type = self.skipfunc(i, markArray, groups)
                 if skip==False:
-                    self.addLineRad(i, scalefrom, scaleto, group, groups[3], type, ishorizontal) # addLabel is called from inside
+                    self.addLineRad(i, scalefrom, scaleto, group, groups[3], type, self.options.ishorizontal) # addLabel is called from inside
 
             #add the perpendicular (circular) line
-            if perpline==True:
-                self.addLineRad(0, scalefrom, scaleto, groups[0], groups[3], 3, ishorizontal)
+            if self.options.perpline is True:
+                self.addLineRad(0, scalefrom, scaleto, groups[0], groups[3], 3, self.options.ishorizontal)
 
             if self.options.radmark=='true':
 
@@ -539,6 +532,11 @@ class VerticalHorizontalScale(inkex.EffectExtension):
 
                 line_attribs = {'style' : str(inkex.Style(line_style)), inkex.addNS('label','inkscape') : 'name', 'd' : 'M '+str(-10)+','+str(10)+' L '+str(10)+','+str(-10)}
                 line = etree.SubElement(grpRadMark, inkex.addNS('path','svg'), line_attribs )
+
+        #add all sub groups into a top one
+        for group in groups:
+            if group is not None:
+                scaleGroup.append(group)
 
 if __name__ == '__main__':
     VerticalHorizontalScale().run()
