@@ -14,42 +14,45 @@ ls -d */ | wc -l
 echo "Removing unrequired pyc cache files"
 find . -type d -name "__pycache__" -exec rm -rf {} \;
 
-
-echo "Building Inkscape gallery extension zip files"
-TARGETDIR="../000_Inkscape_Gallery"
-mkdir -p $TARGETDIR > /dev/null
-
-#list of extensions which are uploaded at Inkscape gallery by us at the moment
-for EXTENSION in                            \
-	"animate_order"                         \
-	"cleanup_styles"                        \
-	"contour_scanner_and_trimmer"           \
-	"convert_to_polylines"                  \
-	"create_links"                          \
-	"dxf2papercraft"                        \
-	"dxf_dwg_importer"                      \
-	"imagetracerjs"                         \
-	"inventory_sticker"                     \
-	"move_path_node"                        \
-	"remove_empty_groups"                   \
-    "offset_paths"                          \
-	"papercraft_unfold"                     \
-	"paperfold"                             \
-	"primitive"                             \
-	"slic3r_stl_input"                      \
-	"split_and_break_bezier_at_t"           \
-	"styles_to_layers"                      \
-	"ungrouper_and_element_migrator_filter" \
-	"unwind_paths"                          \
-	"vpypetools"
-do
-	EXTRA=""
-	if [[ $EXTENSION == "styles_to_layers" ]] || [[  $EXTENSION == "ungrouper_and_element_migrator_filter" ]]; then
-		EXTRA="${EXTRA} apply_transformations/"
-	elif [[ $EXTENSION == "styles_to_layers" ]] || [[  $EXTENSION == "ungrouper_and_element_migrator_filter" ]]; then
-		EXTRA="${EXTRA} remove_empty_groups/"
-	fi
-    ZIPFILE=$TARGETDIR/$EXTENSION.zip
-	rm $ZIPFILE > /dev/null
-	zip -r  $ZIPFILE $EXTENSION/ 000_about_fablabchemnitz.svg $EXTRA
-done
+read -p "Build local gallery extension zip files?" -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    echo "Building Inkscape gallery extension zip files"
+    TARGETDIR="../000_Inkscape_Gallery"
+    mkdir -p $TARGETDIR > /dev/null
+    
+    #list of extensions which are uploaded at Inkscape gallery by us at the moment
+    for EXTENSION in                            \
+    	"animate_order"                         \
+    	"cleanup_styles"                        \
+    	"contour_scanner_and_trimmer"           \
+    	"convert_to_polylines"                  \
+    	"create_links"                          \
+    	"dxf2papercraft"                        \
+    	"dxf_dwg_importer"                      \
+    	"imagetracerjs"                         \
+    	"inventory_sticker"                     \
+    	"move_path_node"                        \
+    	"remove_empty_groups"                   \
+        "offset_paths"                          \
+    	"papercraft_unfold"                     \
+    	"paperfold"                             \
+    	"primitive"                             \
+    	"slic3r_stl_input"                      \
+    	"split_and_break_bezier_at_t"           \
+    	"styles_to_layers"                      \
+    	"ungrouper_and_element_migrator_filter" \
+    	"unwind_paths"                          \
+    	"vpypetools"
+    do
+    	EXTRA=""
+    	if [[ $EXTENSION == "styles_to_layers" ]] || [[  $EXTENSION == "ungrouper_and_element_migrator_filter" ]]; then
+    		EXTRA="${EXTRA} apply_transformations/"
+    	elif [[ $EXTENSION == "styles_to_layers" ]] || [[  $EXTENSION == "ungrouper_and_element_migrator_filter" ]]; then
+    		EXTRA="${EXTRA} remove_empty_groups/"
+    	fi
+        ZIPFILE=$TARGETDIR/$EXTENSION.zip
+    	rm $ZIPFILE > /dev/null
+    	zip -r  $ZIPFILE $EXTENSION/ 000_about_fablabchemnitz.svg $EXTRA
+    done
+fi
