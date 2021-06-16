@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <name>Incadiff</name>
+    <id>fablabchemnitz.de.incadiff</id>
+    <effect needs-document="true" needs-live-preview="false">
+        <effects-menu hidden="false">
+            <submenu name="FabLab Chemnitz">
+                <submenu name="Modify existing Path(s)"/>
+            </submenu>
+        </effects-menu>
+        <menu-tip>Apply successive difference operations on superimposed paths. Useful for plotter addicts.</menu-tip>
+        <object-type>all</object-type>
+    </effect>
+    <script>
+        <command location="inx" interpreter="python">incadiff.py</command>
+    </script>
+</inkscape-extension>
