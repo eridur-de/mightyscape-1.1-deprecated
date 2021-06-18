@@ -1,5 +1,4 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
+#! /usr/bin/env python3
 
 # this module is under licence CC-by-sa  @ Tiemen DUVILLARD 2020
 # for all questions, comments, bugs: duvillard.tiemen@gmail.com 

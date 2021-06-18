@@ -1,6 +1,4 @@
-#!/usr/bin/python
-
-# -*- coding: utf-8 -*-
+#!/usr/bin/python3
 
 # -y11+a13*x13+a12*x12+a11*x11+b1
 # -y12+a23*x13+a22*x12+a21*x11+b2

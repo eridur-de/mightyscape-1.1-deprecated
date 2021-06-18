@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # plot_utils.py
 # Common plotting utilities for EiBotBoard
 # https://github.com/evil-mad/plotink
