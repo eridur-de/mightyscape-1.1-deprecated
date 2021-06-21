@@ -1,8 +1,8 @@
-
 # BentleyOttmann sweep-line implementation
 # (for finding all intersections in a set of line segments)
 
 from __future__ import annotations
+import inkex
 
 __all__ = (
     "isect_segments",
@@ -26,7 +26,7 @@ __all__ = (
 # their end points form the intersection point.
 USE_IGNORE_SEGMENT_ENDINGS = True
 
-USE_DEBUG = False
+USE_DEBUG = True
 
 USE_VERBOSE = False
 
@@ -590,7 +590,7 @@ def isect_segments_impl(segments, *, include_segments=False, validate=True) -> l
 
     while len(queue.events_scan) > 0:
         if USE_VERBOSE:
-            print(len(queue.events_scan), sweep_line._current_event_point_x)
+            inkex.utils.debug("event {}: x={}".format(len(queue.events_scan), sweep_line._current_event_point_x))
         p, e_ls = queue.poll()
         for events_current in e_ls:
             if events_current:

@@ -452,6 +452,13 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         pars.add_argument("--reverse_removal_order", type=inkex.Boolean, default=False, help="Reverses the order of removal. Relevant for keeping certain styles of elements")
         pars.add_argument("--keep_original_after_trim", type=inkex.Boolean, default=False, help="Keep original paths after trimming") 
 
+        pars.add_argument("--bent_ott_use_ignore_segment_endings", type=inkex.Boolean, default=True, help="Whether to ignore intersections of line segments when both their end points form the intersection point")
+        pars.add_argument("--bent_ott_use_debug", type=inkex.Boolean, default=False)
+        pars.add_argument("--bent_ott_use_verbose", type=inkex.Boolean, default=False)        
+        pars.add_argument("--bent_ott_use_paranoid", type=inkex.Boolean, default=False)
+        pars.add_argument("--bent_ott_use_vertical", type=inkex.Boolean, default=True)
+        pars.add_argument("--bent_ott_number_type", default="native")
+
         #Style - General Style
         pars.add_argument("--strokewidth", type=float, default=1.0, help="Stroke width (px)")   
         pars.add_argument("--dotsize_intersections", type=int, default=30, help="Dot size (px) for self-intersecting and global intersection points")
@@ -719,7 +726,34 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         now we intersect the sub split lines to find the global intersection points using Bentley-Ottmann algorithm (contains self-intersections too!)
         '''
         if so.draw_trimmed is True:     
-            try:        
+            try:
+                #some config for Bentley Ottmann
+                poly_point_isect.USE_IGNORE_SEGMENT_ENDINGS = so.bent_ott_use_ignore_segment_endings
+                poly_point_isect.USE_DEBUG = so.bent_ott_use_debug
+                poly_point_isect.USE_VERBOSE = so.bent_ott_use_verbose
+                if so.show_debug is False:
+                    poly_point_isect.USE_VERBOSE = False
+                poly_point_isect.USE_PARANOID = so.bent_ott_use_paranoid
+                poly_point_isect.USE_VERTICAL = so.bent_ott_use_vertical
+                NUMBER_TYPE = so.bent_ott_number_type
+                if NUMBER_TYPE == 'native':
+                    Real = float
+                    NUM_EPS = Real("1e-10")
+                    NUM_INF = Real(float("inf"))
+                elif NUMBER_TYPE == 'numpy':
+                    import numpy
+                    Real = numpy.float64
+                    del numpy
+                    NUM_EPS = Real("1e-10")
+                    NUM_INF = Real(float("inf"))
+                poly_point_isect.Real = Real
+                poly_point_isect.NUM_EPS = NUM_EPS
+                poly_point_isect.NUM_INF = NUM_INF
+                poly_point_isect.NUM_EPS_SQ = NUM_EPS * NUM_EPS
+                poly_point_isect.NUM_ZERO = Real(0.0)
+                poly_point_isect.NUM_ONE = Real(1.0)
+
+
                 allSubSplitLineStrings = []
                 for subSplitLine in subSplitLineArray:
                     csp = subSplitLine.path.to_arrays()
@@ -735,10 +769,12 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                 
                 # Very small step sizes over near-vertical lines can cause errors. We hide exceptions with try-catch, thus we disabled the debugging in poly_point_isect:
                 # by setting USE_DEBUG = False (True was default setting)
+                if so.show_debug is True:
+                    self.msg("Going to calculate intersections using Bentley Ottmann Sweep Line Algorithm") 
                 globalIntersectionPoints = MultiPoint(isect_segments(allSubSplitLineStrings, validate=True))
        
                 if so.show_debug is True:
-                    self.msg("global intersection points count: {}".format(len(globalIntersectionPoints)))     
+                    self.msg("global intersection points count: {}".format(len(globalIntersectionPoints)))   
                 if len(globalIntersectionPoints) > 0:
                     if so.visualize_global_intersections is True:
                         self.visualize_global_intersections(globalIntersectionPoints)
