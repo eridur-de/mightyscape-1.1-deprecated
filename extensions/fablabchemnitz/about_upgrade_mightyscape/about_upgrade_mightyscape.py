@@ -100,8 +100,9 @@ class AboutUpgradeMightyScape(inkex.EffectExtension):
 
         gitDir = os.path.join(main_dir, ".git")
         if not os.path.exists(gitDir):
-            self.msg("MightyScape .git directory was not found. It seems you installed MightyScape the traditional way (by downloading and extracting from archive). Please install MightyScape using the git pull method if you want to use the upgrade function. More details can be found in the official README.")
+            self.msg("MightyScape .git directory was not found. It seems you installed MightyScape the traditional way (by downloading and extracting from archive). Please install MightyScape using the git clone method if you want to use the upgrade function. More details can be found in the official README.")
             exit(1)
+            #Possible option: turn the zip installation into a .git one by cloning over the recent extension dir. could be added as ugprader option.
         
         local_repo = Repo(gitDir)
         #check if it is a non-empty git repository
