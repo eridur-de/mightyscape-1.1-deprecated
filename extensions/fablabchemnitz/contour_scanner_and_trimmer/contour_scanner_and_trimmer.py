@@ -22,7 +22,7 @@ Extension for InkScape 1.0+
     - maybe option: convert rel path to abs path
         replacedelement.path = replacedelement.path.to_absolute().to_superpath().to_path()
     - maybe option: break apart while keeping relative/absolute commands (more complex and not sure if we have a great advantage having this)
-
+    - if calculation of trim lines fails (bentley ottmann) we could try to sort out the lines where slope is nearly identical and then we try again
     
 - important to notice
     - this algorithm might be really slow. Reduce flattening quality to speed up
@@ -51,7 +51,7 @@ Extension for InkScape 1.0+
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 09.08.2020 (extension originally called "Contour Scanner")
-Last patch: 11.06.2021
+Last patch: 22.06.2021
 License: GNU GPL v3
 
 '''
@@ -73,8 +73,9 @@ if speedups.available:
     speedups.enable()
 
 
-idPrefix = "subsplit"
-intersectedVerb = "-intersected-"
+idPrefixSubSplit = "subsplit"
+idPrefixTrimming = "shapely"
+intersectedVerb = "intersected"
 
 class ContourScannerAndTrimmer(inkex.EffectExtension):
 
@@ -252,10 +253,10 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         trimLineStyle = {'stroke': str(self.options.color_trimmed), 'fill': 'none', 'stroke-width': self.options.strokewidth}
            
         linesWithSnappedIntersectionPoints = snap(ls, globalIntersectionPoints, self.options.snap_tolerance)
-        trimGroupId = 'shapely-' + subSplitLineArray[subSplitIndex].attrib['id'].split("_")[0] #split at "_" (_ from subSplitId)
-        trimGroupParentId = subSplitLineArray[subSplitIndex].attrib['id'].split(idPrefix+"-")[1].split("_")[0]
+        trimGroupParentId = subSplitLineArray[subSplitIndex].attrib['originalPathId']
+        trimGroupId = '{}-{}-{}'.format(idPrefixTrimming, idPrefixSubSplit, trimGroupParentId)
         trimGroupParent = self.svg.getElementById(trimGroupParentId)
-        trimGroupParentTransform = trimGroupParent.composed_transform()
+        #trimGroupParentTransform = trimGroupParent.composed_transform()
         trimGroup = self.find_group(trimGroupId)
         if trimGroup is None:
             trimGroup = trimGroupParent.getparent().add(inkex.Group(id=trimGroupId))
@@ -273,19 +274,19 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
             trimLineId = "{}-{}".format(trimGroupId, subSplitIndex)
             splitAt.append(trimGroupId)
             if splitAt.count(trimGroupId) > 1: #we detected a lines with intersection on
-                trimLineId = trimLineId + self.svg.get_unique_id(intersectedVerb)
+                trimLineId = "{}-{}".format(trimLineId, self.svg.get_unique_id(intersectedVerb + "-"))
                 '''
                 so the previous lines was an intersection lines too. so we change the id to include the intersected verb
                 (left side and right side of cut) - note: updating element 
                 id sometimes seems not to work if the id was used before in Inkscape
                 '''
-                prevLine.attrib['id'] = trimGroupId + "-" + str(subSplitIndex) + self.svg.get_unique_id(intersectedVerb)
+                prevLine.attrib['id'] = "{}-{}".format(trimGroupId, str(subSplitIndex) + "-" + self.svg.get_unique_id(intersectedVerb + "-"))
                 prevLine.attrib['intersected'] = 'True' #some dirty flag we need
             prevLine = trimLine = inkex.PathElement(id=trimLineId)
             x, y = trimLines[j].coords.xy
             trimLine.path = [['M', [x[0],y[0]]], ['L', [x[1],y[1]]]]
-            if trimGroupParentTransform is not None:
-                trimLine.path = trimLine.path.transform(-trimGroupParentTransform)
+            #if trimGroupParentTransform is not None:
+            #    trimLine.path = trimLine.path.transform(-trimGroupParentTransform)
             if self.options.apply_style_to_trimmed is False:
                 trimLine.style = trimLineStyle
             else:
@@ -301,15 +302,16 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
             allTrimGroups = allTrimGroups[::-1]
         for trimGroup in allTrimGroups:
             for element in trimGroup:
-                if element.path not in totalTrimPaths:
-                    totalTrimPaths.append(element.path)
+                path = element.path.transform(element.composed_transform())
+                if path not in totalTrimPaths:
+                    totalTrimPaths.append(path)
                 else:
                     if self.options.show_debug is True:
-                        self.msg("Deleting {}".format(element.get('id')))
+                        self.msg("Deleting path {}".format(element.get('id')))
                     element.delete()
             if len(trimGroup) == 0:
                 if self.options.show_debug is True:
-                    self.msg("Deleting {}".format(trimGroup.get('id')))
+                    self.msg("Deleting group {}".format(trimGroup.get('id')))
                 trimGroup.delete()
                                 
 
@@ -564,7 +566,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                 continue #skip this loop iteration
   
             if so.draw_subsplit is True:
-                subSplitLineGroup = pathElement.getparent().add(inkex.Group(id="{}-{}".format(idPrefix, originalPathId)))
+                subSplitLineGroup = pathElement.getparent().add(inkex.Group(id="{}-{}".format(idPrefixSubSplit, originalPathId)))
            
             #get all sub paths for the path of the element
             subPaths, prev = [], 0
@@ -601,7 +603,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                 for i in range(len(segs) - 1): #we could do the same routine to build up polylines using "for x, y in node.path.end_points". See "number nodes" extension
                     x1, y1, x2, y2 = self.line_from_segments(segs, i, so.decimals)
                     #self.msg("(y1 = {},y2 = {},x1 = {},x2 = {})".format(x1, y1, x2, y2))
-                    subSplitId = "{}-{}_{}".format(idPrefix, originalPathId, i)
+                    subSplitId = "{}-{}-{}".format(idPrefixSubSplit, originalPathId, i)
                     line = inkex.PathElement(id=subSplitId)
                     #apply line path with composed negative transform from parent element
                     line.path = [['M', [x1, y1]], ['L', [x2, y2]]]
@@ -721,8 +723,18 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                 allSubSplitLineStrings = []
                 for subSplitLine in subSplitLineArray:
                     csp = subSplitLine.path.to_arrays()
-                    allSubSplitLineStrings.append([(csp[0][1][0], csp[0][1][1]), (csp[1][1][0], csp[1][1][1])])
-                                
+                    lineString = [(csp[0][1][0], csp[0][1][1]), (csp[1][1][0], csp[1][1][1])]
+                    if so.remove_duplicates is True:
+                        if lineString not in allSubSplitLineStrings:
+                            allSubSplitLineStrings.append(lineString)
+                        else:
+                            if so.show_debug is True:
+                                self.msg("line {} already in sub split line collection. Dropping ...".format(lineString))
+                    else: #if false we append all segments without filtering duplicate ones
+                        allSubSplitLineStrings.append(lineString)
+                
+                # Very small step sizes over near-vertical lines can cause errors. We hide exceptions with try-catch, thus we disabled the debugging in poly_point_isect:
+                # by setting USE_DEBUG = False (True was default setting)
                 globalIntersectionPoints = MultiPoint(isect_segments(allSubSplitLineStrings, validate=True))
        
                 if so.show_debug is True:

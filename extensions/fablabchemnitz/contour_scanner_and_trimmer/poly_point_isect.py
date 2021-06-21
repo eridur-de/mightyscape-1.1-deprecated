@@ -26,7 +26,7 @@ __all__ = (
 # their end points form the intersection point.
 USE_IGNORE_SEGMENT_ENDINGS = True
 
-USE_DEBUG = True
+USE_DEBUG = False
 
 USE_VERBOSE = False
 
