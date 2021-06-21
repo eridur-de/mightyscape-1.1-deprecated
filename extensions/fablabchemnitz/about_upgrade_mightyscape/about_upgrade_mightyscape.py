@@ -28,7 +28,7 @@ class AboutUpgradeMightyScape(inkex.EffectExtension):
         try:
             latestRemoteCommit = git.cmd.Git().ls_remote(remote, heads=True).replace('refs/heads/master','').strip()
             localCommit = str(local_repo.head.commit)
-            #ref_logs = repo.head.reference.log()
+            #ref_logs = local_repo.head.reference.log()
             
             #commits = list(local_repo.iter_commits("master", max_count=5))
             commits = list(local_repo.iter_commits("master"))
@@ -54,7 +54,8 @@ class AboutUpgradeMightyScape(inkex.EffectExtension):
 
             if localCommit != latestRemoteCommit:
                 ssh_executable = 'git'
-                with repo.git.custom_environment(GIT_SSH=ssh_executable):
+                with local_repo.git.custom_environment(GIT_SSH=ssh_executable):
+                    origin = local_repo.remotes.origin
                     origin.fetch()
                       
                     fetch_info = origin.pull() #finally pull new data               
@@ -97,7 +98,12 @@ class AboutUpgradeMightyScape(inkex.EffectExtension):
         
         inkex.utils.debug("Locally there are {} extension folders with {} .inx files!\n".format(totalFolders, totalInx))
 
-        local_repo = Repo(os.path.join(main_dir, ".git"))
+        gitDir = os.path.join(main_dir, ".git")
+        if not os.path.exists(gitDir):
+            self.msg("MightyScape .git directory was not found. It seems you installed MightyScape the traditional way (by downloading and extracting from archive). Please install MightyScape using the git pull method if you want to use the upgrade function. More details can be found in the official README.")
+            exit(1)
+        
+        local_repo = Repo(gitDir)
         #check if it is a non-empty git repository
         if local_repo.bare is False:
             if local_repo.is_dirty(untracked_files=True) is False:        
@@ -106,8 +112,7 @@ class AboutUpgradeMightyScape(inkex.EffectExtension):
                         local_repo.git.stash('save')
                     else:
                         inkex.utils.debug("There are some untracked files in your MightyScape directory. Still trying to pull recent files from git...")
-        
-            origin = local_repo.remotes.origin
+              
             remotes = []
             remotes.append("https://gitea.fablabchemnitz.de/FabLab_Chemnitz/mightyscape-1.X.git") #main
             remotes.append("https://github.com/vmario89/mightyscape-1.X.git") #copy/second remote
