@@ -859,25 +859,26 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
 
         if so.remove_subsplit_collinear is True:
             if so.show_debug is True: self.msg("filtering collinear overlapping lines / duplicate lines")
-            output_set, dropped_ids = self.filter_collinear(subSplitLineArray)
-            for subSplitLine in subSplitLineArray:
-                ssl_id = subSplitLine.get('id')
-                if ssl_id in dropped_ids:
-                    ssl_parent = subSplitLine.getparent()
-                    subSplitLine.delete() #delete the line
-    
-                    #and delete the containg group if empty
-                    if ssl_parent is not None and len(ssl_parent) == 0:
-                        if self.options.show_debug is True:
-                            self.msg("Deleting group {}".format(ssl_parent.get('id')))
-                        ssl_parent.delete()
-                # and now we replace the overlapping items with the new merged output
-                for output in output_set:
-                    if output['id'] == subSplitLine.attrib['id']:
-                        #self.msg(output['p0'])
-                        subSplitLine.attrib['d'] = line.attrib['d'] = 'M {},{} L {},{}'.format(
-                            output['p0'][0], output['p0'][1], output['p1'][0], output['p1'][1]) #we set the path of trimLine using 'd' attribute because if we use trimLine.path the decimals get cut off unwantedly
-                        #subSplitLine.path = line.path = [['M', output['p0']], ['L', output['p1']]] 
+            if len(subSplitLineArray) > 0:
+                output_set, dropped_ids = self.filter_collinear(subSplitLineArray)
+                for subSplitLine in subSplitLineArray:
+                    ssl_id = subSplitLine.get('id')
+                    if ssl_id in dropped_ids:
+                        ssl_parent = subSplitLine.getparent()
+                        subSplitLine.delete() #delete the line
+        
+                        #and delete the containg group if empty
+                        if ssl_parent is not None and len(ssl_parent) == 0:
+                            if self.options.show_debug is True:
+                                self.msg("Deleting group {}".format(ssl_parent.get('id')))
+                            ssl_parent.delete()
+                    # and now we replace the overlapping items with the new merged output
+                    for output in output_set:
+                        if output['id'] == subSplitLine.attrib['id']:
+                            #self.msg(output['p0'])
+                            subSplitLine.attrib['d'] = line.attrib['d'] = 'M {},{} L {},{}'.format(
+                                output['p0'][0], output['p0'][1], output['p1'][0], output['p1'][1]) #we set the path of trimLine using 'd' attribute because if we use trimLine.path the decimals get cut off unwantedly
+                            #subSplitLine.path = line.path = [['M', output['p0']], ['L', output['p1']]] 
                 
         '''
         now we intersect the sub split lines to find the global intersection points using Bentley-Ottmann algorithm (contains self-intersections too!)
