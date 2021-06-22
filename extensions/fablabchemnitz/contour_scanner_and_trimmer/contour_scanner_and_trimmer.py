@@ -5,10 +5,10 @@ Extension for InkScape 1.0+
  - WARNING: HORRIBLY SLOW CODE. PLEASE HELP TO MAKE IT USEFUL FOR LARGE AMOUNT OF PATHS
  - add options:
     - replace trimmed paths by bezier paths (calculating lengths and required t parameter)
-    - find more duplicates
-        - overlapping in original selection
-        - duplicates in original selection
-        - duplicates in split bezier
+    - detection of collinear segments: special case where it seems not to work 90° angle between two lines
+    - filter/remove overlapping/duplicates in 
+        - in original selection
+        - split bezier
         - ...
     - maybe option: convert abs path to rel path
     - maybe option: convert rel path to abs path
