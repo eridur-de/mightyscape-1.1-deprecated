@@ -327,9 +327,9 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                 # calculate slope from S0P0 to S1P1 and S0P1 to S1P0
                 # if slopes all match the working set's slope, we're collinear
                 # if not, these segments are parallel but not collinear and should be left alone
-                p0 = working_set[i]['p0']
                 expected_slope = working_set[i]['slope']
-                if (abs(self.slope(working_set[i]['p1'], working_set[j]['p0']) - expected_slope) > EPS_M) or (abs(self.slope(working_set[i]['p0'], working_set[j]['p1']) - expected_slope) > EPS_M):
+                if (abs(self.slope(working_set[i]['p1'], working_set[j]['p0']) - expected_slope) > EPS_M) \
+                or (abs(self.slope(working_set[i]['p0'], working_set[j]['p1']) - expected_slope) > EPS_M):
                     continue
     
                 # the only remaining permissible configuration: collinear segments with a gap between them
