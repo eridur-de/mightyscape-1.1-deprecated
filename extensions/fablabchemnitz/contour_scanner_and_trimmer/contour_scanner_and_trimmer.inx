@@ -13,7 +13,7 @@
             <param name="decimals" type="int" min="0" max="16" gui-text="Decimals" gui-description="Accuracy for sub split lines / lines trimmed by shapely (default: 3)">3</param>
             <param name="snap_tolerance" type="float" min="0.01" max="10.0" gui-text="Snap tolerance" gui-description="Snap tolerance for intersection points on paths (default: 0.1)">0.1</param>
             <param name="draw_subsplit" type="bool" gui-text="Draw sub split lines (for debugging purposes)" gui-description="Draws polylines. Will be automatically enabled if any highlighting is activated.">false</param> 
-            <param name="remove_subsplit_collinear" type="bool" gui-text="Remove collinear overlapping lines (experimental)" gui-description="Removes any duplicates by merging (multiple) overlapping line segments into longer lines.">true</param>     
+            <param name="remove_subsplit_collinear" type="bool" gui-text="Remove collinear overlapping lines (experimental)" gui-description="Removes any duplicates by merging (multiple) overlapping line segments into longer lines. Not possible to apply for original paths because this routine does not support bezier type paths.">true</param>     
         </page>
         <page name="tab_scanning" gui-text="Scanning and Trimming">
             <hbox>

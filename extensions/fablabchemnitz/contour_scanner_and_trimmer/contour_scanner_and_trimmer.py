@@ -5,9 +5,8 @@ Extension for InkScape 1.0+
  - WARNING: HORRIBLY SLOW CODE. PLEASE HELP TO MAKE IT USEFUL FOR LARGE AMOUNT OF PATHS
  - add options:
     - replace trimmed paths by bezier paths (calculating lengths and required t parameter)
-    - detection of collinear segments: does not work sometimes because it generates pointy paths or kicks out paths which still should be inside the data set
     - filter/remove overlapping/duplicates in 
-        - in original selection
+        - in original selection (not working bezier but for straight line segments!) We can use another extension for it
         - split bezier
         - ...
     - maybe option: convert abs path to rel path
@@ -339,6 +338,10 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                 s0x1 = working_set[i]['p1'][0]
                 s1x0 = working_set[j]['p0'][0]
                 s1x1 = working_set[j]['p1'][0]
+
+                if s0x0 == s1x0 and s0x1 == s1x1:
+                    continue #skip if pointy path is going to be created
+
                 if not (s0x0 < s0x1 and s0x1 < s1x0 and s1x0 < s1x1):
                     # make a duplicate set, omitting segments i and j
                     new_set = [x for (k, x) in enumerate(working_set) if k not in (i, j)]
@@ -346,16 +349,9 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                     # add a segment representing i and j's furthest points
                     pts = [ working_set[i]['p0'], working_set[i]['p1'], working_set[j]['p0'], working_set[j]['p1'] ]
                     pts.sort(key=lambda x: x[0])
-                    #if pts[0] == pts[-1]:
-                    #    replace_path = Path(working_set[i]['d']).to_arrays()
-                    #    if self.options.show_debug is True:
-                    #        self.msg("Error: creating pointy path while looking for overlapping lines. Result will be wrong: p0{} = p1{}. Replacing by p0{} = p1{}".format(pts[0], pts[-1], replace_path[0][1], replace_path[1][1]))
-                    #    pts[0] = replace_path[0][1]
-                    #    pts[-1] = replace_path[1][1]
-                    #    working_set[i]['p0'] = replace_path[0][1]
-                    #    working_set[i]['p1'] = replace_path[1][1]
-                    #    working_set[j]['p0'] = replace_path[0][1]
-                    #    working_set[j]['p1'] = replace_path[1][1]
+                    if pts[0] == pts[-1]:
+                        continue #skip if pointy path is going to be created
+                    
                     new_set.append({
                         'p0': pts[0], 
                         'p1': pts[-1],
@@ -373,10 +369,14 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
             Loop through a set of lines and find + fiter all overlapping segments / duplicate segments
             finally returns a set of merged-like lines and a set of original items which should be dropped
         '''
-        segments = []
+        input_set = []
+        input_ids = []
+
         # collect segments, calculate their slopes, order their points left-to-right
         for line in lineArray:
             csp = line.path.to_arrays()
+            #csp = Path(line.path.transform(line.composed_transform()).to_superpath()).to_arrays()
+
             x1, y1, x2, y2 = csp[0][1][0], csp[0][1][1], csp[1][1][0], csp[1][1][1]
             # ensure p0 is left of p1
             if x1 < x2:
@@ -393,19 +393,19 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
             s['id'] = line.attrib['id']
             s['originalPathId'] = line.attrib['originalPathId']
             #s['d'] = line.attrib['d']
-            segments.append(s)
+            input_set.append(s)
     
         working_set = []
         output_set = []
-        segments.sort(key=lambda x: x['slope'])
-        segments.append(False) # used to clear out lingering contents of working_set on last iteration
-        current_slope = segments[0]['slope']
-        for seg in segments:
-    
-            # bin sets of segments by slope (within a tolerance)
-            dm = seg and abs(seg['slope'] - current_slope) or 0
-            if seg and dm < EPS_M:
-                working_set.append(seg)
+        input_set.sort(key=lambda x: x['slope'])
+        input_set.append(False) # used to clear out lingering contents of working_set on last iteration
+        current_slope = input_set[0]['slope']
+        for input in input_set:
+            # bin sets of input_set by slope (within a tolerance)
+            dm = input and abs(input['slope'] - current_slope) or 0
+            if input and dm < EPS_M:
+                working_set.append(input) #we put all lines to working set which have similar slopes
+                if input['id'] != '': input_ids.append(input['id'])
     
             else: # slope discontinuity, process accumulated set
                 while True:
@@ -414,28 +414,46 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                         output_set.extend(working_set)
                         break
 
-                if seg: # begin new working set
-                    working_set = [seg]
-                    current_slope = seg['slope']
-        
-        seg_ids = []
-        for seg in segments:
-            if seg is not False and seg['id'] != '':
-               seg_ids.append(seg['id'])         
-        out_ids = []
+                if input: # begin new working set
+                    working_set = [input]
+                    current_slope = input['slope']
+                    if input['id'] != '': input_ids.append(input['id'])      
+                   
+        output_ids = []
         for output in output_set:
-            out_ids.append(output['id'])
+            output_ids.append(output['id'])
 
-        dropped_ids = set(seg_ids) - set(out_ids)
- 
-        #self.msg("segments:{}".format(segments))                  
-        #self.msg("_____________")                  
-        #self.msg("working_set:{}".format(working_set))                  
-        #self.msg("_____________")                  
-        #self.msg("output_set:{}".format(output_set))                  
-        #self.msg("_____________")
-        #self.msg("dropped_set:{}".format(dropped_ids))                  
-        #self.msg("_____________")
+        working_ids = []
+        for working in working_set:
+            working_ids.append(working['id'])
+
+        #we finally build a list which contains all overlapping elements we want to drop
+        dropped_ids = []
+        for working_id in working_ids: #if the working id is not in the output id we are going to drop it
+            if working_id not in output_ids:
+               dropped_ids.append(working_id) 
+
+        if self.options.show_debug is True:
+            #self.msg("input_set:{}".format(input_set))               
+            self.msg("input_ids:")
+            for input_id in input_ids:
+               self.msg(input_id)
+            self.msg("*"*24)     
+            #self.msg("working_set:{}".format(working_set))                  
+            self.msg("working_ids:")
+            for working_id in working_ids:
+               self.msg(working_id) 
+            self.msg("*"*24)     
+            #self.msg("output_set:{}".format(output_set))                  
+            self.msg("output_ids:")
+            for output_id in output_ids:
+               self.msg(output_id)
+            self.msg("*"*24)
+            self.msg("dropped_ids:")
+            for dropped_id in dropped_ids:
+               self.msg(dropped_id)
+            self.msg("*"*24)     
+        
         return output_set, dropped_ids
 
 
@@ -566,7 +584,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         pars.add_argument("--decimals", type=int, default=3, help="Accuracy for sub split lines / lines trimmed by shapely")
         pars.add_argument("--snap_tolerance", type=float, default=0.1, help="Snap tolerance for intersection points")
         pars.add_argument("--draw_subsplit", type=inkex.Boolean, default=False, help="Draw sub split lines (polylines)")
-        pars.add_argument("--remove_subsplit_collinear", type=inkex.Boolean, default=True, help="Removes any duplicates by merging (multiple) overlapping line segments into longer lines.")    
+        pars.add_argument("--remove_subsplit_collinear", type=inkex.Boolean, default=True, help="Removes any duplicates by merging (multiple) overlapping line segments into longer lines. Not possible to apply for original paths because this routine does not support bezier type paths.")    
 
         #Scanning - Removing
         pars.add_argument("--remove_relative", type=inkex.Boolean, default=False, help="relative cmd")
