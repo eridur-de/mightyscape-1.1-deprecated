@@ -5,7 +5,7 @@ Extension for InkScape 1.0+
  - WARNING: HORRIBLY SLOW CODE. PLEASE HELP TO MAKE IT USEFUL FOR LARGE AMOUNT OF PATHS
  - add options:
     - replace trimmed paths by bezier paths (calculating lengths and required t parameter)
-    - detection of collinear segments: special case where it seems not to work 90° angle between two lines
+    - detection of collinear segments: does not work sometimes because it generates pointy paths or kicks out paths which still should be inside the data set
     - filter/remove overlapping/duplicates in 
         - in original selection
         - split bezier
@@ -346,13 +346,23 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                     # add a segment representing i and j's furthest points
                     pts = [ working_set[i]['p0'], working_set[i]['p1'], working_set[j]['p0'], working_set[j]['p1'] ]
                     pts.sort(key=lambda x: x[0])
+                    #if pts[0] == pts[-1]:
+                    #    replace_path = Path(working_set[i]['d']).to_arrays()
+                    #    if self.options.show_debug is True:
+                    #        self.msg("Error: creating pointy path while looking for overlapping lines. Result will be wrong: p0{} = p1{}. Replacing by p0{} = p1{}".format(pts[0], pts[-1], replace_path[0][1], replace_path[1][1]))
+                    #    pts[0] = replace_path[0][1]
+                    #    pts[-1] = replace_path[1][1]
+                    #    working_set[i]['p0'] = replace_path[0][1]
+                    #    working_set[i]['p1'] = replace_path[1][1]
+                    #    working_set[j]['p0'] = replace_path[0][1]
+                    #    working_set[j]['p1'] = replace_path[1][1]
                     new_set.append({
                         'p0': pts[0], 
                         'p1': pts[-1],
                         'slope': self.slope(pts[0], pts[-1]),
                         'id': working_set[i]['id'],
                         'originalPathId': working_set[i]['originalPathId']
-                    })
+                        })
                     return (False, new_set)
     
         return (True, working_set)
@@ -382,6 +392,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
             s['slope'] = self.slope(s['p0'], s['p1'])
             s['id'] = line.attrib['id']
             s['originalPathId'] = line.attrib['originalPathId']
+            #s['d'] = line.attrib['d']
             segments.append(s)
     
         working_set = []
