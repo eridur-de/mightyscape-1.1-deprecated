@@ -4,16 +4,8 @@
 Extension for InkScape 1.0+
  - WARNING: HORRIBLY SLOW CODE. PLEASE HELP TO MAKE IT USEFUL FOR LARGE AMOUNT OF PATHS
  - add options:
-    - efficiently find overlapping colinear lines by checking their slope/gradient
-        - get all lines and sort by slope; kick out all slopes which are unique. We only want re-occuring slopes
-        - intersects() is equivalent to the OR-ing of contains(), crosses(), equals(), touches(), and within().
-          So there might be some cases where two lines intersect eachother without crossing, 
-          in particular when one line contains another or when two lines are equals.
-        - crosses() returns True if the dimension of the intersection is less than the dimension of the one or the other.
-          So if two lines overlap, they won't be considered as "crossing". intersection() will return a geometric object.
     - replace trimmed paths by bezier paths (calculating lengths and required t parameter)
     - find more duplicates
-        - overlapping lines in sub splits
         - overlapping in original selection
         - duplicates in original selection
         - duplicates in split bezier
@@ -22,7 +14,6 @@ Extension for InkScape 1.0+
     - maybe option: convert rel path to abs path
         replacedelement.path = replacedelement.path.to_absolute().to_superpath().to_path()
     - maybe option: break apart while keeping relative/absolute commands (more complex and not sure if we have a great advantage having this)
-    - if calculation of trim lines fails (bentley ottmann) we could try to sort out the lines where slope is nearly identical and then we try again
     
 - important to notice
     - this algorithm might be really slow. Reduce flattening quality to speed up
@@ -31,11 +22,17 @@ Extension for InkScape 1.0+
       poly_point_isect.py: "KeyError: 'Event(0x21412ce81c0, s0=(47.16, 179.1),
       s1=(47.17, 178.21), p=(47.16, 179.1), type=2, slope=-88.9999999999531)'"
     - this extension does not check for strange paths. Please ensure that your path 'd'
-      data is valid (no pointy paths, no duplicates, etc.)
-    - we do not use shapely to look for intersections by cutting each line against
-      each other line (line1.intersection(line2) using two for-loops) because this 
-      kind of logic is really really slow for huge amount. You could use that only 
-      for ~50-100 elements. So we use special algorihm (Bentley-Ottmann)
+      data is valid (no pointy paths, no duplicates, etc.)     
+    - Notes about shapely:
+        - we do not use shapely to look for intersections by cutting each line against
+          each other line (line1.intersection(line2) using two for-loops) because this 
+          kind of logic is really really slow for huge amount. You could use that only 
+          for ~50-100 elements. So we use special algorihm (Bentley-Ottmann)
+        - intersects() is equivalent to the OR-ing of contains(), crosses(), equals(), touches(), and within().
+          So there might be some cases where two lines intersect eachother without crossing, 
+          in particular when one line contains another or when two lines are equals.
+        - crosses() returns True if the dimension of the intersection is less than the dimension of the one or the other.
+          So if two lines overlap, they won't be considered as "crossing". intersection() will return a geometric object.
     - Cool tool to visualize sweep line algorithm Bentley-Ottmann: https://bl.ocks.org/1wheel/464141fe9b940153e636
 
 - things to look at more closely:
@@ -76,6 +73,7 @@ if speedups.available:
 idPrefixSubSplit = "subsplit"
 idPrefixTrimming = "shapely"
 intersectedVerb = "intersected"
+EPS_M = 0.01
 
 class ContourScannerAndTrimmer(inkex.EffectExtension):
 
@@ -271,6 +269,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         splitAt = [] #if the sub split line was split by an intersecting line we receive two trim lines with same assigned original path id!
         prevLine = None
         for j in range(len(trimLines)):
+
             trimLineId = "{}-{}".format(trimGroupId, subSplitIndex)
             splitAt.append(trimGroupId)
             if splitAt.count(trimGroupId) > 1: #we detected a lines with intersection on
@@ -283,8 +282,19 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                 prevLine.attrib['id'] = "{}-{}".format(trimGroupId, str(subSplitIndex) + "-" + self.svg.get_unique_id(intersectedVerb + "-"))
                 prevLine.attrib['intersected'] = 'True' #some dirty flag we need
             prevLine = trimLine = inkex.PathElement(id=trimLineId)
-            x, y = trimLines[j].coords.xy
-            trimLine.path = [['M', [x[0],y[0]]], ['L', [x[1],y[1]]]]
+            x, y = trimLines[j].coords.xy          
+            x0 = round(x[0], self.options.decimals)
+            x1 = round(x[1], self.options.decimals)
+            y0 = round(y[0], self.options.decimals)
+            y1 = round(y[1], self.options.decimals)
+            if x0 == x1 and y0 == y1: #check if the trimLine is a pointy one (rounded start point equals rounded end point)
+                if self.options.show_debug is True:
+                    self.msg("pointy trim line (start point equals end point). Skipping ...")
+                continue
+            
+            trimLine.attrib['d'] = 'M {},{} L {},{}'.format(x0, y0, x1, y1) #we set the path of trimLine using 'd' attribute because if we use trimLine.path the decimals get cut off unwantedly
+            #trimLine.path = Path([['M', [x0,y0]], ['L', [x1,y1]]])
+
             #if trimGroupParentTransform is not None:
             #    trimLine.path = trimLine.path.transform(-trimGroupParentTransform)
             if self.options.apply_style_to_trimmed is False:
@@ -293,6 +303,129 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                 trimLine.style = subSplitLineArray[subSplitIndex].attrib['originalPathStyle']
             trimGroup.add(trimLine)
         return trimGroup
+
+
+    def slope(self, p0, p1):
+        '''
+            Calculate the slope (gradient) of a line's start point p0 + end point p1
+        '''
+        dx = p1[0] - p0[0]
+        if dx == 0:
+            return sys.float_info.max
+        return (p1[1] - p0[1]) / dx
+
+
+    def process_set(self, working_set):
+        if len(working_set) < 2:
+            return (True, working_set)
+    
+        # sort working set left to right
+        working_set.sort(key=lambda x: x['p0'][0])
+        for i in range(0, len(working_set)):
+            for j in range(i + 1, len(working_set)):
+    
+                # calculate slope from S0P0 to S1P1 and S0P1 to S1P0
+                # if slopes all match the working set's slope, we're collinear
+                # if not, these segments are parallel but not collinear and should be left alone
+                p0 = working_set[i]['p0']
+                expected_slope = working_set[i]['slope']
+                if (abs(self.slope(working_set[i]['p1'], working_set[j]['p0']) - expected_slope) > EPS_M) or (abs(self.slope(working_set[i]['p0'], working_set[j]['p1']) - expected_slope) > EPS_M):
+                    continue
+    
+                # the only remaining permissible configuration: collinear segments with a gap between them
+                # e.g. ---  -----
+                # otherwise we combine segments and flag the set as requiring more processing
+                s0x0 = working_set[i]['p0'][0]
+                s0x1 = working_set[i]['p1'][0]
+                s1x0 = working_set[j]['p0'][0]
+                s1x1 = working_set[j]['p1'][0]
+                if not (s0x0 < s0x1 and s0x1 < s1x0 and s1x0 < s1x1):
+                    # make a duplicate set, omitting segments i and j
+                    new_set = [x for (k, x) in enumerate(working_set) if k not in (i, j)]
+                    
+                    # add a segment representing i and j's furthest points
+                    pts = [ working_set[i]['p0'], working_set[i]['p1'], working_set[j]['p0'], working_set[j]['p1'] ]
+                    pts.sort(key=lambda x: x[0])
+                    new_set.append({
+                        'p0': pts[0], 
+                        'p1': pts[-1],
+                        'slope': self.slope(pts[0], pts[-1]),
+                        'id': working_set[i]['id'],
+                        'originalPathId': working_set[i]['originalPathId']
+                    })
+                    return (False, new_set)
+    
+        return (True, working_set)
+
+
+    def filter_collinear(self, lineArray):
+        '''
+            Loop through a set of lines and find + fiter all overlapping segments / duplicate segments
+            finally returns a set of merged-like lines and a set of original items which should be dropped
+        '''
+        segments = []
+        # collect segments, calculate their slopes, order their points left-to-right
+        for line in lineArray:
+            csp = line.path.to_arrays()
+            x1, y1, x2, y2 = csp[0][1][0], csp[0][1][1], csp[1][1][0], csp[1][1][1]
+            # ensure p0 is left of p1
+            if x1 < x2:
+                s = {
+                    'p0': [x1, y1],
+                    'p1': [x2, y2]
+                }
+            else:
+                s = {
+                    'p0': [x2, y2],
+                    'p1': [x1, y1]
+                }
+            s['slope'] = self.slope(s['p0'], s['p1'])
+            s['id'] = line.attrib['id']
+            s['originalPathId'] = line.attrib['originalPathId']
+            segments.append(s)
+    
+        working_set = []
+        output_set = []
+        segments.sort(key=lambda x: x['slope'])
+        segments.append(False) # used to clear out lingering contents of working_set on last iteration
+        current_slope = segments[0]['slope']
+        for seg in segments:
+    
+            # bin sets of segments by slope (within a tolerance)
+            dm = seg and abs(seg['slope'] - current_slope) or 0
+            if seg and dm < EPS_M:
+                working_set.append(seg)
+    
+            else: # slope discontinuity, process accumulated set
+                while True:
+                    (done, working_set) = self.process_set(working_set)
+                    if done:
+                        output_set.extend(working_set)
+                        break
+
+                if seg: # begin new working set
+                    working_set = [seg]
+                    current_slope = seg['slope']
+        
+        seg_ids = []
+        for seg in segments:
+            if seg is not False and seg['id'] != '':
+               seg_ids.append(seg['id'])         
+        out_ids = []
+        for output in output_set:
+            out_ids.append(output['id'])
+
+        dropped_ids = set(seg_ids) - set(out_ids)
+ 
+        #self.msg("segments:{}".format(segments))                  
+        #self.msg("_____________")                  
+        #self.msg("working_set:{}".format(working_set))                  
+        #self.msg("_____________")                  
+        #self.msg("output_set:{}".format(output_set))                  
+        #self.msg("_____________")
+        #self.msg("dropped_set:{}".format(dropped_ids))                  
+        #self.msg("_____________")
+        return output_set, dropped_ids
 
 
     def remove_duplicates(self, allTrimGroups):
@@ -421,6 +554,8 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         pars.add_argument("--flatness", type=float, default=0.1, help="Minimum flatness = 0.001. The smaller the value the more fine segments you will get (quantization). Large values might destroy the line continuity.")
         pars.add_argument("--decimals", type=int, default=3, help="Accuracy for sub split lines / lines trimmed by shapely")
         pars.add_argument("--snap_tolerance", type=float, default=0.1, help="Snap tolerance for intersection points")
+        pars.add_argument("--draw_subsplit", type=inkex.Boolean, default=False, help="Draw sub split lines (polylines)")
+        pars.add_argument("--remove_subsplit_collinear", type=inkex.Boolean, default=True, help="Removes any duplicates by merging (multiple) overlapping line segments into longer lines.")    
 
         #Scanning - Removing
         pars.add_argument("--remove_relative", type=inkex.Boolean, default=False, help="relative cmd")
@@ -441,7 +576,6 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         pars.add_argument("--highlight_opened", type=inkex.Boolean, default=False, help="opened paths")
         pars.add_argument("--highlight_closed", type=inkex.Boolean, default=False, help="closed paths")
         pars.add_argument("--highlight_self_intersecting", type=inkex.Boolean, default=False, help="self-intersecting paths")
-        pars.add_argument("--draw_subsplit", type=inkex.Boolean, default=False, help="Draw sub split lines (polylines)")
         pars.add_argument("--visualize_self_intersections", type=inkex.Boolean, default=False, help="self-intersecting path points")
         pars.add_argument("--visualize_global_intersections", type=inkex.Boolean, default=False, help="global intersection points")
  
@@ -506,7 +640,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
 
         #get all paths which are within selection or in document and generate sub split lines
         pathElements = self.get_path_elements()
-
+          
         subSplitLineArray = []
         
         for pathElement in pathElements:
@@ -613,7 +747,8 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                     subSplitId = "{}-{}-{}".format(idPrefixSubSplit, originalPathId, i)
                     line = inkex.PathElement(id=subSplitId)
                     #apply line path with composed negative transform from parent element
-                    line.path = [['M', [x1, y1]], ['L', [x2, y2]]]
+                    line.attrib['d'] = 'M {},{} L {},{}'.format(x1, y1, x2, y2) #we set the path of trimLine using 'd' attribute because if we use trimLine.path the decimals get cut off unwantedly
+                    #line.path = [['M', [x1, y1]], ['L', [x2, y2]]]
                     if pathElement.getparent() != self.svg.root and pathElement.getparent() != None:
                         line.path = line.path.transform(-pathElement.getparent().composed_transform())
                     line.style = basicSubSplitLineStyle
@@ -722,6 +857,28 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         if so.show_debug is True:
             self.msg("sub split line count: {}".format(len(subSplitLineArray)))   
 
+        if so.remove_subsplit_collinear is True:
+            if so.show_debug is True: self.msg("filtering collinear overlapping lines / duplicate lines")
+            output_set, dropped_ids = self.filter_collinear(subSplitLineArray)
+            for subSplitLine in subSplitLineArray:
+                ssl_id = subSplitLine.get('id')
+                if ssl_id in dropped_ids:
+                    ssl_parent = subSplitLine.getparent()
+                    subSplitLine.delete() #delete the line
+    
+                    #and delete the containg group if empty
+                    if ssl_parent is not None and len(ssl_parent) == 0:
+                        if self.options.show_debug is True:
+                            self.msg("Deleting group {}".format(ssl_parent.get('id')))
+                        ssl_parent.delete()
+                # and now we replace the overlapping items with the new merged output
+                for output in output_set:
+                    if output['id'] == subSplitLine.attrib['id']:
+                        #self.msg(output['p0'])
+                        subSplitLine.attrib['d'] = line.attrib['d'] = 'M {},{} L {},{}'.format(
+                            output['p0'][0], output['p0'][1], output['p1'][0], output['p1'][1]) #we set the path of trimLine using 'd' attribute because if we use trimLine.path the decimals get cut off unwantedly
+                        #subSplitLine.path = line.path = [['M', output['p0']], ['L', output['p1']]] 
+                
         '''
         now we intersect the sub split lines to find the global intersection points using Bentley-Ottmann algorithm (contains self-intersections too!)
         '''
@@ -794,17 +951,21 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                     if len(allTrimGroups) == 0:
                         self.msg("You selected to draw trimmed lines but no intersections could be calculated.")
                          
-                    #trim beziers - not working yet   
-                    if so.bezier_trimming is True: self.trim_bezier(allTrimGroups)  
+                    if so.bezier_trimming is True:
+                        if so.show_debug is True: self.msg("trimming beziers - not working yet")
+                        self.trim_bezier(allTrimGroups)  
                    
-                    #check for duplicate trim lines and delete them if desired
-                    if so.remove_duplicates is True: self.remove_duplicates(allTrimGroups)
+                    if so.remove_duplicates is True:
+                        if so.show_debug is True: self.msg("checking for duplicate trim lines and deleting them")
+                        self.remove_duplicates(allTrimGroups)
                                     
-                    #glue together all non-intersected sub split lines to larger path structures again (cleaning up).
-                    if so.combine_nonintersects is True: self. combine_nonintersects(allTrimGroups)
+                    if so.combine_nonintersects is True:
+                        if so.show_debug is True: self.msg("glueing together all non-intersected sub split lines to larger path structures again (cleaning up)")
+                        self. combine_nonintersects(allTrimGroups)
 
                     #clean original paths if selected. This option is explicitely independent from remove_open, remove_closed
                     if so.keep_original_after_trim is False:
+                        if so.show_debug is True: self.msg("cleaning original paths")
                         for pathElement in pathElements:
                             pathElement.delete()
         

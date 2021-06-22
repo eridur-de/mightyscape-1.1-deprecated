@@ -13,6 +13,7 @@
             <param name="decimals" type="int" min="0" max="16" gui-text="Decimals" gui-description="Accuracy for sub split lines / lines trimmed by shapely (default: 3)">3</param>
             <param name="snap_tolerance" type="float" min="0.01" max="10.0" gui-text="Snap tolerance" gui-description="Snap tolerance for intersection points on paths (default: 0.1)">0.1</param>
             <param name="draw_subsplit" type="bool" gui-text="Draw sub split lines (for debugging purposes)" gui-description="Draws polylines. Will be automatically enabled if any highlighting is activated.">false</param> 
+            <param name="remove_subsplit_collinear" type="bool" gui-text="Remove collinear overlapping lines (experimental)" gui-description="Removes any duplicates by merging (multiple) overlapping line segments into longer lines.">true</param>     
         </page>
         <page name="tab_scanning" gui-text="Scanning and Trimming">
             <hbox>
@@ -129,6 +130,7 @@ Tips:
             <spacer/>
             <label appearance="header">Third Party Modules</label>
             <label appearance="url">https://github.com/ideasman42/isect_segments-bentley_ottmann</label>
+            <label appearance="url">https://gist.github.com/sbma44/dc34e5005d9827aa7b1c8c11e68b0c6b</label>
             <spacer/>
             <label appearance="header">MightyScape Extension Collection</label>
             <label>This piece of software is part of the MightyScape for Inkscape Extension Collection and is licensed under GNU GPL v3</label>
