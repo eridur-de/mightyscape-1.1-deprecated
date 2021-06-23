@@ -47,7 +47,7 @@ Extension for InkScape 1.0+
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 09.08.2020 (extension originally called "Contour Scanner")
-Last patch: 22.06.2021
+Last patch: 23.06.2021
 License: GNU GPL v3
 
 '''
@@ -376,7 +376,11 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         # collect segments, calculate their slopes, order their points left-to-right
         for line in lineArray:
             #csp = line.path.to_arrays()
-            csp = Path(line.path.transform(line.getparent().composed_transform())).to_arrays()
+            parent = line.getparent()
+            if parent is not None:
+                csp = Path(line.path.transform(parent.composed_transform())).to_arrays()
+            else:
+                csp = line.path.to_arrays()
             #self.msg("csp = {}".format(csp))
             x1, y1, x2, y2 = csp[0][1][0], csp[0][1][1], csp[1][1][0], csp[1][1][1]
             # ensure p0 is left of p1
@@ -431,7 +435,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
 
         #we finally build a list which contains all overlapping elements we want to drop
         dropped_ids = []
-        for input_id in input_ids: #if the working id is not in the output id we are going to drop it
+        for input_id in input_ids: #if the input_id id is not in the output ids we are going to drop it
             if input_id not in output_ids:
                dropped_ids.append(input_id) 
 
@@ -587,8 +591,9 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         pars.add_argument("--snap_tolerance", type=float, default=0.1, help="Snap tolerance for intersection points")
         pars.add_argument("--draw_subsplit", type=inkex.Boolean, default=False, help="Draw sub split lines (polylines)")
         pars.add_argument("--remove_subsplit_collinear", type=inkex.Boolean, default=True, help="Removes any duplicates by merging (multiple) overlapping line segments into longer lines. Not possible to apply for original paths because this routine does not support bezier type paths.")    
+        pars.add_argument("--keep_original_after_split_trim", type=inkex.Boolean, default=False, help="Keep original paths after sub splitting / trimming") 
 
-        #Scanning - Removing
+        #Scanning - Removing of original paths
         pars.add_argument("--remove_relative", type=inkex.Boolean, default=False, help="relative cmd")
         pars.add_argument("--remove_absolute", type=inkex.Boolean, default=False, help="absolute cmd")
         pars.add_argument("--remove_mixed", type=inkex.Boolean, default=False, help="mixed cmd (relative + absolute)")
@@ -598,7 +603,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         pars.add_argument("--remove_closed", type=inkex.Boolean, default=False, help="closed")
         pars.add_argument("--remove_self_intersecting", type=inkex.Boolean, default=False, help="self-intersecting")
 
-        #Scanning - Highlighting
+        #Scanning - Highlighting of original paths (and sub split lines)
         pars.add_argument("--highlight_relative", type=inkex.Boolean, default=False, help="relative cmd paths")
         pars.add_argument("--highlight_absolute", type=inkex.Boolean, default=False, help="absolute cmd paths")
         pars.add_argument("--highlight_mixed", type=inkex.Boolean, default=False, help="mixed cmd (relative + absolute) paths")
@@ -610,12 +615,11 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         pars.add_argument("--visualize_self_intersections", type=inkex.Boolean, default=False, help="self-intersecting path points")
         pars.add_argument("--visualize_global_intersections", type=inkex.Boolean, default=False, help="global intersection points")
  
-        #Settings - Trimming
+        #Settings - Trimming of sub split lines
         pars.add_argument("--draw_trimmed", type=inkex.Boolean, default=False, help="Draw trimmed lines")
         pars.add_argument("--combine_nonintersects", type=inkex.Boolean, default=True, help="Combine non-intersected lines")
         pars.add_argument("--remove_duplicates", type=inkex.Boolean, default=True, help="Remove duplicate trim lines")
         pars.add_argument("--reverse_removal_order", type=inkex.Boolean, default=False, help="Reverses the order of removal. Relevant for keeping certain styles of elements")
-        pars.add_argument("--keep_original_after_trim", type=inkex.Boolean, default=False, help="Keep original paths after trimming") 
 
         pars.add_argument("--bent_ott_use_ignore_segment_endings", type=inkex.Boolean, default=True, help="Whether to ignore intersections of line segments when both their end points form the intersection point")
         pars.add_argument("--bent_ott_use_debug", type=inkex.Boolean, default=False)
@@ -629,10 +633,10 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         pars.add_argument("--dotsize_intersections", type=int, default=30, help="Dot size (px) for self-intersecting and global intersection points")
         pars.add_argument("--removefillsetstroke", type=inkex.Boolean, default=False, help="Remove fill and define stroke for original paths")
         pars.add_argument("--bezier_trimming", type=inkex.Boolean, default=False, help="If true we try to use the calculated t parameters from intersection points to receive splitted bezier curves")
-        pars.add_argument("--apply_style_to_subsplits", type=inkex.Boolean, default=True, help="Apply highlighting styles to sub split lines.")
+        pars.add_argument("--subsplit_style", default="default", help="Sub split line style")
         pars.add_argument("--apply_style_to_trimmed", type=inkex.Boolean, default=True, help="Apply original path style to trimmed lines")
      
-        #Style - Scanning Colors
+        #Style - Scanning Colors (Highlighting things)
         pars.add_argument("--color_subsplit", type=Color, default='1630897151', help="sub split lines")
         pars.add_argument("--color_relative", type=Color, default='3419879935', help="relative cmd paths")
         pars.add_argument("--color_absolute", type=Color, default='1592519679', help="absolute cmd paths")
@@ -645,7 +649,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         pars.add_argument("--color_self_intersections", type=Color, default='6320383', help="self-intersecting path points")
         pars.add_argument("--color_global_intersections", type=Color, default='4239343359', help="global intersection points")
        
-        #Style - Trimming Color
+        #Style - Trimming Colors
         pars.add_argument("--color_trimmed", type=Color, default='1923076095', help="trimmed lines")
         pars.add_argument("--color_combined", type=Color, default='3227634687', help="non-intersected lines")
         pars.add_argument("--color_nonintersected", type=Color, default='3045284607', help="non-intersected paths")
@@ -792,7 +796,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                     line.attrib['originalPathStyle'] = str(pathElement.style)
                     subSplitLineArray.append(line)
 
-                    if so.apply_style_to_subsplits is True:
+                    if so.subsplit_style == "apply_from_highlightings":
                         if line.attrib['originalPathIsRelative'] == 'True':
                             if so.highlight_relative is True:
                                 line.style = relativePathStyle
@@ -818,6 +822,8 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                         else:
                             if so.highlight_opened is True:
                                 line.style = openPathStyle
+                    elif so.subsplit_style == "apply_from_original":
+                        line.style = line.attrib['originalPathStyle']
 
                     if so.draw_subsplit is True:
                         subSplitLineGroup.add(line)
@@ -997,12 +1003,6 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                     if so.combine_nonintersects is True:
                         if so.show_debug is True: self.msg("glueing together all non-intersected sub split lines to larger path structures again (cleaning up)")
                         self. combine_nonintersects(allTrimGroups)
-
-                    #clean original paths if selected. This option is explicitely independent from remove_open, remove_closed
-                    if so.keep_original_after_trim is False:
-                        if so.show_debug is True: self.msg("cleaning original paths")
-                        for pathElement in pathElements:
-                            pathElement.delete()
         
             except AssertionError as e:
                 self.msg("Error calculating global intersections.\n\
@@ -1010,7 +1010,13 @@ See https://github.com/ideasman42/isect_segments-bentley_ottmann.\n\n\
 You can try to fix this by:\n\
 - reduce or raise the 'decimals' setting (default is 3 but try to set to 6 for example)\n\
 - reduce or raise the 'flatness' setting (if quantization option is used at all; default is 0.100).")
-            return
+                return
+
+        #clean original paths if selected.
+        if so.keep_original_after_split_trim is False:
+            if so.show_debug is True: self.msg("cleaning original paths after sub splitting / trimming")
+            for pathElement in pathElements:
+                pathElement.delete()
 
 if __name__ == '__main__':
     ContourScannerAndTrimmer().run()

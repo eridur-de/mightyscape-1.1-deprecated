@@ -14,6 +14,7 @@
             <param name="snap_tolerance" type="float" min="0.01" max="10.0" gui-text="Snap tolerance" gui-description="Snap tolerance for intersection points on paths (default: 0.1)">0.1</param>
             <param name="draw_subsplit" type="bool" gui-text="Draw sub split lines (for debugging purposes)" gui-description="Draws polylines. Will be automatically enabled if any highlighting is activated.">false</param> 
             <param name="remove_subsplit_collinear" type="bool" gui-text="Remove collinear overlapping lines (experimental)" gui-description="Removes any duplicates by merging (multiple) overlapping line segments into longer lines. Not possible to apply for original paths because this routine does not support bezier type paths.">true</param>     
+            <param name="keep_original_after_split_trim" type="bool" gui-text="Keep original paths after sub splitting / trimming">false</param>
         </page>
         <page name="tab_scanning" gui-text="Scanning and Trimming">
             <hbox>
@@ -53,7 +54,6 @@
                     <param name="remove_duplicates" type="bool" gui-text="Remove duplicate trim lines">true</param>
                     <param name="reverse_removal_order" type="bool" gui-text="Reverse removal order" gui-description="Reverses the order of removal. Relevant for keeping certain styles of elements">false</param>
                     <param name="bezier_trimming" type="bool" gui-text="Trim original beziers (not working yet)" gui-description="If enabled we try to split the original bezier paths at the intersections points by finding the correct bezier segments and calculating t parameters from trimmed sub split lines. Not working yet. Will just print debug info if debug is enabled.">true</param>
-                    <param name="keep_original_after_trim" type="bool" gui-text="Keep original paths after trimming">false</param>
                     <label appearance="header">Bentley Ottmann Sweep Line Settings</label>
                     <param name="bent_ott_use_ignore_segment_endings" type="bool" gui-text="Ignore segment endings" gui-description="Whether to ignore intersections of line segments when both their end points form the intersection point">true</param>
                     <param name="bent_ott_use_debug" type="bool" gui-text="Debug">false</param>
@@ -93,9 +93,12 @@
                     <param name="strokewidth" min="0.0" max="10000.0" precision="3" gui-text="Stroke width (px)" gui-description="Applies For sub split lines and trimmed lines" type="float">1.0</param>
                     <param name="dotsize_intersections" type="int" min="0" max="10000" gui-text="Dot size (px)" gui-description="For self-intersecting and global intersection points">30</param>
                     <param name="removefillsetstroke" type="bool" gui-text="Remove fill and define stroke" gui-description="Modifies original path style">false</param>
-                    <param name="apply_style_to_subsplits" type="bool" gui-text="Highlighting styles for sub split lines" gui-description="Apply highlighting styles to sub split lines.">true</param>  
+                    <param name="subsplit_style" type="optiongroup" appearance="combo" gui-text="Sub split line style">
+                        <option value="default">Use default sub split style</option>
+                        <option value="apply_from_highlightings">Apply highlighting styles</option>
+                        <option value="apply_from_original">Apply original path styles</option>
+                    </param>                    
                     <param name="apply_style_to_trimmed" type="bool" gui-text="Original style for trimmed lines" gui-description="Apply original path style to trimmed lines.">true</param>  
- 
                 </vbox>
             </hbox>
         </page>
