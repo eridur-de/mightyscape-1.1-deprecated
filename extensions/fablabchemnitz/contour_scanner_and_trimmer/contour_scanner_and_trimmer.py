@@ -339,8 +339,8 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                 s1x0 = working_set[j]['p0'][0]
                 s1x1 = working_set[j]['p1'][0]
 
-                if s0x0 == s1x0 and s0x1 == s1x1:
-                    continue #skip if pointy path is going to be created
+                #if s0x0 == s1x0 and s0x1 == s1x1:
+                #   continue #skip if pointy path is going to be created
 
                 if not (s0x0 < s0x1 and s0x1 < s1x0 and s1x0 < s1x1):
                     # make a duplicate set, omitting segments i and j
@@ -357,7 +357,8 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                         'p1': pts[-1],
                         'slope': self.slope(pts[0], pts[-1]),
                         'id': working_set[i]['id'],
-                        'originalPathId': working_set[i]['originalPathId']
+                        'originalPathId': working_set[i]['originalPathId'],
+                        'composed_transform': working_set[i]['composed_transform']
                         })
                     return (False, new_set)
     
@@ -374,9 +375,9 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
 
         # collect segments, calculate their slopes, order their points left-to-right
         for line in lineArray:
-            csp = line.path.to_arrays()
-            #csp = Path(line.path.transform(line.composed_transform()).to_superpath()).to_arrays()
-
+            #csp = line.path.to_arrays()
+            csp = Path(line.path.transform(line.getparent().composed_transform())).to_arrays()
+            #self.msg("csp = {}".format(csp))
             x1, y1, x2, y2 = csp[0][1][0], csp[0][1][1], csp[1][1][0], csp[1][1][1]
             # ensure p0 is left of p1
             if x1 < x2:
@@ -392,6 +393,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
             s['slope'] = self.slope(s['p0'], s['p1'])
             s['id'] = line.attrib['id']
             s['originalPathId'] = line.attrib['originalPathId']
+            s['composed_transform'] = line.composed_transform()
             #s['d'] = line.attrib['d']
             input_set.append(s)
     
@@ -429,27 +431,27 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
 
         #we finally build a list which contains all overlapping elements we want to drop
         dropped_ids = []
-        for working_id in working_ids: #if the working id is not in the output id we are going to drop it
-            if working_id not in output_ids:
-               dropped_ids.append(working_id) 
+        for input_id in input_ids: #if the working id is not in the output id we are going to drop it
+            if input_id not in output_ids:
+               dropped_ids.append(input_id) 
 
         if self.options.show_debug is True:
             #self.msg("input_set:{}".format(input_set))               
-            self.msg("input_ids:")
+            self.msg("input_ids [{}]:".format(len(input_ids)))
             for input_id in input_ids:
                self.msg(input_id)
             self.msg("*"*24)     
             #self.msg("working_set:{}".format(working_set))                  
-            self.msg("working_ids:")
+            self.msg("working_ids [{}]:".format(len(working_ids)))
             for working_id in working_ids:
                self.msg(working_id) 
             self.msg("*"*24)     
             #self.msg("output_set:{}".format(output_set))                  
-            self.msg("output_ids:")
+            self.msg("output_ids [{}]:".format(len(output_ids)))
             for output_id in output_ids:
                self.msg(output_id)
             self.msg("*"*24)
-            self.msg("dropped_ids:")
+            self.msg("dropped_ids [{}]:".format(len(dropped_ids)))
             for dropped_id in dropped_ids:
                self.msg(dropped_id)
             self.msg("*"*24)     
@@ -905,10 +907,13 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                     for output in output_set:
                         if output['id'] == subSplitLine.attrib['id']:
                             #self.msg(output['p0'])
-                            subSplitLine.attrib['d'] = line.attrib['d'] = 'M {},{} L {},{}'.format(
+                            subSplitLine.attrib['d'] = 'M {},{} L {},{}'.format(
                                 output['p0'][0], output['p0'][1], output['p1'][0], output['p1'][1]) #we set the path of trimLine using 'd' attribute because if we use trimLine.path the decimals get cut off unwantedly
-                            #subSplitLine.path = line.path = [['M', output['p0']], ['L', output['p1']]] 
-                
+                            #subSplitLine.path = [['M', output['p0']], ['L', output['p1']]] 
+                            #self.msg("composed_transform = {}".format(output['composed_transform']))
+                            #subSplitLine.transform = Transform(-output['composed_transform']) * subSplitLine.transform
+                            subSplitLine.path = subSplitLine.path.transform(-output['composed_transform'])
+
         '''
         now we intersect the sub split lines to find the global intersection points using Bentley-Ottmann algorithm (contains self-intersections too!)
         '''
