@@ -97,8 +97,11 @@
                         <option value="default">Use default sub split style</option>
                         <option value="apply_from_highlightings">Apply highlighting styles</option>
                         <option value="apply_from_original">Apply original path styles</option>
-                    </param>                    
-                    <param name="apply_style_to_trimmed" type="bool" gui-text="Original style for trimmed lines" gui-description="Apply original path style to trimmed lines.">true</param>  
+                    </param>
+                    <param name="trimmed_style" type="optiongroup" appearance="combo" gui-text="Trimmed line style">
+                        <option value="apply_from_trimmed">Apply default trimming styles</option>
+                        <option value="apply_from_original">Apply original path styles</option>
+                    </param>         
                 </vbox>
             </hbox>
         </page>
@@ -108,7 +111,7 @@
  - Uses Bentley-Ottmann algorithm to detect intersections
  - Allows to separate different contour types by colors
  - Works with paths which have Live Path Effects (LPE)
- - Does not find overlapping colinear lines (sweep line algorithm does not intersect them)
+ - Finds overlapping / collinear lines
 
 Tips:
  - If nothings is selected, the whole document will be processed, regardless of groups. In contrast, if you made a custom selection, check to handle or not to handle groups.

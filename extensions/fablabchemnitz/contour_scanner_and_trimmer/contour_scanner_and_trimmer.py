@@ -296,9 +296,9 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
 
             #if trimGroupParentTransform is not None:
             #    trimLine.path = trimLine.path.transform(-trimGroupParentTransform)
-            if self.options.apply_style_to_trimmed is False:
+            if self.options.trimmed_style == "apply_from_trimmed":
                 trimLine.style = trimLineStyle
-            else:
+            elif self.options.trimmed_style == "apply_from_original":
                 trimLine.style = subSplitLineArray[subSplitIndex].attrib['originalPathStyle']
             trimGroup.add(trimLine)
         return trimGroup
@@ -526,7 +526,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                     self.msg("trim group {} has {} combinable segments:".format(trimGroup.get('id'), len(newPathData)))     
                     self.msg("{}".format(newPathData))
                 combinedPath.path = Path(newPathData)              
-                if self.options.apply_style_to_trimmed is False:
+                if self.options.trimmed_style is False:
                     combinedPath.style = trimNonIntersectedStyle         
                     if totalIntersectionsAtPath == 0:
                         combinedPath.style = nonTrimLineStyle
@@ -634,7 +634,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         pars.add_argument("--removefillsetstroke", type=inkex.Boolean, default=False, help="Remove fill and define stroke for original paths")
         pars.add_argument("--bezier_trimming", type=inkex.Boolean, default=False, help="If true we try to use the calculated t parameters from intersection points to receive splitted bezier curves")
         pars.add_argument("--subsplit_style", default="default", help="Sub split line style")
-        pars.add_argument("--apply_style_to_trimmed", type=inkex.Boolean, default=True, help="Apply original path style to trimmed lines")
+        pars.add_argument("--trimmed_style", default="apply_from_trimmed", help="Trimmed line style")
      
         #Style - Scanning Colors (Highlighting things)
         pars.add_argument("--color_subsplit", type=Color, default='1630897151', help="sub split lines")
