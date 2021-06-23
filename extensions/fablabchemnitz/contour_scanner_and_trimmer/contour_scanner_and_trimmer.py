@@ -18,6 +18,7 @@ Extension for InkScape 1.0+
         - maybe option: convert rel path to abs path
             replacedelement.path = replacedelement.path.to_absolute().to_superpath().to_path()
         - maybe option: break apart while keeping relative/absolute commands (more complex and not sure if we have a great advantage having this)
+    - note: running this extension might leave some empty parent groups in some circumstances. run the clean groups extension separately to fix that
     
 - important to notice
     - this algorithm might be really slow. Reduce flattening quality to speed up
@@ -52,7 +53,7 @@ Extension for InkScape 1.0+
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 09.08.2020 (extension originally called "Contour Scanner")
-Last patch: 23.06.2021
+Last patch: 24.06.2021
 License: GNU GPL v3
 
 '''
@@ -74,7 +75,7 @@ if speedups.available:
     speedups.enable()
 
 idPrefixSubSplit = "subsplit"
-idPrefixTrimming = "shapely"
+idPrefixTrimming = "trimmed"
 intersectedVerb = "intersected"
 collinearVerb = "collinear"
 
@@ -649,6 +650,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         pars.add_argument("--combine_nonintersects", type=inkex.Boolean, default=True, help="Combine non-intersected lines")
         pars.add_argument("--remove_trim_duplicates", type=inkex.Boolean, default=True, help="Remove duplicate trim lines")
         pars.add_argument("--reverse_trim_removal_order", type=inkex.Boolean, default=False, help="Reverses the order of removal. Relevant for keeping certain styles of elements")
+        pars.add_argument("--remove_subsplit_after_trimming", type=inkex.Boolean, default=True, help="Remove sub split lines after trimming")
         #Trimming - Bentley-Ottmann sweep line settings
         pars.add_argument("--bent_ott_use_ignore_segment_endings", type=inkex.Boolean, default=True, help="Whether to ignore intersections of line segments when both their end points form the intersection point")
         pars.add_argument("--bent_ott_use_debug", type=inkex.Boolean, default=False)
@@ -696,7 +698,8 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         if so.highlight_merges is True:
             so.filter_subsplit_collinear = True
      
-        if so.filter_subsplit_collinear_action == "separate_group":
+        if so.filter_subsplit_collinear is True: #this is a must. 
+        #if so.draw_subsplit is disabled bu we filter sub split lines and follow with trim operation we lose a lot of elements which may not be deleted!
             so.draw_subsplit = True
      
         #some constant stuff / styles
@@ -1087,11 +1090,21 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                     if so.remove_trim_duplicates is True:
                         if so.show_debug is True: self.msg("checking for duplicate trim lines and deleting them")
                         self.remove_trim_duplicates(allTrimGroups)
-                                    
+                                         
                     if so.combine_nonintersects is True:
                         if so.show_debug is True: self.msg("glueing together all non-intersected sub split lines to larger path structures again (cleaning up)")
-                        self. combine_nonintersects(allTrimGroups)
+                        self.combine_nonintersects(allTrimGroups)
         
+                    if so.remove_subsplit_after_trimming is True:
+                        if so.show_debug is True: self.msg("removing unwanted subsplit lines after trimming")
+                        for subSplitLine in subSplitLineArray:
+                            ssl_parent = subSplitLine.getparent()
+                            subSplitLine.delete()
+                            if ssl_parent is not None and len(ssl_parent) == 0:
+                                if self.options.show_debug is True:
+                                    self.msg("Deleting group {}".format(ssl_parent.get('id')))
+                                ssl_parent.delete()
+
             except AssertionError as e:
                 self.msg("Error calculating global intersections.\n\
 See https://github.com/ideasman42/isect_segments-bentley_ottmann.\n\n\
