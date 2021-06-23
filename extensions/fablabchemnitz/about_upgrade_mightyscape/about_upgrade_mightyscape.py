@@ -7,8 +7,13 @@ Extension for InkScape 1.X
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 14.05.2021
-Last patch: 14.05.2021
+Last patch: 23.06.2021
 License: GNU GPL v3
+
+ToDo
+    - enable stash option
+    - add while loop to list all remoteCommits by jumping from parent to parent
+    - add option to create/init .git repo from zip downloaded MightyScape version (to enable upgrader) if no .git dir was found
 """
 
 import inkex
@@ -26,33 +31,36 @@ class AboutUpgradeMightyScape(inkex.EffectExtension):
 
     def update(self, local_repo, remote):
         try:
-            latestRemoteCommit = git.cmd.Git().ls_remote(remote, heads=True).replace('refs/heads/master','').strip()
-            localCommit = str(local_repo.head.commit)
-            #ref_logs = local_repo.head.reference.log()
-            
-            #commits = list(local_repo.iter_commits("master", max_count=5))
-            commits = list(local_repo.iter_commits("master"))
-            self.msg("Local commit id is: " + localCommit[:7])
-            self.msg("Latest remote commit is: " + latestRemoteCommit[:7])
-            self.msg("There are {} remote commits at the moment.".format(len(commits)))
-            #self.msg("There are {} remote ref logs at the moment.".format(len(ref_logs)))
-            commitList = []
-            for commit in commits:
-                commitList.append(commit)
-            #commitList.reverse()
-            #show last 10 entries
+            localCommit = local_repo.head.commit
+            remote_repo = git.remote.Remote(local_repo, 'origin')
+            remoteCommit = remote_repo.fetch()[0].commit  
+            authors = []
+            # for every remote commit
+            while remoteCommit.hexsha != localCommit.hexsha:
+                authors.append(remoteCommit.author.email) 
+                remoteCommit = remoteCommit.parents[0]
+
+            #local_commits = list(local_repo.iter_commits("master", max_count=5))
+            local_commits = list(local_repo.iter_commits("master"))
+            self.msg("Local commit id is: " + str(localCommit)[:7])
+            self.msg("Latest remote commit is: " + str(remoteCommit)[:7])
+            self.msg("There are {} local commits at the moment.".format(len(local_commits)))
+            localCommitList = []
+            for local_commit in local_commits:
+                localCommitList.append(local_commit)
+            #localCommitList.reverse()
             self.msg("*"*40)
-            self.msg("Latest 10 commits are:")
+            self.msg("Latest 10 local commits are:")
             for i in range(0, 10):
                 self.msg("{} | {} : {}".format(
-                    datetime.utcfromtimestamp(commitList[i].committed_date).strftime('%Y-%m-%d %H:%M:%S'),
-                    commitList[i].name_rev[:7],
-                    commitList[i].message.strip())
+                    datetime.utcfromtimestamp(localCommitList[i].committed_date).strftime('%Y-%m-%d %H:%M:%S'),
+                    localCommitList[i].name_rev[:7],
+                    localCommitList[i].message.strip())
                     )   
-                #self.msg(" - {}: {}".format(commitList[i].newhexsha[:7], commitList[i].message))   
+                #self.msg(" - {}: {}".format(localCommitList[i].newhexsha[:7], localCommitList[i].message))   
             self.msg("*"*40)
 
-            if localCommit != latestRemoteCommit:
+            if localCommit.hexsha != remoteCommit.hexsha:
                 ssh_executable = 'git'
                 with local_repo.git.custom_environment(GIT_SSH=ssh_executable):
                     origin = local_repo.remotes.origin
