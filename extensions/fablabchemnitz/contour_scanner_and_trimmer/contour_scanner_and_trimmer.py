@@ -695,7 +695,8 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
            so.highlight_merges is True:
             so.draw_subsplit = True
             
-        if so.highlight_merges is True:
+        if so.highlight_duplicates is True or \
+           so.highlight_merges is True:
             so.filter_subsplit_collinear = True
      
         if so.filter_subsplit_collinear is True: #this is a must. 
