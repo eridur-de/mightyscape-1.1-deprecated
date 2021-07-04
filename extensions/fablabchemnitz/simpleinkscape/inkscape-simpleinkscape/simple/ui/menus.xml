@@ -1,0 +1,328 @@
+<inkscape version="1.0"
+  xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+  xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+  show-icons="false">
+
+   <submenu name="_File">
+       <verb verb-id="FileNew" />
+       <verb verb-id="FileTemplates" />
+       <verb verb-id="FileOpen" />
+       <recent-file-list/>
+       <!-- <verb verb-id="FileRevert" /> /-->
+       <verb verb-id="FileSave" />
+       <verb verb-id="FileSaveAs" />
+       <!-- <verb verb-id="FileSaveACopy" /> /-->
+       <!-- <verb verb-id="FileSaveTemplate" /> /-->
+       <separator/>
+       <verb verb-id="FileImport" />
+       <verb verb-id="DialogExport" />
+       <separator/>
+       <verb verb-id="FilePrint" />
+       <separator/>
+       <!-- <verb verb-id="FileVacuum" /> /-->
+       <separator/>
+       <verb verb-id="DialogDocumentProperties" />
+       <!--verb verb-id="DialogMetadata" /-->
+       <!-- <separator/> /-->
+       <verb verb-id="FileClose" />
+       <verb verb-id="FileQuit" />
+   </submenu>
+   <submenu name="_Edit">
+       <verb verb-id="EditUndo" />
+       <verb verb-id="EditRedo" />
+       <!-- <verb verb-id="DialogUndoHistory" /> /-->
+       <separator/>
+       <verb verb-id="EditCut" />
+       <verb verb-id="EditCopy" />
+       <verb verb-id="EditPaste" />
+       <!-- <verb verb-id="EditPasteInPlace" /> /-->
+       <!-- <verb verb-id="EditPasteStyle" /> /-->
+       <!-- <submenu name="Paste Si_ze">
+           <verb verb-id="EditPasteSize" />
+           <verb verb-id="EditPasteWidth" />
+           <verb verb-id="EditPasteHeight" />
+           <verb verb-id="EditPasteSizeSeparately" />
+           <verb verb-id="EditPasteWidthSeparately" />
+           <verb verb-id="EditPasteHeightSeparately" />
+       </submenu> /-->
+       <separator/>
+       <!-- <verb verb-id="DialogFind" /> /-->
+       <!-- <separator/> /-->
+       <verb verb-id="EditDuplicate" />
+       <!-- <submenu name="Clo_ne">
+           <verb verb-id="EditClone" />
+           <verb verb-id="DialogClonetiler" />
+           <verb verb-id="EditUnlinkClone" />
+           <verb verb-id="EditUnlinkCloneRecursive" />
+           <verb verb-id="EditRelinkClone" />
+           <verb verb-id="EditCloneSelectOriginal" />
+           <verb verb-id="EditCloneOriginalPathLPE" />
+       </submenu> /-->
+       <!-- <verb verb-id="SelectionCreateBitmap" /> /-->
+       <!-- <separator/> /-->
+       <verb verb-id="EditDelete" />
+       <separator/>
+       <verb verb-id="EditSelectAll" />
+       <!-- <verb verb-id="EditSelectAllInAllLayers" /> /-->
+       <!-- <submenu name="Select Sa_me">
+           <verb verb-id="EditSelectSameFillStroke" />
+           <verb verb-id="EditSelectSameFillColor" />
+           <verb verb-id="EditSelectSameStrokeColor" />
+           <verb verb-id="EditSelectSameStrokeStyle" />
+           <verb verb-id="EditSelectSameObjectType" />
+       </submenu> /-->
+       <verb verb-id="EditInvert" />
+       <verb verb-id="EditDeselect" />
+       <!-- <separator/> /-->
+       <!-- <verb verb-id="FitCanvasToSelectionOrDrawing" /> /--> 
+       <!-- <separator/> /-->
+       <!-- <verb verb-id="EditGuidesAroundPage" /> /-->
+       <!-- <verb verb-id="EditGuidesToggleLock" check="yes" /> /-->
+       <!-- <verb verb-id="EditRemoveAllGuides" /> /-->
+       <!-- <separator/> /-->
+       <!-- <verb verb-id="DialogXMLEditor" /> /-->
+       <!-- <separator/> /-->
+       <!-- <verb verb-id="DialogInput" /> /-->
+       <verb verb-id="DialogPreferences" show-icons="true" />
+   </submenu>
+   <submenu name="_View">
+     <submenu name="_Zoom">
+       <verb verb-id="ZoomIn" />
+       <verb verb-id="ZoomOut" />
+       <separator/>
+       <!-- <verb verb-id="Zoom1:0" /> /-->
+       <!-- <verb verb-id="Zoom1:2" /> /-->
+       <!-- <verb verb-id="Zoom2:1" /> /-->
+       <!-- <separator/> /-->
+       <verb verb-id="ZoomSelection" />
+       <verb verb-id="ZoomDrawing" />
+       <verb verb-id="ZoomPage" />
+       <!-- <verb verb-id="ZoomPageWidth" /> /-->
+       <!-- <verb verb-id="ZoomCenterPage" /> /-->
+       <!-- <separator/> /-->
+       <!-- <verb verb-id="ZoomPrev" /> /-->
+       <!-- <verb verb-id="ZoomNext" /> /-->
+     </submenu>
+       <!-- <submenu name="_Display Mode"> /-->
+         <!-- <verb verb-id="ViewModeToggle"/> /-->
+         <!-- <verb verb-id="ViewModeNormal" radio="yes" default="yes"/> /-->
+         <!-- <verb verb-id="ViewModeNoFilters" radio="yes"/> /-->
+         <!-- <verb verb-id="ViewModeOutline" radio="yes"/> /-->
+         <!-- <verb verb-id="ViewModeVisibleHairlines" radio="yes"/> /-->
+         <!--Better location in menu needs to be found/-->
+         <!--verb verb-id="ViewModePrintColorsPreview" radio="yes"/-->
+         <!--verb verb-id="DialogPrintColorsPreview" /-->
+       <!-- </submenu> /-->
+       <!-- <submenu name="_Color Display Mode"> /-->
+         <!--  <verb verb-id="ViewColorModeToggle"/> /-->
+         <!--  <verb verb-id="ViewColorModeNormal" radio="yes" default="yes"/> /-->
+         <!--  <verb verb-id="ViewColorModeGrayscale" radio="yes"/> /--> 
+         <!--Better location in menu needs to be found-->
+         <!--verb verb-id="ViewColorModePrintColorsPreview" radio="yes"/-->
+         <!--verb verb-id="DialogPrintColorsPreview" /-->
+       <!--  </submenu> /-->
+       <submenu name="_Canvas Orientation">
+         <verb verb-id="FlipHorizontal" check="yes"/>
+         <verb verb-id="FlipVertical" check="yes"/>
+         <separator/>
+         <verb verb-id="RotateZero"/>
+       </submenu>
+       <separator/>
+       <!-- <verb verb-id="ViewSplitModeToggle" check="yes" /> /-->
+       <!-- <verb verb-id="ViewXRayToggle" check="yes" /> /-->
+       <verb verb-id="ToggleGrid" check="yes" />
+       <verb verb-id="ToggleGuides" check="yes" />
+       <!-- <verb verb-id="ViewCmsToggle" check="yes" /> /-->
+       <separator/>
+       <!-- <submenu name="Sh_ow/Hide"> /-->
+         <!-- <verb verb-id="ToggleCommandsToolbar" check="yes" /> /-->
+         <!-- <verb verb-id="ToggleSnapToolbar"     check="yes" /> /-->
+         <!-- <verb verb-id="ToggleToolToolbar"     check="yes" /> /-->
+         <!-- <verb verb-id="ToggleToolbox"         check="yes" /> /-->
+         <!-- <verb verb-id="ToggleRulers"          check="yes" /> /-->
+         <!-- <verb verb-id="ToggleScrollbars"      check="yes" /> /-->
+         <!-- <verb verb-id="TogglePalette"         check="yes" /> /-->
+         <!-- <verb verb-id="ToggleStatusbar"       check="yes" /> /-->
+       <!-- </submenu> /-->
+       <!-- <verb verb-id="DialogsToggle" /> /-->
+       <!-- <separator/> /-->
+       <!-- <verb verb-id="DialogSwatches" /> /-->
+       <!-- <verb verb-id="DialogDebug" /> /-->
+       <!-- <separator/> /-->
+       <!-- <verb verb-id="PrevWindow" /> /-->
+       <!-- <verb verb-id="NextWindow" /> /-->
+       <!-- <separator/> /-->
+       <!-- <verb verb-id="ViewIconPreview" /> /-->
+       <!-- <verb verb-id="ViewNew" /> /-->
+       <!-- <separator/> /-->
+       <verb verb-id="FullScreen" />
+       <separator/>
+       <task-checkboxes/>
+       <!-- Not quite ready to be in the menus.
+         <verb verb-id="FocusToggle" /-->
+   </submenu>
+   <!-- <submenu name="_Layer">
+       <verb verb-id="DialogLayers" />
+       <separator/>
+       <verb verb-id="LayerNew" />
+       <verb verb-id="LayerRename" />
+       <separator/>
+       <verb verb-id="LayerToggleHide" />
+       <verb verb-id="LayerToggleLock" />
+       <separator/>
+       <verb verb-id="LayerNext"       show-icons="true"/>
+       <verb verb-id="LayerPrev"       show-icons="true"/>
+       <separator/>
+       <verb verb-id="LayerMoveToNext" show-icons="true"/>
+       <verb verb-id="LayerMoveToPrev" show-icons="true"/>
+       <verb verb-id="LayerMoveTo"     show-icons="true"/>
+       <separator/>
+       <verb verb-id="LayerRaise"      show-icons="true"/>
+       <verb verb-id="LayerLower"      show-icons="true"/>
+       <verb verb-id="LayerToTop"      show-icons="true"/>
+       <verb verb-id="LayerToBottom"   show-icons="true" />
+       <separator/>
+       <verb verb-id="LayerDuplicate" />
+       <verb verb-id="LayerDelete" />
+   </submenu> /-->
+   <submenu name="_Object">
+       <!-- <verb verb-id="DialogObjects" /> /-->
+       <!--
+       <verb verb-id="DialogTags" />
+       -->
+       <!-- <separator/> /-->
+       <verb verb-id="DialogFillStroke" />
+       <verb verb-id="DialogObjectProperties" />
+       <verb verb-id="DialogPaintServers" />
+       <!-- <submenu name="Patter_n"> /-->
+           <verb verb-id="ObjectsToPattern" />
+           <!-- <verb verb-id="ObjectsFromPattern" /> /-->
+       <!-- </submenu> /-->
+       <verb verb-id="ObjectsToMarker" />
+       <!--
+       <verb verb-id="DialogSelectors" />
+       -->
+       <separator/>
+       <verb verb-id="SelectionGroup" />
+       <verb verb-id="SelectionUnGroup" />
+       <!-- <verb verb-id="SelectionUnGroupPopSelection" /> /-->
+       <!-- <separator/> /-->
+       <separator/>
+       <verb verb-id="SelectionRaise"         show-icons="true"/>
+       <verb verb-id="SelectionLower"         show-icons="true" />
+       <verb verb-id="SelectionToFront"       show-icons="true" />
+       <verb verb-id="SelectionToBack"        show-icons="true"/>
+       <separator/>
+       <verb verb-id="ObjectRotate90"         show-icons="true" />
+       <verb verb-id="ObjectRotate90CCW"      show-icons="true" />
+       <verb verb-id="ObjectFlipHorizontally" show-icons="true" />
+       <verb verb-id="ObjectFlipVertically"   show-icons="true" />
+       <separator/>
+       <!-- <verb verb-id="UnhideAll" /> /-->
+       <!-- <verb verb-id="UnlockAll" /> /-->
+       <!-- <separator/> /-->
+       <!-- <verb verb-id="DialogTransform" /> /-->
+       <!-- <verb verb-id="DialogAlignDistribute" /> /-->
+       <!-- <verb verb-id="DialogArrange" /> /-->
+       <!-- <verb verb-id="DialogPrototype" /> /-->
+       <separator/>
+       <verb verb-id="ObjectsToGuides" />
+       <separator/>
+       <submenu name="Cli_p">
+           <verb verb-id="ObjectSetClipPath" />
+           <!-- <verb verb-id="ObjectSetInverseClipPath" /> /-->
+           <verb verb-id="ObjectUnSetClipPath" />
+       </submenu>
+       <!-- <submenu name="Mas_k"> /-->
+           <!-- <verb verb-id="ObjectSetMask" /> /-->
+           <!-- <verb verb-id="ObjectSetInverseMask" /> /-->
+           <!-- <verb verb-id="ObjectUnSetMask" /> /-->
+       <!-- </submenu> /-->
+       <verb verb-id="DialogSymbols" />
+       <separator/>
+   </submenu>
+   <submenu name="_Path">
+       <verb verb-id="ObjectToPath" />
+       <verb verb-id="StrokeToPath" />
+       <verb verb-id="SelectionTrace" />
+       <separator/>
+       <verb verb-id="SelectionUnion"        show-icons="true" />
+       <verb verb-id="SelectionDiff"         show-icons="true" />
+       <verb verb-id="SelectionIntersect"    show-icons="true" />
+       <!-- <verb verb-id="SelectionSymDiff"      show-icons="true" /> /-->
+       <!-- <verb verb-id="SelectionDivide"       show-icons="true" /> /-->
+       <verb verb-id="SelectionCutPath"      show-icons="true" />
+       <separator/>
+       <verb verb-id="SelectionCombine"      show-icons="true" />
+       <verb verb-id="SelectionBreakApart"   show-icons="true" />
+       <separator/>
+       <verb verb-id="SelectionInset"        show-icons="true" />
+       <verb verb-id="SelectionOffset"       show-icons="true" />
+       <!-- <verb verb-id="SelectionDynOffset"    show-icons="true" /> /-->
+       <verb verb-id="SelectionLinkedOffset" show-icons="true" />
+       <separator/>
+       <verb verb-id="SelectionSimplify" />
+       <!-- <verb verb-id="SelectionReverse" /> /-->
+       <separator/>
+       <verb verb-id="DialogLivePathEffect" />
+       <!-- <verb verb-id="PasteLivePathEffect" /> /-->
+       <!-- <verb verb-id="RemoveLivePathEffect" /> /-->
+   </submenu>
+   <submenu name="_Text">
+       <verb verb-id="DialogText" />
+       <!-- <verb verb-id="DialogSVGFonts" /> /-->
+       <!-- <verb verb-id="DialogGlyphs" /> /-->
+       <separator/>
+       <verb verb-id="SelectionTextToPath" />
+       <verb verb-id="SelectionTextFromPath" />
+       <separator/>
+       <verb verb-id="ObjectFlowText" />
+       <verb verb-id="ObjectUnFlowText" />
+       <!-- <verb verb-id="ObjectFlowtextToText" /> /-->
+       <separator/>
+       <verb verb-id="SelectionTextRemoveKerns" />
+       <!-- <separator/> /-->
+       <!-- <verb verb-id="DialogSpellcheck" />  <!-- depends on HAVE_ASPELL --> /-->
+   </submenu>
+  <!-- <submenu name="Filter_s">
+       <filters-list/>
+       <separator/>
+       <verb verb-id="DialogFilterEffects" />
+       <verb verb-id="RemoveFilter" />
+   </submenu> -->
+  <submenu name="Exte_nsions">
+	   <verb verb-id="fablabchemnitz.de.simpleinkscape" />
+       <!-- <effects-list/> -->
+   </submenu>
+   <!-- <submenu name="_Help">
+       <verb verb-id="HelpUrlManual" />
+       <verb verb-id="HelpUrlKeys" />
+       <verb verb-id="HelpUrlAskQuestion" />
+       <!-- <submenu name="Tutorials">
+           <verb verb-id="TutorialsBasic" />
+           <verb verb-id="TutorialsShapes" />
+           <verb verb-id="TutorialsAdvanced" />
+           <verb verb-id="TutorialsTracing" />
+           <verb verb-id="TutorialsTracingPixelArt" />
+           <verb verb-id="TutorialsCalligraphy" />
+           <verb verb-id="TutorialsInterpolate" />
+           <verb verb-id="TutorialsDesign" />
+           <verb verb-id="TutorialsTips" />
+       </submenu> -->
+       <!--verb verb-id="org.inkscape.dialogs.extensioneditor" /-->
+       <!-- <verb verb-id="HelpUrlMan" /> -->
+       <!-- <verb verb-id="HelpUrlFAQ" /> -->
+       <!-- <verb verb-id="HelpUrlReleaseNotes" /> -->
+       <!-- <verb verb-id="HelpUrlReportBug" /> -->
+       <!-- <verb verb-id="HelpUrlSvg11Spec" /> -->
+       <!-- <verb verb-id="HelpUrlSvg2Spec" /> -->
+       <!-- <separator/> -->
+       <!-- <verb verb-id="HelpAboutMemory" /> -->
+       <!-- <verb verb-id="HelpAbout" show-icons="true"/> -->
+       <!--verb verb-id="ShowLicense" /-->
+   </submenu> /-->
+
+   <contextmenu id="canvas" show-icons="false" />
+   <contextmenu id="layers" show-icons="false" />
+   <contextmenu id="objects" show-icons="false" />
+</inkscape>

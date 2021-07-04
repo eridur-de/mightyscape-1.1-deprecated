@@ -1,0 +1,49 @@
+<ui>
+  <toolbar name='ToolToolbar'>
+
+    <!-- Select and Edit -->
+    <toolitem action='ToolSelector' />
+    <toolitem action='ToolNode' />
+
+<separator />
+
+    <!-- Create predefined shapes -->
+    <toolitem action='ToolRect' />
+    <toolitem action='ToolArc' />
+    <toolitem action='ToolStar' />
+    <!-- <toolitem action='Tool3DBox' /> -->
+    <toolitem action='ToolSpiral' />
+
+<separator />
+
+    <!-- Create new paths and text -->
+    <toolitem action='ToolPen' />
+    <toolitem action='ToolPencil' />
+    <toolitem action='ToolCalligraphic' />
+    <toolitem action='ToolText' />
+
+<separator />
+
+    <!-- Edit color of objects -->
+    <toolitem action='ToolGradient' />
+    <!-- <toolitem action='ToolMesh' /> -->
+    <!-- <toolitem action='ToolDropper' /> -->
+
+    <toolitem action='ToolPaintBucket' />
+
+<separator />
+
+    <!-- Other tools to edit objects -->
+    <!-- <toolitem action='ToolTweak' /> -->
+    <toolitem action='ToolSpray' />
+    <toolitem action='ToolEraser' />
+    <!-- <toolitem action='ToolConnector' />
+ -->    <!-- <toolitem action='ToolLPETool' />
+ -->   <separator />
+
+    <!-- Other tools that do not modify objects -->
+    <!-- <toolitem action='ToolZoom' /> -->
+    <!-- <toolitem action='ToolMeasure' />
+ -->
+
+  </toolbar>    </ui>

@@ -1,0 +1,41 @@
+<ui>
+  <toolbar name='CommandsToolbar'>
+    <toolitem action='FileNew' />
+    <toolitem action='FileOpen' />
+    <toolitem action='FileSave' />
+    <toolitem action='FilePrint' />
+    <separator />
+    <toolitem action='FileImport' />
+    <toolitem action='DialogExport' />
+    <separator />
+    <toolitem action='EditUndo' />
+    <toolitem action='EditRedo' />
+    <separator />
+    <toolitem action='EditCopy' />
+    <toolitem action='EditCut' />
+    <toolitem action='EditPaste' />
+    <separator />
+    <toolitem action='ZoomSelection' />
+    <toolitem action='ZoomDrawing' />    <toolitem action='ZoomPage' />
+    <!-- <toolitem action='ZoomCenterPage' /> -->
+    <separator />
+    <toolitem action='EditDuplicate' />
+    <!-- <toolitem action='EditClone' /> -->
+    <!-- <toolitem action='EditUnlinkClone' /> -->
+    <separator />
+    <toolitem action='SelectionGroup' />
+    <toolitem action='SelectionUnGroup' />
+    <separator />
+    <toolitem action='DialogFillStroke' />
+    <toolitem action='DialogText' />
+    <!-- <toolitem action='DialogLayers' /> -->
+    <!-- <toolitem action='DialogXMLEditor' />
+ -->    <!--
+    <toolitem action='DialogSelectors' />
+ -->
+    <!-- <toolitem action='DialogAlignDistribute' /> -->
+    <separator />
+    <!-- <toolitem action='DialogDocumentProperties' /> -->
+    <!-- <toolitem action='DialogPreferences' />
+ -->  </toolbar>
+</ui>
