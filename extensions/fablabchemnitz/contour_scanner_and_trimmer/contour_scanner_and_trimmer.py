@@ -3,16 +3,22 @@
 '''
 Extension for InkScape 1.0+
  - WARNING: HORRIBLY SLOW CODE. PLEASE HELP TO MAKE IT USEFUL FOR LARGE AMOUNT OF PATHS
- - add options:
-    - replace trimmed paths by bezier paths (calculating lengths and required t parameter)
-    - filter/remove overlapping/duplicates in 
-        - in original selection (not working bezier but for straight line segments!) We can use another extension for it
-        - split bezier
-        - ...
-    - maybe option: convert abs path to rel path
-    - maybe option: convert rel path to abs path
-        replacedelement.path = replacedelement.path.to_absolute().to_superpath().to_path()
-    - maybe option: break apart while keeping relative/absolute commands (more complex and not sure if we have a great advantage having this)
+ - ToDo: 
+    - add more comments
+    - add more debug output
+    - add documentation at online page
+    - add statistics about type counts and path lengths (before/after sub splitting/trimming)
+    - add options:
+        - replace trimmed paths by bezier paths (calculating lengths and required t parameter)
+        - filter/remove overlapping/duplicates in 
+            - in original selection (not working bezier but for straight line segments!) We can use another extension for it
+            - split bezier
+            - ...
+        - maybe option: convert abs path to rel path
+        - maybe option: convert rel path to abs path
+            replacedelement.path = replacedelement.path.to_absolute().to_superpath().to_path()
+        - maybe option: break apart while keeping relative/absolute commands (more complex and not sure if we have a great advantage having this)
+    - note: running this extension might leave some empty parent groups in some circumstances. run the clean groups extension separately to fix that
     
 - important to notice
     - this algorithm might be really slow. Reduce flattening quality to speed up
@@ -47,7 +53,7 @@ Extension for InkScape 1.0+
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 09.08.2020 (extension originally called "Contour Scanner")
-Last patch: 22.06.2021
+Last patch: 24.06.2021
 License: GNU GPL v3
 
 '''
@@ -68,10 +74,11 @@ from shapely import speedups
 if speedups.available:
     speedups.enable()
 
-
 idPrefixSubSplit = "subsplit"
-idPrefixTrimming = "shapely"
+idPrefixTrimming = "trimmed"
 intersectedVerb = "intersected"
+collinearVerb = "collinear"
+
 EPS_M = 0.01
 
 class ContourScannerAndTrimmer(inkex.EffectExtension):
@@ -216,6 +223,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
             selfIntersectionPointCircle.set('id', self.svg.get_unique_id('selfIntersectionPoint-'))
             selfIntersectionPointCircle.style = selfIntersectionPointStyle
             selfIntersectionGroup.add(selfIntersectionPointCircle)
+        return selfIntersectionGroup
 
 
     def visualize_global_intersections(self, globalIntersectionPoints):
@@ -296,9 +304,9 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
 
             #if trimGroupParentTransform is not None:
             #    trimLine.path = trimLine.path.transform(-trimGroupParentTransform)
-            if self.options.apply_style_to_trimmed is False:
+            if self.options.trimmed_style == "apply_from_trimmed":
                 trimLine.style = trimLineStyle
-            else:
+            elif self.options.trimmed_style == "apply_from_original":
                 trimLine.style = subSplitLineArray[subSplitIndex].attrib['originalPathStyle']
             trimGroup.add(trimLine)
         return trimGroup
@@ -368,7 +376,10 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
     def filter_collinear(self, lineArray):
         '''
             Loop through a set of lines and find + fiter all overlapping segments / duplicate segments
-            finally returns a set of merged-like lines and a set of original items which should be dropped
+            finally returns a set of merged-like lines and a set of original items which should be dropped.
+            Based on the style of the algorithm we have no good influence on the z-index of the items because 
+            it is scanned by slope and point coordinates. That's why we have a more special 
+            'remove_trim_duplicates()' function for trimmed duplicates!
         '''
         input_set = []
         input_ids = []
@@ -376,7 +387,11 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         # collect segments, calculate their slopes, order their points left-to-right
         for line in lineArray:
             #csp = line.path.to_arrays()
-            csp = Path(line.path.transform(line.getparent().composed_transform())).to_arrays()
+            parent = line.getparent()
+            if parent is not None:
+                csp = Path(line.path.transform(parent.composed_transform())).to_arrays()
+            else:
+                csp = line.path.to_arrays()
             #self.msg("csp = {}".format(csp))
             x1, y1, x2, y2 = csp[0][1][0], csp[0][1][1], csp[1][1][0], csp[1][1][1]
             # ensure p0 is left of p1
@@ -431,7 +446,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
 
         #we finally build a list which contains all overlapping elements we want to drop
         dropped_ids = []
-        for input_id in input_ids: #if the working id is not in the output id we are going to drop it
+        for input_id in input_ids: #if the input_id id is not in the output ids we are going to drop it
             if input_id not in output_ids:
                dropped_ids.append(input_id) 
 
@@ -459,10 +474,14 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         return output_set, dropped_ids
 
 
-    def remove_duplicates(self, allTrimGroups):
-        ''' find duplicate lines in a given array [] of groups '''
+    def remove_trim_duplicates(self, allTrimGroups):
+        ''' 
+            find duplicate lines in a given array [] of groups
+            note: this function is similar to filter_collinear but we keep it because we have a 'reverse_trim_removal_order' option.
+            We can use this option in some special situations where we work without the function 'filter_collinear()'.
+        '''
         totalTrimPaths = []
-        if self.options.reverse_removal_order is True:
+        if self.options.reverse_trim_removal_order is True:
             allTrimGroups = allTrimGroups[::-1]
         for trimGroup in allTrimGroups:
             for element in trimGroup:
@@ -522,7 +541,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                     self.msg("trim group {} has {} combinable segments:".format(trimGroup.get('id'), len(newPathData)))     
                     self.msg("{}".format(newPathData))
                 combinedPath.path = Path(newPathData)              
-                if self.options.apply_style_to_trimmed is False:
+                if self.options.trimmed_style  == "apply_from_trimmed":
                     combinedPath.style = trimNonIntersectedStyle         
                     if totalIntersectionsAtPath == 0:
                         combinedPath.style = nonTrimLineStyle
@@ -574,9 +593,10 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                 
 
     def add_arguments(self, pars):
-        pars.add_argument("--tab")
+        pars.add_argument("--nb_main")
+        pars.add_argument("--nb_settings_and_actions")
         
-        #Settings - General
+        #Settings - General Input/Output
         pars.add_argument("--show_debug", type=inkex.Boolean, default=False, help="Show debug infos")
         pars.add_argument("--break_apart", type=inkex.Boolean, default=False, help="Break apart input paths into sub paths")
         pars.add_argument("--handle_groups", type=inkex.Boolean, default=False, help="Also looks for paths in groups which are in the current selection")
@@ -585,10 +605,15 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         pars.add_argument("--flatness", type=float, default=0.1, help="Minimum flatness = 0.001. The smaller the value the more fine segments you will get (quantization). Large values might destroy the line continuity.")
         pars.add_argument("--decimals", type=int, default=3, help="Accuracy for sub split lines / lines trimmed by shapely")
         pars.add_argument("--snap_tolerance", type=float, default=0.1, help="Snap tolerance for intersection points")
-        pars.add_argument("--draw_subsplit", type=inkex.Boolean, default=False, help="Draw sub split lines (polylines)")
-        pars.add_argument("--remove_subsplit_collinear", type=inkex.Boolean, default=True, help="Removes any duplicates by merging (multiple) overlapping line segments into longer lines. Not possible to apply for original paths because this routine does not support bezier type paths.")    
+        #Settings - General Style
+        pars.add_argument("--strokewidth", type=float, default=1.0, help="Stroke width (px)")   
+        pars.add_argument("--dotsize_intersections", type=int, default=30, help="Dot size (px) for self-intersecting and global intersection points")
+        pars.add_argument("--removefillsetstroke", type=inkex.Boolean, default=False, help="Remove fill and define stroke for original paths")
+        pars.add_argument("--bezier_trimming", type=inkex.Boolean, default=False, help="If true we try to use the calculated t parameters from intersection points to receive splitted bezier curves")
+        pars.add_argument("--subsplit_style", default="default", help="Sub split line style")
+        pars.add_argument("--trimmed_style", default="apply_from_trimmed", help="Trimmed line style")
 
-        #Scanning - Removing
+        #Removing - Applying to original paths and sub split lines
         pars.add_argument("--remove_relative", type=inkex.Boolean, default=False, help="relative cmd")
         pars.add_argument("--remove_absolute", type=inkex.Boolean, default=False, help="absolute cmd")
         pars.add_argument("--remove_mixed", type=inkex.Boolean, default=False, help="mixed cmd (relative + absolute)")
@@ -597,8 +622,13 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         pars.add_argument("--remove_opened", type=inkex.Boolean, default=False, help="opened")
         pars.add_argument("--remove_closed", type=inkex.Boolean, default=False, help="closed")
         pars.add_argument("--remove_self_intersecting", type=inkex.Boolean, default=False, help="self-intersecting")
+        #Removing - Applying to sub split lines only
+        pars.add_argument("--filter_subsplit_collinear", type=inkex.Boolean, default=True, help="Removes any duplicates by merging (multiple) overlapping line segments into longer lines. Not possible to apply for original paths because this routine does not support bezier type paths.")
+        pars.add_argument("--filter_subsplit_collinear_action", default="remove", help="What to do with collinear overlapping lines?")
+        #Removing - Applying to original paths only
+        pars.add_argument("--keep_original_after_split_trim", type=inkex.Boolean, default=False, help="Keep original paths after sub splitting / trimming") 
 
-        #Scanning - Highlighting
+        #Highlighting - Applying to original paths and sub split lines
         pars.add_argument("--highlight_relative", type=inkex.Boolean, default=False, help="relative cmd paths")
         pars.add_argument("--highlight_absolute", type=inkex.Boolean, default=False, help="absolute cmd paths")
         pars.add_argument("--highlight_mixed", type=inkex.Boolean, default=False, help="mixed cmd (relative + absolute) paths")
@@ -606,17 +636,22 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         pars.add_argument("--highlight_beziers", type=inkex.Boolean, default=False, help="bezier paths")
         pars.add_argument("--highlight_opened", type=inkex.Boolean, default=False, help="opened paths")
         pars.add_argument("--highlight_closed", type=inkex.Boolean, default=False, help="closed paths")
+        #Highlighting - Applying to sub split lines only
+        pars.add_argument("--draw_subsplit", type=inkex.Boolean, default=False, help="Draw sub split lines (polylines)")
+        pars.add_argument("--highlight_duplicates", type=inkex.Boolean, default=False, help="duplicates (only applies to sub split lines)")
+        pars.add_argument("--highlight_merges", type=inkex.Boolean, default=False, help="merges (only applies to sub split lines)")
+        #Highlighting - Intersection points
         pars.add_argument("--highlight_self_intersecting", type=inkex.Boolean, default=False, help="self-intersecting paths")
         pars.add_argument("--visualize_self_intersections", type=inkex.Boolean, default=False, help="self-intersecting path points")
         pars.add_argument("--visualize_global_intersections", type=inkex.Boolean, default=False, help="global intersection points")
  
-        #Settings - Trimming
+        #Trimming - General trimming settings
         pars.add_argument("--draw_trimmed", type=inkex.Boolean, default=False, help="Draw trimmed lines")
         pars.add_argument("--combine_nonintersects", type=inkex.Boolean, default=True, help="Combine non-intersected lines")
-        pars.add_argument("--remove_duplicates", type=inkex.Boolean, default=True, help="Remove duplicate trim lines")
-        pars.add_argument("--reverse_removal_order", type=inkex.Boolean, default=False, help="Reverses the order of removal. Relevant for keeping certain styles of elements")
-        pars.add_argument("--keep_original_after_trim", type=inkex.Boolean, default=False, help="Keep original paths after trimming") 
-
+        pars.add_argument("--remove_trim_duplicates", type=inkex.Boolean, default=True, help="Remove duplicate trim lines")
+        pars.add_argument("--reverse_trim_removal_order", type=inkex.Boolean, default=False, help="Reverses the order of removal. Relevant for keeping certain styles of elements")
+        pars.add_argument("--remove_subsplit_after_trimming", type=inkex.Boolean, default=True, help="Remove sub split lines after trimming")
+        #Trimming - Bentley-Ottmann sweep line settings
         pars.add_argument("--bent_ott_use_ignore_segment_endings", type=inkex.Boolean, default=True, help="Whether to ignore intersections of line segments when both their end points form the intersection point")
         pars.add_argument("--bent_ott_use_debug", type=inkex.Boolean, default=False)
         pars.add_argument("--bent_ott_use_verbose", type=inkex.Boolean, default=False)        
@@ -624,28 +659,24 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         pars.add_argument("--bent_ott_use_vertical", type=inkex.Boolean, default=True)
         pars.add_argument("--bent_ott_number_type", default="native")
 
-        #Style - General Style
-        pars.add_argument("--strokewidth", type=float, default=1.0, help="Stroke width (px)")   
-        pars.add_argument("--dotsize_intersections", type=int, default=30, help="Dot size (px) for self-intersecting and global intersection points")
-        pars.add_argument("--removefillsetstroke", type=inkex.Boolean, default=False, help="Remove fill and define stroke for original paths")
-        pars.add_argument("--bezier_trimming", type=inkex.Boolean, default=False, help="If true we try to use the calculated t parameters from intersection points to receive splitted bezier curves")
-        pars.add_argument("--apply_style_to_subsplits", type=inkex.Boolean, default=True, help="Apply highlighting styles to sub split lines.")
-        pars.add_argument("--apply_style_to_trimmed", type=inkex.Boolean, default=True, help="Apply original path style to trimmed lines")
-     
-        #Style - Scanning Colors
-        pars.add_argument("--color_subsplit", type=Color, default='1630897151', help="sub split lines")
+        #Colors
+        pars.add_argument("--color_subsplit", type=Color, default='1630897151', help="sub split lines")   
+        #Colors - path structure
         pars.add_argument("--color_relative", type=Color, default='3419879935', help="relative cmd paths")
         pars.add_argument("--color_absolute", type=Color, default='1592519679', help="absolute cmd paths")
-        pars.add_argument("--color_mixed", type=Color, default='3351636735', help="mixed cmd (relative + absolute) paths")
+        pars.add_argument("--color_mixed", type=Color, default='3351636735', help="mixed cmd (relative + absolute) paths")     
         pars.add_argument("--color_polyline", type=Color, default='4289703935', help="polyline paths")
         pars.add_argument("--color_bezier", type=Color, default='258744063', help="bezier paths")
         pars.add_argument("--color_opened", type=Color, default='4012452351', help="opened paths")
         pars.add_argument("--color_closed", type=Color, default='2330080511', help="closed paths")
+        #Colors - duplicates and merges
+        pars.add_argument("--color_duplicates", type=Color, default='897901823', help="duplicates")
+        pars.add_argument("--color_merges", type=Color, default='869366527', help="merges")        
+        #Colors - intersections
         pars.add_argument("--color_self_intersecting_paths", type=Color, default='2593756927', help="self-intersecting paths")
         pars.add_argument("--color_self_intersections", type=Color, default='6320383', help="self-intersecting path points")
         pars.add_argument("--color_global_intersections", type=Color, default='4239343359', help="global intersection points")
-       
-        #Style - Trimming Color
+        #Colors - trimming
         pars.add_argument("--color_trimmed", type=Color, default='1923076095', help="trimmed lines")
         pars.add_argument("--color_combined", type=Color, default='3227634687', help="non-intersected lines")
         pars.add_argument("--color_nonintersected", type=Color, default='3045284607', help="non-intersected paths")
@@ -658,6 +689,20 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         if so.break_apart is True and so.show_debug is True:
             self.msg("Warning: 'Break apart input' setting is enabled. Cannot check accordingly for relative, absolute or mixed paths for breaked elements (they are always absolute)!")
      
+        #some configuration dependecies
+        if so.highlight_self_intersecting is True or \
+           so.highlight_duplicates is True or \
+           so.highlight_merges is True:
+            so.draw_subsplit = True
+            
+        if so.highlight_duplicates is True or \
+           so.highlight_merges is True:
+            so.filter_subsplit_collinear = True
+     
+        if so.filter_subsplit_collinear is True: #this is a must. 
+        #if so.draw_subsplit is disabled bu we filter sub split lines and follow with trim operation we lose a lot of elements which may not be deleted!
+            so.draw_subsplit = True
+     
         #some constant stuff / styles
         relativePathStyle = {'stroke': str(so.color_relative), 'fill': 'none', 'stroke-width': so.strokewidth}
         absolutePathStyle = {'stroke': str(so.color_absolute), 'fill': 'none', 'stroke-width': so.strokewidth}
@@ -666,6 +711,8 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         bezierPathStyle = {'stroke': str(so.color_bezier), 'fill': 'none', 'stroke-width': so.strokewidth}
         openPathStyle = {'stroke': str(so.color_opened), 'fill': 'none', 'stroke-width': so.strokewidth}
         closedPathStyle = {'stroke': str(so.color_closed), 'fill': 'none', 'stroke-width': so.strokewidth}
+        duplicatesPathStyle = {'stroke': str(so.color_duplicates), 'fill': 'none', 'stroke-width': so.strokewidth}
+        mergesPathStyle = {'stroke': str(so.color_merges), 'fill': 'none', 'stroke-width': so.strokewidth}
         selfIntersectingPathStyle = {'stroke': str(so.color_self_intersecting_paths), 'fill': 'none', 'stroke-width': so.strokewidth}
         basicSubSplitLineStyle = {'stroke': str(so.color_subsplit), 'fill': 'none', 'stroke-width': so.strokewidth}
 
@@ -778,7 +825,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                     subSplitId = "{}-{}-{}".format(idPrefixSubSplit, originalPathId, i)
                     line = inkex.PathElement(id=subSplitId)
                     #apply line path with composed negative transform from parent element
-                    line.attrib['d'] = 'M {},{} L {},{}'.format(x1, y1, x2, y2) #we set the path of trimLine using 'd' attribute because if we use trimLine.path the decimals get cut off unwantedly
+                    line.attrib['d'] = 'M {},{} L {},{}'.format(x1, y1, x2, y2) #we set the path of Line using 'd' attribute because if we use trimLine.path the decimals get cut off unwantedly
                     #line.path = [['M', [x1, y1]], ['L', [x2, y2]]]
                     if pathElement.getparent() != self.svg.root and pathElement.getparent() != None:
                         line.path = line.path.transform(-pathElement.getparent().composed_transform())
@@ -792,7 +839,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                     line.attrib['originalPathStyle'] = str(pathElement.style)
                     subSplitLineArray.append(line)
 
-                    if so.apply_style_to_subsplits is True:
+                    if so.subsplit_style == "apply_from_highlightings":
                         if line.attrib['originalPathIsRelative'] == 'True':
                             if so.highlight_relative is True:
                                 line.style = relativePathStyle
@@ -818,6 +865,8 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                         else:
                             if so.highlight_opened is True:
                                 line.style = openPathStyle
+                    elif so.subsplit_style == "apply_from_original":
+                        line.style = line.attrib['originalPathStyle']
 
                     if so.draw_subsplit is True:
                         subSplitLineGroup.add(line)
@@ -830,15 +879,14 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                     isSelfIntersecting = True
                     if so.show_debug is True:
                         self.msg("{} in {} intersects itself with {} intersections!".format(subSplitId, originalPathId, len(selfIntersectionPoints)))
-                    if so.draw_subsplit is True:
-                        if so.highlight_self_intersecting is True:
-                            for subSplitLine in subSplitLineGroup:
-                                subSplitLine.style = selfIntersectingPathStyle #adjusts line color
+                    if so.highlight_self_intersecting is True:
+                        for subSplitLine in subSplitLineGroup:
+                            subSplitLine.style = selfIntersectingPathStyle #adjusts line color
                         #delete cosmetic sub split lines if desired
                         if so.remove_self_intersecting:
                             subSplitLineGroup.delete()
                     if so.visualize_self_intersections is True: #draw points (circles)
-                        self.visualize_self_intersections(pathElement, selfIntersectionPoints)
+                        selfIntersectionGroup = self.visualize_self_intersections(pathElement, selfIntersectionPoints)
 
                     #delete self-intersecting sub split lines and orginal paths
                     if so.remove_self_intersecting:
@@ -888,31 +936,81 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         if so.show_debug is True:
             self.msg("sub split line count: {}".format(len(subSplitLineArray)))   
 
-        if so.remove_subsplit_collinear is True:
+        '''
+        check for collinear lines and apply filters to remove or regroup and to restyle them
+        Run this action only if one of the options requires it (to avoid useless calculation cycles)
+        '''     
+        if so.filter_subsplit_collinear is True or \
+           so.highlight_duplicates is True or \
+           so.highlight_merges is True:
             if so.show_debug is True: self.msg("filtering collinear overlapping lines / duplicate lines")
             if len(subSplitLineArray) > 0:
                 output_set, dropped_ids = self.filter_collinear(subSplitLineArray)
+                deleteIndices = []
+                deleteIndice = 0
                 for subSplitLine in subSplitLineArray:
-                    ssl_id = subSplitLine.get('id')
-                    if ssl_id in dropped_ids:
-                        ssl_parent = subSplitLine.getparent()
-                        subSplitLine.delete() #delete the line
-        
-                        #and delete the containg group if empty
-                        if ssl_parent is not None and len(ssl_parent) == 0:
-                            if self.options.show_debug is True:
-                                self.msg("Deleting group {}".format(ssl_parent.get('id')))
-                            ssl_parent.delete()
-                    # and now we replace the overlapping items with the new merged output
+                    '''
+                    Replace the overlapping items with the new merged output
+                    '''
                     for output in output_set:
                         if output['id'] == subSplitLine.attrib['id']:
-                            #self.msg(output['p0'])
-                            subSplitLine.attrib['d'] = 'M {},{} L {},{}'.format(
-                                output['p0'][0], output['p0'][1], output['p1'][0], output['p1'][1]) #we set the path of trimLine using 'd' attribute because if we use trimLine.path the decimals get cut off unwantedly
+                            originalSplitLinePath = subSplitLine.path
+                            output_line = 'M {},{} L {},{}'.format(
+                                output['p0'][0], output['p0'][1], output['p1'][0], output['p1'][1])
+                            output_line_reversed = 'M {},{} L {},{}'.format(
+                                output['p1'][0], output['p1'][1], output['p0'][0], output['p0'][1])
+                            subSplitLine.attrib['d'] = output_line #we set the path using 'd' attribute because if we use trimLine.path the decimals get cut off unwantedly
+                            mergedSplitLinePath = subSplitLine.path
+                            mergedSplitLinePathReversed = Path(output_line_reversed)
                             #subSplitLine.path = [['M', output['p0']], ['L', output['p1']]] 
                             #self.msg("composed_transform = {}".format(output['composed_transform']))
                             #subSplitLine.transform = Transform(-output['composed_transform']) * subSplitLine.transform
+
                             subSplitLine.path = subSplitLine.path.transform(-output['composed_transform'])
+                            if so.highlight_merges is True:
+                                if originalSplitLinePath != mergedSplitLinePath and \
+                                   originalSplitLinePath != mergedSplitLinePathReversed: #if the path changed we are going to highlight it
+                                    subSplitLine.style = mergesPathStyle
+                                    
+                    
+                    '''
+                    Delete or move sub split lines which are overlapping
+                    '''
+                    ssl_id = subSplitLine.get('id')                 
+                    if ssl_id in dropped_ids:
+                        if so.highlight_duplicates is True:
+                            subSplitLine.style = duplicatesPathStyle
+                        
+                        if so.filter_subsplit_collinear is True:
+                            ssl_parent = subSplitLine.getparent()
+                            if so.filter_subsplit_collinear_action == "remove":
+                                if self.options.show_debug is True:
+                                    self.msg("Deleting sub split line {}".format(subSplitLine.get('id')))
+                                subSplitLine.delete() #delete the line from XML tree
+                                deleteIndices.append(deleteIndice) #store this id to remove it from stupid subSplitLineArray later
+                            elif so.filter_subsplit_collinear_action == "separate_group":
+                                if self.options.show_debug is True:
+                                    self.msg("Moving sub split line {}".format(subSplitLine.get('id')))
+                                originalPathId = subSplitLine.attrib['originalPathId']
+                                collinearGroupId = '{}-{}'.format(collinearVerb, originalPathId)
+                                originalPathElement = self.svg.getElementById(originalPathId)
+                                collinearGroup = self.find_group(collinearGroupId)
+                                if collinearGroup is None:
+                                    collinearGroup = originalPathElement.getparent().add(inkex.Group(id=collinearGroupId))
+                                collinearGroup.append(subSplitLine) #move to that group
+                            #and delete the containg group if empty (can happen in "remove" or "separate_group" constellation
+                            if ssl_parent is not None and len(ssl_parent) == 0:
+                                if self.options.show_debug is True:
+                                    self.msg("Deleting group {}".format(ssl_parent.get('id')))
+                                ssl_parent.delete()
+                                
+                    deleteIndice += 1 #end the loop by incrementing +1
+                
+                #shrink the sub split line array to kick out all unrequired indices
+                for deleteIndice in sorted(deleteIndices, reverse=True):
+                    if self.options.show_debug is True:
+                        self.msg("Deleting index {} from subSplitLineArray".format(deleteIndice))
+                    del subSplitLineArray[deleteIndice]
 
         '''
         now we intersect the sub split lines to find the global intersection points using Bentley-Ottmann algorithm (contains self-intersections too!)
@@ -950,7 +1048,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                 for subSplitLine in subSplitLineArray:
                     csp = subSplitLine.path.to_arrays()
                     lineString = [(csp[0][1][0], csp[0][1][1]), (csp[1][1][0], csp[1][1][1])]
-                    if so.remove_duplicates is True:
+                    if so.remove_trim_duplicates is True:
                         if lineString not in allSubSplitLineStrings:
                             allSubSplitLineStrings.append(lineString)
                         else:
@@ -990,27 +1088,37 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                         if so.show_debug is True: self.msg("trimming beziers - not working yet")
                         self.trim_bezier(allTrimGroups)  
                    
-                    if so.remove_duplicates is True:
+                    if so.remove_trim_duplicates is True:
                         if so.show_debug is True: self.msg("checking for duplicate trim lines and deleting them")
-                        self.remove_duplicates(allTrimGroups)
-                                    
+                        self.remove_trim_duplicates(allTrimGroups)
+                                         
                     if so.combine_nonintersects is True:
                         if so.show_debug is True: self.msg("glueing together all non-intersected sub split lines to larger path structures again (cleaning up)")
-                        self. combine_nonintersects(allTrimGroups)
-
-                    #clean original paths if selected. This option is explicitely independent from remove_open, remove_closed
-                    if so.keep_original_after_trim is False:
-                        if so.show_debug is True: self.msg("cleaning original paths")
-                        for pathElement in pathElements:
-                            pathElement.delete()
+                        self.combine_nonintersects(allTrimGroups)
         
+                    if so.remove_subsplit_after_trimming is True:
+                        if so.show_debug is True: self.msg("removing unwanted subsplit lines after trimming")
+                        for subSplitLine in subSplitLineArray:
+                            ssl_parent = subSplitLine.getparent()
+                            subSplitLine.delete()
+                            if ssl_parent is not None and len(ssl_parent) == 0:
+                                if self.options.show_debug is True:
+                                    self.msg("Deleting group {}".format(ssl_parent.get('id')))
+                                ssl_parent.delete()
+
             except AssertionError as e:
                 self.msg("Error calculating global intersections.\n\
 See https://github.com/ideasman42/isect_segments-bentley_ottmann.\n\n\
 You can try to fix this by:\n\
 - reduce or raise the 'decimals' setting (default is 3 but try to set to 6 for example)\n\
 - reduce or raise the 'flatness' setting (if quantization option is used at all; default is 0.100).")
-            return
+                return
+
+        #clean original paths if selected.
+        if so.keep_original_after_split_trim is False:
+            if so.show_debug is True: self.msg("cleaning original paths after sub splitting / trimming")
+            for pathElement in pathElements:
+                pathElement.delete()
 
 if __name__ == '__main__':
     ContourScannerAndTrimmer().run()

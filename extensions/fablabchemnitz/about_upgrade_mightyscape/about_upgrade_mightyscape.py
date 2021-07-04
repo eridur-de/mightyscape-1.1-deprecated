@@ -33,32 +33,14 @@ class AboutUpgradeMightyScape(inkex.EffectExtension):
         try:
             localCommit = local_repo.head.commit
             remote_repo = git.remote.Remote(local_repo, 'origin')
-            remoteCommit = remote_repo.fetch()[0].commit  
+            remoteCommit = remote_repo.fetch()[0].commit
+            self.msg("Latest remote commit is: " + str(remoteCommit)[:7])
+
             authors = []
             # for every remote commit
             while remoteCommit.hexsha != localCommit.hexsha:
                 authors.append(remoteCommit.author.email) 
                 remoteCommit = remoteCommit.parents[0]
-
-            #local_commits = list(local_repo.iter_commits("master", max_count=5))
-            local_commits = list(local_repo.iter_commits("master"))
-            self.msg("Local commit id is: " + str(localCommit)[:7])
-            self.msg("Latest remote commit is: " + str(remoteCommit)[:7])
-            self.msg("There are {} local commits at the moment.".format(len(local_commits)))
-            localCommitList = []
-            for local_commit in local_commits:
-                localCommitList.append(local_commit)
-            #localCommitList.reverse()
-            self.msg("*"*40)
-            self.msg("Latest 10 local commits are:")
-            for i in range(0, 10):
-                self.msg("{} | {} : {}".format(
-                    datetime.utcfromtimestamp(localCommitList[i].committed_date).strftime('%Y-%m-%d %H:%M:%S'),
-                    localCommitList[i].name_rev[:7],
-                    localCommitList[i].message.strip())
-                    )   
-                #self.msg(" - {}: {}".format(localCommitList[i].newhexsha[:7], localCommitList[i].message))   
-            self.msg("*"*40)
 
             if localCommit.hexsha != remoteCommit.hexsha:
                 ssh_executable = 'git'
@@ -125,6 +107,26 @@ class AboutUpgradeMightyScape(inkex.EffectExtension):
             remotes = []
             remotes.append("https://gitea.fablabchemnitz.de/FabLab_Chemnitz/mightyscape-1.X.git") #main
             remotes.append("https://github.com/vmario89/mightyscape-1.X.git") #copy/second remote
+            
+            localCommit = local_repo.head.commit
+            #local_commits = list(local_repo.iter_commits("master", max_count=5))
+            localCommits = list(local_repo.iter_commits("master"))
+            self.msg("Local commit id is: " + str(localCommit)[:7])
+            self.msg("There are {} local commits at the moment.".format(len(localCommits)))
+            localCommitList = []
+            for local_commit in localCommits:
+                localCommitList.append(localCommit)
+            #localCommitList.reverse()
+            self.msg("*"*40)
+            self.msg("Latest 10 local commits are:")
+            for i in range(0, 10):
+                self.msg("{} | {} : {}".format(
+                    datetime.utcfromtimestamp(localCommitList[i].committed_date).strftime('%Y-%m-%d %H:%M:%S'),
+                    localCommitList[i].name_rev[:7],
+                    localCommitList[i].message.strip())
+                    )   
+                #self.msg(" - {}: {}".format(localCommitList[i].newhexsha[:7], localCommitList[i].message))   
+            self.msg("*"*40)
             
             #finally run the update
             success = self.update(local_repo, remotes[0])
