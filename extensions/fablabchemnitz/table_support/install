@@ -1,3 +1,0 @@
-#!/bin/sh
-
-./install_shortcuts.py -i keys.xml -o `inkscape -x`/../keys/default.xml

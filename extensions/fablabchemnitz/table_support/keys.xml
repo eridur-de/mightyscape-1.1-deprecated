@@ -1,3 +1,0 @@
-<bind key="C" modifiers="Ctrl,Shift,Alt" action="org.greygreen.inkscape.effects.table_create" display="true"/>
-<bind key="D" modifiers="Ctrl,Shift,Alt" action="org.greygreen.inkscape.effects.table_duplicate" display="true"/>
-<bind key="T" modifiers="Ctrl,Shift,Alt" action="org.greygreen.inkscape.effects.table_edit_text" display="true"/>
