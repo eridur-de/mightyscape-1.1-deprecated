@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <name>Tabgen</name>
-    <id>fablabchemnitz.de.tabgen</id>
+    <name>Tab Generator</name>
+    <id>fablabchemnitz.de.tab_generator</id>
     <param name="usermenu" type="notebook">
         <page name="settings" gui-text="Settings">
             <param name="tabangle" type="float" min="0.0" max="90.0" gui-text="Angle of tab edges (degrees):">45.0</param>
@@ -23,6 +23,9 @@
                 <option value="ft">ft</option>
                 <option value="yd">yd</option>
             </param>
+            <param name="strokewidth" min="0.0" max="10000.0" precision="3" gui-text="Stroke width (px)" type="float">1.0</param>
+            <param name="color_solid" type="color" appearance="colorbutton" gui-text="Solid line color">3419879935</param>
+            <param name="color_dash" type="color" appearance="colorbutton" gui-text="Dash line color">1592519679</param>
             <param name="print_debug" type="bool" gui-text="Print debug info">true</param>
             <param name="keep_original" type="bool" gui-text="Keep original elements">false</param>
         </page>
@@ -33,10 +36,12 @@
     <effect needs-live-preview="true">
         <object-type>all</object-type>
         <effects-menu>
-            <submenu name="Papercraft" />
+            <submenu name="FabLab Chemnitz">
+                <submenu name="Paper/Cardboard Boxes"/>
+            </submenu>
         </effects-menu>
     </effect>
     <script>
-        <command location="inx" interpreter="python">tabgen.py</command>
+        <command location="inx" interpreter="python">tab_generator.py</command>
     </script>
 </inkscape-extension>

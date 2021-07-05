@@ -22,7 +22,7 @@ tabs and score lines for each straight edge.
 """
 
 import inkex
-from inkex import Path
+from inkex import Path, Color
 from lxml import etree
 import math
 import copy
@@ -77,6 +77,9 @@ class Tabgen(inkex.EffectExtension):
         pars.add_argument("--dashlength", type=float, default=0.25, help="Length of dashline in dimentional units (zero for solid line)")
         pars.add_argument("--tabsets", default="both", help="Tab placement on polygons with cutouts")
         pars.add_argument("--unit", default="in", help="Dimensional units of selected paths")
+        pars.add_argument("--strokewidth", type=float, default=1.0, help="Stroke width (px)")   
+        pars.add_argument("--color_solid", type=Color, default='3419879935', help="Solid line color")
+        pars.add_argument("--color_dash", type=Color, default='1592519679', help="Solid line dash")
         pars.add_argument("--print_debug", type=inkex.Boolean, default=True, help="Print debug info")
         pars.add_argument("--keep_original", type=inkex.Boolean, default=False, help="Keep original elements")
 
@@ -489,6 +492,7 @@ class Tabgen(inkex.EffectExtension):
 
 
     def effect(self):
+                
         scale = self.svg.unittouu('1'+self.options.unit)
         layer = self.svg.get_current_layer()
         tab_angle = float(self.options.tabangle)
@@ -499,6 +503,11 @@ class Tabgen(inkex.EffectExtension):
         savid = ''
         elems = []
         pc = 0
+        
+        solidLineStyle = {'stroke': str(self.options.color_solid), 'fill': 'none', 'stroke-width': self.options.strokewidth}
+        dashLineStyle = {'stroke': str(self.options.color_dash), 'fill': 'none', 'stroke-width': self.options.strokewidth}
+
+        
         for selem in self.svg.selection.filter(inkex.PathElement):
             elems.append(selem)
         if len(elems) == 0:
@@ -557,6 +566,7 @@ class Tabgen(inkex.EffectExtension):
                     else:
                         raise inkex.AbortExtension("Unrecognized path command {0}".format(ptoken.letter))
                     npath.path.append(inkex.paths.Line(ptx2,pty2))
+                    npath.style = solidLineStyle
                     if ptoken.letter == 'Z':
                         npaths.append(npath)
                     else:
