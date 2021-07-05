@@ -4,9 +4,10 @@
     <id>fablabchemnitz.de.tab_generator</id>
     <param name="usermenu" type="notebook">
         <page name="settings" gui-text="Settings">
-            <param name="tabangle" type="float" min="0.0" max="90.0" gui-text="Angle of tab edges (degrees):">45.0</param>
-            <param name="tabheight" type="float" min="0.01" max="9999.0" gui-text="Height of tab:">0.4</param>
-            <param name="dashlength" type="float" min="0.0" max="9999.0" gui-text="Length of dashline (zero for solid line):">0.1</param>
+            <label appearance="header">Measures and tab generation</label>
+            <param name="tabangle" type="float" min="0.01" max="90.0" precision="2" gui-text="Angle of tab edges (degrees):">45.00</param>
+            <param name="tabheight" type="float" min="0.01" max="9999.0" precision="2" gui-text="Height of tab:">0.40</param>
+            <param name="dashlength" type="float" min="0.0" max="9999.0"  precision="2" gui-text="Length of dash line (zero for solid line):" gui-description="If value larger than zero the line will split up into real dash lines (no cosmetic one's)">0.1</param>
             <param name="tabsets" type="optiongroup" appearance="combo" gui-text="Tab placement on polygons with cutouts:">
                 <option value="outside">outside</option>
                 <option value="inside">inside</option>           
@@ -23,9 +24,11 @@
                 <option value="ft">ft</option>
                 <option value="yd">yd</option>
             </param>
-            <param name="strokewidth" min="0.0" max="10000.0" precision="3" gui-text="Stroke width (px)" type="float">1.0</param>
-            <param name="color_solid" type="color" appearance="colorbutton" gui-text="Solid line color">3419879935</param>
-            <param name="color_dash" type="color" appearance="colorbutton" gui-text="Dash line color">1592519679</param>
+            <label appearance="header">Styles</label>
+            <param name="cosmetic_dash_style" type="bool" gui-text="Cosmetic dash lines" gui-description="If entered dash line length is zero we can apply some cosmetic style only">false</param>
+            <param name="color_solid" type="color" appearance="colorbutton" gui-text="Solid line color">4278190335</param>
+            <param name="color_dash" type="color" appearance="colorbutton" gui-text="Dash line color">65535</param>
+            <label appearance="header">Other settings</label>
             <param name="print_debug" type="bool" gui-text="Print debug info">true</param>
             <param name="keep_original" type="bool" gui-text="Keep original elements">false</param>
         </page>

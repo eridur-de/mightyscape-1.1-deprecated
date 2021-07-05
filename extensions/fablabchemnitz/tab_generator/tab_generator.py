@@ -16,6 +16,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
+
 """
 Given a closed path of straight lines, this program generates a paper model containing
 tabs and score lines for each straight edge.
@@ -75,16 +76,19 @@ class Tabgen(inkex.EffectExtension):
         pars.add_argument("--tabangle", type=float, default=45.0, help="Angle of tab edges in degrees")
         pars.add_argument("--tabheight", type=float, default=0.4, help="Height of tab in dimensional units")
         pars.add_argument("--dashlength", type=float, default=0.25, help="Length of dashline in dimentional units (zero for solid line)")
+        pars.add_argument("--cosmetic_dash_style", type=inkex.Boolean, default=False, help="Cosmetic dash lines")
         pars.add_argument("--tabsets", default="both", help="Tab placement on polygons with cutouts")
         pars.add_argument("--unit", default="in", help="Dimensional units of selected paths")
-        pars.add_argument("--strokewidth", type=float, default=1.0, help="Stroke width (px)")   
-        pars.add_argument("--color_solid", type=Color, default='3419879935', help="Solid line color")
-        pars.add_argument("--color_dash", type=Color, default='1592519679', help="Solid line dash")
+        pars.add_argument("--color_solid", type=Color, default='4278190335', help="Solid line color")
+        pars.add_argument("--color_dash", type=Color, default='65535', help="Solid line dash")
         pars.add_argument("--print_debug", type=inkex.Boolean, default=True, help="Print debug info")
         pars.add_argument("--keep_original", type=inkex.Boolean, default=False, help="Keep original elements")
 
-    #draw SVG line segment(s) between the given (raw) points
+    
     def drawline(self, dstr, name, parent, sstr=None):
+        '''
+            draw SVG line segment(s) between the given (raw) points
+        '''
         line_style   = {'stroke':'#000000','stroke-width':'1','fill':'none'}
         if sstr == None:
             stylestr = str(inkex.Style(line_style))
@@ -95,6 +99,7 @@ class Tabgen(inkex.EffectExtension):
         el.style = sstr
         el.label = name
 
+
     def pathInsidePath(self, path, testpath):
         enclosed = True
         for tp in testpath:
@@ -103,6 +108,7 @@ class Tabgen(inkex.EffectExtension):
                 enclosed = False
                 return enclosed # True if testpath is fully enclosed in path
         return enclosed
+    
         
     def insidePath(self, path, p):
         point = pnPoint((p.x, p.y))
@@ -111,6 +117,7 @@ class Tabgen(inkex.EffectExtension):
             pverts.append((pnum.x, pnum.y))
         isInside = point.InPolygon(pverts, True)
         return isInside # True if point p is inside path
+
 
     def makescore(self, pt1, pt2, dashlength):
         # Draws a dashed line of dashlength between two points
@@ -200,16 +207,19 @@ class Tabgen(inkex.EffectExtension):
                         done = True
         return ddash
 
+
     def detectIntersect(self, x1, y1, x2, y2, x3, y3, x4, y4):
         td = (x1-x2)*(y3-y4)-(y1-y2)*(x3-x4)
         if td == 0:
             # These line segments are parallel
             return False
         t = ((x1-x3)*(y3-y4)-(y1-y3)*(x3-x4))/td
+
         if (0.0 <= t) and (t <= 1.0):
             return True
         else:
             return False
+
 
     def makeTab(self, tpath, pt1, pt2, tabht, taba):
         # tpath - the pathstructure containing pt1 and pt2
@@ -467,6 +477,7 @@ class Tabgen(inkex.EffectExtension):
                         tpt1.y = thetal1[1].y
                         tpt2.x = thetal2[1].x
                         tpt2.y = thetal2[1].y
+   
             # Check to see if any tabs intersect each other
             if self.detectIntersect(pt1.x, pt1.y, tpt1.x, tpt1.y, pt2.x, pt2.y, tpt2.x, tpt2.y):
                 # Found an intersection.
@@ -503,11 +514,7 @@ class Tabgen(inkex.EffectExtension):
         savid = ''
         elems = []
         pc = 0
-        
-        solidLineStyle = {'stroke': str(self.options.color_solid), 'fill': 'none', 'stroke-width': self.options.strokewidth}
-        dashLineStyle = {'stroke': str(self.options.color_dash), 'fill': 'none', 'stroke-width': self.options.strokewidth}
 
-        
         for selem in self.svg.selection.filter(inkex.PathElement):
             elems.append(selem)
         if len(elems) == 0:
@@ -525,6 +532,18 @@ class Tabgen(inkex.EffectExtension):
             savid = elem.get_id()
             idmod = 0
             elementPath = Path(elem.path.to_absolute().transform(elem.getparent().composed_transform()))
+            
+            isClosed = False
+            raw = elementPath.to_arrays()
+            if raw[-1][0] == 'Z' or \
+                (raw[-1][0] == 'L' and raw[0][1] == raw[-1][1]) or \
+                (raw[-1][0] == 'C' and raw[0][1] == [raw[-1][1][-2], raw[-1][1][-1]]) \
+                :  #if first is last point the path is also closed. The "Z" command is not required
+                isClosed = True
+            if isClosed is False: 
+                if self.options.print_debug is True:
+                    self.msg("Warning! Path {} is not closed. Skipping ...".format(elem.get('id')))
+                continue
             
             for ptoken in elementPath: # For each point in the path
                 ptx2 = None
@@ -566,12 +585,9 @@ class Tabgen(inkex.EffectExtension):
                     else:
                         raise inkex.AbortExtension("Unrecognized path command {0}".format(ptoken.letter))
                     npath.path.append(inkex.paths.Line(ptx2,pty2))
-                    npath.style = solidLineStyle
                     if ptoken.letter == 'Z':
                         npaths.append(npath)
-                    else:
-                        if self.options.print_debug is True:
-                            self.msg("Warning! Path {} is not closed. Skipping ...".format(elem.get('id')))
+                        
                 last_letter = ptoken.letter
             # check for cutouts
             if idmod > 1:
@@ -580,6 +596,7 @@ class Tabgen(inkex.EffectExtension):
                         if apath.id != bpath.id:
                             if self.pathInsidePath(bpath.path, apath.path):
                                 apath.enclosed = True
+                                
             # add tabs to current path(s)
             if 'style' in elem.attrib:
                 sstr = elem.attrib['style']
@@ -600,6 +617,7 @@ class Tabgen(inkex.EffectExtension):
             dsub = '' # Used for building sub-paths
             dprop = '' # Used for building the main path
             dscore = '' # Used for building dashlines
+           
             for apath in npaths:
                 mpath = [apath.path[0]] # init output path with first point of input path
                 for ptn in range(len(apath.path)-1):
@@ -628,17 +646,17 @@ class Tabgen(inkex.EffectExtension):
                     ## and close the path
                     dsub = dsub + ' Z'
             dprop = dprop + dsub # combine all the paths
-            if math.isclose(dashlength, 0.0):
-                # lump together all the score lines
-                group = inkex.elements._groups.Group()
-                group.label = 'group'+str(pc)+'ms'
-                self.drawline(dprop,'model'+str(pc),group,sstr) # Output the model
-                if dscore != '':
-                    self.drawline(dscore,'score'+str(pc),group,sstr) # Output the scorelines separately
-                layer.append(group)
-            else:
-                dprop = dprop + dscore
-                self.drawline(dprop,savid+'ms',layer,sstr)
+            # lump together all the score lines
+            group = inkex.elements._groups.Group()
+            group.label = 'group'+str(pc)+'ms'
+            self.drawline(dprop,'model'+str(pc),group,sstr+';stroke:{}'.format(self.options.color_solid)) # Output the model
+            if dscore != '':
+                dscore_style = sstr+';stroke:{}'.format(self.options.color_dash)
+                if self.options.cosmetic_dash_style is True:
+                    dscore_style += ';stroke-dasharray:{}'.format(3, 3)
+                self.drawline(dscore,'score'+str(pc),group,dscore_style) # Output the scorelines separately
+            layer.append(group)
+
             pc += 1
          
             if self.options.keep_original is False:
