@@ -718,44 +718,6 @@ specks=(
 "M -0.0742332 -0.173289  c -0.15768,0.0526 0.1494,0.70495 0.19313,0.0823 -0.0947,-0.0745 -0.15647,-0.0942 -0.19313,-0.0823 z",
     )
 
-inxhead = """<?xml version="1.0" encoding="UTF-8"?>
-<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-  <_name>ChipScratches</_name>
-  <id>ca.sfu.AT.kurn.ChipScratches</id>
-  <dependency type="executable" location="extensions">chipScratches.py</dependency>
-  <dependency type="executable" location="extensions">inkex.py</dependency>
-"""
-
-inxfoot = """  <effect>
-    <object-type>all</object-type>
-    <effects-menu>
-       <submenu _name="Generate">
-         <submenu _name="Noise"/>
-       </submenu>
-    </effects-menu>
-  </effect>
-  <script>
-    <command reldir="extensions" interpreter="python">chipScratches.py</command>
-  </script>
-</inkscape-extension>
-"""
-
-inxtype = {
-    "i" : '<param  name="%s" type="int" %s _gui-text="%s">%s</param>\n',
-    "f" : '<param  name="%s" type="float" %s _gui-text="%s">%s</param>\n',
-    "s" : '<param  name="%s" type="string" %s _gui-text="%s">%s</param>\n',
-    "b" : '<param  name="%s" type="boolean" %s _gui-text="%s">%s</param>\n',
-    "n" : '<!-- Dummy line for index. %s %s %s %s  -->\n',
-    }
-
-inxbk = {
-    "tabs" : '<param type="notebook" name="Nmain">\n<page name="%(s)s" _gui-text="%(s)s">\n',
-    "tab"  : '</page>\n<page name="%(s)s" _gui-text="%(s)s">\n',
-    "tabe"  : '</page>\n</param>\n',
-    "lit" : '<_param name="%(s)s"   type="description" >%(s)s</_param>\n',
-
-    }
-
 def mt( s ) :
     return s.isspace() or len(s) == 0
 
