@@ -38,6 +38,7 @@
                     <param name="fontSize" type="int" min="1" max="100" gui-text="Label font size (%)">15</param>
                     <param name="flipLabels" type="bool" gui-text="Flip labels">false</param>
                     <param name="dashes" type="bool" gui-text="Dashes for cut/coplanar lines">true</param>
+                    <param name="merge_cut_lines" type="bool" gui-text="Merge cut lines" gui-description="This will merge all cut lines to a single path">true</param>
                     <param name="edgeStyle" type="optiongroup" appearance="combo" gui-text="Edge style">
                        <option value="regular">regular</option>
                        <option value="saturationsForAngles">saturations for angles</option>

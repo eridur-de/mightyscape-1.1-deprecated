@@ -531,8 +531,10 @@ class Tabgen(inkex.EffectExtension):
             last_letter = 'Z'
             savid = elem.get_id()
             idmod = 0
-            elementPath = Path(elem.path.to_absolute().transform(elem.getparent().composed_transform()))
-            
+            parent = elem.getparent()
+            #if parent != self.svg.root:
+            #   elem.path.transform = elem.path.transform(parent.composed_transform())
+            elementPath = elem.path.to_non_shorthand().to_absolute()
             isClosed = False
             raw = elementPath.to_arrays()
             if raw[-1][0] == 'Z' or \

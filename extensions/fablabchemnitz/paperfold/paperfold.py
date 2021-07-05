@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import math
 import inkex
+from inkex import Transform, TextElement, Tspan, Color, Circle, PathElement, CubicSuperPath
 import tempfile
 import os
 import random
@@ -8,7 +9,7 @@ import numpy as np
 import openmesh as om
 import networkx as nx
 from lxml import etree
-from inkex import Transform, TextElement, Tspan, Color, Circle
+import copy
 
 """
 Extension for InkScape 1.0
@@ -68,6 +69,8 @@ class Paperfold(inkex.EffectExtension):
     
     
     # Check if two lines intersect
+
+
     def lineIntersection(self, v1, v2, v3, v4, epsilon):
         d = (v4[1] - v3[1]) * (v2[0] - v1[0]) - (v4[0] - v3[0]) * (v2[1] - v1[1])
         u = (v4[0] - v3[0]) * (v1[1] - v3[1]) - (v4[1] - v3[1]) * (v1[0] - v3[0])
@@ -77,6 +80,8 @@ class Paperfold(inkex.EffectExtension):
         return ((0 + epsilon) <= u <= (d - epsilon)) and ((0 + epsilon) <= v <= (d - epsilon))
     
     # Check if a point lies inside a triangle
+
+
     def pointInTriangle(self, A, B, C, P, epsilon):
         v0 = [C[0] - A[0], C[1] - A[1]]
         v1 = [B[0] - A[0], B[1] - A[1]]
@@ -91,6 +96,8 @@ class Paperfold(inkex.EffectExtension):
     
     
     # Check if two triangles intersect
+
+
     def triangleIntersection(self, t1, t2, epsilon):
         if self.lineIntersection(t1[0], t1[1], t2[0], t2[1], epsilon): return True
         if self.lineIntersection(t1[0], t1[1], t2[0], t2[2], epsilon): return True
@@ -115,6 +122,8 @@ class Paperfold(inkex.EffectExtension):
     
     
     # Functions for visualisation and output
+
+
     def addVisualisationData(self, mesh, unfoldedMesh, originalHalfedges, unfoldedHalfedges, glueNumber, dihedralAngles):
         for i in range(3):
             dihedralAngles[unfoldedMesh.edge_handle(unfoldedHalfedges[i]).idx()] = round(math.degrees(mesh.calc_dihedral_angle(originalHalfedges[i])), self.options.roundingDigits)
@@ -549,7 +558,7 @@ class Paperfold(inkex.EffectExtension):
             vertex1 = mesh.point(mesh.to_vertex_handle(he))
     
             # Write a straight line between the two corners
-            line = edgesGroup.add(inkex.PathElement())
+            line = edgesGroup.add(PathElement())
             line.set('d', "M {:0.6f},{:0.6f} {:0.6f},{:0.6f}".format(vertex0[0], vertex0[1], vertex1[0], vertex1[1]))
             # Colour depending on folding direction
             lineStyle = {"fill": "none"}
@@ -656,6 +665,56 @@ class Paperfold(inkex.EffectExtension):
                 text.delete()
                 tspan.delete()
  
+        '''
+        merge cutting edges to single contour. code ripped off from "join path" extension
+        '''
+        if self.options.merge_cut_lines is True:
+            cutEdges = []
+            
+            #find all cutting edges - they have to be sorted to build up a clean continuous line
+            for edge in edgesGroup:
+                edge_id = edge.get('id')
+                if "cut-edge-" in edge_id:
+                    cutEdges.append(edge)
+
+            #find the cutting edge which starts at the previous cutting edge end point
+            paths = {p.get('id'): self.getPartsFromCubicSuper(CubicSuperPath(p.get('d'))) for p in  cutEdges }
+            pathIds = [p.get('id') for p in cutEdges]
+
+            startPathId = pathIds[0]
+            pathIds = self.getArrangedIds(paths, startPathId)
+                
+            newParts = []
+            firstElem = None
+            for key in pathIds:
+                parts = paths[key]
+                # ~ parts = getPartsFromCubicSuper(cspath)
+                start = parts[0][0][0]
+                elem = self.svg.getElementById(key)
+        
+                if(len(newParts) == 0):
+                    newParts += parts[:]
+                    firstElem = elem
+                else:
+                    if(self.vectCmpWithMargin(start, newParts[-1][-1][-1], margin = .01)):
+                        newParts[-1] += parts[0]
+                    else:
+                        newSeg = [newParts[-1][-1][-1], newParts[-1][-1][-1], start, start]
+                        newParts[-1].append(newSeg)                    
+                        newParts[-1] += parts[0]
+                    
+                    if(len(parts) > 1):
+                        newParts += parts[1:]
+                
+                parent = elem.getparent()
+                parent.remove(elem)
+        
+            newElem = copy.copy(firstElem)
+            oldId = firstElem.get('id')
+            newElem.set('d', CubicSuperPath(self.getCubicSuperFromParts(newParts)))
+            newElem.set('id', oldId + '_joined')
+            parent.append(newElem) #insert at the end
+ 
         if len(textFacesGroup) == 0:
             textFacesGroup.delete() #delete if empty set
             
@@ -676,6 +735,90 @@ class Paperfold(inkex.EffectExtension):
             inkex.utils.debug(" * Edge angle range: {:0.2f}".format(self.angleRange))
                         
         return paperfoldPageGroup
+
+
+    def floatCmpWithMargin(self, float1, float2, margin):
+        return abs(float1 - float2) < margin 
+  
+        
+    def vectCmpWithMargin(self, vect1, vect2, margin):
+        return all(self.floatCmpWithMargin(vect2[i], vect1[i], margin) for i in range(0, len(vect1)))
+  
+    
+    def getPartsFromCubicSuper(self, cspath):
+        parts = []
+        for subpath in cspath:
+            part = []
+            prevBezPt = None            
+            for i, bezierPt in enumerate(subpath):
+                if(prevBezPt != None):
+                    seg = [prevBezPt[1], prevBezPt[2], bezierPt[0], bezierPt[1]]
+                    part.append(seg)
+                prevBezPt = bezierPt
+            parts.append(part)
+        return parts
+  
+            
+    def getCubicSuperFromParts(self, parts):
+        cbsuper = []
+        for part in parts:
+            subpath = []
+            lastPt = None
+            pt = None
+            for seg in part:
+                if(pt == None):
+                    ptLeft = seg[0]
+                    pt = seg[0]
+                ptRight = seg[1]
+                subpath.append([ptLeft, pt, ptRight])
+                ptLeft = seg[2]
+                pt = seg[3]
+            subpath.append([ptLeft, pt, pt])
+            cbsuper.append(subpath)
+        return cbsuper
+   
+        
+    def getArrangedIds(self, pathMap, startPathId):
+        nextPathId = startPathId
+        orderPathIds = [nextPathId]
+        
+        #Arrange in order
+        while(len(orderPathIds) < len(pathMap)):
+            minDist = 9e+100 #A large float
+            closestId = None        
+            np = pathMap[nextPathId]
+            npPts = [np[-1][-1][-1]]
+            if(len(orderPathIds) == 1):#compare both the ends for the first path
+                npPts.append(np[0][0][0])
+            
+            for key in pathMap:
+                if(key in orderPathIds):
+                    continue
+                parts = pathMap[key] 
+                start = parts[0][0][0]
+                end = parts[-1][-1][-1]
+                
+                for i, npPt in enumerate(npPts):
+                    dist = abs(start[0] - npPt[0]) + abs(start[1] - npPt[1])
+                    if(dist < minDist):
+                        minDist = dist
+                        closestId = key
+                    dist = abs(end[0] - npPt[0]) + abs(end[1] - npPt[1])
+                    if(dist < minDist):
+                        minDist = dist
+                        pathMap[key] = [[[pts for pts in reversed(seg)] for seg in \
+                            reversed(part)] for part in reversed(parts)]
+                        closestId = key
+                        
+                    #If start point of the first path is closer reverse its direction    
+                    if(i > 0 and closestId == key):
+                        pathMap[nextPathId] = [[[pts for pts in reversed(seg)] for seg in \
+                            reversed(part)] for part in reversed(np)]
+                        
+            orderPathIds.append(closestId)
+            nextPathId = closestId
+        return orderPathIds
+ 
                 
     def add_arguments(self, pars):
         pars.add_argument("--tab")
@@ -704,6 +847,7 @@ class Paperfold(inkex.EffectExtension):
         pars.add_argument("--fontSize", type=int, default=15, help="Label font size (%)")
         pars.add_argument("--flipLabels", type=inkex.Boolean, default=False, help="Flip labels")
         pars.add_argument("--dashes", type=inkex.Boolean, default=True, help="Dashes for cut/coplanar edges")
+        pars.add_argument("--merge_cut_lines", type=inkex.Boolean, default=True, help="Merge cut lines")
         pars.add_argument("--edgeStyle", help="Adjust color saturation or opacity for folding edges. The larger the angle the darker the color")
         pars.add_argument("--separateGluePairsByColor", type=inkex.Boolean, default=False, help="Separate glue pairs by color")
         pars.add_argument("--colorCutEdges", type=Color, default='255', help="Cut edges")
@@ -714,6 +858,7 @@ class Paperfold(inkex.EffectExtension):
         #Post Processing
         pars.add_argument("--joineryMode", type=inkex.Boolean, default=False, help="Enable joinery mode")
         pars.add_argument("--origamiSimulatorMode", type=inkex.Boolean, default=False, help="Enable origami simulator mode")
+   
                
     def effect(self):
         if not os.path.exists(self.options.inputfile):
