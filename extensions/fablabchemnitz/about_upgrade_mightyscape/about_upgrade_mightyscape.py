@@ -36,11 +36,12 @@ class AboutUpgradeMightyScape(inkex.EffectExtension):
             remoteCommit = remote_repo.fetch()[0].commit
             self.msg("Latest remote commit is: " + str(remoteCommit)[:7])
 
-            authors = []
             # for every remote commit
             while remoteCommit.hexsha != localCommit.hexsha:
-                authors.append(remoteCommit.author.email) 
-                remoteCommit = remoteCommit.parents[0]
+                try:
+                    remoteCommit = remoteCommit.parents[0]
+                except:
+                    pass
 
             if localCommit.hexsha != remoteCommit.hexsha:
                 ssh_executable = 'git'
@@ -108,17 +109,16 @@ class AboutUpgradeMightyScape(inkex.EffectExtension):
             remotes.append("https://gitea.fablabchemnitz.de/FabLab_Chemnitz/mightyscape-1.X.git") #main
             remotes.append("https://github.com/vmario89/mightyscape-1.X.git") #copy/second remote
             
-            localCommit = local_repo.head.commit
-            #local_commits = list(local_repo.iter_commits("master", max_count=5))
-            localCommits = list(local_repo.iter_commits("master"))
-            self.msg("Local commit id is: " + str(localCommit)[:7])
+            localLatestCommit = local_repo.head.commit
+            localCommits = list(local_repo.iter_commits("master", max_count=10, skip=0))
+            self.msg("Local commit id is: " + str(localLatestCommit)[:7])
             self.msg("There are {} local commits at the moment.".format(len(localCommits)))
             localCommitList = []
-            for local_commit in localCommits:
+            for localCommit in localCommits:
                 localCommitList.append(localCommit)
             #localCommitList.reverse()
             self.msg("*"*40)
-            self.msg("Latest 10 local commits are:")
+            self.msg("Latest local commits are:")
             for i in range(0, 10):
                 self.msg("{} | {} : {}".format(
                     datetime.utcfromtimestamp(localCommitList[i].committed_date).strftime('%Y-%m-%d %H:%M:%S'),
