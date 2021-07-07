@@ -4,12 +4,17 @@ for folder in */ ; do xmllint --noout --relaxng ./inkscape.extension.rng $folder
 
 
 echo "Count of inx files:"
-find ./ -type f -name "*.inx" | wc -l
-
+INX=$(find ./ -type f -name "*.inx" | wc -l)
+echo INX: $INX
 
 echo "Count of extension folders:"
-ls -d */ | wc -l
+FOLDERS=$(ls -d */ | wc -l)
+echo FOLDERS: $FOLDERS
 
+README="../../README.md"
+#replace values in README.md
+sed -i 's/\*\*.* extension folders\*\*/\*\*'${FOLDERS}' extension folders\*\*/g' ${README}
+sed -i 's/\*\* with .* \.inx files\*\*/\*\* with \*\*'${INX}' \.inx files\*\*/g' ${README}
 
 echo "Removing unrequired pyc cache files"
 find . -type d -name "__pycache__" -exec rm -rf {} \;
