@@ -7,6 +7,7 @@ Extension for InkScape 1.0+
     - add more comments
     - add more debug output
     - add documentation at online page
+    - fix filtering duplicate lines if perfect vertical > write a function process_set_y()
     - add statistics about type counts and path lengths (before/after sub splitting/trimming)
     - add options:
         - replace trimmed paths by bezier paths (calculating lengths and required t parameter)
@@ -318,11 +319,11 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         '''
         dx = p1[0] - p0[0]
         if dx == 0:
-            return sys.float_info.max
+            return sys.float_info.max #vertical
         return (p1[1] - p0[1]) / dx
 
 
-    def process_set(self, working_set):
+    def process_set_x(self, working_set):
         if len(working_set) < 2:
             return (True, working_set)
     
@@ -342,13 +343,10 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                 # the only remaining permissible configuration: collinear segments with a gap between them
                 # e.g. ---  -----
                 # otherwise we combine segments and flag the set as requiring more processing
-                s0x0 = working_set[i]['p0'][0]
-                s0x1 = working_set[i]['p1'][0]
-                s1x0 = working_set[j]['p0'][0]
+                s0x0 = working_set[i]['p0'][0] 
+                s0x1 = working_set[i]['p1'][0] 
+                s1x0 = working_set[j]['p0'][0] 
                 s1x1 = working_set[j]['p1'][0]
-
-                #if s0x0 == s1x0 and s0x1 == s1x1:
-                #   continue #skip if pointy path is going to be created
 
                 if not (s0x0 < s0x1 and s0x1 < s1x0 and s1x0 < s1x1):
                     # make a duplicate set, omitting segments i and j
@@ -357,9 +355,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                     # add a segment representing i and j's furthest points
                     pts = [ working_set[i]['p0'], working_set[i]['p1'], working_set[j]['p0'], working_set[j]['p1'] ]
                     pts.sort(key=lambda x: x[0])
-                    if pts[0] == pts[-1]:
-                        continue #skip if pointy path is going to be created
-                    
+
                     new_set.append({
                         'p0': pts[0], 
                         'p1': pts[-1],
@@ -415,6 +411,18 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         working_set = []
         output_set = []
         input_set.sort(key=lambda x: x['slope'])
+        input_set_new = []
+        
+        #loop through input_set to filter out the vertical lines because we need to handle them separately
+        vertical_set = []
+        for i in range(0, len(input_set)):
+            if input_set[i]['slope'] == sys.float_info.max:
+                vertical_set.append(input_set[i])
+            else:
+                input_set_new.append(input_set[i])
+        
+        input_set = input_set_new #overwrite the input_set with the filtered one
+        
         input_set.append(False) # used to clear out lingering contents of working_set on last iteration
         current_slope = input_set[0]['slope']
         for input in input_set:
@@ -426,7 +434,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
     
             else: # slope discontinuity, process accumulated set
                 while True:
-                    (done, working_set) = self.process_set(working_set)
+                    (done, working_set) = self.process_set_x(working_set)
                     if done:
                         output_set.extend(working_set)
                         break
