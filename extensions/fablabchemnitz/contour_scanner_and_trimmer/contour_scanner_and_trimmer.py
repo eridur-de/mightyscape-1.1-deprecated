@@ -6,8 +6,7 @@ Extension for InkScape 1.0+
  - ToDo: 
     - add more comments
     - add more debug output
-    - add documentation at online page
-    - fix filtering duplicate lines if perfect vertical > write a function process_set_y()
+    - add documentation about used algorithms at online page
     - add statistics about type counts and path lengths (before/after sub splitting/trimming)
     - add options:
         - replace trimmed paths by bezier paths (calculating lengths and required t parameter)
@@ -54,7 +53,7 @@ Extension for InkScape 1.0+
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 09.08.2020 (extension originally called "Contour Scanner")
-Last patch: 24.06.2021
+Last patch: 08.07.2021
 License: GNU GPL v3
 
 '''
@@ -80,9 +79,8 @@ idPrefixTrimming = "trimmed"
 intersectedVerb = "intersected"
 collinearVerb = "collinear"
 
-EPS_M = 0.01
-
 class ContourScannerAndTrimmer(inkex.EffectExtension):
+
 
     def break_contours(self, element, breakelements = None):
         ''' 
@@ -336,8 +334,8 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                 # if slopes all match the working set's slope, we're collinear
                 # if not, these segments are parallel but not collinear and should be left alone
                 expected_slope = working_set[i]['slope']
-                if (abs(self.slope(working_set[i]['p1'], working_set[j]['p0']) - expected_slope) > EPS_M) \
-                or (abs(self.slope(working_set[i]['p0'], working_set[j]['p1']) - expected_slope) > EPS_M):
+                if (abs(self.slope(working_set[i]['p1'], working_set[j]['p0']) - expected_slope) > self.options.collinear_filter_epsilon) \
+                or (abs(self.slope(working_set[i]['p0'], working_set[j]['p1']) - expected_slope) > self.options.collinear_filter_epsilon):
                     continue
     
                 # the only remaining permissible configuration: collinear segments with a gap between them
@@ -369,13 +367,62 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         return (True, working_set)
 
 
+    def process_set_y(self, working_set):
+        if len(working_set) < 2:
+            return (True, working_set)
+        
+        # sort working set top to bottom
+        working_set.sort(key=lambda y: -y['p0'][1])
+
+        for i in range(0, len(working_set)):
+            for j in range(i + 1, len(working_set)):
+        
+                # the only remaining permissible configuration: collinear segments with a gap between them
+                # e.g. 
+                #   |
+                #   |
+                #
+                #   |
+                #   |
+                #   |
+                #
+                # otherwise we combine segments and flag the set as requiring more processing
+                s0y0 = working_set[i]['p0'][1] 
+                s0y1 = working_set[i]['p1'][1] 
+                s1y0 = working_set[j]['p0'][1] 
+                s1y1 = working_set[j]['p1'][1]
+
+                if not (s0y0 < s0y1 and s0y1 < s1y0 and s1y0 < s1y1):
+                    # make a duplicate set, omitting segments i and j
+                    new_set = [y for (k, y) in enumerate(working_set) if k not in (i, j)]
+                    
+                    # add a segment representing i and j's furthest points
+                    pts = [ working_set[i]['p0'], working_set[i]['p1'], working_set[j]['p0'], working_set[j]['p1'] ]
+                    pts.sort(key=lambda y: y[1])
+                    new_set.append({
+                        'p0': pts[0], 
+                        'p1': pts[-1],
+                        'slope': self.slope(pts[0], pts[-1]),
+                        'id': working_set[i]['id'],
+                        'originalPathId': working_set[i]['originalPathId'],
+                        'composed_transform': working_set[i]['composed_transform']
+                        })
+                    return (False, new_set)
+        
+        return (True, working_set)
+ 
+    
     def filter_collinear(self, lineArray):
-        '''
+        ''' Another sweep line algorithm to scan collinear lines
             Loop through a set of lines and find + fiter all overlapping segments / duplicate segments
             finally returns a set of merged-like lines and a set of original items which should be dropped.
             Based on the style of the algorithm we have no good influence on the z-index of the items because 
             it is scanned by slope and point coordinates. That's why we have a more special 
             'remove_trim_duplicates()' function for trimmed duplicates!
+        '''
+        
+        '''
+        filter for regular input lines and special vertical lines
         '''
         input_set = []
         input_ids = []
@@ -408,13 +455,14 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
             #s['d'] = line.attrib['d']
             input_set.append(s)
     
-        working_set = []
-        output_set = []
         input_set.sort(key=lambda x: x['slope'])
+        #input_set.append(False) # used to clear out lingering contents of working_set_x on last iteration
+
         input_set_new = []
         
         #loop through input_set to filter out the vertical lines because we need to handle them separately
         vertical_set = []
+        vertical_ids = []
         for i in range(0, len(input_set)):
             if input_set[i]['slope'] == sys.float_info.max:
                 vertical_set.append(input_set[i])
@@ -422,41 +470,97 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                 input_set_new.append(input_set[i])
         
         input_set = input_set_new #overwrite the input_set with the filtered one
-        
-        input_set.append(False) # used to clear out lingering contents of working_set on last iteration
-        current_slope = input_set[0]['slope']
-        for input in input_set:
-            # bin sets of input_set by slope (within a tolerance)
-            dm = input and abs(input['slope'] - current_slope) or 0
-            if input and dm < EPS_M:
-                working_set.append(input) #we put all lines to working set which have similar slopes
-                if input['id'] != '': input_ids.append(input['id'])
-    
-            else: # slope discontinuity, process accumulated set
-                while True:
-                    (done, working_set) = self.process_set_x(working_set)
-                    if done:
-                        output_set.extend(working_set)
-                        break
+        input_set.append(False) # used to clear out lingering contents of working_set_x on last iteration
 
-                if input: # begin new working set
-                    working_set = [input]
-                    current_slope = input['slope']
-                    if input['id'] != '': input_ids.append(input['id'])      
+        '''
+        process x lines (all lines except vertical ones)
+        '''
+        working_set_x = []
+        working_x_ids = []
+        output_set_x = []
+        output_x_ids = []
+        
+        if len(input_set) > 0:
+            current_slope = input_set[0]['slope']
+            for input in input_set:
+                # bin sets of input_set by slope (within a tolerance)
+                dm = input and abs(input['slope'] - current_slope) or 0
+                if input and dm < self.options.collinear_filter_epsilon:
+                    working_set_x.append(input) #we put all lines to working set which have similar slopes
+                    if input['id'] != '': input_ids.append(input['id'])
+                else: # slope discontinuity, process accumulated set
+                    while True:
+                        (done, working_set_x) = self.process_set_x(working_set_x)
+                        if done:
+                            output_set_x.extend(working_set_x)
+                            break
+    
+                    if input: # begin new working set
+                        working_set_x = [input]
+                        current_slope = input['slope']
+                        if input['id'] != '': input_ids.append(input['id'])      
+            
+
+            for output_x in output_set_x:
+                output_x_ids.append(output_x['id'])
+    
+            for working_x in working_set_x:
+                working_x_ids.append(working_x['id'])
+        else:
+            if self.options.show_debug is True:
+                self.msg("Scanning: no non-vertical input lines found. That might be okay or not ...")  
+        
+        '''
+        process vertical lines
+        '''
+        working_set_y = []
+        working_y_ids = []
+        output_set_y = []
+        output_y_ids = []
+
+        if len(vertical_set) > 0:
+            vertical_set.sort(key=lambda x: x['p0'][0]) #sort verticals by their x coordinate
+            vertical_set.append(False) # used to clear out lingering contents of working_set_y on last iteration
+            current_x = vertical_set[0]['p0'][0]
+            for vertical in vertical_set:
+                if vertical and current_x == vertical['p0'][0]:
+                    working_set_y.append(vertical) #we put all lines to working set which have same x coordinate
+                    if vertical['id'] != '': vertical_ids.append(vertical['id'])
+                else: # x coord discontinuity, process accumulated set
+                    while True:
+                        (done, working_set_y) = self.process_set_y(working_set_y)
+                        if done:
+                            output_set_y.extend(working_set_y)
+                            break
+                    if vertical: # begin new working set
+                        working_set_y = [vertical]
+                        current_x = vertical['p0'][0]
+                        if vertical['id'] != '': vertical_ids.append(vertical['id'])
+        else:
+            if self.options.show_debug is True:
+                self.msg("Scanning: no vertical lines found. That might be okay or not ...")  
                    
+        for output_y in output_set_y:
+            output_y_ids.append(output_y['id'])
+
+        for working_y in working_set_y:
+            working_y_ids.append(working_y['id'])
+
+        output_set = output_set_x
+        output_set.extend(output_set_y)
         output_ids = []
         for output in output_set:
+            #self.msg(output)
             output_ids.append(output['id'])
-
-        working_ids = []
-        for working in working_set:
-            working_ids.append(working['id'])
 
         #we finally build a list which contains all overlapping elements we want to drop
         dropped_ids = []
         for input_id in input_ids: #if the input_id id is not in the output ids we are going to drop it
             if input_id not in output_ids:
-               dropped_ids.append(input_id) 
+               dropped_ids.append(input_id)
+        for vertical_id in vertical_ids: #if the input_id id is not in the output ids we are going to drop it
+            if vertical_id not in output_ids:
+               dropped_ids.append(vertical_id)
 
         if self.options.show_debug is True:
             #self.msg("input_set:{}".format(input_set))               
@@ -464,11 +568,21 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
             for input_id in input_ids:
                self.msg(input_id)
             self.msg("*"*24)     
-            #self.msg("working_set:{}".format(working_set))                  
-            self.msg("working_ids [{}]:".format(len(working_ids)))
-            for working_id in working_ids:
-               self.msg(working_id) 
+            #self.msg("working_set_x:{}".format(working_set_x))                  
+            self.msg("working_x_ids [{}]:".format(len(working_x_ids)))
+            for working_x_id in working_x_ids:
+               self.msg(working_x_id) 
             self.msg("*"*24)     
+            #self.msg("output_set_x:{}".format(output_set_x))                  
+            self.msg("output_x_ids [{}]:".format(len(output_x_ids)))
+            for output_x_id in output_x_ids:
+               self.msg(output_x_id)
+            self.msg("*"*24)
+            #self.msg("output_set_y:{}".format(output_set_y))                  
+            self.msg("output_y_ids [{}]:".format(len(output_y_ids)))
+            for output_y_id in output_y_ids:
+               self.msg(output_y_id)
+            self.msg("*"*24)
             #self.msg("output_set:{}".format(output_set))                  
             self.msg("output_ids [{}]:".format(len(output_ids)))
             for output_id in output_ids:
@@ -478,7 +592,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
             for dropped_id in dropped_ids:
                self.msg(dropped_id)
             self.msg("*"*24)     
-        
+          
         return output_set, dropped_ids
 
 
@@ -613,6 +727,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         pars.add_argument("--flatness", type=float, default=0.1, help="Minimum flatness = 0.001. The smaller the value the more fine segments you will get (quantization). Large values might destroy the line continuity.")
         pars.add_argument("--decimals", type=int, default=3, help="Accuracy for sub split lines / lines trimmed by shapely")
         pars.add_argument("--snap_tolerance", type=float, default=0.1, help="Snap tolerance for intersection points")
+        pars.add_argument("--collinear_filter_epsilon", type=float, default=0.01, help="Epsilon for collinear line filter")
         #Settings - General Style
         pars.add_argument("--strokewidth", type=float, default=1.0, help="Stroke width (px)")   
         pars.add_argument("--dotsize_intersections", type=int, default=30, help="Dot size (px) for self-intersecting and global intersection points")
