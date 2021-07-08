@@ -33,9 +33,10 @@
                     <label appearance="header">Applying to original paths and sub split lines</label>
                     <param name="remove_relative" type="bool" gui-text="relative cmd">false</param>
                     <param name="remove_absolute" type="bool" gui-text="absolute cmd">false</param>     
-                    <param name="remove_mixed" type="bool" gui-text="mixed cmd" gui-description="combined relative and absolute">false</param>
+                    <param name="remove_rel_abs_mixed" type="bool" gui-text="mixed rel/abs cmd" gui-description="combined relative and absolute">false</param>
                     <param name="remove_polylines" type="bool" gui-text="polylines">false</param>
-                    <param name="remove_beziers" type="bool" gui-text="beziers">false</param>     
+                    <param name="remove_beziers" type="bool" gui-text="beziers">false</param>
+                    <param name="remove_poly_bez_mixed" type="bool" gui-text="mixed cmd polyline/bezier paths" gui-description="combined polyline and bezier">false</param>               
                     <param name="remove_opened" type="bool" gui-text="opened">false</param>
                     <param name="remove_closed" type="bool" gui-text="closed">false</param>
                     <param name="remove_self_intersecting" type="bool" gui-text="self-intersecting">false</param>
@@ -52,9 +53,10 @@
                     <label appearance="header">Applying to original paths and sub split lines</label>
                     <param name="highlight_relative" type="bool" gui-text="relative cmd">false</param>
                     <param name="highlight_absolute" type="bool" gui-text="absolute cmd">false</param>
-                    <param name="highlight_mixed" type="bool" gui-text="mixed cmd" gui-description="combined relative and absolute">false</param>  
+                    <param name="highlight_rel_abs_mixed" type="bool" gui-text="mixed rel/abs cmd" gui-description="combined relative and absolute">false</param>  
                     <param name="highlight_polylines" type="bool" gui-text="polylines">false</param>
                     <param name="highlight_beziers" type="bool" gui-text="beziers">false</param>
+                    <param name="highlight_poly_bez_mixed" type="bool" gui-text="mixed cmd polyline/bezier paths" gui-description="combined polyline and bezier">false</param>
                     <param name="highlight_opened" type="bool" gui-text="opened">false</param>
                     <param name="highlight_closed" type="bool" gui-text="closed">false</param>
                     <param name="highlight_self_intersecting" type="bool" gui-text="self-intersecting" gui-description="Requires enabled 'Draw sub split lines' option (will auto-enable). Will override other highlighting colors (if those options are enabled)">false</param>
@@ -98,9 +100,10 @@
                             <label appearance="header">Path structure</label>
                             <param name="color_relative" type="color" appearance="colorbutton" gui-text="relative cmd paths">3419879935</param>
                             <param name="color_absolute" type="color" appearance="colorbutton" gui-text="absolute cmd paths">1592519679</param>
-                            <param name="color_mixed" type="color" appearance="colorbutton" gui-text="mixed cmd paths"  gui-description="combined relative and absolute">3351636735</param>
+                            <param name="color_rel_abs_mixed" type="color" appearance="colorbutton" gui-text="mixed cmd rel/abs paths" gui-description="combined relative and absolute">3351636735</param>
                             <param name="color_polyline" type="color" appearance="colorbutton" gui-text="polyline paths">4289703935</param>
                             <param name="color_bezier" type="color" appearance="colorbutton" gui-text="bezier paths">258744063</param>
+                            <param name="color_poly_bez_mixed" type="color" appearance="colorbutton" gui-text="mixed polyline/bezier paths" gui-description="combined polyline and bezier">4118348031</param>
                             <param name="color_opened" type="color" appearance="colorbutton" gui-text="opened paths">4012452351</param>
                             <param name="color_closed" type="color" appearance="colorbutton" gui-text="closed paths">2330080511</param>
                         </vbox>

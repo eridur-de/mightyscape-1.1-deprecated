@@ -267,6 +267,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
           
         #apply isBezier and original path id information to group (required for bezier splitting the original path at the end)
         trimGroup.attrib['originalPathIsBezier'] = subSplitLineArray[subSplitIndex].attrib['originalPathIsBezier']
+        trimGroup.attrib['originalPathIsPolyBezMixed'] = subSplitLineArray[subSplitIndex].attrib['originalPathIsPolyBezMixed']
         trimGroup.attrib['originalPathId'] = subSplitLineArray[subSplitIndex].attrib['originalPathId']
 
         #split all lines against all other lines using the intersection points
@@ -678,7 +679,8 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         This function does not work yet.
         '''  
         for trimGroup in allTrimGroups:
-            if trimGroup.attrib.has_key('originalPathIsBezier') and trimGroup.attrib['originalPathIsBezier'] == "True":
+            if (trimGroup.attrib.has_key('originalPathIsBezier') and trimGroup.attrib['originalPathIsBezier'] == "True") or\
+            (trimGroup.attrib.has_key('originalPathIsPolyBezMixed') and trimGroup.attrib['originalPathIsPolyBezMixed'] == "True"):
                 globalTParameters = []
                 if self.options.show_debug is True:
                     self.msg("{}: count of trim lines = {}".format(trimGroup.get('id'), len(trimGroup)))
@@ -739,9 +741,10 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         #Removing - Applying to original paths and sub split lines
         pars.add_argument("--remove_relative", type=inkex.Boolean, default=False, help="relative cmd")
         pars.add_argument("--remove_absolute", type=inkex.Boolean, default=False, help="absolute cmd")
-        pars.add_argument("--remove_mixed", type=inkex.Boolean, default=False, help="mixed cmd (relative + absolute)")
+        pars.add_argument("--remove_rel_abs_mixed", type=inkex.Boolean, default=False, help="mixed rel/abs cmd (relative + absolute)")
         pars.add_argument("--remove_polylines", type=inkex.Boolean, default=False, help="polyline")
         pars.add_argument("--remove_beziers", type=inkex.Boolean, default=False, help="bezier")
+        pars.add_argument("--remove_poly_bez_mixed", type=inkex.Boolean, default=False, help="mixed polyline/bezier paths")     
         pars.add_argument("--remove_opened", type=inkex.Boolean, default=False, help="opened")
         pars.add_argument("--remove_closed", type=inkex.Boolean, default=False, help="closed")
         pars.add_argument("--remove_self_intersecting", type=inkex.Boolean, default=False, help="self-intersecting")
@@ -754,9 +757,10 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         #Highlighting - Applying to original paths and sub split lines
         pars.add_argument("--highlight_relative", type=inkex.Boolean, default=False, help="relative cmd paths")
         pars.add_argument("--highlight_absolute", type=inkex.Boolean, default=False, help="absolute cmd paths")
-        pars.add_argument("--highlight_mixed", type=inkex.Boolean, default=False, help="mixed cmd (relative + absolute) paths")
+        pars.add_argument("--highlight_rel_abs_mixed", type=inkex.Boolean, default=False, help="mixed rel/abs cmd (relative + absolute) paths")
         pars.add_argument("--highlight_polylines", type=inkex.Boolean, default=False, help="polyline paths")
         pars.add_argument("--highlight_beziers", type=inkex.Boolean, default=False, help="bezier paths")
+        pars.add_argument("--highlight_poly_bez_mixed", type=inkex.Boolean, default=False, help="mixed polyline/bezier paths")     
         pars.add_argument("--highlight_opened", type=inkex.Boolean, default=False, help="opened paths")
         pars.add_argument("--highlight_closed", type=inkex.Boolean, default=False, help="closed paths")
         #Highlighting - Applying to sub split lines only
@@ -787,9 +791,10 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         #Colors - path structure
         pars.add_argument("--color_relative", type=Color, default='3419879935', help="relative cmd paths")
         pars.add_argument("--color_absolute", type=Color, default='1592519679', help="absolute cmd paths")
-        pars.add_argument("--color_mixed", type=Color, default='3351636735', help="mixed cmd (relative + absolute) paths")     
+        pars.add_argument("--color_rel_abs_mixed", type=Color, default='3351636735', help="mixed rel/abs cmd (relative + absolute) paths")     
         pars.add_argument("--color_polyline", type=Color, default='4289703935', help="polyline paths")
         pars.add_argument("--color_bezier", type=Color, default='258744063', help="bezier paths")
+        pars.add_argument("--color_poly_bez_mixed", type=Color, default='4118348031', help="mixed polyline/bezier paths")     
         pars.add_argument("--color_opened", type=Color, default='4012452351', help="opened paths")
         pars.add_argument("--color_closed", type=Color, default='2330080511', help="closed paths")
         #Colors - duplicates and merges
@@ -825,13 +830,14 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         if so.filter_subsplit_collinear is True: #this is a must. 
         #if so.draw_subsplit is disabled bu we filter sub split lines and follow with trim operation we lose a lot of elements which may not be deleted!
             so.draw_subsplit = True
-     
+
         #some constant stuff / styles
         relativePathStyle = {'stroke': str(so.color_relative), 'fill': 'none', 'stroke-width': so.strokewidth}
         absolutePathStyle = {'stroke': str(so.color_absolute), 'fill': 'none', 'stroke-width': so.strokewidth}
-        mixedPathStyle = {'stroke': str(so.color_mixed), 'fill': 'none', 'stroke-width': so.strokewidth}
+        mixedRelAbsPathStyle = {'stroke': str(so.color_rel_abs_mixed), 'fill': 'none', 'stroke-width': so.strokewidth}
         polylinePathStyle = {'stroke': str(so.color_polyline), 'fill': 'none', 'stroke-width': so.strokewidth}
         bezierPathStyle = {'stroke': str(so.color_bezier), 'fill': 'none', 'stroke-width': so.strokewidth}
+        mixedPolyBezPathStyle = {'stroke': str(so.color_poly_bez_mixed), 'fill': 'none', 'stroke-width': so.strokewidth}
         openPathStyle = {'stroke': str(so.color_opened), 'fill': 'none', 'stroke-width': so.strokewidth}
         closedPathStyle = {'stroke': str(so.color_closed), 'fill': 'none', 'stroke-width': so.strokewidth}
         duplicatesPathStyle = {'stroke': str(so.color_duplicates), 'fill': 'none', 'stroke-width': so.strokewidth}
@@ -854,14 +860,14 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
             '''
             isRelative = False
             isAbsolute = False
-            isMixed = False
+            isRelAbsMixed = False
             relCmds = ['m', 'l', 'h', 'v', 'c', 's', 'q', 't', 'a', 'z']
             if any(relCmd in str(path) for relCmd in relCmds):
                 isRelative = True
             if any(relCmd.upper() in str(path) for relCmd in relCmds):
                 isAbsolute = True
-            if isRelative is True and isAbsolute is True:
-                isMixed = True
+            if isRelative is True and isAbsolute is True: #cannot be both at the same time, so it's mixed
+                isRelAbsMixed = True
                 isRelative = False
                 isAbsolute = False
             if so.remove_absolute is True and isAbsolute is True:
@@ -870,25 +876,36 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
             if so.remove_relative is True and isRelative is True:
                 pathElement.delete()
                 continue #skip this loop iteration
-            if so.remove_mixed is True and isMixed is True:
+            if so.remove_rel_abs_mixed is True and isRelAbsMixed is True:
                 pathElement.delete()
                 continue #skip this loop iteration
 
             '''
             check for bezier or polyline paths
             '''
+            isPoly = False         
             isBezier = False
-            if 'c' in str(path) or 'C' in str(path):
+            isPolyBezMixed = False
+            if ('c' in str(path) or 'C' in str(path)):
                 isBezier = True
-            if so.show_debug is True:
-                self.msg("sub path in {} is bezier: {}".format(originalPathId, isBezier))                   
+            if ('l' in str(path) or 'L' in str(path)):
+                isPoly = True
+            if isPoly is True and isBezier is True: #cannot be both at the same time, so it's mixed
+                isPolyBezMixed = True
+                isPoly = False #reset
+                isBezier = False #reset
+                
+            #if so.show_debug is True:
+            #    self.msg("sub path in {} is bezier: {}".format(originalPathId, isBezier))               
             if so.remove_beziers is True and isBezier is True:
                 pathElement.delete()
                 continue #skip this loop iteration
-            if so.remove_polylines is True and isBezier is False:
+            if so.remove_polylines is True and isPoly is True:
                 pathElement.delete()
                 continue #skip this loop iteration
-
+            if so.remove_poly_bez_mixed is True and isPolyBezMixed is False:
+                pathElement.delete()
+                continue #skip this loop iteration
 
             '''
             check for closed or open paths
@@ -923,7 +940,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                 subPathData = CubicSuperPath(subPath)
 
                 #flatten bezier curves. If it was already a straight line do nothing! Otherwise we would split straight lines into a lot more straight lines
-                if so.flattenbezier is True and isBezier is True:
+                if so.flattenbezier is True and (isBezier is True or isPolyBezMixed is True):
                     bezier.cspsubdiv(subPathData, so.flatness) #modifies the path
                     flattenedpath = []
                     for seg in subPathData:
@@ -956,8 +973,10 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                     line.attrib['originalPathId'] = originalPathId
                     line.attrib['originalPathIsRelative'] = str(isRelative)
                     line.attrib['originalPathIsAbsolute'] = str(isAbsolute)
-                    line.attrib['originalPathIsMixed'] = str(isMixed)
+                    line.attrib['originalPathIsRelAbsMixed'] = str(isRelAbsMixed)
                     line.attrib['originalPathIsBezier'] = str(isBezier)
+                    line.attrib['originalPathIsPoly'] = str(isPoly)
+                    line.attrib['originalPathIsPolyBezMixed'] = str(isPolyBezMixed)
                     line.attrib['originalPathIsClosed'] = str(isClosed)
                     line.attrib['originalPathStyle'] = str(pathElement.style)
                     subSplitLineArray.append(line)
@@ -971,16 +990,21 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                             if so.highlight_absolute is True:
                                 line.style = absolutePathStyle
                              
-                        if line.attrib['originalPathIsMixed'] == 'True':
-                            if so.highlight_mixed is True:
-                                line.style = mixedPathStyle
-                        
+                        if line.attrib['originalPathIsRelAbsMixed'] == 'True':
+                            if so.highlight_rel_abs_mixed is True:
+                                line.style = mixedRelAbsPathStyle
+               
+                        if line.attrib['originalPathIsPoly'] == 'True':
+                            if so.highlight_polylines is True:
+                                line.style = polylinePathStyle
+                                                   
                         if line.attrib['originalPathIsBezier'] == 'True':
                             if so.highlight_beziers is True:
                                 line.style = bezierPathStyle
-                        else:
-                            if so.highlight_polylines is True:
-                                line.style = polylinePathStyle
+
+                        if line.attrib['originalPathIsPolyBezMixed'] == 'True':
+                            if so.highlight_poly_bez_mixed is True:
+                                line.style = mixedPolyBezPathStyle
     
                         if line.attrib['originalPathIsClosed'] == 'True':
                             if so.highlight_closed is True:
@@ -1030,16 +1054,21 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                 if so.highlight_absolute is True:
                     pathElement.style = absolutePathStyle
                  
-            if isMixed is True:
-                if so.highlight_mixed is True:
-                    pathElement.style = mixedPathStyle
+            if isRelAbsMixed is True:
+                if so.highlight_rel_abs_mixed is True:
+                    pathElement.style = mixedRelAbsPathStyle
             
             if isBezier is True:
                 if so.highlight_beziers is True:
                     pathElement.style = bezierPathStyle
-            else:
+                    
+            if isPoly is True:
                 if so.highlight_polylines is True:
                     pathElement.style = polylinePathStyle
+
+            if isPolyBezMixed is True:
+                if so.highlight_poly_bez_mixed is True:
+                    pathElement.style = mixedPolyBezPathStyle
 
             if isClosed is True:
                 if so.highlight_closed is True:
