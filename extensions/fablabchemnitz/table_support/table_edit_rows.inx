@@ -3,7 +3,7 @@
     <name>Selected rows height</name>
     <id>fablabchemnitz.de.table_edit_rows</id>
     <param name="height" type="string" gui-text="Input the new height:">10mm</param>
-    <!--param name="keep" type="boolean" gui-text="Keep the table original height">false</param-->
+    <!--param name="keep" type="bool" gui-text="Keep the table original height">false</param-->
     <effect>
         <object-type>all</object-type>
         <effects-menu>
