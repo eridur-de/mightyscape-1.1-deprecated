@@ -1,18 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <name>Collar</name>
-    <id>fablabchemnitz.de.collar</id>
+    <name>Extruder</name>
+    <id>fablabchemnitz.de.extruder</id>
     <param name="usermenu" type="notebook">
         <page name="settings" gui-text="Settings">
             <label appearance="header">General</label>
-            <param name="polysides" type="int" min="3" max="360" gui-text="Number of Polygon Sides:">6</param>
-            <param name="poly1size" type="float" min="0.2" max="9999.0" gui-text="Size of Polygon 1 (in Dimensional Units):">5.0</param>
-            <param name="poly2size" type="float" min="0.2" max="9999.0" gui-text="Size of Polygon 2 (in Dimensional Units):">3.0</param>
-            <param name="collarheight" type="float" min="0.2" max="9999.0" gui-text="Height of Collar (in Dimensional Units):">5.0</param>
-            <param name="collarparts" type="int" min="1" max="10" gui-text="Number of parts to divide collar into:">1</param>
-            <param name="tabangle" type="float" min="0.0" max="90.0" gui-text="Angle of tab edges (degrees):">45.0</param>
-            <param name="tabheight" type="float" min="0.01" max="9999.0" gui-text="Height of tab (in Dimensional Units):">0.4</param>
-            <param name="dashlength" type="float" precision="3" min="0.0" max="9999.0" gui-text="Length of dashline (zero for solid line) (in Dimensional Units):">0.1</param>
+            <param name="extrude" type="float" min="0.2" precision="2" max="9999.0" gui-text="Width of extrusion:">1.0</param>
+            <param name="maxstrip" type="float" min="0.5" precision="2" max="9999.0" gui-text="Maximum length of extrusion:">11.5</param>
+            <param name="tabangle" type="float" min="0.01" precision="2" max="90.0" gui-text="Angle of tab edges (degrees):">45.0</param>
+            <param name="tabheight" type="float" min="0.01" precision="3" max="9999.0" gui-text="Height of tab:">0.4</param>
+            <param name="dashlength" type="float" precision="3" min="0.0" max="9999.0" gui-text="Length of dashline (zero for solid line):">0.1</param>
             <param name="unit" type="optiongroup" appearance="combo" gui-text="Dimensional units:">
                 <option value="mm">mm</option>
                 <option value="cm">cm</option>
@@ -29,9 +26,11 @@
             <param name="cosmetic_dash_style" type="bool" gui-text="Cosmetic dash lines" gui-description="If entered dash line length is zero we can apply some cosmetic style only">false</param>
             <param name="color_solid" type="color" appearance="colorbutton" gui-text="Solid line color">4278190335</param>
             <param name="color_dash" type="color" appearance="colorbutton" gui-text="Dash line color">65535</param>
+            <label appearance="header">Other settings</label>
+            <param name="print_debug" type="bool" gui-text="Print debug info">true</param>
         </page>
         <page name="help" gui-text="Help">
-            <label xml:space="preserve">Given the number of sides and sizes of two polygons, this program generates (1) a paper model of a collar with tabs to assemble between the polygons; (2) the two polygons themselves; and (3) strips for covering the tabbed collar. You can also specify certain tab parameters, but be aware that the program might adjust them to avoid problems.</label>
+            <label xml:space="preserve">Given a closed path of straight lines, this program generates a paper model of (1) another copy of the closed path; (2) an extrusion (or more if it exceeds the maximum length) represented by a strip with tabs and score lines; and (3) strips for covering the tabbed strips.</label>
         </page>
     </param>
     <effect needs-live-preview="true">
@@ -39,10 +38,10 @@
         <effects-menu>
             <submenu name="FabLab Chemnitz">
                 <submenu name="Paper/Cardboard Boxes"/>
-            </submenu>        
+            </submenu>
         </effects-menu>
     </effect>
     <script>
-        <command location="inx" interpreter="python">collar.py</command>
+        <command location="inx" interpreter="python">extruder.py</command>
     </script>
 </inkscape-extension>
