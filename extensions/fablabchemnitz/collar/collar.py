@@ -16,38 +16,44 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
-
 """
-Given a closed path of straight lines, this program generates a paper model containing
-tabs and score lines for each straight edge.
+Given a set of parameters for two polygons, this program generates paper
+models of (1) the two polygons; (2) a collar (divided into segments if desired)
+represented by a strip with tabs and score lines; and (3) wrapper(s) for
+covering the tabbed strip(s).
 """
 
 import inkex
-from inkex import Path, Color
-from lxml import etree
+from inkex import Color
 import math
 import copy
-import inspect
 
 class pathStruct(object):
+    
     
     def __init__(self):
         self.id="path0000"
         self.path=[]
         self.enclosed=False
         
+        
     def __str__(self):
         return self.path
     
 class pnPoint(object):
-    
    # This class came from https://github.com/JoJocoder/PNPOLY
+   
+   
     def __init__(self,p):
         self.p=p
+        
         
     def __str__(self):
         return self.p
     
+    
+ 
+
     def InPolygon(self,polygon,BoundCheck=False):
         inside=False
         if BoundCheck:
@@ -69,47 +75,59 @@ class pnPoint(object):
             j=i
         return inside
 
-class Tabgen(inkex.EffectExtension):
+
+class Collar(inkex.EffectExtension):
+    
     
     def add_arguments(self, pars):
         pars.add_argument("--usermenu")
+        pars.add_argument("--unit", default="in",help="Dimensional units")
+        pars.add_argument("--polysides", type=int, default=6,help="Number of Polygon Sides")
+        pars.add_argument("--poly1size", type=float, default=5.0, help="Size of Polygon 1 in dimensional units")
+        pars.add_argument("--poly2size", type=float, default=3.0, help="Size of Polygon 2 in dimensional units")
+        pars.add_argument("--collarheight", type=float, default=2.0, help="Height of collar in dimensional units")
+        pars.add_argument("--collarparts", type=int, default=1,help="Number of parts to divide collar into")
+        pars.add_argument("--dashlength", type=float, default=0.1, help="Length of dashline in dimensional units (zero for solid line)")
         pars.add_argument("--tabangle", type=float, default=45.0, help="Angle of tab edges in degrees")
         pars.add_argument("--tabheight", type=float, default=0.4, help="Height of tab in dimensional units")
-        pars.add_argument("--dashlength", type=float, default=0.1, help="Length of dashline in dimentional units (zero for solid line)")
+        pars.add_argument("--generate_decorative_wrapper", type=inkex.Boolean, default=False, help="Generate decorative wrapper")
         pars.add_argument("--cosmetic_dash_style", type=inkex.Boolean, default=False, help="Cosmetic dash lines")
-        pars.add_argument("--tabsets", default="both", help="Tab placement on polygons with cutouts")
-        pars.add_argument("--unit", default="in", help="Dimensional units of selected paths")
         pars.add_argument("--color_solid", type=Color, default='4278190335', help="Solid line color")
         pars.add_argument("--color_dash", type=Color, default='65535', help="Solid line dash")
-        pars.add_argument("--print_debug", type=inkex.Boolean, default=True, help="Print debug info")
-        pars.add_argument("--keep_original", type=inkex.Boolean, default=False, help="Keep original elements")
 
-    
+
+    #draw SVG line segment(s) between the given (raw) points
     def drawline(self, dstr, name, parent, sstr=None):
-        '''
-            draw SVG line segment(s) between the given (raw) points
-        '''
-        line_style   = {'stroke':'#000000','stroke-width':'1','fill':'none'}
+        line_style   = {'stroke':self.options.color_solid,'stroke-width':'0.25','fill':'#eeeeee'}
         if sstr == None:
             stylestr = str(inkex.Style(line_style))
         else:
             stylestr = sstr
         el = parent.add(inkex.PathElement())
         el.path = dstr
-        el.style = sstr
+        el.style = stylestr
         el.label = name
-
-
-    def pathInsidePath(self, path, testpath):
-        enclosed = True
-        for tp in testpath:
-            # If any point in the testpath is outside the path, it's not enclosed
-            if self.insidePath(path, tp) == False:
-                enclosed = False
-                return enclosed # True if testpath is fully enclosed in path
-        return enclosed
-    
         
+    def makepoly(self, toplength, numpoly):
+      r = toplength/(2*math.sin(math.pi/numpoly))
+      pstr = ''
+      for ppoint in range(0,numpoly):
+         xn = r*math.cos(2*math.pi*ppoint/numpoly)
+         yn = r*math.sin(2*math.pi*ppoint/numpoly)
+         if ppoint == 0:
+            pstr = 'M '
+         else:
+            pstr += ' L '
+         pstr += str(xn) + ',' + str(yn)
+      pstr = pstr + ' Z'
+      return pstr
+
+    # Thanks to Gabriel Eng for his python implementation of https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection
+    def findIntersection(self, x1,y1,x2,y2,x3,y3,x4,y4):
+        px= ( (x1*y2-y1*x2)*(x3-x4)-(x1-x2)*(x3*y4-y3*x4) ) / ( (x1-x2)*(y3-y4)-(y1-y2)*(x3-x4) ) 
+        py= ( (x1*y2-y1*x2)*(y3-y4)-(y1-y2)*(x3*y4-y3*x4) ) / ( (x1-x2)*(y3-y4)-(y1-y2)*(x3-x4) )
+        return px, py
+
     def insidePath(self, path, p):
         point = pnPoint((p.x, p.y))
         pverts = []
@@ -117,7 +135,6 @@ class Tabgen(inkex.EffectExtension):
             pverts.append((pnum.x, pnum.y))
         isInside = point.InPolygon(pverts, True)
         return isInside # True if point p is inside path
-
 
     def makescore(self, pt1, pt2, dashlength):
         # Draws a dashed line of dashlength between two points
@@ -207,19 +224,16 @@ class Tabgen(inkex.EffectExtension):
                         done = True
         return ddash
 
-
     def detectIntersect(self, x1, y1, x2, y2, x3, y3, x4, y4):
         td = (x1-x2)*(y3-y4)-(y1-y2)*(x3-x4)
         if td == 0:
             # These line segments are parallel
             return False
         t = ((x1-x3)*(y3-y4)-(y1-y3)*(x3-x4))/td
-
         if (0.0 <= t) and (t <= 1.0):
             return True
         else:
             return False
-
 
     def makeTab(self, tpath, pt1, pt2, tabht, taba):
         # tpath - the pathstructure containing pt1 and pt2
@@ -232,7 +246,7 @@ class Tabgen(inkex.EffectExtension):
         currTabHt = tabht
         currTabAngle = taba
         testAngle = 1.0
-        testHt = currTabHt * 0.01
+        testHt = currTabHt * 0.001
         adjustTab = 0
         tabDone = False
         while not tabDone:
@@ -477,7 +491,6 @@ class Tabgen(inkex.EffectExtension):
                         tpt1.y = thetal1[1].y
                         tpt2.x = thetal2[1].x
                         tpt2.y = thetal2[1].y
-   
             # Check to see if any tabs intersect each other
             if self.detectIntersect(pt1.x, pt1.y, tpt1.x, tpt1.y, pt2.x, pt2.y, tpt2.x, tpt2.y):
                 # Found an intersection.
@@ -501,168 +514,240 @@ class Tabgen(inkex.EffectExtension):
             
         return tpt1,tpt2
 
-
     def effect(self):
-                
-        scale = self.svg.unittouu('1'+self.options.unit)
         layer = self.svg.get_current_layer()
+        scale = self.svg.unittouu('1'+self.options.unit)
+        polysides = int(self.options.polysides)
+        poly1size = float(self.options.poly1size) * scale
+        poly2size = float(self.options.poly2size) * scale
+        collarht = float(self.options.collarheight) * scale
+        partcnt = int(self.options.collarparts)
         tab_angle = float(self.options.tabangle)
         tab_height = float(self.options.tabheight) * scale
         dashlength = float(self.options.dashlength) * scale
-        tabsets = self.options.tabsets
-        npaths = []
-        savid = ''
-        elems = []
-        pc = 0
-
-        for selem in self.svg.selection.filter(inkex.PathElement):
-            elems.append(selem)
-        if len(elems) == 0:
-            raise inkex.AbortExtension("Nothing selected")
-        for elem in elems:
-            npaths.clear()
-            escale = 1.0
-            #inkex.utils.debug(elem.attrib)
-            if 'transform' in elem.attrib:
-                transforms = elem.attrib['transform'].split()
-                for tf in transforms:
-                    if tf.startswith('scale'):
-                        escale = float(tf.split('(')[1].split(')')[0])
-            last_letter = 'Z'
-            savid = elem.get_id()
-            idmod = 0
-            parent = elem.getparent()
-            #if parent != self.svg.root:
-            #   elem.path.transform = elem.path.transform(parent.composed_transform())
-            elementPath = elem.path.to_non_shorthand().to_absolute()
-            isClosed = False
-            raw = elementPath.to_arrays()
-            if raw[-1][0] == 'Z' or \
-                (raw[-1][0] == 'L' and raw[0][1] == raw[-1][1]) or \
-                (raw[-1][0] == 'C' and raw[0][1] == [raw[-1][1][-2], raw[-1][1][-1]]) \
-                :  #if first is last point the path is also closed. The "Z" command is not required
-                isClosed = True
-            if isClosed is False: 
-                if self.options.print_debug is True:
-                    self.msg("Warning! Path {} is not closed. Skipping ...".format(elem.get('id')))
-                continue
-            
-            for ptoken in elementPath: # For each point in the path
-                ptx2 = None
-                pty2 = None
-                if ptoken.letter == 'M': # Starting point
-                    # Hold this point in case we receive a Z
-                    ptx1 = mx = ptoken.x * escale
-                    pty1 = my = ptoken.y * escale
-                    '''
-                    Assign a structure to the new path. We assume that there is
-                    only one path and, therefore, it isn't enclosed by a
-                    sub-path. However, we'll suffix the ID, if we find a
-                    sub-path.
-                    '''
-                    npath = pathStruct()
-                    npath.enclosed = False
-                    if idmod > 0:
-                        npath.id = elem.get_id()+"-"+str(idmod)
-                    else:
-                        npath.id = elem.get_id()
-                    idmod += 1
-                    npath.path.append(inkex.paths.Move(ptx1,pty1))
+        polylarge = max(poly1size, poly2size) # Larger of the two polygons
+        polysmall = min(poly1size, poly2size) # Smaller of the two polygons
+        polysmallR = polysmall/2
+        polysmallr = polysmallR*math.cos(math.pi/polysides)
+        polysmalltabht = tab_height
+        if polysmallr < polysmalltabht:
+             polysmalltabht = polysmallr
+        wpaths = []
+        done = 0
+        # We go through this loop twice
+        # First time for the wrapper / decorative strip
+        # Second time for the model, scorelines, and the lids
+        while done < 2:
+          w1 = (polylarge)*(math.sin(math.pi/polysides))
+          w2 = (polysmall)*(math.sin(math.pi/polysides))
+          if done == 0:
+             # First time through, init the storage areas
+             pieces = []
+             nodes = []
+             nd = []
+             for i in range(4):
+                nd.append(inkex.paths.Line(0.0,0.0))
+          else:
+             # Second time through, empty the storage areas
+             i = 0
+             while i < polysides:
+                j = 0
+                while j < 4:
+                   del pieces[i][0]
+                   j = j + 1
+                i = i + 1
+             i = 0
+             while len(pieces) > 0:
+                del pieces[0]
+                i = i + 1
+             i = 0
+             while i < 4:
+                del nodes[0]
+                i = i + 1
+          for pn in range(polysides):
+             nodes.clear()
+             #what we need here is to skip the rotatation and just move the x and y if there is no difference between the polygon sizes.
+             #Added by Sue to handle equal polygons
+             if poly1size == poly2size:
+                nd[0].x =  pn * w1
+                nd[0].y = collarht
+                nd[1].x = nd[0].x + w1  
+                nd[1].y = nd[0].y
+                nd[2].x = nd[1].x
+                nd[2].y = nd[0].y - collarht   
+                nd[3].x = nd[0].x  
+                nd[3].y = nd[2].y 
+             else:
+                if pn == 0:
+                   nd[3].x = -w2/2
+                   nd[3].y = (polysmall/2)*math.cos(math.pi/polysides)
+                   nd[0].x = -w1/2
+                   nd[0].y = (polylarge/2)*math.cos(math.pi/polysides)
+                   vlen = math.sqrt(collarht**2 + (nd[0].y-nd[3].y)**2)
+                   nd[0].y = nd[0].y + (vlen-(nd[0].y-nd[3].y))
+                   nd[2].x = w2/2
+                   nd[2].y = nd[3].y
+                   nd[1].x = w1/2
+                   nd[1].y = nd[0].y
+                   ox,oy = self.findIntersection(nd[0].x,nd[0].y,nd[3].x,nd[3].y,nd[1].x,nd[1].y,nd[2].x,nd[2].y)
+                   Q2 = math.degrees(math.atan((nd[0].y - oy)/(w1/2 - ox)))
+                   Q1 = 90 - Q2
                 else:
-                    if last_letter != 'M':
-                        ptx1 = ptx2
-                        pty1 = pty2
-                    if ptoken.letter == 'L':
-                        ptx2 = ptoken.x * escale
-                        pty2 = ptoken.y * escale
-                    elif ptoken.letter == 'H':
-                        ptx2 = ptoken.x * escale
-                        pty2 = pty1
-                    elif ptoken.letter == 'V':
-                        ptx2 = ptx1
-                        pty2 = ptoken.y * escale
-                    elif ptoken.letter == 'Z':
-                        ptx2 = mx
-                        pty2 = my
-                    else:
-                        raise inkex.AbortExtension("Unrecognized path command {0}".format(ptoken.letter))
-                    npath.path.append(inkex.paths.Line(ptx2,pty2))
-                    if ptoken.letter == 'Z':
-                        npaths.append(npath)
-                        
-                last_letter = ptoken.letter
-            # check for cutouts
-            if idmod > 1:
-                for apath in npaths: # We test these paths to see if they are fully enclosed
-                    for bpath in npaths: # by these paths
-                        if apath.id != bpath.id:
-                            if self.pathInsidePath(bpath.path, apath.path):
-                                apath.enclosed = True
-                                
-            # add tabs to current path(s)
-            if 'style' in elem.attrib:
-                sstr = elem.attrib['style']
-                if not math.isclose(escale, 1.0):
-                    lsstr = sstr.split(';')
-                    for stoken in range(len(lsstr)):
-                        if lsstr[stoken].startswith('stroke-width'):
-                            swt = lsstr[stoken].split(':')[1]
-                            swf = str(float(swt)*escale)
-                            lsstr[stoken] = lsstr[stoken].replace(swt, swf)
-                        if lsstr[stoken].startswith('stroke-miterlimit'):
-                            swt = lsstr[stoken].split(':')[1]
-                            swf = str(float(swt)*escale)
-                            lsstr[stoken] = lsstr[stoken].replace(swt, swf)
-                    sstr = ";".join(lsstr)
-            else:
-                sstr = None
-            dsub = '' # Used for building sub-paths
-            dprop = '' # Used for building the main path
-            dscore = '' # Used for building dashlines
-           
-            for apath in npaths:
-                mpath = [apath.path[0]] # init output path with first point of input path
-                for ptn in range(len(apath.path)-1):
-                    if (tabsets == 'both') or (((tabsets == 'inside') and (apath.enclosed)) or ((tabsets == 'outside') and (not apath.enclosed))):
-                        tabpt1, tabpt2 = self.makeTab(apath, apath.path[ptn], apath.path[ptn+1], tab_height, tab_angle)
-                        mpath.append(tabpt1)
-                        mpath.append(tabpt2)
-                        dscore = dscore + self.makescore(apath.path[ptn], apath.path[ptn+1],dashlength)
-                    mpath.append(apath.path[ptn+1])
-                if apath.id == elem.get_id():
-                    for nodes in range(len(mpath)):
-                        if nodes == 0:
-                            dprop = 'M ' # This is the main path, which should appear first
+                   dl = ''
+                   for j in range(4):
+                        if j == 0:
+                           dl += 'M '
                         else:
-                            dprop = dprop + ' L '
-                        dprop = dprop + str(mpath[nodes].x) + ',' + str(mpath[nodes].y)
-                    ## and close the path
-                    dprop = dprop + ' Z'
+                           dl += ' L '
+                        dl += str(nd[j].x) + ',' + str(nd[j].y)
+                   dl += ' Z'
+                   p1 = inkex.paths.Path(path_d=dl)
+                   p2 = p1.rotate(-2*Q1, (ox,oy))
+                   for j in range(4):
+                      nd[j].x = p2[j].x
+                      nd[j].y = p2[j].y
+             for i in range(4):
+                nodes.append(copy.deepcopy(nd[i]))
+             pieces.append(copy.deepcopy(nodes))
+          dscores = []
+          if done == 0:
+             wpath = pathStruct() # We'll need this for makeTab
+             wpath.id = "c1"
+             for pc in range(partcnt):
+                dwrap = '' # Create the wrapper
+                dscores.clear()
+                sidecnt = math.ceil(polysides/partcnt)
+                if pc == partcnt - 1:
+                   # Last time through creates the remainder of the pieces
+                   sidecnt = polysides - math.ceil(polysides/partcnt)*pc
+                startpc = pc*math.ceil(polysides/partcnt)
+                endpc = startpc + sidecnt
+                for pn in range(startpc, endpc):
+                   # First half
+                   if(pn == startpc):
+                      ppt0 = inkex.paths.Move(pieces[pn][0].x,pieces[pn][0].y)
+                      dwrap +='M '+str(ppt0.x)+','+str(ppt0.y)
+                      # We're also creating wpath for later use in creating the model
+                      wpath.path.append(ppt0)
+                   ppt1 = inkex.paths.Line(pieces[pn][1].x,pieces[pn][1].y)
+                   dwrap +=' L '+str(ppt1.x)+','+str(ppt1.y)
+                   wpath.path.append(ppt1)
+                   if pn < endpc - 1:
+                      # Put scorelines across the collar
+                      ppt2 = inkex.paths.Line(pieces[pn][2].x,pieces[pn][2].y)
+                      spaths = self.makescore(ppt1, ppt2,dashlength)
+                      dscores.append(spaths)
+                for pn in range(endpc-1, startpc-1, -1):
+                   # Second half
+                   if(pn == (endpc-1)):
+                      ppt2 = inkex.paths.Line(pieces[pn][2].x,pieces[pn][2].y)
+                      dwrap +=' L '+str(pieces[pn][2].x)+','+str(pieces[pn][2].y)
+                      wpath.path.append(inkex.paths.Line(pieces[pn][2].x,pieces[pn][2].y))
+                   ppt3 = inkex.paths.Line(pieces[pn][3].x,pieces[pn][3].y)
+                   dwrap +=' L '+str(ppt3.x)+','+str(ppt3.y)
+                   wpath.path.append(inkex.paths.Line(pieces[pn][3].x,pieces[pn][3].y))
+                dwrap +=' Z' # Close off the wrapper's path
+                wpath.path.append(ppt0)
+                if math.isclose(dashlength, 0.0):
+                   # lump together all the score lines
+                   dscore = ''
+                   for dndx in range(len(dscores)):
+                      if dndx == 0:
+                         dscore = dscores[dndx][1:]
+                      else:
+                         dscore += dscores[dndx]
+                   group = inkex.elements._groups.Group()
+                   group.label = 'group'+str(pc)+'ws'
+                   if self.options.generate_decorative_wrapper is True:
+                       self.drawline(dwrap,'wrapper'+str(pc),group,sstr="fill:#ffdddd;stroke:{};stroke-width:0.25".format(self.options.color_solid)) # Output the wrapper
+                       self.drawline(dscore,'score'+str(pc)+'w',group,sstr="fill:#ffdddd;stroke:{};stroke-width:0.25".format(self.options.color_dash)) # Output the scorelines separately
+                   layer.append(group)
                 else:
-                    for nodes in range(len(mpath)):
-                        if nodes == 0:
-                            dsub = dsub + ' M ' # This is a sub-path, which should follow the main path
-                        else:
-                            dsub = dsub + ' L '
-                        dsub = dsub + str(mpath[nodes].x) + ',' + str(mpath[nodes].y)
-                    ## and close the path
-                    dsub = dsub + ' Z'
-            dprop = dprop + dsub # combine all the paths
-            # lump together all the score lines
-            group = inkex.elements._groups.Group()
-            group.label = 'group'+str(pc)+'ms'
-            self.drawline(dprop,'model'+str(pc),group,sstr+';stroke:{}'.format(self.options.color_solid)) # Output the model
-            if dscore != '':
-                dscore_style = sstr+';stroke:{}'.format(self.options.color_dash)
-                if self.options.cosmetic_dash_style is True:
+                   # lump together all the score lines with the model
+                   for dndx in dscores:
+                      dwrap = dwrap + dndx
+                   self.drawline(dwrap,'wrapper'+str(pc),layer,sstr="fill:#ffdddd;stroke:{};stroke-width:0.25".format(self.options.color_solid)) # Output the wrapper
+                wpaths.append(copy.deepcopy(wpath))
+                wpath.path.clear()
+             done = 1
+          else:
+             # Create the model
+             for pc in range(partcnt):
+                dprop = ''
+                dscores.clear()
+                sidecnt = math.ceil(polysides/partcnt)
+                if pc == partcnt - 1:
+                   sidecnt = polysides - math.ceil(polysides/partcnt)*pc
+                startpc = pc*math.ceil(polysides/partcnt)
+                endpc = startpc + sidecnt
+                for pn in range(startpc, endpc):
+                   # First half
+                   if pn == startpc:
+                      dprop = 'M '+str(pieces[pn][0].x)+','+str(pieces[pn][0].y)
+                   cpt1 = inkex.paths.Move(pieces[pn][0].x, pieces[pn][0].y)
+                   cpt2 = inkex.paths.Move(pieces[pn][1].x, pieces[pn][1].y)
+                   tabpt1, tabpt2 = self.makeTab(wpaths[pc], cpt1, cpt2, tab_height, tab_angle)
+                   dprop +=' L '+str(tabpt1.x)+','+str(tabpt1.y)
+                   dprop +=' L '+str(tabpt2.x)+','+str(tabpt2.y)
+                   dprop += ' L '+str(pieces[pn][1].x)+','+str(pieces[pn][1].y)
+                   # As long as we're here, create a scoreline along the tab...
+                   spaths = self.makescore(pieces[pn][0], pieces[pn][1],dashlength)
+                   dscores.append(spaths)
+                   # ...and across the collar
+                   spaths = self.makescore(pieces[pn][1], pieces[pn][2],dashlength)
+                   dscores.append(spaths)
+                for pn in range(endpc-1, startpc-1, -1):
+                   # Second half
+                   if(pn == (endpc-1)):
+                      # Since we're starting on the last piece, put a tab on the end of it, too
+                      cpt1 = inkex.paths.Move(pieces[pn][1].x, pieces[pn][1].y)
+                      cpt2 = inkex.paths.Move(pieces[pn][2].x, pieces[pn][2].y)
+                      tabpt1, tabpt2 = self.makeTab(wpaths[pc], cpt1, cpt2, tab_height, tab_angle)
+                      dprop +=' L '+str(tabpt1.x)+','+str(tabpt1.y)
+                      dprop +=' L '+str(tabpt2.x)+','+str(tabpt2.y)
+                      # Create a scoreline along the tab
+                      #spaths = self.makescore(pieces[pn][1], pieces[pn][2],dashlength)
+                      #dscores.append(spaths)
+                   dprop +=' L '+str(pieces[pn][2].x)+','+str(pieces[pn][2].y)
+                   cpt1 = inkex.paths.Move(pieces[pn][2].x, pieces[pn][2].y)
+                   cpt2 = inkex.paths.Move(pieces[pn][3].x, pieces[pn][3].y)
+                   tabpt1, tabpt2 = self.makeTab(wpaths[pc], cpt1, cpt2, polysmalltabht, tab_angle)
+                   dprop +=' L '+str(tabpt1.x)+','+str(tabpt1.y)
+                   dprop +=' L '+str(tabpt2.x)+','+str(tabpt2.y)
+                   dprop += ' L '+str(pieces[pn][3].x)+','+str(pieces[pn][3].y)
+                   # Create a scoreline along the tab
+                   spaths = self.makescore(pieces[pn][2], pieces[pn][3],dashlength)
+                   dscores.append(spaths)
+                dprop += ' Z' # Close off the model's path
+                # lump together all the score lines
+                dscore = ''
+                for dndx in range(len(dscores)):
+                   if dndx == 0:
+                      dscore = dscores[dndx][1:]
+                   else:
+                      dscore += dscores[dndx]
+                group = inkex.elements._groups.Group()
+                group.label = 'group'+str(pc)+'ms'
+                self.drawline(dprop,'model'+str(pc),group,sstr='stroke:{};stroke-width:0.25;fill:#eeeeee'.format(self.options.color_solid)) # Output the model
+                
+                #self.drawline(dprop,'model'+str(pc),group,sstr=None) # Output the model
+                #self.drawline(dscore,'score'+str(pc)+'m',group,sstr=None) # Output the scorelines separately
+                
+                
+                if dscore != '':
+                  dscore_style = 'stroke:{};stroke-width:0.25;fill:#eeeeee'.format(self.options.color_dash)
+                  if self.options.cosmetic_dash_style is True:
                     dscore_style += ';stroke-dasharray:{}'.format(3, 3)
-                self.drawline(dscore,'score'+str(pc),group,dscore_style) # Output the scorelines separately
-            layer.append(group)
-
-            pc += 1
-         
-            if self.options.keep_original is False:
-                elem.delete()  
+                  self.drawline(dscore,'score'+str(pc),group,dscore_style) # Output the scorelines separately
+                
+                layer.append(group)
+    
+             # At this point, we can generate the top and bottom polygons
+             # r = sidelength/(2*sin(PI/numpoly))
+             self.drawline(self.makepoly(w1, polysides),'biglid',layer,sstr=None) # Output the bigger polygon
+             sp = self.makepoly(w2, polysides)
+             self.drawline(sp,'smalllid',layer,sstr=None) # Output the smaller polygon
+             done = 2
 
 if __name__ == '__main__':
-    Tabgen().run()
+    Collar().run()
