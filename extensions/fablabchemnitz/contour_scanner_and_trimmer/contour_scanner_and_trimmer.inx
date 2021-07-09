@@ -10,7 +10,7 @@
                     <param name="show_debug" type="bool" gui-text="Show debug infos">false</param>
                     <param name="break_apart" type="bool" gui-text="Break apart input" gui-description="Break apart input paths into sub paths. Modifies original paths: converts to absolute paths and might create additional new path elements.">false</param>   
                     <param name="handle_groups" type="bool" gui-text="Handle groups" gui-description="Also looks for paths in groups which are in the current selection. Note: The generated results have a different structure (less granularity due to grouping and conversion of absolute paths to relative paths) than directly selected paths. The colorization for non-intersected paths will be different too.">false</param> 
-                    <param name="flattenbezier" type="bool" gui-text="Quantization (flatten bezier curves to polylines)" gui-description="Convert bezier curves to polylines.">true</param>  
+                    <param name="flattenbezier" type="bool" gui-text="Quantization (flatten bezier curves to (poly)lines)" gui-description="Convert bezier curves to (poly)lines.">true</param>  
                     <param name="flatness" type="float" min="0.001" max="99999.000" precision="3" gui-text="Flatness (tolerance)" gui-description="Minimum flatness = 0.001. The smaller the value the more fine segments you will get (quantization). Large values might destroy the line continuity (default: 0.1).">0.100</param>
                     <param name="decimals" type="int" min="0" max="16" gui-text="Decimals" gui-description="Accuracy for sub split lines / lines trimmed by shapely (default: 3)">3</param>
                     <param name="snap_tolerance" type="float" min="0.01" max="10.0" gui-text="Snap tolerance" gui-description="Snap tolerance for intersection points on paths (default: 0.1)">0.1</param>
@@ -34,9 +34,9 @@
                     <param name="remove_relative" type="bool" gui-text="relative cmd">false</param>
                     <param name="remove_absolute" type="bool" gui-text="absolute cmd">false</param>     
                     <param name="remove_rel_abs_mixed" type="bool" gui-text="mixed rel/abs cmd" gui-description="combined relative and absolute">false</param>
-                    <param name="remove_polylines" type="bool" gui-text="polylines">false</param>
+                    <param name="remove_polylines" type="bool" gui-text="(poly)lines">false</param>
                     <param name="remove_beziers" type="bool" gui-text="beziers">false</param>
-                    <param name="remove_poly_bez_mixed" type="bool" gui-text="mixed cmd polyline/bezier paths" gui-description="combined polyline and bezier">false</param>               
+                    <param name="remove_poly_bez_mixed" type="bool" gui-text="mixed cmd (poly)line/bezier paths" gui-description="combined (poly)line and bezier">false</param>               
                     <param name="remove_opened" type="bool" gui-text="opened">false</param>
                     <param name="remove_closed" type="bool" gui-text="closed">false</param>
                     <param name="remove_self_intersecting" type="bool" gui-text="self-intersecting">false</param>
@@ -47,21 +47,21 @@
                         <option value="separate_group">put to separate group</option>
                     </param>
                     <label appearance="header">Applying to original paths only</label>
-                    <param name="keep_original_after_split_trim" type="bool" gui-text="Keep original paths after sub splitting / trimming">false</param>
+                    <param name="delete_original_after_split_trim" type="bool" gui-text="Delete original paths after sub splitting / trimming">false</param>
                 </page>
                 <page name="tab_highlighting" gui-text="Highlighting">
                     <label appearance="header">Applying to original paths and sub split lines</label>
                     <param name="highlight_relative" type="bool" gui-text="relative cmd">false</param>
                     <param name="highlight_absolute" type="bool" gui-text="absolute cmd">false</param>
                     <param name="highlight_rel_abs_mixed" type="bool" gui-text="mixed rel/abs cmd" gui-description="combined relative and absolute">false</param>  
-                    <param name="highlight_polylines" type="bool" gui-text="polylines">false</param>
+                    <param name="highlight_polylines" type="bool" gui-text="(poly)lines">false</param>
                     <param name="highlight_beziers" type="bool" gui-text="beziers">false</param>
-                    <param name="highlight_poly_bez_mixed" type="bool" gui-text="mixed cmd polyline/bezier paths" gui-description="combined polyline and bezier">false</param>
+                    <param name="highlight_poly_bez_mixed" type="bool" gui-text="mixed cmd (poly)line/bezier paths" gui-description="combined (poly)line and bezier">false</param>
                     <param name="highlight_opened" type="bool" gui-text="opened">false</param>
                     <param name="highlight_closed" type="bool" gui-text="closed">false</param>
                     <param name="highlight_self_intersecting" type="bool" gui-text="self-intersecting" gui-description="Requires enabled 'Draw sub split lines' option (will auto-enable). Will override other highlighting colors (if those options are enabled)">false</param>
                     <label appearance="header">Applying to sub split lines only</label>
-                    <param name="draw_subsplit" type="bool" gui-text="Draw sub split lines" gui-description="Draws polylines which are generated from all input paths">false</param> 
+                    <param name="draw_subsplit" type="bool" gui-text="Draw sub split lines" gui-description="Draws (poly)lines which are generated from all input paths">false</param> 
                     <param name="highlight_duplicates" type="bool" gui-text="duplicates">false</param>
                     <param name="highlight_merges" type="bool" gui-text="merges" gui-description="Requires enabled 'Remove collinear overlapping lines' option (will auto-enable)">false</param>
                     <label appearance="header">Intersection points</label>
@@ -101,9 +101,9 @@
                             <param name="color_relative" type="color" appearance="colorbutton" gui-text="relative cmd paths">3419879935</param>
                             <param name="color_absolute" type="color" appearance="colorbutton" gui-text="absolute cmd paths">1592519679</param>
                             <param name="color_rel_abs_mixed" type="color" appearance="colorbutton" gui-text="mixed cmd rel/abs paths" gui-description="combined relative and absolute">3351636735</param>
-                            <param name="color_polyline" type="color" appearance="colorbutton" gui-text="polyline paths">4289703935</param>
+                            <param name="color_polyline" type="color" appearance="colorbutton" gui-text="(poly)line paths">4289703935</param>
                             <param name="color_bezier" type="color" appearance="colorbutton" gui-text="bezier paths">258744063</param>
-                            <param name="color_poly_bez_mixed" type="color" appearance="colorbutton" gui-text="mixed polyline/bezier paths" gui-description="combined polyline and bezier">4118348031</param>
+                            <param name="color_poly_bez_mixed" type="color" appearance="colorbutton" gui-text="mixed (poly)line/bezier paths" gui-description="combined (poly)line and bezier">4118348031</param>
                             <param name="color_opened" type="color" appearance="colorbutton" gui-text="opened paths">4012452351</param>
                             <param name="color_closed" type="color" appearance="colorbutton" gui-text="closed paths">2330080511</param>
                         </vbox>

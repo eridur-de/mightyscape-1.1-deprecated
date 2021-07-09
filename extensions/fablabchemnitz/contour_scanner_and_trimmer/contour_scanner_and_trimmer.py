@@ -725,7 +725,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         pars.add_argument("--break_apart", type=inkex.Boolean, default=False, help="Break apart input paths into sub paths")
         pars.add_argument("--handle_groups", type=inkex.Boolean, default=False, help="Also looks for paths in groups which are in the current selection")
         pars.add_argument("--trimming_path_types", default="closed_paths", help="Process open paths by other open paths, closed paths by other closed paths, or all paths by all other paths")
-        pars.add_argument("--flattenbezier", type=inkex.Boolean, default=True, help="Flatten bezier curves to polylines")
+        pars.add_argument("--flattenbezier", type=inkex.Boolean, default=True, help="Flatten bezier curves to (poly)lines")
         pars.add_argument("--flatness", type=float, default=0.1, help="Minimum flatness = 0.001. The smaller the value the more fine segments you will get (quantization). Large values might destroy the line continuity.")
         pars.add_argument("--decimals", type=int, default=3, help="Accuracy for sub split lines / lines trimmed by shapely")
         pars.add_argument("--snap_tolerance", type=float, default=0.1, help="Snap tolerance for intersection points")
@@ -742,9 +742,9 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         pars.add_argument("--remove_relative", type=inkex.Boolean, default=False, help="relative cmd")
         pars.add_argument("--remove_absolute", type=inkex.Boolean, default=False, help="absolute cmd")
         pars.add_argument("--remove_rel_abs_mixed", type=inkex.Boolean, default=False, help="mixed rel/abs cmd (relative + absolute)")
-        pars.add_argument("--remove_polylines", type=inkex.Boolean, default=False, help="polyline")
+        pars.add_argument("--remove_polylines", type=inkex.Boolean, default=False, help="(poly)line")
         pars.add_argument("--remove_beziers", type=inkex.Boolean, default=False, help="bezier")
-        pars.add_argument("--remove_poly_bez_mixed", type=inkex.Boolean, default=False, help="mixed polyline/bezier paths")     
+        pars.add_argument("--remove_poly_bez_mixed", type=inkex.Boolean, default=False, help="mixed (poly)line/bezier paths")     
         pars.add_argument("--remove_opened", type=inkex.Boolean, default=False, help="opened")
         pars.add_argument("--remove_closed", type=inkex.Boolean, default=False, help="closed")
         pars.add_argument("--remove_self_intersecting", type=inkex.Boolean, default=False, help="self-intersecting")
@@ -752,19 +752,19 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         pars.add_argument("--filter_subsplit_collinear", type=inkex.Boolean, default=True, help="Removes any duplicates by merging (multiple) overlapping line segments into longer lines. Not possible to apply for original paths because this routine does not support bezier type paths.")
         pars.add_argument("--filter_subsplit_collinear_action", default="remove", help="What to do with collinear overlapping lines?")
         #Removing - Applying to original paths only
-        pars.add_argument("--keep_original_after_split_trim", type=inkex.Boolean, default=False, help="Keep original paths after sub splitting / trimming") 
+        pars.add_argument("--delete_original_after_split_trim", type=inkex.Boolean, default=False, help="Delete original paths after sub splitting / trimming") 
 
         #Highlighting - Applying to original paths and sub split lines
         pars.add_argument("--highlight_relative", type=inkex.Boolean, default=False, help="relative cmd paths")
         pars.add_argument("--highlight_absolute", type=inkex.Boolean, default=False, help="absolute cmd paths")
         pars.add_argument("--highlight_rel_abs_mixed", type=inkex.Boolean, default=False, help="mixed rel/abs cmd (relative + absolute) paths")
-        pars.add_argument("--highlight_polylines", type=inkex.Boolean, default=False, help="polyline paths")
+        pars.add_argument("--highlight_polylines", type=inkex.Boolean, default=False, help="(poly)line paths")
         pars.add_argument("--highlight_beziers", type=inkex.Boolean, default=False, help="bezier paths")
-        pars.add_argument("--highlight_poly_bez_mixed", type=inkex.Boolean, default=False, help="mixed polyline/bezier paths")     
+        pars.add_argument("--highlight_poly_bez_mixed", type=inkex.Boolean, default=False, help="mixed (poly)line/bezier paths")     
         pars.add_argument("--highlight_opened", type=inkex.Boolean, default=False, help="opened paths")
         pars.add_argument("--highlight_closed", type=inkex.Boolean, default=False, help="closed paths")
         #Highlighting - Applying to sub split lines only
-        pars.add_argument("--draw_subsplit", type=inkex.Boolean, default=False, help="Draw sub split lines (polylines)")
+        pars.add_argument("--draw_subsplit", type=inkex.Boolean, default=False, help="Draw sub split lines ((poly)lines)")
         pars.add_argument("--highlight_duplicates", type=inkex.Boolean, default=False, help="duplicates (only applies to sub split lines)")
         pars.add_argument("--highlight_merges", type=inkex.Boolean, default=False, help="merges (only applies to sub split lines)")
         #Highlighting - Intersection points
@@ -792,9 +792,9 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         pars.add_argument("--color_relative", type=Color, default='3419879935', help="relative cmd paths")
         pars.add_argument("--color_absolute", type=Color, default='1592519679', help="absolute cmd paths")
         pars.add_argument("--color_rel_abs_mixed", type=Color, default='3351636735', help="mixed rel/abs cmd (relative + absolute) paths")     
-        pars.add_argument("--color_polyline", type=Color, default='4289703935', help="polyline paths")
+        pars.add_argument("--color_polyline", type=Color, default='4289703935', help="(poly)line paths")
         pars.add_argument("--color_bezier", type=Color, default='258744063', help="bezier paths")
-        pars.add_argument("--color_poly_bez_mixed", type=Color, default='4118348031', help="mixed polyline/bezier paths")     
+        pars.add_argument("--color_poly_bez_mixed", type=Color, default='4118348031', help="mixed (poly)line/bezier paths")     
         pars.add_argument("--color_opened", type=Color, default='4012452351', help="opened paths")
         pars.add_argument("--color_closed", type=Color, default='2330080511', help="closed paths")
         #Colors - duplicates and merges
@@ -881,7 +881,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                 continue #skip this loop iteration
 
             '''
-            check for bezier or polyline paths
+            check for bezier or (poly)line paths
             '''
             isPoly = False         
             isBezier = False
@@ -957,9 +957,9 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                     segs = list(subPathData.to_segments())
                 #segs = segs[::-1] #reverse the segments
                 
-                #build polylines from segment data
+                #build (poly)lines from segment data
                 subSplitLines = []
-                for i in range(len(segs) - 1): #we could do the same routine to build up polylines using "for x, y in node.path.end_points". See "number nodes" extension
+                for i in range(len(segs) - 1): #we could do the same routine to build up (poly)lines using "for x, y in node.path.end_points". See "number nodes" extension
                     x1, y1, x2, y2 = self.line_from_segments(segs, i, so.decimals)
                     #self.msg("(y1 = {},y2 = {},x1 = {},x2 = {})".format(x1, y1, x2, y2))
                     subSplitId = "{}-{}-{}".format(idPrefixSubSplit, originalPathId, i)
@@ -1267,7 +1267,7 @@ You can try to fix this by:\n\
                 return
 
         #clean original paths if selected.
-        if so.keep_original_after_split_trim is False:
+        if so.delete_original_after_split_trim is True:
             if so.show_debug is True: self.msg("cleaning original paths after sub splitting / trimming")
             for pathElement in pathElements:
                 pathElement.delete()
