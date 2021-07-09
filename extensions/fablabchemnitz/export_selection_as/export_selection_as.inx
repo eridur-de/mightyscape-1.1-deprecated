@@ -12,6 +12,8 @@
             <param name="export_svg" type="bool" gui-text="Export as SVG">true</param>
             <param name="export_dxf" type="bool" gui-text="Export as DXF R14 file (mm units)">false</param>
             <param name="export_pdf" type="bool" gui-text="Export as PDF 1.5">false</param>
+            <param name="export_png" type="bool" gui-text="Export as PNG">false</param>
+            <param name="replace_by_png" type="bool" gui-text="Replace by PNG">false</param>
             <param name="newwindow" type="bool" gui-text="Open file in new Inkscape instance">false</param>
             <label>Note: If svg/dxf/pdf already existed before, they might get accidently deleted or overwritten. Please take care!</label>
         </page>

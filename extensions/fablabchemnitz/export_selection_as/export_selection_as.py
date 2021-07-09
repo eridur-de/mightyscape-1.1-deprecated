@@ -10,9 +10,13 @@ import subprocess
 from subprocess import Popen, PIPE
 import warnings
 import inkex
+from inkex import Rectangle
 import inkex.command
 from inkex.command import inkscape, inkscape_command
 import tempfile
+from PIL import Image
+import base64
+from io import BytesIO
 
 from lxml import etree
 from scour.scour import scourString
@@ -34,6 +38,8 @@ class ExportObject(inkex.EffectExtension):
         pars.add_argument("--export_svg", type=inkex.Boolean, default=False, help="Create a svg file")
         pars.add_argument("--export_dxf", type=inkex.Boolean, default=False, help="Create a dxf file")
         pars.add_argument("--export_pdf", type=inkex.Boolean, default=False, help="Create a pdf file")
+        pars.add_argument("--export_png", type=inkex.Boolean, default=False, help="Create a png file")
+        pars.add_argument("--replace_by_png", type=inkex.Boolean, default=False, help="Replace selection by png export")
         pars.add_argument("--newwindow", type=inkex.Boolean, default=False, help="Open file in new Inkscape window")      
 
     def openExplorer(self, dir):
@@ -56,13 +62,19 @@ class ExportObject(inkex.EffectExtension):
     def effect(self):
         
         svg_export = self.options.export_svg
+        extra_param = "--batch-process"
         
         if self.options.export_svg is False and \
             self.options.export_dxf is False and \
             self.options.export_pdf is False and \
+            self.options.export_png is False and \
+            self.options.replace_by_png is False and \
             self.options.newwindow is False:
             inkex.utils.debug("You must select at least one option to continue!")
             return
+
+        if self.options.replace_by_png is True:
+            self.options.border_offset = 0 #override
 
         if not self.svg.selected:
             inkex.errormsg("Selection is empty. Please select some objects first!")
@@ -80,7 +92,11 @@ class ExportObject(inkex.EffectExtension):
 
         bbox = inkex.BoundingBox()
 
-        for elem in self.svg.selected.values():
+        selected = self.svg.selected
+        firstId = selected[0].get('id')
+        parent = self.svg.getElementById(firstId).getparent()
+
+        for elem in selected.values():
             transform = inkex.Transform()
             parent = elem.getparent()
             if parent is not None and isinstance(parent, inkex.ShapeElement):
@@ -121,15 +137,32 @@ class ExportObject(inkex.EffectExtension):
             svg_filename = filename_base + '.svg'
 
         template.append(group)
+        svg_out = os.path.join(tempfile.gettempdir(), svg_filename)
 
-        if not self.options.wrap_transform:
-            self.load(inkscape_command(template.tostring(), select=GROUP_ID, verbs=['SelectionUnGroup']))
+        if self.options.wrap_transform is False:
+            #self.load(inkscape_command(template.tostring(), select=GROUP_ID, verbs=['SelectionUnGroup;FileSave'])) #fails due to new bug
+            
+            #workaround
+            self.save_document(template, svg_out) #export recent file
+            actions_list=[]
+            actions_list.append("SelectionUnGroup")
+            actions_list.append("export-type:svg")
+            actions_list.append("export-filename:{}".format(svg_out))
+            actions_list.append("export-do") 
+            extra_param = "--batch-process"
+            actions = ";".join(actions_list)
+            cli_output = inkscape(svg_out, extra_param, actions=actions) #process recent file
+            if len(cli_output) > 0:
+                self.msg("Inkscape returned the following output when trying to run the file export; the file export may still have worked:")
+                self.msg(cli_output)
+            self.load(svg_out) #reload recent file
+            
             template = self.svg
             for child in template.getchildren():
                 if child.tag == '{http://www.w3.org/2000/svg}metadata':
                     template.remove(child)
 
-        self.save_document(template, os.path.join(tempfile.gettempdir(), svg_filename)) # save one into temp dir to access for dxf/pdf/new window instance
+        self.save_document(template, svg_out) # save one into temp dir to access for dxf/pdf/new window instance
 
         if self.options.export_svg is True:
             self.save_document(template, export_dir / svg_filename)
@@ -154,12 +187,49 @@ class ExportObject(inkex.EffectExtension):
             stdout, stderr = proc.communicate()
             if proc.returncode != 0:
                 inkex.utils.debug("%d %s %s" % (proc.returncode, stdout, stderr))
-            
+
         if self.options.export_pdf is True:    
-            cli_output = inkscape(os.path.join(tempfile.gettempdir(), svg_filename), actions='export-pdf-version:1.5;export-text-to-path;export-filename:{file_name};export-do;FileClose'.format(file_name=os.path.join(export_dir, filename_base + '.pdf')))
+            cli_output = inkscape(os.path.join(tempfile.gettempdir(), svg_filename), extra_param, actions='export-pdf-version:1.5;export-text-to-path;export-filename:{file_name};export-do'.format(file_name=os.path.join(export_dir, filename_base + '.pdf')))
             if len(cli_output) > 0:
                 self.msg("Inkscape returned the following output when trying to run the file export; the file export may still have worked:")
                 self.msg(cli_output)
+            
+        if self.options.export_png is True:    
+            cli_output = inkscape(os.path.join(tempfile.gettempdir(), svg_filename), extra_param, actions='export-background:white;export-filename:{file_name};export-do'.format(file_name=os.path.join(export_dir, filename_base + '.png')))
+            if len(cli_output) > 0:
+                self.msg("Inkscape returned the following output when trying to run the file export; the file export may still have worked:")
+                self.msg(cli_output)
+              
+        if self.options.replace_by_png is True:
+            #export to png file to temp
+            
+            #png_export=os.path.join(export_dir, filename_base + '.png')
+            png_export=os.path.join(tempfile.gettempdir(), filename_base + '.png')
+            cli_output = inkscape(os.path.join(tempfile.gettempdir(), svg_filename), extra_param, actions='export-background:white;export-filename:{};export-do'.format(png_export))
+            if len(cli_output) > 0:
+                self.msg("Inkscape returned the following output when trying to run the file export; the file export may still have worked:")
+                self.msg(cli_output)
+            #then remove the selection and replace it by png
+            #self.msg(parent.get('id'))
+            for elem in selected.values():
+                elem.delete()
+            #read png file and get base64 string from it
+            img = Image.open(png_export)
+            output_buffer = BytesIO()
+            img.save(output_buffer, format='PNG')
+            byte_data = output_buffer.getvalue()
+            base64_str = base64.b64encode(byte_data).decode('UTF-8')
+
+            #finally replace the svg:path(s) with svg:image
+            imgReplacement = etree.SubElement(Rectangle(), '{http://www.w3.org/2000/svg}image')
+            imgReplacement.attrib['x'] = str(bbox.left)
+            imgReplacement.attrib['y'] = str(bbox.top)
+            imgReplacement.attrib['width'] = str(bbox.width)
+            imgReplacement.attrib['height'] = str(bbox.height)
+            imgReplacement.attrib['id'] = firstId
+            imgReplacement.attrib['{http://www.w3.org/1999/xlink}href'] = "data:image/png;base64,{}".format(base64_str)
+            parent.append(imgReplacement)
+            
                 
     def create_document(self):
         document = self.svg.copy()
