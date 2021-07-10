@@ -426,7 +426,7 @@ else:
     # normally
     destination = filename + ".cutstudio.eps"
 
-EPS2CutstudioEPS(inkscape_eps_file, destination, mirror=("--mirror=true" in sys.argv))
+OpenInRolandCutStudio(inkscape_eps_file, destination, mirror=("--mirror=true" in sys.argv))
 
 if "--selftest" in sys.argv:
     # unittest: compare with known reference output
