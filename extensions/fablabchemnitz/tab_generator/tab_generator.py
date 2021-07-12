@@ -69,7 +69,7 @@ class pnPoint(object):
             j=i
         return inside
 
-class Tabgen(inkex.EffectExtension):
+class TabGenerator(inkex.EffectExtension):
     
     def add_arguments(self, pars):
         pars.add_argument("--usermenu")
@@ -665,4 +665,4 @@ class Tabgen(inkex.EffectExtension):
                 elem.delete()  
 
 if __name__ == '__main__':
-    Tabgen().run()
+    TabGenerator().run()

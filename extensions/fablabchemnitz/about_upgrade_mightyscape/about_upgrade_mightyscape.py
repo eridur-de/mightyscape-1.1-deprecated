@@ -36,13 +36,6 @@ class AboutUpgradeMightyScape(inkex.EffectExtension):
             remoteCommit = remote_repo.fetch()[0].commit
             self.msg("Latest remote commit is: " + str(remoteCommit)[:7])
 
-            # for every remote commit
-            while remoteCommit.hexsha != localCommit.hexsha:
-                try:
-                    remoteCommit = remoteCommit.parents[0]
-                except:
-                    pass
-
             if localCommit.hexsha != remoteCommit.hexsha:
                 ssh_executable = 'git'
                 with local_repo.git.custom_environment(GIT_SSH=ssh_executable):
@@ -58,7 +51,9 @@ class AboutUpgradeMightyScape(inkex.EffectExtension):
             else:
                 inkex.utils.debug("Nothing to do! MightyScape is already up to date!")  
                    
-        except git.exc.GitCommandError:
+        except git.exc.GitCommandError as e:
+            self.msg("Error: ")
+            self.msg(e)
             return False
         return True
 
