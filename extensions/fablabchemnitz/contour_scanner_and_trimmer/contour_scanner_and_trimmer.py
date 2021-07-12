@@ -1197,10 +1197,19 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
 
 
                 allSubSplitLineStrings = []
+                allSubSplitLineStringsTransformed = []
                 for subSplitLine in subSplitLineArray:
                     csp = subSplitLine.path.to_arrays()
+                    cspTransformed = Path(subSplitLine.path.transform(subSplitLine.getparent().composed_transform())).to_arrays()
                     lineString = [(csp[0][1][0], csp[0][1][1]), (csp[1][1][0], csp[1][1][1])]
+                    lineStringTransformed = [(cspTransformed[0][1][0], cspTransformed[0][1][1]), (cspTransformed[1][1][0], cspTransformed[1][1][1])]
                     if so.remove_trim_duplicates is True:
+                        if so.visualize_global_intersections is True: #ignore that calculation if false
+                            if lineStringTransformed not in allSubSplitLineStringsTransformed:
+                                allSubSplitLineStringsTransformed.append(lineStringTransformed)
+                            else:
+                                if so.show_debug is True:
+                                    self.msg("transformed line {} already in sub split line collection. Dropping ...".format(lineStringTransformed))
                         if lineString not in allSubSplitLineStrings:
                             allSubSplitLineStrings.append(lineString)
                         else:
@@ -1208,18 +1217,20 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                                 self.msg("line {} already in sub split line collection. Dropping ...".format(lineString))
                     else: #if false we append all segments without filtering duplicate ones
                         allSubSplitLineStrings.append(lineString)
+                        if so.visualize_global_intersections is True: #ignore that calculation if false
+                            allSubSplitLineStringsTransformed.append(allSubSplitLineStringsTransformed)
                 
-                # Very small step sizes over near-vertical lines can cause errors. We hide exceptions with try-catch, thus we disabled the debugging in poly_point_isect:
-                # by setting USE_DEBUG = False (True was default setting)
                 if so.show_debug is True:
                     self.msg("Going to calculate intersections using Bentley Ottmann Sweep Line Algorithm") 
                 globalIntersectionPoints = MultiPoint(isect_segments(allSubSplitLineStrings, validate=True))
+                if so.visualize_global_intersections is True: #ignore that calculation to save time
+                    globalIntersectionPointsTransformed = MultiPoint(isect_segments(allSubSplitLineStringsTransformed, validate=True))
        
                 if so.show_debug is True:
                     self.msg("global intersection points count: {}".format(len(globalIntersectionPoints)))   
                 if len(globalIntersectionPoints) > 0:
                     if so.visualize_global_intersections is True:
-                        self.visualize_global_intersections(globalIntersectionPoints)
+                        self.visualize_global_intersections(globalIntersectionPointsTransformed)
     
                     '''
                     now we trim the sub split lines at all calculated intersection points. 

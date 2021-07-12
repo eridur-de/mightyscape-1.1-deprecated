@@ -37,10 +37,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 __version__ = "0.3"
 
-import inkex
 import sys, math, random, copy
 from lxml import etree
-from inkex.paths import Path, CubicSuperPath
+import inkex
+from inkex import Path, CubicSuperPath, Color
+from inkex.command import inkscape
 
 def dirtyFormat(path):
     return str(path).replace('[','').replace(']','').replace(',','').replace('\'','')
@@ -103,37 +104,37 @@ def get_derivative(polynomial):
         deriv.append(i* polynomial[i])
     return deriv
 
-class LasercutJigsaw(inkex.Effect):
+class LasercutJigsaw(inkex.EffectExtension):
 
-    def __init__(self):
-        inkex.Effect.__init__(self)
-        self.arg_parser.add_argument("-x", "--width", type=float, default=50.0, help="The Box Width - in the X dimension")
-        self.arg_parser.add_argument("-y", "--height", type=float, default=30.0, help="The Box Height - in the Y dimension")
-        self.arg_parser.add_argument("-u", "--units", default="cm", help="The unit of the box dimensions")
-        self.arg_parser.add_argument("-w", "--pieces_W", type=int, default=11, help="How many pieces across")
-        self.arg_parser.add_argument("-z", "--pieces_H", type=int, default=11, help="How many pieces down")
-        self.arg_parser.add_argument("-k", "--notch_percent", type=float, default=0.0, help="Notch relative size. 0 to 1. 0.15 is good")
-        self.arg_parser.add_argument("-r", "--rand", type=float, default=0.1, help="Amount to perturb the basic piece grid.")
-        self.arg_parser.add_argument("-i", "--innerradius", type=float, default=5.0, help="0 implies square corners")
-        self.arg_parser.add_argument("-b", "--border", type=inkex.Boolean, default=False, help="Add Outer Surround")
-        self.arg_parser.add_argument("-a", "--borderwidth", type=float, default=10.0, help="Size of external surrounding border.")
-        self.arg_parser.add_argument("-o", "--outerradius", type=float, default=5.0, help="0 implies square corners")
-        self.arg_parser.add_argument("-p", "--pack", default="Below", help="Where to place backing piece on page")
-        self.arg_parser.add_argument("-g", "--use_seed", type=inkex.Boolean, default=False, help="Use the kerf value as the drawn line width")
-        self.arg_parser.add_argument("-s", "--seed", type=int, default=12345, help="Random seed for repeatability")
-        self.arg_parser.add_argument("-j", "--pieces", type=inkex.Boolean, default=False, help="Make extra pieces for manual boolean separation.")
-        self.arg_parser.add_argument("-n", "--smooth_edges", type=inkex.Boolean, default=False, help="Allow pieces with smooth edges.")
-        self.arg_parser.add_argument("-f", "--noknob_frequency", type=float, default=10, help="Percentage of smooth-sided edges.")                              
-        # dummy for the doc tab - which is named
-        self.arg_parser.add_argument("--tab", default="use", help="The selected UI-tab when OK was pressed")
-        # internal useful variables
-        self.stroke_width = 0.1 # default for visiblity
-        self.line_style = {'stroke': '#0000FF', # Ponoko blue
-                           'fill': 'none',
-                           'stroke-width': self.stroke_width,
-                           'stroke-linecap': 'butt',
-                           'stroke-linejoin': 'miter'}
+    def add_arguments(self, pars):
+        # General settings
+        pars.add_argument("--tab")
+        
+        #Style
+        pars.add_argument("--color_border", type=Color, default='4278190335', help="Border color")
+        pars.add_argument("--color_jigsaw", type=Color, default='65535', help="Jigsaw lines color")
+         
+        #Dimensions
+        pars.add_argument("--width", type=float, default=50.0, help="The Box Width - in the X dimension")
+        pars.add_argument("--height", type=float, default=30.0, help="The Box Height - in the Y dimension")
+        pars.add_argument("--innerradius", type=float, default=5.0, help="0 implies square corners")
+        pars.add_argument("--units", default="cm", help="The unit of the box dimensions")
+        pars.add_argument("--border", type=inkex.Boolean, default=False, help="Add Outer Surround")
+        pars.add_argument("--borderwidth", type=float, default=10.0, help="Size of external surrounding border.")
+        pars.add_argument("--outerradius", type=float, default=5.0, help="0 implies square corners")
+        pars.add_argument("--pack", default="Below", help="Where to place backing piece on page")
+        pars.add_argument("--pieces_W", type=int, default=11, help="How many pieces across")
+        pars.add_argument("--pieces_H", type=int, default=11, help="How many pieces down")
 
+        #Notches
+        pars.add_argument("--notch_percent", type=float, default=0.0, help="Notch relative size. 0 to 1. 0.15 is good")
+        pars.add_argument("--rand", type=float, default=0.1, help="Amount to perturb the basic piece grid.")
+        pars.add_argument("--noknob_frequency", type=float, default=10, help="Percentage of smooth-sided edges.")                              
+        pars.add_argument("--smooth_edges", type=inkex.Boolean, default=False, help="Allow pieces with smooth edges.")
+        pars.add_argument("--use_seed", type=inkex.Boolean, default=False, help="Use the kerf value as the drawn line width")
+        pars.add_argument("--seed", type=int, default=12345, help="Random seed for repeatability")
+        pars.add_argument("--pieces", type=inkex.Boolean, default=False, help="Make extra pieces for manual boolean separation.")
+  
     def add_jigsaw_horiz_line(self, startx, starty, stepx, steps, width, style, name, parent):
         """ complex version All C smooth
             - get ctrl pt offset and use on both sides of each node (negate for smooth)"""
@@ -194,8 +195,8 @@ class LasercutJigsaw(inkex.Effect):
         #
         clist.extend([width, starty, width, starty]) # doubled up at end for smooth curve
         line_path.append(['C',clist])
-        line_style = str(inkex.Style(style))
-        attribs = { 'style':line_style, 'id':name, 'd':dirtyFormat(line_path)}
+        borderLineStyle = str(inkex.Style(style))
+        attribs = { 'style':borderLineStyle, 'id':name, 'd':dirtyFormat(line_path)}
         etree.SubElement(parent, inkex.addNS('path','svg'), attribs )
 
     def create_horiz_blocks(self, group, gridy, style):
@@ -319,37 +320,84 @@ class LasercutJigsaw(inkex.Effect):
     def create_pieces(self, jigsaw, gridx, gridy):
         """ Loop through each row """
         # Treat outer edge carefully as border runs around. So special code the edges
-        # Internal lines should be in pairs  -with second line reversed and appended to first. Close with a 'z'
+        # Internal lines should be in pairs - with second line reversed and appended to first. Close with a 'z'
         # Create new group
         g_attribs = {inkex.addNS('label','inkscape'):'JigsawPieces:X' + \
                      str( self.pieces_W )+':Y'+str( self.pieces_H ) }
         jigsaw_pieces = etree.SubElement(jigsaw, 'g', g_attribs)
-        line_style = str(inkex.Style(self.line_style))
-        #
-        xblocks = self.create_horiz_blocks(jigsaw_pieces, gridy, line_style)
-        #sys.stderr.write("count: %s\n"% dir(gridx))
-        yblocks = self.create_vert_blocks(jigsaw_pieces, gridx, line_style)
-        #
-        # for each xblock intersect it with each Y block
-        #for x in range(len(xblocks)):
-        #    for y in range(len(yblocks)):
-                
-        # delete the paths in xblocks and yblocks
-        # transform them out of the way for now
-        for node in xblocks:
-            node.set('transform', 'translate(%f,%f)' % (self.width, 0))
-            node.apply_transform()
-        for node in yblocks:
-            node.set('transform', 'translate(%f,%f)' % (self.width, 0))
-            node.apply_transform()
-
+        borderLineStyle = str(inkex.Style(self.borderLineStyle))
         
-    ###--------------------------------------------
-    ### The main function called by the Inkscape UI
+        xblocks = self.create_horiz_blocks(jigsaw_pieces, gridy, borderLineStyle)
+        yblocks = self.create_vert_blocks(jigsaw_pieces, gridx, borderLineStyle)
+        
+        # for each xblock intersect it with each Y block
+        puzzlePartNo = 1
+        allPathPairsToIntersect = []
+        allPathsToDelete = []
+        
+        for x in range(len(xblocks)):
+            for y in range(len(yblocks)):
+                allPathPairsToIntersect.append([copy.copy(xblocks[x]), copy.copy(yblocks[y])])
+                allPathsToDelete.append(xblocks[x])
+                allPathsToDelete.append(yblocks[y])
+        
+        for pair in allPathPairsToIntersect:
+            pair[0].attrib['id'] = str(puzzlePartNo) + "_X"
+            pair[1].attrib['id'] = str(puzzlePartNo) + "_Y"
+            xId = pair[0].get('id')
+            yId = pair[1].get('id')
+            #self.msg("intersecting {} with {}".format(xId, yId))
+            puzzlePartNo += 1
+            jigsaw_pieces.append(pair[0])
+            jigsaw_pieces.append(pair[1])
+        
+        for pathToDelete in allPathsToDelete:
+            pathToDelete.delete()
+        
+        actions_list = []
+        for pair in allPathPairsToIntersect:
+                actions_list.append("select:{}".format(pair[0].attrib['id']))
+                actions_list.append("select:{}".format(pair[1].attrib['id']))
+                actions_list.append("SelectionIntersect")
+                actions_list.append("EditDeselect")
+        
+        #self.msg(actions_list)
+        
+        #workaround to fix it (we use export to tempfile instead processing and saving again)
+        tempfile = self.options.input_file + "-intersected.svg"
+        with open(tempfile, 'wb') as fp:
+            fp.write(self.svg.tostring())
+        extra_param = "--batch-process"
+        actions_list.append("export-type:svg")
+        actions_list.append("export-filename:{}".format(tempfile))
+        actions_list.append("export-do") 
+        actions = ";".join(actions_list)
+        #self.msg(actions)
+        cli_output = inkscape(tempfile, extra_param, actions=actions) #process recent file
+        if len(cli_output) > 0:
+            self.msg("Inkscape returned the following output when trying to run the file export; the file export may still have worked:")
+            self.msg(cli_output)
+        
+        # replace current document with content of temp copy file
+        self.document = inkex.load_svg(tempfile)
+        # update self.svg
+        self.svg = self.document.getroot()
+    
+
     def effect(self):
+        
+        # internal useful variables
+        self.stroke_width = 0.1 # default for visiblity
+        self.borderLineStyle = {'stroke': self.options.color_border, 'fill': 'none', 'stroke-width': self.stroke_width,
+                           'stroke-linecap': 'butt', 'stroke-linejoin': 'miter'}
+        self.jigsawLineStyle = {'stroke': self.options.color_jigsaw, 'fill': 'none', 'stroke-width': self.stroke_width,
+                           'stroke-linecap': 'butt', 'stroke-linejoin': 'miter'}
+        
+        
         # document dimensions (for centering)
         docW = self.svg.unittouu(self.document.getroot().get('width'))
         docH = self.svg.unittouu(self.document.getroot().get('height'))
+        
         # extract fields from UI
         self.width  = self.svg.unittouu( str(self.options.width)  + self.options.units )
         self.height  = self.svg.unittouu( str(self.options.height) + self.options.units )
@@ -386,43 +434,46 @@ class LasercutJigsaw(inkex.Effect):
         gridy = etree.SubElement(jigsaw_group, 'g', g_attribs)
 
         # Draw the Border
-        add_rounded_rectangle(0,0, self.inner_radius, self.width, self.height, self.line_style, 'innerborder', jigsaw_group)
+        add_rounded_rectangle(0,0, self.inner_radius, self.width, self.height, self.borderLineStyle, 'innerborder', jigsaw_group)
         # Do the Border
         if self.border:
             add_rounded_rectangle(-self.borderwidth,-self.borderwidth, self.outer_radius, self.borderwidth*2+self.width,
-                                  self.borderwidth*2+self.height, self.line_style, 'outerborder', jigsaw_group)
+                                  self.borderwidth*2+self.height, self.borderLineStyle, 'outerborder', jigsaw_group)
             # make a second copy below the jigsaw for the cutout BG
             if self.pack == "Below":
                 add_rounded_rectangle(-self.borderwidth,self.borderwidth+ self.height, self.outer_radius, self.borderwidth*2+self.width,
-                                      self.borderwidth*2+self.height, self.line_style, 'BG', jigsaw_group, self.pack)
+                                      self.borderwidth*2+self.height, self.borderLineStyle, 'BG', jigsaw_group, self.pack)
             elif self.pack == "Right":
                 add_rounded_rectangle(self.width+self.borderwidth,-self.borderwidth, self.outer_radius, self.borderwidth*2+self.width,
-                                      self.borderwidth*2+self.height, self.line_style, 'BG', jigsaw_group, self.pack)
+                                      self.borderwidth*2+self.height, self.borderLineStyle, 'BG', jigsaw_group, self.pack)
             else: # Separate
                 add_rounded_rectangle(self.width+self.borderwidth*2,-self.borderwidth, self.outer_radius, self.borderwidth*2+self.width,
-                                      self.borderwidth*2+self.height, self.line_style, 'BG', jigsaw_group)
+                                      self.borderwidth*2+self.height, self.borderLineStyle, 'BG', jigsaw_group)
 
         # Step through the Grid
         Xstep = self.width / (self.pieces_W)
         Ystep = self.height / (self.pieces_H)
         # Draw Horizontal lines on Y step with Xstep notches
         for i in range(1, self.pieces_H):
-            self.add_jigsaw_horiz_line(0, Ystep*i, Xstep, self.pieces_W, self.width, self.line_style, 'YDiv'+str(i), gridy)
+            self.add_jigsaw_horiz_line(0, Ystep*i, Xstep, self.pieces_W, self.width, self.jigsawLineStyle, 'YDiv'+str(i), gridy)
         # Draw Vertical lines on X step with Ystep notches
         for i in range(1, self.pieces_W):
-            self.add_jigsaw_horiz_line(0, Xstep*i, Ystep, self.pieces_H, self.height, self.line_style, 'XDiv'+str(i), gridx)
+            self.add_jigsaw_horiz_line(0, Xstep*i, Ystep, self.pieces_H, self.height, self.jigsawLineStyle, 'XDiv'+str(i), gridx)
             # Rotate lines into pos
             # actualy transform can have multiple transforms in it e.g. 'translate(10,10) rotate(10)'
         for node in gridx.iterchildren():
             if node.tag == inkex.addNS('path','svg'):
                 node.set('transform', 'translate(%f,%f) rotate(90)' % (self.width, 0))
+                node.apply_transform()
         # center the jigsaw
         jigsaw_group.set('transform', 'translate(%f,%f)' % ( (docW-self.width)/2, (docH-self.height)/2 ) )
         
         # pieces
         if self.pieces:
+            gridx.delete() #delete the previous x generated stuff because we have single pieces instead!
+            gridy.delete() #delete the previous y generated stuff because we have single pieces instead!
+            jigsaw_group.getchildren()[0].delete() #delete inner border
             self.create_pieces(jigsaw_group, gridx,gridy)
-            # needs manual boolean ops until that is exposed or we get all the commented code working up top :-(
        
 if __name__ == '__main__':
     LasercutJigsaw().run()
