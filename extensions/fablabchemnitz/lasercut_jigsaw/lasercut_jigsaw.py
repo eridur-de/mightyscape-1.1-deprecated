@@ -133,8 +133,9 @@ class LasercutJigsaw(inkex.EffectExtension):
         pars.add_argument("--smooth_edges", type=inkex.Boolean, default=False, help="Allow pieces with smooth edges.")
         pars.add_argument("--use_seed", type=inkex.Boolean, default=False, help="Use the kerf value as the drawn line width")
         pars.add_argument("--seed", type=int, default=12345, help="Random seed for repeatability")
-        pars.add_argument("--pieces", type=inkex.Boolean, default=False, help="Make extra pieces for manual boolean separation.")
-  
+        pars.add_argument("--pieces", type=inkex.Boolean, default=False, help="Create separated pieces")
+        pars.add_argument("--shift", type=float, default=0.0, help="Shifting for each piece (%)")
+
     def add_jigsaw_horiz_line(self, startx, starty, stepx, steps, width, style, name, parent):
         """ complex version All C smooth
             - get ctrl pt offset and use on both sides of each node (negate for smooth)"""
@@ -325,6 +326,8 @@ class LasercutJigsaw(inkex.EffectExtension):
         g_attribs = {inkex.addNS('label','inkscape'):'JigsawPieces:X' + \
                      str( self.pieces_W )+':Y'+str( self.pieces_H ) }
         jigsaw_pieces = etree.SubElement(jigsaw, 'g', g_attribs)
+        jigsaw_pieces_id = self.svg.get_unique_id("pieces-")
+        jigsaw_pieces.attrib['id'] = jigsaw_pieces_id
         borderLineStyle = str(inkex.Style(self.borderLineStyle))
         
         xblocks = self.create_horiz_blocks(jigsaw_pieces, gridy, borderLineStyle)
@@ -350,7 +353,7 @@ class LasercutJigsaw(inkex.EffectExtension):
             puzzlePartNo += 1
             jigsaw_pieces.append(pair[0])
             jigsaw_pieces.append(pair[1])
-        
+             
         for pathToDelete in allPathsToDelete:
             pathToDelete.delete()
         
@@ -383,6 +386,22 @@ class LasercutJigsaw(inkex.EffectExtension):
         # update self.svg
         self.svg = self.document.getroot()
     
+        row = 1
+        col = 1      
+        offsetW = self.options.shift / 100 * (self.options.width / self.options.pieces_W)     
+        offsetH = self.options.shift / 100 * (self.options.height / self.options.pieces_H)     
+        for jigsaw_piece in self.svg.getElementById(jigsaw_pieces_id).getchildren():      
+            jigsaw_piece.apply_transform()
+            jigsaw_piece.set('transform', 'translate(%f,%f)' % (-col * offsetH, 0))
+            jigsaw_piece.apply_transform()
+            jigsaw_piece.set('transform', 'translate(%f,%f)' % (0, row * offsetW))
+            jigsaw_piece.apply_transform()
+            currentPiece = int(jigsaw_piece.get('id').split('_')[0])   
+            #self.msg("piece {} zeile {} Spalte {}".format(currentPiece, row, col))
+            if currentPiece % self.options.pieces_W == 0:
+                row += 1
+                col -= self.options.pieces_W
+            col += 1
 
     def effect(self):
         

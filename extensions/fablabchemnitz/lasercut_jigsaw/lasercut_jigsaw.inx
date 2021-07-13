@@ -40,6 +40,7 @@
          <param name="use_seed" type="bool" gui-text="Random jigsaw" gui-description="Use the kerf value as the drawn line width">true</param>
          <param name="seed" type="int" min="0" max="99999999" gui-text="or Jigsaw pattern (seed)" gui-description="Random seed for repeatability">12345</param>
          <param name="pieces" type="bool" gui-text="Create separated pieces">false</param>
+         <param name="shift" type="float" min="0.0" max="100.0" precision="2" gui-text="Shifting for each piece (%)">0</param>
       </page>
       <page name="Usage" gui-text="Usage">
         <label xml:space="preserve">Jigsaw lines are single for minimal laser cutting.
