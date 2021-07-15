@@ -22,49 +22,34 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-# The source code is a horrible mess. I apologize for your inconvenience, but hope that it still helps. Feel free to improve :-)
-# Keep everything python2 compatible as long as people out there are using Inkscape <= 0.92.4!
+'''
+KNOWN BUGS:
+WONTFIX: clipping of paths doesnt work
+WONTFIX: if there is any object with opacity != 100%, inkscape exports some objects as bitmaps. They will disappear in CutStudio! The same problem also occurs if the alpha value of stroke or fill color is not 100%.
+WONTFIX: filters (e.g. blur) are not supported
+'''
 
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import absolute_import
-
-from builtins import open
-from builtins import map
-from builtins import str
-from builtins import range
 import sys
 import os
-from subprocess import Popen
 import subprocess
+from subprocess import Popen
+from functools import reduce
+from pathlib import Path
 import shutil
 import numpy
-from functools import reduce
 import atexit
 import filecmp
-try:
-    from pathlib import Path
-except ImportError:
-    # Workaround for Python < 3.5
-    class fakepath:
-        def home(self):
-            return os.path.expanduser("~")
-    Path = fakepath()
-try:
-    from functools import lru_cache
-except ImportError:
-    def lru_cache():
-        def wrapper(func):
-            return func
-        return wrapper
 import tempfile
+import warnings
+import inkex.command
+from inkex.command import inkscape
 
 DEVNULL = open(os.devnull, 'w')
 atexit.register(DEVNULL.close)
 
 def message(s):
     sys.stderr.write(s+"\n")
+    
 def debug(s):
     message(s)
 
@@ -93,18 +78,7 @@ def which(program, raiseError, extraPaths=[], subdir=None):
         raise Exception("Cannot find " + str(program) + " in any of these paths: " + str(pathlist) + ". Either the program is not installed, PATH is not set correctly, or this is a bug.")
     else:
         return None
-
-# mostly copied from https://github.com/t-oster/VisiCut/blob/0abe785a30d5d5085dd3b5953b38239b1ff83358/tools/inkscape_extension/visicut_export.py
-@lru_cache()
-def inkscape_version():
-    """determine if Inkscape is version 0 or 1"""
-    version = subprocess.check_output([INKSCAPEBIN, "--version"],  stderr=DEVNULL).decode('ASCII', 'ignore')
-    assert version.startswith("Inkscape ")
-    if version.startswith("Inkscape 0"):
-        return 0
-    else:
-        return 1
-    
+ 
 # copied from https://github.com/t-oster/VisiCut/blob/0abe785a30d5d5085dd3b5953b38239b1ff83358/tools/inkscape_extension/visicut_export.py
 # Strip SVG to only contain selected elements, convert objects to paths, unlink clones
 # Inkscape version: takes care of special cases where the selected objects depend on non-selected ones.
@@ -115,71 +89,33 @@ def inkscape_version():
 def stripSVG_inkscape(src, dest, elements):    
     # create temporary file for opening with inkscape.
     # delete this file later so that it will disappear from the "recently opened" list.
-    tmpfile = tempfile.NamedTemporaryFile(delete=False, prefix='temp-visicut-', suffix='.svg')
+    tmpfile = tempfile.NamedTemporaryFile(delete=False, prefix='temp-cutstudio-', suffix='.svg')
     tmpfile.close()
     tmpfile = tmpfile.name
-    import shutil
     shutil.copyfile(src, tmpfile)
+    actions_list=[]
+    actions_list.append("ObjectToPath")
+    actions_list.append("UnlockAllInAllLayers")
 
-
-    if inkscape_version() == 0:
-        # inkscape 0.92 long-term-support release. Will be in Linux distributions until 2025 or so
-        # Selection commands: select items, invert selection, delete
-        selection = []
-        for el in elements:
-            selection += ["--select=" + el]
-
-        if len(elements) > 0:
-            # selection += ["--verb=FitCanvasToSelection"] # TODO add a user configuration option whether to keep the page size (and by this the position relative to the page)
-            selection += ["--verb=EditInvertInAllLayers", "--verb=EditDelete"]
-
-
-        hidegui = ["--without-gui"]
-
-        # currently this only works with gui because of a bug in inkscape: https://bugs.launchpad.net/inkscape/+bug/843260
-        hidegui = []
-
-        command = [INKSCAPEBIN] + hidegui + [tmpfile, "--verb=UnlockAllInAllLayers", "--verb=UnhideAllInAllLayers"] + selection + ["--verb=EditSelectAllInAllLayers", "--verb=EditUnlinkClone", "--verb=ObjectToPath", "--verb=FileSave", "--verb=FileQuit"]
+    if elements: # something is selected
+        actions_list.append("select:{}".format(",".join(elements)))
     else:
-        # Inkscape 1.0, to be released ca 2020
-        # inkscape --select=... --verbs=...
-        # (see inkscape --help, inkscape --verb-list)
-        command = [INKSCAPEBIN, tmpfile, "--batch-process"]
-        verbs = ["ObjectToPath", "UnlockAllInAllLayers"]
-        if elements: # something is selected
-            # --select=object1,object2,object3,...
-            command += ["--select=" + ",".join(elements)]
-        else:
-            verbs += ["EditSelectAllInAllLayers"]
-        verbs += ["UnhideAllInAllLayers", "EditInvertInAllLayers", "EditDelete", "EditSelectAllInAllLayers", "EditUnlinkClone", "ObjectToPath", "FileSave"]
-        # --verb=action1;action2;...
-        command += ["--verb=" + ";".join(verbs)]
-        
-        
-        DEBUG = False
-        if DEBUG:
-            # Inkscape sometimes silently ignores wrong verbs, so we need to double-check that everything's right
-            for verb in verbs:
-                verb_list = [line.split(":")[0] for line in subprocess.check_output([INKSCAPEBIN, "--verb-list"], stderr=DEVNULL).split("\n")]
-                if verb not in verb_list:
-                    sys.stderr.write("Inkscape does not have the verb '{}'. Please report this as a VisiCut bug.".format(verb))
-        
-    inkscape_output = "(not yet run)"
-    try:
-        #sys.stderr.write(" ".join(command))
-        # run inkscape, buffer output
-        inkscape = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        inkscape_output = inkscape.communicate()[0]
-        if inkscape.returncode != 0:
-            sys.stderr.write("Error: cleaning the document with inkscape failed. Something might still be shown in visicut, but it could be incorrect.\nInkscape's output was:\n" + inkscape_output)
-    except:
-        sys.stderr.write("Error: cleaning the document with inkscape failed. Something might still be shown in visicut, but it could be incorrect. Exception information: \n" + str(sys.exc_info()[0]) + "Inkscape's output was:\n" + inkscape_output)
-
+        actions_list.append("EditSelectAllInAllLayers")
+    actions_list.append("UnhideAllInAllLayers")
+    actions_list.append("EditInvertInAllLayers")
+    actions_list.append("EditDelete")
+    actions_list.append("EditSelectAllInAllLayers")
+    actions_list.append("EditUnlinkClone")
+    actions_list.append("ObjectToPath")
+    actions_list.append("FileSave")
+    actions = ";".join(actions_list)
+    cli_output = inkscape(tmpfile, "--batch-process", actions=actions) #process recent file
+    if len(cli_output) > 0:
+        self.msg("Inkscape returned the following output when trying to run the file export; the file export may still have worked:")
+        self.msg(cli_output)
+    
     # move output to the intended destination filename
     os.rename(tmpfile, dest)
-
-
-
 
 # header
 # for debugging purposes you can open the resulting EPS file in Inkscape,
@@ -282,6 +218,7 @@ end restore
 """
 
 def OpenInRolandCutStudio(src, dest, mirror=False):
+    
     def outputFromStack(stack, n, transformCoordinates=True):
         arr=stack[-(n+1):-1]
         if transformCoordinates:
@@ -291,6 +228,7 @@ def OpenInRolandCutStudio(src, dest, mirror=False):
             return output(arrTransformed+[stack[-1]])
         else:
             return output(arr+[stack[-1]])
+        
     def transform(x, y):
         #debug("trafo from: {} {}".format(x, y))
         p=numpy.array([[float(x),float(y),1]]).transpose()
@@ -304,6 +242,7 @@ def OpenInRolandCutStudio(src, dest, mirror=False):
         y=float(pnew[1])
         #debug("to: {} {}".format(x, y))
         return [x, y]
+    
     def toString(v):
         """
         like str(), but gives the exact same output for floats across python2 and python3
@@ -312,17 +251,21 @@ def OpenInRolandCutStudio(src, dest, mirror=False):
             return repr(v)
         else:
             return str(v)
+        
     def outputMoveto(x, y):
         [xx, yy]=transform(x, y)
         return output([toString(xx), toString(yy), "m"])
+    
     def outputLineto(x, y):
         [xx, yy]=transform(x, y)
         return output([toString(xx), toString(yy), "l"])
+    
     def output(array):
         array=list(map(toString, array))
         output=" ".join(array)
         #debug("OUTPUT: "+output)
         return output + "\n"
+    
     stack=[]
     scalingStack=[numpy.identity(3)]
     if mirror:
@@ -383,13 +326,6 @@ def OpenInRolandCutStudio(src, dest, mirror=False):
     outputFile.close()
     inputFile.close()
 
-if os.name=="nt": # windows
-    INKSCAPEBIN = which("inkscape.exe", True, subdir="Inkscape")
-else:
-    INKSCAPEBIN=which("inkscape", True)
-
-assert os.path.isfile(INKSCAPEBIN),  "cannot find inkscape binary " + INKSCAPEBIN
-
 selectedElements=[]
 for arg in sys.argv[1:]:
     if arg[0] == "-":
@@ -406,18 +342,20 @@ else:
     # only take selected elements
     stripSVG_inkscape(src=filename, dest=filename+".filtered.svg", elements=selectedElements)
 
-if inkscape_version() == 0:
-    # Inkscape 0.92.4
-    cmd = [INKSCAPEBIN,"-z",filename+".filtered.svg","-T", "--export-ignore-filters",  "--export-eps="+filename+".inkscape.eps"]
-else:
-    # Inkscape 1.0
-    cmd = [INKSCAPEBIN, "-T", "--export-ignore-filters",  "--export-area-drawing", "--export-filename="+filename+".inkscape.eps", filename+".filtered.svg"]
+actions_list=[]
+actions_list.append("export-text-to-path")
+actions_list.append("export-ignore-filters")
+actions_list.append("export-area-drawing")
+actions_list.append("export-filename:{}".format(filename + ".inkscape.eps"))
+actions_list.append("export-do") 
+actions = ";".join(actions_list)
+cli_output = inkscape(filename + ".filtered.svg", actions=actions) #process recent file
+if len(cli_output) > 0:
+    self.msg("Inkscape returned the following output when trying to run the file export; the file export may still have worked:")
+    self.msg(cli_output)
+          
 inkscape_eps_file = filename + ".inkscape.eps"
-
-#debug(" ".join(cmd))
-assert 0 == subprocess.call(cmd, stderr=DEVNULL), 'EPS conversion failed: command returned error: ' + '"' + '" "'.join(cmd) + '"'
 assert os.path.exists(inkscape_eps_file), 'EPS conversion failed: command did not create result file: ' + '"' + '" "'.join(cmd) + '"' 
-
 
 if "--selftest" in sys.argv:
     # used for unit-testing: fixed location of output file
@@ -437,7 +375,10 @@ if "--selftest" in sys.argv:
 
 if os.name=="nt":
     DETACHED_PROCESS = 8 # start as "daemon"
-    Popen([which("CutStudio\CutStudio.exe", True), "/import", destination], creationflags=DETACHED_PROCESS, close_fds=True)
+    warnings.simplefilter('ignore', ResourceWarning) #suppress "enable tracemalloc to get the object allocation traceback"
+    proc = Popen([which("CutStudio\CutStudio.exe", True), "/import", destination], creationflags=DETACHED_PROCESS, close_fds=True)
+    #warnings.simplefilter("default", ResourceWarning)    
+    
 else: #check if we have access to "wine"
     CUTSTUDIO_C_DRIVE = str(Path.home()) + "/.wine/drive_c/"
     CUTSTUDIO_PATH_LINUX_WINE = CUTSTUDIO_C_DRIVE + "Program Files (x86)/CutStudio/CutStudio.exe"
@@ -454,9 +395,3 @@ else: #check if we have access to "wine"
             "Please open that with CutStudio manually. \n\n" + \
             "Tip: On Linux, you can use 'wine' to install CutStudio 3.10. Then, the file will be directly opened with CutStudio. \n" + \
             " Diagnostic information: \n" + str(exc))
-        #os.popen("/usr/bin/xdg-open " + filename) #os.popen is deprecated. Use subprocess.Popen
-        #Popen(["inkscape", filename+".filtered.svg"], stderr=DEVNULL)
-        #Popen(["inkscape", filename+".cutstudio.eps"])
-#os.unlink(filename+".filtered.svg")
-#os.unlink(filename)
-#os.unlink(filename+".cutstudio.eps")
