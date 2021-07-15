@@ -39,6 +39,7 @@ class ExportObject(inkex.EffectExtension):
         pars.add_argument("--export_dxf", type=inkex.Boolean, default=False, help="Create a dxf file")
         pars.add_argument("--export_pdf", type=inkex.Boolean, default=False, help="Create a pdf file")
         pars.add_argument("--export_png", type=inkex.Boolean, default=False, help="Create a png file")
+        pars.add_argument("--png_dpi", type=float, default=96, help="PNG DPI (applies for export and replace)")
         pars.add_argument("--replace_by_png", type=inkex.Boolean, default=False, help="Replace selection by png export")
         pars.add_argument("--newwindow", type=inkex.Boolean, default=False, help="Open file in new Inkscape window")      
 
@@ -80,10 +81,11 @@ class ExportObject(inkex.EffectExtension):
             inkex.errormsg("Selection is empty. Please select some objects first!")
             return
 
-        #preflight check for DXF input dir
-        if not os.path.exists(self.options.dxf_exporter_path):
-            inkex.utils.debug("Location of dxf_outlines.py does not exist. Please select a proper file and try again.")
-            exit(1)
+        if self.options.export_dxf is True:
+            #preflight check for DXF input dir
+            if not os.path.exists(self.options.dxf_exporter_path):
+                inkex.utils.debug("Location of dxf_outlines.py does not exist. Please select a proper file and try again.")
+                exit(1)
             
         export_dir = Path(self.absolute_href(self.options.export_dir))
         os.makedirs(export_dir, exist_ok=True)
@@ -119,22 +121,28 @@ class ExportObject(inkex.EffectExtension):
         group.attrib['transform'] = str(inkex.Transform(((1, 0, -bbox.left), (0, 1, -bbox.top))))
 
         for elem in self.svg.selected.values():
+            if elem.tag == inkex.addNS('image', 'svg'):
+                continue #skip images
             elem_copy = deepcopy(elem)
             elem_copy.attrib['transform'] = str(elem.composed_transform())
             elem_copy.attrib['style'] = str(elem.composed_style())            
             group.append(elem_copy)
 
-            template.attrib['viewBox'] = f'{-offset} {-offset} {bbox.width + offset * 2} {bbox.height + offset * 2}'
-            template.attrib['width'] = f'{bbox.width + offset * 2}' + self.svg.unit
-            template.attrib['height'] = f'{bbox.height + offset * 2}' + self.svg.unit
+        template.attrib['viewBox'] = f'{-offset} {-offset} {bbox.width + offset * 2} {bbox.height + offset * 2}'
+        template.attrib['width'] = f'{bbox.width + offset * 2}' + self.svg.unit
+        template.attrib['height'] = f'{bbox.height + offset * 2}' + self.svg.unit
 
-            if svg_filename is None:
-                filename_base = elem.attrib.get('id', None).replace(os.sep, '_')
-                if filename_base:
-                    svg_filename = filename_base + '.svg'
+        if svg_filename is None:
+            filename_base = elem.attrib.get('id', None).replace(os.sep, '_')
+            if filename_base:
+                svg_filename = filename_base + '.svg'
         if not filename_base: #should never be the case. Inkscape might crash if the id attribute is empty or not existent due to invalid SVG
             filename_base = self.svg.get_unique_id("selection")
             svg_filename = filename_base + '.svg'
+
+        if len(group) == 0:
+            self.msg("Selection does not contain any vector data.")
+            exit(1)
 
         template.append(group)
         svg_out = os.path.join(tempfile.gettempdir(), svg_filename)
@@ -149,7 +157,6 @@ class ExportObject(inkex.EffectExtension):
             actions_list.append("export-type:svg")
             actions_list.append("export-filename:{}".format(svg_out))
             actions_list.append("export-do") 
-            extra_param = "--batch-process"
             actions = ";".join(actions_list)
             cli_output = inkscape(svg_out, extra_param, actions=actions) #process recent file
             if len(cli_output) > 0:
@@ -202,13 +209,25 @@ class ExportObject(inkex.EffectExtension):
               
         if self.options.replace_by_png is True:
             #export to png file to temp
-            
-            #png_export=os.path.join(export_dir, filename_base + '.png')
             png_export=os.path.join(tempfile.gettempdir(), filename_base + '.png')
-            cli_output = inkscape(os.path.join(tempfile.gettempdir(), svg_filename), extra_param, actions='export-background:white;export-filename:{};export-do'.format(png_export))
+            try:
+                os.remove(png_export)
+            except OSError as e: 
+                #inkex.utils.debug("Error while deleting previously generated output file " + png_export)
+                pass
+            
+            actions_list=[]
+            actions_list.append("export-background:white")
+            actions_list.append("export-type:png")
+            actions_list.append("export-dpi:{}".format(self.options.png_dpi))
+            actions_list.append("export-filename:" + png_export)
+            actions_list.append("export-do") 
+            actions = ";".join(actions_list)
+            cli_output = inkscape(os.path.join(tempfile.gettempdir(), svg_filename), extra_param, actions=actions)
             if len(cli_output) > 0:
                 self.msg("Inkscape returned the following output when trying to run the file export; the file export may still have worked:")
                 self.msg(cli_output)
+                
             #then remove the selection and replace it by png
             #self.msg(parent.get('id'))
             for elem in selected.values():
