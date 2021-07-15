@@ -8,7 +8,6 @@ import os
 import sys
 import subprocess
 from subprocess import Popen, PIPE
-import warnings
 import inkex
 from inkex import Rectangle
 import inkex.command
@@ -17,7 +16,8 @@ import tempfile
 from PIL import Image
 import base64
 from io import BytesIO
-
+import warnings
+warnings.simplefilter('ignore', Image.DecompressionBombWarning)
 from lxml import etree
 from scour.scour import scourString
 
@@ -244,7 +244,11 @@ class ExportObject(inkex.EffectExtension):
             for elem in selected.values():
                 elem.delete()
             #read png file and get base64 string from it
-            img = Image.open(png_export)
+            try:
+                img = Image.open(png_export)
+            except Image.DecompressionBombError as e: #we could also increse PIL.Image.MAX_IMAGE_PIXELS = some large int
+                self.msg("Error. Image is too large. Reduce DPI and try again!")
+                exit(1)
             output_buffer = BytesIO()
             img.save(output_buffer, format='PNG')
             byte_data = output_buffer.getvalue()

@@ -1200,7 +1200,10 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                 allSubSplitLineStringsTransformed = []
                 for subSplitLine in subSplitLineArray:
                     csp = subSplitLine.path.to_arrays()
-                    cspTransformed = Path(subSplitLine.path.transform(subSplitLine.getparent().composed_transform())).to_arrays()
+                    if subSplitLine.getparent() != None:
+                        cspTransformed = Path(subSplitLine.path.transform(subSplitLine.getparent().composed_transform())).to_arrays()
+                    else:
+                        cspTransformed = csp
                     lineString = [(csp[0][1][0], csp[0][1][1]), (csp[1][1][0], csp[1][1][1])]
                     lineStringTransformed = [(cspTransformed[0][1][0], cspTransformed[0][1][1]), (cspTransformed[1][1][0], cspTransformed[1][1][1])]
                     if so.remove_trim_duplicates is True:
