@@ -22,60 +22,19 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import absolute_import
-
-from builtins import open
-from builtins import map
-from builtins import str
-from builtins import range
 import sys
 import os
-from subprocess import Popen
-import subprocess
 import shutil
 import numpy
 from functools import reduce
 import inkex
-import filecmp
-from pathlib import Path
-from functools import lru_cache
-import atexit
-DEVNULL = open(os.devnull, 'w')
-atexit.register(DEVNULL.close)
+import inkex.command
+from inkex.command import inkscape
 
 def message(s):
     sys.stderr.write(s+"\n")
 def debug(s):
     message(s)
-
-# copied from https://github.com/t-oster/roland_eps/blob/0abe785a30d5d5085dd3b5953b38239b1ff83358/tools/inkscape_extension/roland_eps_export.py
-def which(program, raiseError, extraPaths=[], subdir=None):
-    """
-    find program in the $PATH environment variable and in $extraPaths.
-    If $subdir is given, also look in the given subdirectory of each $PATH entry.
-    """
-    pathlist=os.environ["PATH"].split(os.pathsep)
-    if "nt" in os.name:
-        pathlist.append(os.environ.get("ProgramFiles","C:\Program Files\\"))
-        pathlist.append(os.environ.get("ProgramFiles(x86)","C:\Program Files (x86)\\"))
-        pathlist.append("C:\Program Files\\") # needed for 64bit inkscape on 64bit Win7 machines
-        pathlist.append(os.path.dirname(os.path.dirname(os.getcwd()))) # portable application in the current directory
-    pathlist += extraPaths
-    if subdir:
-        pathlist = [os.path.join(p, subdir) for p in pathlist] + pathlist
-    def is_exe(fpath):
-        return os.path.isfile(fpath) and (os.access(fpath, os.X_OK) or fpath.endswith(".exe"))
-    for path in pathlist:
-      exe_file = os.path.join(path, program)
-      if is_exe(exe_file):
-        return exe_file
-    if raiseError:
-        raise Exception("Cannot find " + str(program) + " in any of these paths: " + str(pathlist) + ". Either the program is not installed, PATH is not set correctly, or this is a bug.")
-    else:
-        return None
 
 # header
 # for debugging purposes you can open the resulting EPS file in Inkscape,
@@ -226,15 +185,22 @@ class RolandCutStudioEPSExport(inkex.OutputExtension):
             #debug("OUTPUT: "+output)
             return output + "\n"
         
-        if os.name=="nt": # windows
-            INKSCAPEBIN = which("inkscape.exe", True, subdir="Inkscape")
-        else:
-            INKSCAPEBIN=which("inkscape", True)
         filename = self.options.input_file
-        shutil.copyfile(filename, filename+".filtered.svg")
-        cmd = [INKSCAPEBIN, "-T", "--export-ignore-filters",  "--export-area-drawing", "--export-filename="+filename+".inkscape.eps", filename+".filtered.svg"]
+        shutil.copyfile(filename, filename + ".filtered.svg")
+
+        actions_list=[]
+        actions_list.append("export-text-to-path")
+        actions_list.append("export-ignore-filters")
+        actions_list.append("export-area-drawing")
+        actions_list.append("export-filename:{}".format(filename + ".inkscape.eps"))
+        actions_list.append("export-do") 
+        actions = ";".join(actions_list)
+        cli_output = inkscape(filename + ".filtered.svg", actions=actions) #process recent file
+        if len(cli_output) > 0:
+            self.msg("Inkscape returned the following output when trying to run the file export; the file export may still have worked:")
+            self.msg(cli_output)
+                  
         inkscape_eps_file = filename + ".inkscape.eps"
-        assert 0 == subprocess.call(cmd, stderr=DEVNULL), 'EPS conversion failed: command returned error: ' + '"' + '" "'.join(cmd) + '"'
         assert os.path.exists(inkscape_eps_file), 'EPS conversion failed: command did not create result file: ' + '"' + '" "'.join(cmd) + '"' 
         stack=[]
         scalingStack=[numpy.identity(3)]
