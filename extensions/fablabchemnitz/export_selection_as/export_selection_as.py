@@ -201,12 +201,25 @@ class ExportObject(inkex.EffectExtension):
                 self.msg("Inkscape returned the following output when trying to run the file export; the file export may still have worked:")
                 self.msg(cli_output)
             
-        if self.options.export_png is True:    
-            cli_output = inkscape(os.path.join(tempfile.gettempdir(), svg_filename), extra_param, actions='export-background:white;export-filename:{file_name};export-do'.format(file_name=os.path.join(export_dir, filename_base + '.png')))
+        if self.options.export_png is True:
+            png_export=os.path.join(export_dir, filename_base + '.png')
+            try:
+                os.remove(png_export)
+            except OSError as e: 
+                #inkex.utils.debug("Error while deleting previously generated output file " + png_export)
+                pass
+            actions_list=[]
+            actions_list.append("export-background:white")
+            actions_list.append("export-type:png")
+            actions_list.append("export-dpi:{}".format(self.options.png_dpi))
+            actions_list.append("export-filename:{}".format(png_export))
+            actions_list.append("export-do") 
+            actions = ";".join(actions_list)
+            cli_output = inkscape(os.path.join(tempfile.gettempdir(), svg_filename), extra_param, actions=actions)
             if len(cli_output) > 0:
                 self.msg("Inkscape returned the following output when trying to run the file export; the file export may still have worked:")
                 self.msg(cli_output)
-              
+                
         if self.options.replace_by_png is True:
             #export to png file to temp
             png_export=os.path.join(tempfile.gettempdir(), filename_base + '.png')
@@ -215,19 +228,17 @@ class ExportObject(inkex.EffectExtension):
             except OSError as e: 
                 #inkex.utils.debug("Error while deleting previously generated output file " + png_export)
                 pass
-            
             actions_list=[]
             actions_list.append("export-background:white")
             actions_list.append("export-type:png")
             actions_list.append("export-dpi:{}".format(self.options.png_dpi))
-            actions_list.append("export-filename:" + png_export)
+            actions_list.append("export-filename:{}".format(png_export))
             actions_list.append("export-do") 
             actions = ";".join(actions_list)
             cli_output = inkscape(os.path.join(tempfile.gettempdir(), svg_filename), extra_param, actions=actions)
             if len(cli_output) > 0:
                 self.msg("Inkscape returned the following output when trying to run the file export; the file export may still have worked:")
-                self.msg(cli_output)
-                
+                self.msg(cli_output)         
             #then remove the selection and replace it by png
             #self.msg(parent.get('id'))
             for elem in selected.values():
@@ -238,7 +249,6 @@ class ExportObject(inkex.EffectExtension):
             img.save(output_buffer, format='PNG')
             byte_data = output_buffer.getvalue()
             base64_str = base64.b64encode(byte_data).decode('UTF-8')
-
             #finally replace the svg:path(s) with svg:image
             imgReplacement = etree.SubElement(Rectangle(), '{http://www.w3.org/2000/svg}image')
             imgReplacement.attrib['x'] = str(bbox.left)
@@ -248,7 +258,8 @@ class ExportObject(inkex.EffectExtension):
             imgReplacement.attrib['id'] = firstId
             imgReplacement.attrib['{http://www.w3.org/1999/xlink}href'] = "data:image/png;base64,{}".format(base64_str)
             parent.append(imgReplacement)
-            
+            del parent.attrib['transform'] #remove transform
+
                 
     def create_document(self):
         document = self.svg.copy()
