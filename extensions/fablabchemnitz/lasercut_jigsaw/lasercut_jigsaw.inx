@@ -33,7 +33,7 @@
       </page>
       <page name="Notches" gui-text="Notches">
          <label>The interlocking pieces can be shaped here. Also the random nature of the layout.</label>
-         <param name="notch_percent" type="float" min="0.0" max="1.0"  precision="2" appearance="full" gui-text="Notch relative size" gui-description="Notch relative size. 0 to 1. 0.15 is good">0.5</param>
+         <param name="notch_percent" type="float" min="0.0" max="1.0"  precision="2" appearance="full" gui-text="Notch relative size" gui-description="Notch relative size. 0.15 to 0.50 is good">0.5</param>
          <param name="rand" type="float" min="0.0" max="1.0"  precision="2" appearance="full"  gui-text="Grid Randomisation" gui-description="Amount to perturb the basic piece grid.">0.4</param>
          <param name="smooth_edges" type="bool" gui-text="Some edges can be smooth" gui-description="Allow pieces with smooth edges.">false</param>
          <param name="noknob_frequency" type="float" min="0.0" max="100.0" appearance="full" precision="2" gui-text="percentage of smooth edges">10</param>
