@@ -7,7 +7,7 @@ Extension for InkScape 1.X
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 14.05.2021
-Last patch: 23.06.2021
+Last patch: 23.07.2021
 License: GNU GPL v3
 
 ToDo
@@ -60,6 +60,7 @@ class AboutUpgradeMightyScape(inkex.EffectExtension):
    
     def add_arguments(self, pars):
         pars.add_argument("--tab")
+        pars.add_argument("--convert_to_git", type=inkex.Boolean, default=False, help="If you downloaded MightyScape as .zip or .tar.gz you cannot upgrade using this extension. But you can convert your downloaded directory to a .git one by enabling this option")
         pars.add_argument("--stash_untracked", type=inkex.Boolean, default=False, help="Stash untracked files and continue to upgrade")
   
         
@@ -84,11 +85,34 @@ class AboutUpgradeMightyScape(inkex.EffectExtension):
         
         inkex.utils.debug("Locally there are {} extension folders with {} .inx files!\n".format(totalFolders, totalInx))
 
+        remotes = []
+        remotes.append(["https://gitea.fablabchemnitz.de/FabLab_Chemnitz/mightyscape-1.X.git", "origin"]) #main
+        remotes.append(["https://github.com/vmario89/mightyscape-1.X.git", "github"]) #copy/second remote
+            
         gitDir = os.path.join(main_dir, ".git")
         if not os.path.exists(gitDir):
-            self.msg("MightyScape .git directory was not found. It seems you installed MightyScape the traditional way (by downloading and extracting from archive). Please install MightyScape using the git clone method if you want to use the upgrade function. More details can be found in the official README.")
-            exit(1)
-            #Possible option: turn the zip installation into a .git one by cloning over the recent extension dir. could be added as ugprader option.
+            if self.options.convert_to_git is True:
+                local_repo = Repo.init(main_dir)
+                local_repo.git.add(all=True)
+                localRemotes = []
+                for remote in remotes:
+                    localRemotes.append(local_repo.create_remote(remote[1], url=remote[0]))
+                localRemotes[0].update()    
+                local_repo.index.commit('.')
+                if self.options.stash_untracked is True:
+                    local_repo.git.stash('save')
+                local_repo.git.checkout('origin/master')
+                #git init
+                #git add .
+                #git remote add origin https://gitea.fablabchemnitz.de/FabLab_Chemnitz/mightyscape-1.X.git
+                #git remote add github https://github.com/vmario89/mightyscape-1.X.git
+                #git remote update
+                #git commit -m "."
+                #git stash
+                #git checkout origin/master 
+            else:
+                self.msg("MightyScape .git directory was not found. It seems you installed MightyScape the traditional way (by downloading and extracting from archive). Please install MightyScape using the git clone method if you want to use the upgrade function. More details can be found in the official README.")
+                exit(1)
         
         local_repo = Repo(gitDir)
         #check if it is a non-empty git repository
@@ -100,12 +124,8 @@ class AboutUpgradeMightyScape(inkex.EffectExtension):
                     else:
                         inkex.utils.debug("There are some untracked files in your MightyScape directory. Still trying to pull recent files from git...")
               
-            remotes = []
-            remotes.append("https://gitea.fablabchemnitz.de/FabLab_Chemnitz/mightyscape-1.X.git") #main
-            remotes.append("https://github.com/vmario89/mightyscape-1.X.git") #copy/second remote
-            
             localLatestCommit = local_repo.head.commit
-            localCommits = list(local_repo.iter_commits("master", max_count=10, skip=0))
+            localCommits = list(local_repo.iter_commits("origin/master", max_count=10, skip=0))
             self.msg("Local commit id is: " + str(localLatestCommit)[:7])
             self.msg("There are {} local commits at the moment.".format(len(localCommits)))
             localCommitList = []
@@ -114,7 +134,7 @@ class AboutUpgradeMightyScape(inkex.EffectExtension):
             #localCommitList.reverse()
             self.msg("*"*40)
             self.msg("Latest local commits are:")
-            for i in range(0, 10):
+            for i in range(0, len(localCommits)):
                 self.msg("{} | {} : {}".format(
                     datetime.utcfromtimestamp(localCommitList[i].committed_date).strftime('%Y-%m-%d %H:%M:%S'),
                     localCommitList[i].name_rev[:7],
@@ -124,12 +144,12 @@ class AboutUpgradeMightyScape(inkex.EffectExtension):
             self.msg("*"*40)
             
             #finally run the update
-            success = self.update(local_repo, remotes[0])
+            success = self.update(local_repo, remotes[0][0])
             if success is False: #try the second remote if first failed
-                self.msg("Error receiving latest remote commit from main git remote {}. Trying second remote ...".format(remotes[0]))
-                success = self.update(local_repo, remotes[1])
+                self.msg("Error receiving latest remote commit from main git remote {}. Trying second remote ...".format(remotes[0][0]))
+                success = self.update(local_repo, remotes[1][0])
             if success is False: #if still false:
-                self.msg("Error receiving latest remote commit from second git remote {}.\nAre you offline? Cannot continue!".format(remotes[0]))
+                self.msg("Error receiving latest remote commit from second git remote {}.\nAre you offline? Cannot continue!".format(remotes[0][0]))
                 exit(1)
         
         else:
