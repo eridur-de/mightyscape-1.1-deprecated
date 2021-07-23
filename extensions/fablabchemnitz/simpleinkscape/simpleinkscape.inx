@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <name>Simple Inkscape (Interface)</name>
+    <id>fablabchemnitz.de.simpleinkscape</id>
+    <label xml:space="preserve">
+Use  this extension to change the user interface of inkscape.
+
+- 'Default' has all the default buttons and menu items.
+- 'Simple' hides some interface items to make inkscape look simpler.
+  
+You can run it again and choose default to restore the original interface.
+
+***   WARNING !!!!   ***
+
+This will delete and overwrite the inkscape userfolder/ui.
+If you know what that means, please make sure you have a backup.
+
+After applying the changes you need to restart Inkscape to see the results.
+
+</label>
+    <param name="interfaceVersion" gui-text="Interface" type="optiongroup" appearance="radio">
+        <option value="Default">Default</option>
+        <option value="Simple">Simple</option>
+        <!--<option value="Lasercutter">Lasercutter</option>-->
+    </param>
+    <label />
+    <effect needs-live-preview="false">
+        <object-type>all</object-type>
+        <effects-menu>
+            <submenu name="FabLab Chemnitz"/>
+        </effects-menu>
+    </effect>
+    <script>
+        <command location="inx" interpreter="python">simpleinkscape.py</command>
+    </script>
+</inkscape-extension>

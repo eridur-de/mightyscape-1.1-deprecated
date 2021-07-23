@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <name>Join Paths</name>
+    <id>fablabchemnitz.de.join_paths</id>
+    <param name="tab" type="notebook">
+        <page name="subdividePath" gui-text="Join Paths">
+            <param name="optimized" type="bool" gui-text="Optimized">true</param>
+        </page>
+        <page name="desc" gui-text="Help">
+            <label xml:space="preserve">This effect joins the Bezier curves, with straight line segments. If the end nodes are close enough, they are merged into a single one. With the optimized option selected, the new curve starts from the top most curve from the selection. The curves are then joined based on the distance of their closest end point to the previous curve.
+            </label>
+        </page>
+    </param>
+    <effect>
+        <object-type>path</object-type>
+        <effects-menu>
+            <submenu name="FabLab Chemnitz">
+                <submenu name="Modify existing Path(s)"/>
+            </submenu>
+        </effects-menu>
+    </effect>
+    <script>
+        <command location="inx" interpreter="python">join_paths.py</command>
+    </script>
+</inkscape-extension>
