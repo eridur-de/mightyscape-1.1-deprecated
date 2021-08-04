@@ -8,7 +8,6 @@ Vektorkollektor Team: Kati Hyyppa [http://katihyyppa.com] & Niklas Roy [https://
 http://vektorkollektor.com
 '''
 
-import os
 import urllib.request
 from lxml import etree
 import inkex
@@ -24,23 +23,6 @@ class Vektorkollektor(inkex.EffectExtension):
         pars.add_argument("--vk_id", type=int, default=1)
 
     def effect(self):
-        # Adjust the document view for the desired sticker size
-        root = self.svg.getElement("//svg:svg")
-
-        #clean the document (make it blank) to avoid printing duplicated things
-        ct = 0
-        for node in self.document.xpath('//*', namespaces=inkex.NSS):
-            ct = ct + 1
-            if ct > 3: #we keep svg:svg, sodipodi:namedview and svg:defs which defines the default canvas without any content inside
-                #inkex.errormsg(str(node))
-                try:
-                    root.remove(node)
-                except Exception as e:
-                    pass
-            
-        #set the document units
-        self.document.getroot().find(inkex.addNS("namedview", "sodipodi")).set("inkscape:document-units", "px")
-
         # Download the recent vektorkollektor data file and parse it
         handler = urllib.request.HTTPBasicAuthHandler()
         opener = urllib.request.build_opener(handler)
