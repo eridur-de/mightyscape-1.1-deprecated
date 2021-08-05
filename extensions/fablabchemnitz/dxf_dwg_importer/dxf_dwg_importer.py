@@ -232,11 +232,14 @@ class DXFDWGImport(inkex.EffectExtension):
                 else: 
                         proc = subprocess.Popen(oda_cmd, shell=False, stdout=PIPE, stderr=PIPE)
                 stdout, stderr = proc.communicate()
-                if proc.returncode != 0 or (len(stderr) > 0 and stderr != b"Quit (core dumped)\n"): 
+                if proc.returncode != 0: #in this case we exit
                    self.msg("ODAFileConverter failed: %d %s %s" % (proc.returncode, stdout, stderr))
                    if os.name != 'nt':
                        self.msg("If the error message above contains a warning about wrong/missing Qt version please install the required version. You can get the installer from 'https://download.qt.io/archive/qt/'. Sadly you will need to create a free account to install. After installation please configure the shell script '/usr/bin/ODAFileConverter' to add a preceding line with content similar to 'LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/Qt5.14.2/5.14.2/gcc_64/lib/'.")
                    exit(1)
+                if len(stderr) > 0 and stderr != b"Quit (core dumped)\n": #in this case we only warn about
+                   self.msg("ODAFileConverter returned some error output (which might be ignored): %d %s %s" % (proc.returncode, stdout, stderr))
+
             # check if ODA converted successfully. This is the case if no error file was created
             oda_errorfile = os.path.join(temp_output_dir, Path(inputfile).name + ".err")
             if os.path.exists(oda_errorfile):
