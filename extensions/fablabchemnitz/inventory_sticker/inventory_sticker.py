@@ -397,15 +397,9 @@ class InventorySticker(inkex.Effect):
         root.set("viewBox", "%f %f %f %f" % (0, 0, sticker_width, sticker_height))
 
         #clean the document (make it blank) to avoid printing duplicated things
-        ct = 0
         for node in self.document.xpath('//*', namespaces=inkex.NSS):
-            ct = ct + 1
-            if ct > 3: #we keep svg:svg, sodipodi:namedview and svg:defs which defines the default canvas without any content inside
-                #inkex.errormsg(str(node))
-                try:
-                    root.remove(node)
-                except Exception as e:
-                    pass
+            if node.TAG not in ('svg', 'defs', 'namedview'):
+                node.delete()
             
         #set the document units
         self.document.getroot().find(inkex.addNS("namedview", "sodipodi")).set("inkscape:document-units", "px")

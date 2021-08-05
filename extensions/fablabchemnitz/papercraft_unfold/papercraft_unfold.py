@@ -189,7 +189,7 @@ class PapercraftUnfold(inkex.EffectExtension):
             stream.close()
 
         doc.set('id', self.svg.get_unique_id('papercraft_unfold'))
-        self.document.getroot().append(doc)             
+        self.document.getroot().append(doc)
 
         #adjust viewport and width/height to have the import at the center of the canvas
         if self.options.resizetoimport:
