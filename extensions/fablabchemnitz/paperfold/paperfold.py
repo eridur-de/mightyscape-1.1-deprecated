@@ -55,7 +55,8 @@ class Paperfold(inkex.EffectExtension):
     # Compute the third point of a triangle when two points and all edge lengths are given
     def getThirdPoint(self, v0, v1, l01, l12, l20):
         v2rotx = (l01 ** 2 + l20 ** 2 - l12 ** 2) / (2 * l01)
-        v2roty0 = np.sqrt((l01 + l20 + l12) * (l01 + l20 - l12) * (l01 - l20 + l12) * (-l01 + l20 + l12)) / (2 * l01)
+        val = (l01 + l20 + l12) * (l01 + l20 - l12) * (l01 - l20 + l12) * (-l01 + l20 + l12)
+        v2roty0 = np.sqrt(abs(val)) / (2 * l01)
     
         v2roty1 = - v2roty0
     
@@ -134,16 +135,20 @@ class Paperfold(inkex.EffectExtension):
     def unfoldSpanningTree(self, mesh, spanningTree): 
         try:
             unfoldedMesh = om.TriMesh()  # the unfolded mesh
-        
+
             numFaces = mesh.n_faces()
             sizeTree = spanningTree.number_of_edges()
             numUnfoldedEdges = 3 * numFaces - sizeTree
-        
+ 
             isFoldingEdge = np.zeros(numUnfoldedEdges, dtype=bool)  # Indicates whether an edge is folded or cut
             glueNumber = np.empty(numUnfoldedEdges, dtype=int)  # Saves with which edge is glued together
             dihedralAngles = np.empty(numUnfoldedEdges, dtype=float)  # Valley folding or mountain folding
             connections = np.empty(numFaces, dtype=int)  # Saves which original triangle belongs to the unrolled one
-        
+
+            numFaces = mesh.n_faces()
+            sizeTree = spanningTree.number_of_edges()
+            numUnfoldedEdges = 3 * numFaces - sizeTree
+    
             # Select the first triangle as desired
             startingNode = list(spanningTree.nodes())[0]
             startingTriangle = mesh.face_handle(startingNode)
@@ -218,65 +223,68 @@ class Paperfold(inkex.EffectExtension):
         
             # We walk through the tree
             for dualEdge in nx.dfs_edges(spanningTree, source=startingNode):
-                foldingEdge = mesh.edge_handle(spanningTree[dualEdge[0]][dualEdge[1]]['idx'])
-                # Find the corresponding half edge in the output triangle
-                foldingHalfEdge = mesh.halfedge_handle(foldingEdge, 0)
-                if not (mesh.face_handle(foldingHalfEdge).idx() == dualEdge[0]):
-                    foldingHalfEdge = mesh.halfedge_handle(foldingEdge, 1)
-        
-                # Find the corresponding unwound half edge
-                unfoldedLastHalfEdge = unfoldedMesh.halfedge_handle(halfEdgeConnections[foldingHalfEdge.idx()])
-        
-                # Find the point in the unrolled triangle that is not on the folding edge
-                oppositeUnfoldedVertex = unfoldedMesh.to_vertex_handle(unfoldedMesh.next_halfedge_handle(unfoldedLastHalfEdge))
-        
-                # We turn the half edges over to lie in the new triangle
-                foldingHalfEdge = mesh.opposite_halfedge_handle(foldingHalfEdge)
-                unfoldedLastHalfEdge = unfoldedMesh.opposite_halfedge_handle(unfoldedLastHalfEdge)
-        
-                # The two corners of the folding edge
-                unfoldedFromVertex = unfoldedMesh.from_vertex_handle(unfoldedLastHalfEdge)
-                unfoldedToVertex = unfoldedMesh.to_vertex_handle(unfoldedLastHalfEdge)
-        
-                # Calculate the edge lengths in the new triangle
-                secondHalfEdgeInFace = mesh.next_halfedge_handle(foldingHalfEdge)
-                thirdHalfEdgeInFace = mesh.next_halfedge_handle(secondHalfEdgeInFace)
-        
-                originalHalfEdges = [foldingHalfEdge, secondHalfEdgeInFace, thirdHalfEdgeInFace]
-        
-                edgelengths = [mesh.calc_edge_length(foldingHalfEdge), mesh.calc_edge_length(secondHalfEdgeInFace),
-                               mesh.calc_edge_length(thirdHalfEdgeInFace)]
-        
-                # We calculate the two possibilities for the third point in the triangle
-                [newUnfoldedVertex0, newUnfoldedVertex1] = self.getThirdPoint(unfoldedMesh.point(unfoldedFromVertex),
-                                                                         unfoldedMesh.point(unfoldedToVertex), edgelengths[0],
-                                                                         edgelengths[1], edgelengths[2])
-        
-        
-                newUnfoldedVertex = unfoldedMesh.add_vertex(newUnfoldedVertex0)
-        
-                # Make the face
-                newface = unfoldedMesh.add_face(unfoldedFromVertex, unfoldedToVertex, newUnfoldedVertex)
-        
-                secondUnfoldedHalfEdge = unfoldedMesh.next_halfedge_handle(unfoldedLastHalfEdge)
-                thirdUnfoldedHalfEdge = unfoldedMesh.next_halfedge_handle(secondUnfoldedHalfEdge)
-                unfoldedHalfEdges = [unfoldedLastHalfEdge, secondUnfoldedHalfEdge, thirdUnfoldedHalfEdge]
-        
-                # Saving the information about edges and page
-                # Dotted one's in the output
-                unfoldedLastEdge = unfoldedMesh.edge_handle(unfoldedLastHalfEdge)
-                isFoldingEdge[unfoldedLastEdge.idx()] = True
-        
-                # Gluing number and folding direction
-                self.addVisualisationData(mesh, unfoldedMesh, originalHalfEdges, unfoldedHalfEdges, glueNumber, dihedralAngles)
-        
-                # Related page
-                connections[newface.idx()] = dualEdge[1]
-        
-                # Identify the half edges
-                for i in range(3):
-                    halfEdgeConnections[originalHalfEdges[i].idx()] = unfoldedHalfEdges[i].idx()
-        
+                try:  
+                    foldingEdge = mesh.edge_handle(spanningTree[dualEdge[0]][dualEdge[1]]['idx'])
+                    # Find the corresponding half edge in the output triangle
+                    foldingHalfEdge = mesh.halfedge_handle(foldingEdge, 0)
+                    if not (mesh.face_handle(foldingHalfEdge).idx() == dualEdge[0]):
+                        foldingHalfEdge = mesh.halfedge_handle(foldingEdge, 1)
+            
+                    # Find the corresponding unwound half edge
+                    unfoldedLastHalfEdge = unfoldedMesh.halfedge_handle(halfEdgeConnections[foldingHalfEdge.idx()])
+            
+                    # Find the point in the unrolled triangle that is not on the folding edge
+                    oppositeUnfoldedVertex = unfoldedMesh.to_vertex_handle(unfoldedMesh.next_halfedge_handle(unfoldedLastHalfEdge))
+            
+                    # We turn the half edges over to lie in the new triangle
+                    foldingHalfEdge = mesh.opposite_halfedge_handle(foldingHalfEdge)
+                    unfoldedLastHalfEdge = unfoldedMesh.opposite_halfedge_handle(unfoldedLastHalfEdge)
+            
+                    # The two corners of the folding edge
+                    unfoldedFromVertex = unfoldedMesh.from_vertex_handle(unfoldedLastHalfEdge)
+                    unfoldedToVertex = unfoldedMesh.to_vertex_handle(unfoldedLastHalfEdge)
+            
+                    # Calculate the edge lengths in the new triangle
+                    secondHalfEdgeInFace = mesh.next_halfedge_handle(foldingHalfEdge)
+                    thirdHalfEdgeInFace = mesh.next_halfedge_handle(secondHalfEdgeInFace)
+            
+                    originalHalfEdges = [foldingHalfEdge, secondHalfEdgeInFace, thirdHalfEdgeInFace]
+            
+                    edgelengths = [mesh.calc_edge_length(foldingHalfEdge), mesh.calc_edge_length(secondHalfEdgeInFace),
+                                   mesh.calc_edge_length(thirdHalfEdgeInFace)]
+            
+                    # We calculate the two possibilities for the third point in the triangle
+                    [newUnfoldedVertex0, newUnfoldedVertex1] = self.getThirdPoint(unfoldedMesh.point(unfoldedFromVertex),
+                                                                             unfoldedMesh.point(unfoldedToVertex), edgelengths[0],
+                                                                             edgelengths[1], edgelengths[2])
+            
+            
+                    newUnfoldedVertex = unfoldedMesh.add_vertex(newUnfoldedVertex0)
+            
+                    # Make the face
+                    newface = unfoldedMesh.add_face(unfoldedFromVertex, unfoldedToVertex, newUnfoldedVertex)
+            
+                    secondUnfoldedHalfEdge = unfoldedMesh.next_halfedge_handle(unfoldedLastHalfEdge)
+                    thirdUnfoldedHalfEdge = unfoldedMesh.next_halfedge_handle(secondUnfoldedHalfEdge)
+                    unfoldedHalfEdges = [unfoldedLastHalfEdge, secondUnfoldedHalfEdge, thirdUnfoldedHalfEdge]
+            
+                    # Saving the information about edges and page
+                    # Dotted one's in the output
+                    unfoldedLastEdge = unfoldedMesh.edge_handle(unfoldedLastHalfEdge)
+                    isFoldingEdge[unfoldedLastEdge.idx()] = True
+            
+                    # Gluing number and folding direction
+                    self.addVisualisationData(mesh, unfoldedMesh, originalHalfEdges, unfoldedHalfEdges, glueNumber, dihedralAngles)
+            
+                    # Related page
+                    connections[newface.idx()] = dualEdge[1]
+            
+                    # Identify the half edges
+                    for i in range(3):
+                        halfEdgeConnections[originalHalfEdges[i].idx()] = unfoldedHalfEdges[i].idx()
+                except Exception as e:
+                    inkex.utils.debug("Error walking the dual tree at dualEdge {}".format(e))
+                    exit(1)
             return [unfoldedMesh, isFoldingEdge, connections, glueNumber, dihedralAngles]
         except Exception as e:
             inkex.utils.debug("Error: model could not be unfolded. Check for:")
@@ -286,7 +294,6 @@ class Paperfold(inkex.EffectExtension):
             inkex.utils.debug(" - missing units")
             inkex.utils.debug(" - missing coordinate system")
             inkex.utils.debug(" - multiple bodies in one file")
-            inkex.utils.debug("error was: " + str(e))
             exit(1)
  
     
