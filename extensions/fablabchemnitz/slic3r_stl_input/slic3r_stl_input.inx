@@ -10,7 +10,8 @@
             <param name="inputfile" type="path" gui-text="Input file (OBJ/OFF/PLY/STL)" filetypes="obj,off,ply,stl" mode="file">/your/object/file.stl</param>
             <param name="max_num_faces" type="int" min="1" max="99999" gui-text="Maximum allowed faces" gui-description="If the STL file has too much detail it contains a large number of faces. This will make processing extremely slow. So we can limit it.">200</param>
             <param name="layer_height" type="float" min="0.001" max="99999.000" precision="3" gui-text="Layer height [mm]">1.000</param>
-            <hbox>
+            <param name="layer_number" type="int" min="0" max="99999" gui-text="Specific layer number" gui-description="Set to 0 to import all numbers or set a number 1+ to import a specific layer.">0</param>
+           <hbox>
                 <vbox>
                     <label appearance="header">Transforms</label>
                     <param name="scalefactor" type="float" precision="3" min="0.0001" max="10000.0" gui-text="Manual scale factor" gui-description="default is 1.0">1.0</param>

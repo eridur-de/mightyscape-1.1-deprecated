@@ -76,6 +76,7 @@ class SlicerSTLInput(inkex.EffectExtension):
         pars.add_argument('--scalefactor', type=float, default=1.0, help='Scale the model to custom size')
         pars.add_argument("--max_num_faces", type=int, default=200, help="If the STL file has too much detail it contains a large number of faces. This will make processing extremely slow. So we can limit it.")
         pars.add_argument('--layer_height', type=float, default=1.000, help='slic3r layer height, probably in mm. Default: per slic3r config')
+        pars.add_argument('--layer_number', type=int, default=0, help='Specific layer number')
 
         #Transforms
         pars.add_argument('--rx', type=float, default=None, help='Rotate STL object around X-Axis before importing.')
@@ -293,7 +294,6 @@ class SlicerSTLInput(inkex.EffectExtension):
         
         for e in doc.iterfind('//{*}polygon'):
             polygoncount += 1
-            
             if args.diffuse_fill_opacity == "front_to_back":
                 fill_opacity =  (args.max_fill_opacity - (polygoncount / totalPolygoncount) * (args.max_fill_opacity - args.min_fill_opacity)) + args.min_fill_opacity
             elif args.diffuse_fill_opacity == "back_to_front":
@@ -355,15 +355,16 @@ class SlicerSTLInput(inkex.EffectExtension):
         layercount = 0
         for e in doc.iterfind('//{*}g'):
             if e.attrib['{http://slic3r.org/namespaces/slic3r}z'] and e.attrib['id']:
+                layercount+=1
                 e.attrib['{http://www.inkscape.org/namespaces/inkscape}label'] = e.attrib['id'] + ' slic3r:z=' + e.attrib['{http://slic3r.org/namespaces/slic3r}z']
                 del e.attrib['{http://slic3r.org/namespaces/slic3r}z']
+                e.attrib['id'] = "stl-layer{}".format(layercount)
                 # for some fun with our inkscape-paths2openscad extension, add sibling to e:
                 # <svg:desc id="descpoly60">Depth: 1mm\nOffset: 31mm</svg:desc>
                 desc = etree.Element('{http://www.w3.org/2000/svg}desc')
                 desc.attrib['id'] = 'descl'+str(layercount)
                 desc.text = "Depth: %.2fmm\nRaise: %.2fmm\n" % (1/scale, layercount/scale)
                 e.append(desc)
-                layercount+=1
                 if args.numbers is True:
                     num = etree.Element('{http://www.w3.org/2000/svg}text')
                     num.attrib['id'] = 'textnum'+str(layercount)
@@ -384,6 +385,12 @@ class SlicerSTLInput(inkex.EffectExtension):
             'sodipodi': 'http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd'})
     
         #inkex.utils.debug("{0}: {1} polygons in {2} layers converted to paths.".format(svgfile, polygoncount, layercount))
+
+        if self.options.layer_number != 0:
+            for element in doc.xpath("//svg:g", namespaces=inkex.NSS):
+            #for element in doc.getroot().iter("{http://www.w3.org/2000/svg}g"):
+                if element.get('id').split('stl-layer')[1] != str(self.options.layer_number):
+                    element.getparent().remove(element) #element.delete() does not work. why?
 
         if layercount == 0:
             inkex.utils.debug("No layers imported. Try to lower your layer height")
