@@ -112,6 +112,10 @@ class SlicerSTLInput(inkex.EffectExtension):
 
     def effect(self):             
         args = self.options
+     
+        if not os.path.exists(args.slic3r_cmd):
+            inkex.utils.debug("Slic3r not found. Please define a correct location.")
+            exit(1)
         
         if args.min_fill_opacity > args.max_fill_opacity:
             inkex.utils.debug("Min fill opacity may not be larger than max fill opacity. Adjust and try again!")

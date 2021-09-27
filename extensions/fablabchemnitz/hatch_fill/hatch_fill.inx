@@ -7,13 +7,13 @@
             <label xml:space="preserve">This extension fills each closed figure in your drawing with a path consisting of back and forth drawn "hatch" lines. If any objects are selected, then only those selected objects will be filled. 
 
 Hatched figures will be grouped with their fills.</label>
-            <param name="hatchSpacing" type="float" min="0.1" max="1000" gui-text="Hatch spacing">3.0</param>
+            <param name="hatchSpacing" type="float" min="0.001" max="1000" precision="3" gui-text="Hatch spacing">3.0</param>
             <param name="hatchAngle" type="float" min="-360" max="360" gui-text="Hatch angle (degrees)">45</param>
             <param name="crossHatch" type="bool" gui-text="Crosshatch?">false</param>
             <param name="reducePenLifts" type="bool" gui-text="Connect nearby ends?">true</param>
-            <param name="hatchScope" type="float" min="0.1" max="10.0" gui-text="Range of end connections (default: 3)">3.0</param>
+            <param name="hatchScope" type="float" min="0.001" max="10.0" precision="3" gui-text="Range of end connections (default: 3)">3.0</param>
             <param name="holdBackHatchFromEdges" type="bool" gui-text="Inset fill from edges?">true</param>
-            <param name="holdBackSteps" type="float" min="0.1" max="10.0" gui-text="Inset distance (default: 1)">1.0</param>
+            <param name="holdBackSteps" type="float" min="0.001" max="10.0" precision="3" gui-text="Inset distance (default: 1)">1.0</param>
             <param name="tolerance" type="float" min="0.1" max="100" gui-text="Tolerance (default: 3.0)">3.0</param>
             <label xml:space="preserve">(v0.9.0b, July, 2020)</label>
         </page>
