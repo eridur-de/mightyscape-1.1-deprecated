@@ -81,7 +81,9 @@
                     <param name="reverse_trim_removal_order" type="bool" gui-text="Reverse trim line removal order" gui-description="Reverses the order of removal. Relevant for keeping certain styles of elements">false</param>
                     <param name="remove_subsplit_after_trimming" type="bool" gui-text="Remove sub split lines after trimming" gui-description="Recommended if option 'Filter collinear overlapping lines' is enabled">true</param>
                     <param name="bezier_trimming" type="bool" gui-text="Trim original beziers (not working yet)" gui-description="If enabled we try to split the original bezier paths at the intersections points by finding the correct bezier segments and calculating t parameters from trimmed sub split lines. Not working yet. Will just print debug info if debug is enabled.">true</param>
-                    <label appearance="header">Bentley-Ottmann sweep line settings</label>
+                </page>
+                <page name="tab_bentleyottmann" gui-text="Bentley-Ottmann">
+                    <label appearance="header">Sweep line settings</label>
                     <param name="bent_ott_use_ignore_segment_endings" type="bool" gui-text="Ignore segment endings" gui-description="Whether to ignore intersections of line segments when both their end points form the intersection point">true</param>
                     <param name="bent_ott_use_debug" type="bool" gui-text="Debug">false</param>
                     <param name="bent_ott_use_verbose" type="bool" gui-text="Verbose">false</param>

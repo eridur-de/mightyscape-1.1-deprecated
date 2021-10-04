@@ -845,6 +845,32 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         selfIntersectingPathStyle = {'stroke': str(so.color_self_intersecting_paths), 'fill': 'none', 'stroke-width': so.strokewidth}
         basicSubSplitLineStyle = {'stroke': str(so.color_subsplit), 'fill': 'none', 'stroke-width': so.strokewidth}
 
+        #some config for Bentley Ottmann - applies to highlighting, removing, trimming
+        poly_point_isect.USE_IGNORE_SEGMENT_ENDINGS = so.bent_ott_use_ignore_segment_endings
+        poly_point_isect.USE_DEBUG = so.bent_ott_use_debug
+        poly_point_isect.USE_VERBOSE = so.bent_ott_use_verbose
+        if so.show_debug is False:
+            poly_point_isect.USE_VERBOSE = False
+        poly_point_isect.USE_PARANOID = so.bent_ott_use_paranoid
+        poly_point_isect.USE_VERTICAL = so.bent_ott_use_vertical
+        NUMBER_TYPE = so.bent_ott_number_type
+        if NUMBER_TYPE == 'native':
+            Real = float
+            NUM_EPS = Real("1e-10")
+            NUM_INF = Real(float("inf"))
+        elif NUMBER_TYPE == 'numpy':
+            import numpy
+            Real = numpy.float64
+            del numpy
+            NUM_EPS = Real("1e-10")
+            NUM_INF = Real(float("inf"))
+        poly_point_isect.Real = Real
+        poly_point_isect.NUM_EPS = NUM_EPS
+        poly_point_isect.NUM_INF = NUM_INF
+        poly_point_isect.NUM_EPS_SQ = NUM_EPS * NUM_EPS
+        poly_point_isect.NUM_ZERO = Real(0.0)
+        poly_point_isect.NUM_ONE = Real(1.0)
+
         #get all paths which are within selection or in document and generate sub split lines
         pathElements = self.get_path_elements()
           
@@ -1021,25 +1047,26 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                     
                 #check for self intersections using Bentley-Ottmann algorithm.
                 isSelfIntersecting = False
-                selfIntersectionPoints = isect_segments(subSplitLines, validate=True)
-                if len(selfIntersectionPoints) > 0:
-                    isSelfIntersecting = True
-                    if so.show_debug is True:
-                        self.msg("{} in {} intersects itself with {} intersections!".format(subSplitId, originalPathId, len(selfIntersectionPoints)))
-                    if so.highlight_self_intersecting is True:
-                        for subSplitLine in subSplitLineGroup:
-                            subSplitLine.style = selfIntersectingPathStyle #adjusts line color
-                        #delete cosmetic sub split lines if desired
+                if so.highlight_self_intersecting is True or so.remove_self_intersecting or so.visualize_self_intersections:
+                    selfIntersectionPoints = isect_segments(subSplitLines, validate=True)
+                    if len(selfIntersectionPoints) > 0:
+                        isSelfIntersecting = True
+                        if so.show_debug is True:
+                            self.msg("{} in {} intersects itself with {} intersections!".format(subSplitId, originalPathId, len(selfIntersectionPoints)))
+                        if so.highlight_self_intersecting is True:
+                            for subSplitLine in subSplitLineGroup:
+                                subSplitLine.style = selfIntersectingPathStyle #adjusts line color
+                            #delete cosmetic sub split lines if desired
+                            if so.remove_self_intersecting:
+                                subSplitLineGroup.delete()
+                        if so.visualize_self_intersections is True: #draw points (circles)
+                            selfIntersectionGroup = self.visualize_self_intersections(pathElement, selfIntersectionPoints)
+    
+                        #delete self-intersecting sub split lines and orginal paths
                         if so.remove_self_intersecting:
-                            subSplitLineGroup.delete()
-                    if so.visualize_self_intersections is True: #draw points (circles)
-                        selfIntersectionGroup = self.visualize_self_intersections(pathElement, selfIntersectionPoints)
-
-                    #delete self-intersecting sub split lines and orginal paths
-                    if so.remove_self_intersecting:
-                        subSplitLineArray = subSplitLineArray[:len(subSplitLineArray) - len(segs) - 1] #remove all last added lines
-                        pathElement.delete() #and finally delete the orginal path
-                        continue
+                            subSplitLineArray = subSplitLineArray[:len(subSplitLineArray) - len(segs) - 1] #remove all last added lines
+                            pathElement.delete() #and finally delete the orginal path
+                            continue
 
             #adjust the style of original paths if desired. Has influence to the finally trimmed lines style results too!
             if so.removefillsetstroke is True:
@@ -1169,33 +1196,6 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         '''
         if so.draw_trimmed is True:     
             try:
-                #some config for Bentley Ottmann
-                poly_point_isect.USE_IGNORE_SEGMENT_ENDINGS = so.bent_ott_use_ignore_segment_endings
-                poly_point_isect.USE_DEBUG = so.bent_ott_use_debug
-                poly_point_isect.USE_VERBOSE = so.bent_ott_use_verbose
-                if so.show_debug is False:
-                    poly_point_isect.USE_VERBOSE = False
-                poly_point_isect.USE_PARANOID = so.bent_ott_use_paranoid
-                poly_point_isect.USE_VERTICAL = so.bent_ott_use_vertical
-                NUMBER_TYPE = so.bent_ott_number_type
-                if NUMBER_TYPE == 'native':
-                    Real = float
-                    NUM_EPS = Real("1e-10")
-                    NUM_INF = Real(float("inf"))
-                elif NUMBER_TYPE == 'numpy':
-                    import numpy
-                    Real = numpy.float64
-                    del numpy
-                    NUM_EPS = Real("1e-10")
-                    NUM_INF = Real(float("inf"))
-                poly_point_isect.Real = Real
-                poly_point_isect.NUM_EPS = NUM_EPS
-                poly_point_isect.NUM_INF = NUM_INF
-                poly_point_isect.NUM_EPS_SQ = NUM_EPS * NUM_EPS
-                poly_point_isect.NUM_ZERO = Real(0.0)
-                poly_point_isect.NUM_ONE = Real(1.0)
-
-
                 allSubSplitLineStrings = []
                 allSubSplitLineStringsTransformed = []
                 for subSplitLine in subSplitLineArray:
