@@ -64,7 +64,11 @@ Information Technology and Control, 35(4), 2006 pp. 371-378.
 """
 
 import inkex
-import sys, math, pprint, copy
+import sys
+import math
+import pprint
+import copy
+import os
 
 __version__ = '1.4'             # Keep in sync with round_corners.inx line 16
 debug = False                   # True: babble on controlling tty
@@ -78,10 +82,7 @@ class RoundCorners(inkex.EffectExtension):
       try:
         self.tty = open("/dev/tty", 'w')
       except:
-        try:
-          self.tty = open("CON:", 'w')        # windows. Does this work???
-        except:
-          self.tty = open(os.devnull, 'w')  # '/dev/null' for POSIX, 'nul' for Windows.
+        self.tty = open(os.devnull, 'w')  # '/dev/null' for POSIX, 'nul' for Windows.
       if debug: print("RoundedCorners ...", file=self.tty)
       self.nodes_inserted = {}
       self.eps = 0.00001                # avoid division by zero
