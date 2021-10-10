@@ -63,7 +63,11 @@ def timed(f):
 
 def get_inkscape_version():
     ink = inkex.command.INKSCAPE_EXECUTABLE_NAME
-    ink_version = inkex.command.call(ink, '--version').decode("utf-8")
+    try: # needed prior to 1.1
+        ink_version = inkex.command.call(ink, '--version').decode("utf-8")
+    except AttributeError: # needed starting from 1.1
+        ink_version = inkex.command.call(ink, '--version')
+
     pos = ink_version.find("Inkscape ")
     if pos != -1:
         pos += 9
