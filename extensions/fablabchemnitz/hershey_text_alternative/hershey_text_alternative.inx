@@ -87,7 +87,7 @@ distribution.
         <object-type>all</object-type>
         <effects-menu>
             <submenu name="FabLab Chemnitz">
-                <submenu name="Modify existing Path(s)"/>
+                <submenu name="Text" />
             </submenu>
         </effects-menu>
     </effect>
