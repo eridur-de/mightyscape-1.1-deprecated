@@ -115,8 +115,9 @@ class LasercutJigsaw(inkex.EffectExtension):
         pars.add_argument("--color_jigsaw", type=Color, default='65535', help="Jigsaw lines color")
          
         #Dimensions
-        pars.add_argument("--width", type=float, default=50.0, help="The Box Width - in the X dimension")
-        pars.add_argument("--height", type=float, default=30.0, help="The Box Height - in the Y dimension")
+        pars.add_argument("--sizetype", default="boxsize")
+        pars.add_argument("--width", type=float, default=50.0)
+        pars.add_argument("--height", type=float, default=30.0)
         pars.add_argument("--innerradius", type=float, default=5.0, help="0 implies square corners")
         pars.add_argument("--units", default="cm", help="The unit of the box dimensions")
         pars.add_argument("--border", type=inkex.Boolean, default=False, help="Add Outer Surround")
@@ -402,6 +403,7 @@ class LasercutJigsaw(inkex.EffectExtension):
                 row += 1
                 col -= self.options.pieces_W
             col += 1
+        return jigsaw_pieces_id
 
     def effect(self):
         
@@ -418,10 +420,15 @@ class LasercutJigsaw(inkex.EffectExtension):
         docH = self.svg.unittouu(self.document.getroot().get('height'))
         
         # extract fields from UI
-        self.width  = self.svg.unittouu( str(self.options.width)  + self.options.units )
-        self.height  = self.svg.unittouu( str(self.options.height) + self.options.units )
+        self.width = self.svg.unittouu( str(self.options.width)  + self.options.units )
+        self.height = self.svg.unittouu( str(self.options.height) + self.options.units )
         self.pieces_W = self.options.pieces_W
         self.pieces_H = self.options.pieces_H
+        
+        if self.options.sizetype == "partsize":
+           self.width = self.width *  self.pieces_W
+           self.height = self.height *  self.pieces_H
+           
         average_block = (self.width/self.pieces_W + self.height/self.pieces_H) / 2
         self.notch_step = average_block * self.options.notch_percent / 3 # 3 = a useful notch size factor
         self.smooth_edges = self.options.smooth_edges
@@ -442,8 +449,7 @@ class LasercutJigsaw(inkex.EffectExtension):
         
         #
         # set up the main object in the current layer - group gridlines
-        g_attribs = {inkex.addNS('label','inkscape'):'Jigsaw:X' + \
-                     str( self.pieces_W )+':Y'+str( self.pieces_H ) }
+        g_attribs = {inkex.addNS('label','inkscape'):'Jigsaw:X' + str(self.pieces_W )+':Y'+str(self.pieces_H)  + "={}Pcs)".format(self.pieces_W * self.pieces_H)}
         jigsaw_group = etree.SubElement(self.svg.get_current_layer(), 'g', g_attribs)
         #Group for X grid
         g_attribs = {inkex.addNS('label','inkscape'):'X_Gridlines'}
@@ -487,12 +493,16 @@ class LasercutJigsaw(inkex.EffectExtension):
         # center the jigsaw
         jigsaw_group.set('transform', 'translate(%f,%f)' % ( (docW-self.width)/2, (docH-self.height)/2 ) )
         
+        #inkex.utils.debug("Your puzzle consists out of {} pieces.".format(self.pieces_W * self.pieces_H))
+        
         # pieces
         if self.pieces:
             gridx.delete() #delete the previous x generated stuff because we have single pieces instead!
             gridy.delete() #delete the previous y generated stuff because we have single pieces instead!
             jigsaw_group.getchildren()[0].delete() #delete inner border
-            self.create_pieces(jigsaw_group, gridx,gridy)
-       
+            jigsaw_pieces_id = self.create_pieces(jigsaw_group, gridx,gridy)
+            for jigsaw_piece in self.svg.getElementById(jigsaw_pieces_id).getchildren():
+                jigsaw_piece.attrib['id'] =  jigsaw_pieces_id + "_" + jigsaw_piece.attrib['id']
+
 if __name__ == '__main__':
     LasercutJigsaw().run()

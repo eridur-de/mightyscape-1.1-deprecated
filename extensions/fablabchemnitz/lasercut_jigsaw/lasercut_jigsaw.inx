@@ -10,8 +10,12 @@
       </page>
       <page name="Dimensions" gui-text="Dimensions">
          <label>Define the Jigsaw size and grid size.</label>
-         <param name="width" type="float" min="0.1" max="1000.0" precision="2" gui-text="Width" gui-description="The Box Width - in the X dimension">100.0</param>
-         <param name="height" type="float" min="0.1" max="1000.0" precision="2" gui-text="Height" gui-description="The Box Height - in the Y dimension">80.0</param>
+         <param name="sizetype" gui-text="Width/Height for ..." type="optiongroup" appearance="radio">
+            <option value="boxsize">box size</option>
+            <option value="partsize">part size</option>
+         </param>
+         <param name="width" type="float" min="0.1" max="1000.0" precision="2" gui-text="Width">100.0</param>
+         <param name="height" type="float" min="0.1" max="1000.0" precision="2" gui-text="Height">80.0</param>
          <param name="innerradius" type="float" min="0.0" max="500.0" precision="2" gui-text="Corner radius" gui-description="0 implies square corners">5.0</param>
          <param name="units" gui-text="Units" type="optiongroup" appearance="combo" gui-description="The unit of the box dimensions">
             <option value="px">px</option>
@@ -28,8 +32,8 @@
             <option value="Below">Below</option>
             <option value="Separate">Separate</option>
          </param>
-         <param name="pieces_W" type="int" min="2" max="199" gui-text="How many pieces across">5</param>
-         <param name="pieces_H" type="int" min="2" max="199" gui-text="How many pieces down">4</param>
+         <param name="pieces_W" type="int" min="2" max="199" gui-text="How many pieces across (cols)">5</param>
+         <param name="pieces_H" type="int" min="2" max="199" gui-text="How many pieces down (rows)">4</param>
       </page>
       <page name="Notches" gui-text="Notches">
          <label>The interlocking pieces can be shaped here. Also the random nature of the layout.</label>
