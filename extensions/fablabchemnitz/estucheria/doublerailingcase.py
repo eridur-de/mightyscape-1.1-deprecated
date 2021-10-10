@@ -32,7 +32,7 @@ __version__ = "0.2"
 
 import inkex
 
-class GenerateBox(inkex.EffectExtension):
+class DoubeRailingCase(inkex.EffectExtension):
 
     def add_arguments(self, pars):
         pars.add_argument("--width", type=float, default=25.0, help="Width of the box")
@@ -222,4 +222,4 @@ class GenerateBox(inkex.EffectExtension):
         line.style = cleft_line_style
 
 if __name__ == '__main__':
-    GenerateBox().run()
+    DoubeRailingCase().run()

@@ -31,7 +31,7 @@ __version__ = "0.2"
 
 import inkex
 
-class GenerarEstuche(inkex.EffectExtension):
+class Box4P(inkex.EffectExtension):
 
     def add_arguments(self, pars):
         pars.add_argument("--width", type=float, default=25.0, help="Ancho de la caja")
@@ -159,4 +159,4 @@ class GenerarEstuche(inkex.EffectExtension):
         line.style = estilo_linea_hendidos
 
 if __name__ == '__main__':
-    GenerarEstuche().run()
+    Box4P().run()
