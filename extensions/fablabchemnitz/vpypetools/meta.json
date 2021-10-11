@@ -1,0 +1,15 @@
+{
+  "name": "<various>",
+  "id": "fablabchemnitz.de.vpype_<various>",
+  "path": "vpypetools",
+  "original_name": "vpypetools",
+  "original_id": "fablabchemnitz.de.vpype_<various>",
+  "license": "GNU GPL v3",
+  "license_url": "https://gitea.fablabchemnitz.de/FabLab_Chemnitz/mightyscape-1.X/src/branch/master/LICENSE",
+  "comment": "Created by Mario Voigt",
+  "source_url": "https://gitea.fablabchemnitz.de/FabLab_Chemnitz/mightyscape-1.X/src/branch/master/extensions/fablabchemnitz/vpypetools",
+  "documentation_url": "https://stadtfabrikanten.org/display/IFM/vpypetools",
+  "main_authors": [
+    "github.com/vmario89"
+  ]
+}

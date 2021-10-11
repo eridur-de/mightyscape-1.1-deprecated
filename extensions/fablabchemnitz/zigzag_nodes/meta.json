@@ -1,0 +1,16 @@
+{
+  "name": "Zigzag Nodes",
+  "id": "fablabchemnitz.de.zigzag_nodes",
+  "path": "zigzag_nodes",
+  "original_name": "unknown",
+  "original_id": "unknown",
+  "license": "GNU GPL v2",
+  "license_url": "http://dp48069596.lolipop.jp/sd/scripts/script_inkscape/zigzag.zip",
+  "comment": "ported to Inkscape v1 by Mario Voigt",
+  "source_url": "http://dp48069596.lolipop.jp/sd/scripts/script_inkscape/zigzag.zip",
+  "documentation_url": "https://stadtfabrikanten.org/display/IFM/Zigzag+Nodes",
+  "main_authors": [
+    "Sunabe Kazumichi",
+    "github.com/vmario89"
+  ]
+}

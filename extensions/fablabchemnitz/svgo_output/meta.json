@@ -1,0 +1,16 @@
+{
+  "name": "SVGO Output",
+  "id": "fablabchemnitz.de.svgo_output",
+  "path": "svgo_output",
+  "original_name": "SVGO Output",
+  "original_id": "org.inkscape.output.svgo",
+  "license": "MIT License",
+  "license_url": "https://github.com/juanfran/svgo-inkscape/blob/master/LICENSE",
+  "comment": "",
+  "source_url": "https://github.com/juanfran/svgo-inkscape/",
+  "documentation_url": "https://stadtfabrikanten.org/pages/viewpage.action?pageId=55019653",
+  "main_authors": [
+    "github.com/juanfran",
+    "github.com/vmario89"
+  ]
+}

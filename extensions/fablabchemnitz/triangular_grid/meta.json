@@ -1,0 +1,16 @@
+{
+  "name": "Triangular Grid",
+  "id": "fablabchemnitz.de.triangular_grid",
+  "path": "triangular_grid",
+  "original_name": "Triangular Grid",
+  "original_id": "grid.triangular",
+  "license": "GNU GPL v2",
+  "license_url": "https://github.com/cds4/inkscape-grids/blob/master/grid_triangular.py",
+  "comment": "ported to Inkscape v1 by Mario Voigt",
+  "source_url": "https://github.com/cds4/inkscape-grids",
+  "documentation_url": "https://stadtfabrikanten.org/display/IFM/Triangular+Grid",
+  "main_authors": [
+    "github.com/cds4",
+    "github.com/vmario89"
+  ]
+}

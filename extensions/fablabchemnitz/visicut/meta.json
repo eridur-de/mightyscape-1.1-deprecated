@@ -1,0 +1,16 @@
+{
+  "name": "<various>",
+  "id": "fablabchemnitz.de.open_in_visicut_<various>",
+  "path": "visicut",
+  "original_name": "<various>",
+  "original_id": "visicut.<various>",
+  "license": "GNU LGPL v3",
+  "license_url": "https://github.com/t-oster/VisiCut/blob/master/LICENSE",
+  "comment": "",
+  "source_url": "https://github.com/t-oster/VisiCut/tree/master/tools/inkscape_extension",
+  "documentation_url": "https://stadtfabrikanten.org/display/IFM/Open+in+VisiCut",
+  "main_authors": [
+    "github.com/t-oster",
+    "github.com/vmario89"
+  ]
+}

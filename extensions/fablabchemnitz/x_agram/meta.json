@@ -1,0 +1,16 @@
+{
+  "name": "X-Agram",
+  "id": "fablabchemnitz.de.x_agram",
+  "path": "x_agram",
+  "original_name": "X-agram",
+  "original_id": "com.kacmarcik.pathmonkey.x-agram",
+  "license": "MIT License",
+  "license_url": "https://github.com/garykac/pathmonkey/blob/master/LICENSE",
+  "comment": "ported to Inkscape v1 manually by Mario Voigt",
+  "source_url": "https://github.com/garykac/pathmonkey",
+  "documentation_url": "https://stadtfabrikanten.org/display/IFM/X-Agram",
+  "main_authors": [
+    "github.com/garykac",
+    "github.com/vmario89"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "Vertical / Horizontal Scale",
+  "id": "fablabchemnitz.de.vertical_horizontal_scale",
+  "path": "vertical_horizontal_scale",
+  "original_name": "Scale",
+  "original_id": "org.inkscape.render.render_scale",
+  "license": "GNU GPL v2",
+  "license_url": "https://github.com/brathering82/inkscape/blob/master/LICENSE",
+  "comment": "ported to Inkscape v1 by Mario Voigt",
+  "source_url": "https://github.com/brathering82/inkscape",
+  "documentation_url": "https://stadtfabrikanten.org/pages/viewpage.action?pageId=55018500",
+  "main_authors": [
+    "github.com/brathering82",
+    "github.com/vmario89"
+  ]
+}

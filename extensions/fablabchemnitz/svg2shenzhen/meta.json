@@ -1,0 +1,16 @@
+{
+  "name": "<various>",
+  "id": "fablabchemnitz.de.svg2shenzhen_<various>",
+  "path": "svg2shenzhen",
+  "original_name": "<various>",
+  "original_id": "net.svg2shenzhen_<various>",
+  "license": "GNU GPL v3",
+  "license_url": "https://github.com/badgeek/svg2shenzhen/blob/master/LICENSE",
+  "comment": "",
+  "source_url": "https://github.com/badgeek/svg2shenzhen",
+  "documentation_url": "https://stadtfabrikanten.org/display/IFM/Svg2Shenzhen",
+  "main_authors": [
+    "github.com/badgeek",
+    "github.com/vmario89"
+  ]
+}

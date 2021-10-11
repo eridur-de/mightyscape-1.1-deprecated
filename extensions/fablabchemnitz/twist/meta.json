@@ -1,0 +1,16 @@
+{
+  "name": "Twist",
+  "id": "fablabchemnitz.de.twist",
+  "path": "twist",
+  "original_name": "Twist",
+  "original_id": "command.eggbot.contributed.twist",
+  "license": "GNU GPL v3",
+  "license_url": "https://github.com/evil-mad/EggBot/blob/master/LICENSE",
+  "comment": "ported to Inkscape v1 manually by Mario Voigt",
+  "source_url": "https://github.com/evil-mad/EggBot/tree/master/inkscape_contributed",
+  "documentation_url": "https://stadtfabrikanten.org/display/IFM/Twist",
+  "main_authors": [
+    "github.com/oskay",
+    "github.com/vmario89"
+  ]
+}
