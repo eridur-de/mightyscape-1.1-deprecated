@@ -262,7 +262,8 @@ class ExportObject(inkex.EffectExtension):
             imgReplacement.attrib['id'] = firstId
             imgReplacement.attrib['{http://www.w3.org/1999/xlink}href'] = "data:image/png;base64,{}".format(base64_str)
             parent.append(imgReplacement)
-            del parent.attrib['transform'] #remove transform
+            if parent.attrib.has_key('transform'):
+                del parent.attrib['transform'] #remove transform
 
                 
     def create_document(self):
