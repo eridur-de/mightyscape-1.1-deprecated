@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-	<name>Origami Pattern - Template effect</name>
+	<name>Origami Pattern - Template Effect</name>
 	<id>fablabchemnitz.de.origami_patterns.template</id>
 	<param name='active-tab' type="notebook">
 		<page name="title" gui-text="Options">
@@ -21,14 +21,16 @@
 		</page>
 		<page name="mountains" gui-text="Mountain creases">
 			<param name="mountain_bool" type="bool" gui-text="Draw mountains?">true</param>
+            <param name="mountain_bool_only" type="bool" gui-text="Draw ONLY mountains?">false</param>
 			<param name="mountain_dashes_bool" type="bool" gui-text="Dashed strokes?">true</param>
-			<param name="mountain_dashes_len" type="float"  min="0.1" max="10" appearance="full" precision="2" gui-text="Mountain dash + gap length">1</param>
-			<param name="mountain_dashes_duty" type="float"  min="0.1" max="1" appearance="full" precision="2" gui-text="Mountain dash duty cycle">0.5</param>
+			<param name="mountain_dashes_len" type="float" min="0.1" max="10" appearance="full" precision="2" gui-text="Mountain dash + gap length">1</param>
+			<param name="mountain_dashes_duty" type="float" min="0.1" max="1" appearance="full" precision="2" gui-text="Mountain dash duty cycle">0.5</param>
 			<param name="mountain_stroke_width" type="float" min="0.01" max="3" appearance="full" gui-text="Width of mountain strokes">0.1</param>
 			<param name="mountain_stroke_color" type="color" gui-text="Mountain creases color: ">4278190335</param>
 		</page>
 		<page name="valleys" gui-text="Valley creases">
 			<param name="valley_bool" type="bool" gui-text="Draw valley?">true</param>
+            <param name="valley_bool_only" type="bool" gui-text="Draw ONLY valleys?">false</param>
 			<param name="valley_dashes_bool" type="bool" gui-text="Dashed strokes?">true</param>
 			<param name="valley_dashes_len" type="float"  min="0.1" max="10" appearance="full" precision="2" gui-text="Valley dash + gap length">1</param>
 			<param name="valley_dashes_duty" type="float"  min="0.1" max="1" appearance="full" precision="2" gui-text="Valley dash duty cycle">0.25</param>
@@ -37,44 +39,21 @@
 		</page>
 		<page name="edge" gui-text="Edge">
 			<param name="edge_bool" type="bool" gui-text="Draw edges?">true</param>
+            <param name="edge_bool_only" type="bool" gui-text="Draw ONLY edges?">false</param>
 			<param name="edge_single_path" type="bool" gui-text="Edges as single path?">true</param>
 			<param name="edge_dashes_bool" type="bool" gui-text="Dashed strokes?">false</param>
-			<param name="edge_dashes_len" type="float"  min="0.1" max="10" appearance="full" precision="2" gui-text="Edge dash + gap length">1</param>
-			<param name="edge_dashes_duty" type="float"  min="0.1" max="1" appearance="full" precision="2" gui-text="Edge dash duty cycle">0.25</param>
-			<param name="edge_stroke_width" type="float" min="0.01" max="3" appearance="full"  gui-text="Width of edge strokes">0.1</param>
+			<param name="edge_dashes_len" type="float" min="0.1" max="10" appearance="full" precision="2" gui-text="Edge dash + gap length">1</param>
+			<param name="edge_dashes_duty" type="float" min="0.1" max="1" appearance="full" precision="2" gui-text="Edge dash duty cycle">0.25</param>
+			<param name="edge_stroke_width" type="float" min="0.01" max="3" appearance="full" gui-text="Width of edge strokes">0.1</param>
 			<param name="edge_stroke_color" type="color" gui-text="Edge color: ">255</param>
 		</page>
 		<page name="vertices" gui-text="Vertices">
 			<param name="vertex_bool" type="bool" gui-text="Draw vertices?">true</param>
-			<param name="vertex_radius" type="float" min="0.01" max="50" appearance="full"  gui-text="Radius of vertices">0.1</param>
-			<param name="vertex_stroke_width" type="float" min="0.01" max="3" appearance="full"  gui-text="Width of vertex strokes">0.1</param>
+            <param name="vertex_bool_only" type="bool" gui-text="Draw ONLY vertices?">false</param>
+			<param name="vertex_radius" type="float" min="0.01" max="50" appearance="full" gui-text="Radius of vertices">0.1</param>
+			<param name="vertex_stroke_width" type="float" min="0.01" max="3" appearance="full" gui-text="Width of vertex strokes">0.1</param>
 			<param name="vertex_stroke_color" type="color" gui-text="Vertices\' color: ">255</param>
 		</page>
-<!--		UNCOMMENT UNIVERSAL CREASES, CUTS AND/OR SEMICREASES IF NEEDED-->
-<!--		<page name="universal" gui-text="Universal creases">-->
-<!--			<param name="universal_bool" type="bool" gui-text="Draw universal creases?">true</param>-->
-<!--			<param name="universal_dashes_bool" type="bool" gui-text="Dashed strokes?">false</param>-->
-<!--			<param name="universal_dashes_len" type="float"  min="0.1" max="10" appearance="full" precision="2" gui-text="Universal dash + gap length">1</param>-->
-<!--			<param name="universal_dashes_duty" type="float"  min="0.1" max="1" appearance="full" precision="2" gui-text="Universal dash duty cycle">0.25</param>-->
-<!-- 			<param name="universal_stroke_width" type="float" min="0.01" max="3" appearance="full"  gui-text="Width of universal strokes">0.1</param> -->
-<!--			<param name="universal_stroke_color" type="color" gui-text="Universal creases color: ">4278255615</param>-->
-<!--		</page>-->
-<!--		<page name="semicrease" gui-text="Semicreases">-->
-<!--			<param name="semicrease_bool" type="bool" gui-text="Draw semicreases?">true</param>-->
-<!--			<param name="semicrease_dashes_bool" type="bool" gui-text="Dashed strokes?">false</param>-->
-<!--			<param name="semicrease_dashes_len" type="float"  min="0.1" max="10" appearance="full" precision="2" gui-text="Semicrease dash + gap length">1</param>-->
-<!--			<param name="semicrease_dashes_duty" type="float"  min="0.1" max="1" appearance="full" precision="2" gui-text="Semicrease dash duty cycle">0.25</param>-->
-<!--			<param name="semicrease_stroke_width" type="float" min="0.01" max="3" appearance="full"  gui-text="Width of semicrease strokes">0.1</param>-->
-<!--			<param name="semicrease_stroke_color" type="color" gui-text="Semicreases color: ">4294902015</param>-->
-<!--		</page>-->
-<!--		<page name="cuts" gui-text="Cuts">-->
-<!--			<param name="cut_bool" type="bool" gui-text="Draw cuts?">true</param>-->
-<!--			<param name="cut_dashes_bool" type="bool" gui-text="Dashed strokes?">false</param>-->
-<!--			<param name="cut_dashes_len" type="float"  min="0.1" max="10" appearance="full" precision="2" gui-text="Cut dash + gap length">1</param>-->
-<!--			<param name="cut_dashes_duty" type="float"  min="0.1" max="1" appearance="full" precision="2" gui-text="Cut dash duty cycle">0.25</param>-->
-<!--			<param name="cut_stroke_width" type="float" min="0.01" max="3" appearance="full" gui-text="Width of cut strokes">0.1</param>-->
-<!--			<param name="cut_stroke_color" type="color" gui-text="Cut creases color: ">16711935</param>-->
-<!--		</page>-->
 	</param>
 	<effect>
 	<object-type>all</object-type>

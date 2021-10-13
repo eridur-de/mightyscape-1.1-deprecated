@@ -1,8 +1,34 @@
 #! /usr/bin/env python3
 
-import inkex
-from lxml import etree
+"""
+Path Class
+
+Defines a path and what it is supposed to be (mountain, valley, edge)
+
+"""
+
+import inkex        # Required
+import simplestyle  # will be needed here for styles support
+
+# compatibility hack
+try:
+    from lxml import etree
+    inkex.etree = etree
+except:
+    pass
+
 from math import sin, cos, pi
+
+# compatibility hack for formatStyle
+def format_style(style):
+    try:
+        return str(inkex.Style(style)) # new
+    except:
+        return simplestyle.formatStyle(style) # old
+# def format_style(style):
+    # return simplestyle.formatStyle(style)
+
+
 
 class Path:
     """ Class that defines an svg stroke to be drawn in Inkscape
@@ -47,6 +73,7 @@ class Path:
         of the style. Ex.:
         if path_tree[i].style = 'm', styles_dict must have an element 'm'.
 
+
     generate_hgrid(cls, xlims, ylims, nb_of_divisions, style, include_edge=False)
         Generate list of Path instances, in which each Path is a stroke defining a horizontal grid dividing the space
         xlims * ylims nb_of_divisions times.
@@ -70,8 +97,16 @@ class Path:
 
     list_add(cls, paths, offsets)
         Generate list of new Path instances, adding a different tuple for each list
+        
+    list_simplify(cls, paths)
+        Gets complicated path-tree list and converts it into 
+        a simple list.
 
+    list_invert(cls, paths)
+        Invert list of paths and points of each path.
 
+    debug_points(cls, paths):
+        Plots points of path tree in drawing order.
     """
 
     def __init__(self, points, style, closed=False, invert=False, radius=0.1, separated=False):
@@ -126,7 +161,7 @@ class Path:
         - Draws strokes defined on "path_tree" to "group"
         - Inputs:
         -- path_tree [nested list] of Path instances
-        -- group [etree.SubElement]
+        -- group [inkex.etree.SubElement]
         -- styles_dict [dict] containing all styles for path_tree
         """
     @staticmethod
@@ -138,10 +173,11 @@ class Path:
                 if len(subpath) == 1:
                     subgroup = group
                 else:
-                    subgroup = etree.SubElement(group, 'g')
+                    subgroup = inkex.etree.SubElement(group, 'g')
                 Path.draw_paths_recursively(subpath, subgroup, styles_dict)
             else:
-                if styles_dict[subpath.style]['draw']:
+                # ~ if subpath.style != 'n':
+                if subpath.style != 'n' and styles_dict[subpath.style]['draw']:
                     if subpath.type == 'linear':
 
                         points = subpath.points
@@ -151,13 +187,14 @@ class Path:
                         if subpath.closed:
                             path = path + 'L{},{} Z'.format(*points[0])
 
-                        attribs = {'style': str(inkex.Style(styles_dict[subpath.style])), 'd': path}
-                        etree.SubElement(group, inkex.addNS('path', 'svg'), attribs)
+                        
+                        attribs = {'style': format_style(styles_dict[subpath.style]), 'd': path}
+                        inkex.etree.SubElement(group, inkex.addNS('path', 'svg'), attribs)
                     else:
-                        attribs = {'style': str(inkex.Style(styles_dict[subpath.style])),
+                        attribs = {'style': format_style(styles_dict[subpath.style]),
                                    'cx': str(subpath.points[0][0]), 'cy': str(subpath.points[0][1]),
                                    'r': str(subpath.radius)}
-                        etree.SubElement(group, inkex.addNS('circle', 'svg'), attribs)
+                        inkex.etree.SubElement(group, inkex.addNS('circle', 'svg'), attribs)
 
     @classmethod
     def generate_hgrid(cls, xlims, ylims, nb_of_divisions, style, include_edge=False):
@@ -242,6 +279,7 @@ class Path:
             paths.append(cls([points[i], points[j]],
                              styles[i]))
         return paths
+        
 
     def __add__(self, offsets):
         """ " + " operator overload.
@@ -464,3 +502,59 @@ class Path:
             paths_new.append(Path.reflect(path, p1, p2))
 
         return paths_new
+        
+    @classmethod
+    def list_simplify(cls, paths):
+        """ Gets complicated path-tree list and converts it into 
+        a simple list.
+
+        Returns
+        ---------
+        paths: list
+            list of Path instances
+        """
+        if type(paths) == Path:
+            return paths
+
+        simple_list = []
+        for i in range(len(paths)):
+            if type(paths[i]) == Path:
+                simple_list.append(paths[i])
+            elif type(paths[i]) == list:
+                simple_list = simple_list + Path.list_simplify(paths[i])
+        return simple_list
+
+    @classmethod
+    def list_invert(cls, paths):
+        """ Invert list of paths and points of each path.
+
+        Returns
+        ---------
+        paths: list
+            list of Path instances
+        """
+
+        if type(paths) == Path:
+            # return Path(paths.points[::-1], paths.style, paths.closed, paths.invert)
+            return Path(paths.points, paths.style, paths.closed, True)
+        elif type(paths) == list:
+            paths_inverted = []
+            # n = len(paths)
+            # for i in range(n):
+            #     # paths_inverted.append(Path.list_invert(paths[n-1-i]))
+            #     paths_inverted.append(Path.list_invert(paths[i]))
+            for path in paths:
+                # paths_inverted.append(Path.list_invert(paths[n-1-i]))
+                paths_inverted.append(Path.list_invert(path))
+            return paths_inverted[::-1]
+
+    @classmethod
+    def debug_points(cls, paths):
+        """ Plots points of path tree in drawing order.
+
+        """
+        if type(paths) == Path:
+            inkex.debug(paths.points)
+        elif type(paths) == list:
+            for sub_path in paths:
+                Path.debug_points(sub_path)

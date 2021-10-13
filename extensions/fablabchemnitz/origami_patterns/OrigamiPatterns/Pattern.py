@@ -29,7 +29,8 @@ class Pattern(inkex.Effect):
         self.add_argument('--mountain_dashes_duty', type=float, default=0.5, help='Mountain dash duty cycle.')
         self.add_argument('--mountain_dashes_bool', type=inkex.Boolean, default=True, help='Dashed strokes?')
         self.add_argument('--mountain_bool', type=inkex.Boolean, default=True, help='Draw mountains?')
-
+        self.add_argument('--mountain_bool_only', type=inkex.Boolean, default=False)
+        
         # --------------------------------------------------------------------------------------------------------------
         # valley options
         self.add_argument('-v', '--valley_stroke_color', default=65535, help='The valley creases color.')
@@ -38,6 +39,7 @@ class Pattern(inkex.Effect):
         self.add_argument('--valley_dashes_duty', type=float, default=0.25, help='Valley dash duty cycle.')
         self.add_argument('--valley_dashes_bool', type=inkex.Boolean, default=True, help='Dashed strokes?')
         self.add_argument('--valley_bool', type=inkex.Boolean, default=True, help='Draw valleys?')
+        self.add_argument('--valley_bool_only', type=inkex.Boolean, default=False)
 
         # --------------------------------------------------------------------------------------------------------------
         # edge options
@@ -47,6 +49,7 @@ class Pattern(inkex.Effect):
         self.add_argument('--edge_dashes_duty', type=float, default=0.25, help='Edge dash duty cycle.')
         self.add_argument('--edge_dashes_bool', type=inkex.Boolean, default=False, help='Dashed strokes?')
         self.add_argument('--edge_bool', type=inkex.Boolean, default=True, help='Draw edges?')
+        self.add_argument('--edge_bool_only', type=inkex.Boolean, default=False)
         self.add_argument('--edge_single_path', type=inkex.Boolean, default=True, help='Edges as single path?')
 
         # --------------------------------------------------------------------------------------------------------------
@@ -57,6 +60,7 @@ class Pattern(inkex.Effect):
         self.add_argument('--universal_dashes_duty', type=float, default=0.25, help='Universal dash duty cycle.')
         self.add_argument('--universal_dashes_bool', type=inkex.Boolean, default=False, help='Dashed strokes?')
         self.add_argument('--universal_bool', type=inkex.Boolean, default=True, help='Draw universal creases?')
+        self.add_argument('--universal_bool_only', type=inkex.Boolean, default=False)
 
         # --------------------------------------------------------------------------------------------------------------
         # semicrease options
@@ -66,7 +70,8 @@ class Pattern(inkex.Effect):
         self.add_argument('--semicrease_dashes_duty', type=float,default=0.25, help='Semicrease dash duty cycle.')
         self.add_argument('--semicrease_dashes_bool', type=inkex.Boolean, default=False, help='Dashed strokes?')
         self.add_argument('--semicrease_bool', type=inkex.Boolean,  default=True, help='Draw semicreases?')
-
+        self.add_argument('--semicrease_bool_only', type=inkex.Boolean, default=False)
+         
         # --------------------------------------------------------------------------------------------------------------
         # cut options
         self.add_argument('--cut_stroke_color', default=16711935,  help='The cut creases color.')
@@ -75,23 +80,42 @@ class Pattern(inkex.Effect):
         self.add_argument('--cut_dashes_duty', type=float, default=0.25, help='Cut dash duty cycle.')
         self.add_argument('--cut_dashes_bool', type=inkex.Boolean, default=False, help='Dashed strokes?')
         self.add_argument('--cut_bool', type=inkex.Boolean, default=True, help='Draw cuts?')
+        self.add_argument('--cut_bool_only', type=inkex.Boolean, default=False)
 
         # --------------------------------------------------------------------------------------------------------------
         # vertex options
         self.add_argument('--vertex_stroke_color', default=255,  help='Vertices\' color.')
         self.add_argument('--vertex_stroke_width', type=float, default=0.1,  help='Width of vertex strokes.')
         self.add_argument('--vertex_radius', type=float, default=0.1, help='Radius of vertices.')
-        self.add_argument('--vertex_bool', type=inkex.Boolean, default=True, help='Draw vertices?')
+        self.add_argument('--vertex_bool', type=inkex.Boolean, default=True)
+        self.add_argument('--vertex_bool_only', type=inkex.Boolean, default=False)
+        
         # here so we can have tabs - but we do not use it directly - else error
         self.add_argument('--active-tab', default='title', help="Active tab.")
 
         self.path_tree = []
         self.edge_points = []
+        self.vertex_points = []
         self.translate = (0, 0)
 
     def effect(self):
-        """ Main function, called when the extension is run.
-        """
+        # check if any selected to print only some of the crease types:
+        bool_only_list = [self.options.mountain_bool_only,
+                          self.options.valley_bool_only,
+                          self.options.edge_bool_only,
+                          self.options.universal_bool_only,
+                          self.options.semicrease_bool_only,
+                          self.options.cut_bool_only,
+                          self.options.vertex_bool_only]
+        if sum(bool_only_list) > 0:
+            self.options.mountain_bool = self.options.mountain_bool and self.options.mountain_bool_only
+            self.options.valley_bool = self.options.valley_bool and self.options.valley_bool_only
+            self.options.edge_bool = self.options.edge_bool and self.options.edge_bool_only
+            self.options.universal_bool = self.options.universal_bool and self.options.universal_bool_only
+            self.options.semicrease_bool = self.options.semicrease_bool and self.options.semicrease_bool_only
+            self.options.cut_bool = self.options.cut_bool and self.options.cut_bool_only
+            self.options.vertex_bool = self.options.vertex_bool and self.options.vertex_bool_only
+        
         # construct dictionary containing styles
         self.create_styles_dict()
 
@@ -102,6 +126,14 @@ class Pattern(inkex.Effect):
         # ~ unit_factor = self.calc_unit_factor()
         # what page are we on
         # page_id = self.options.active_tab # sometimes wrong the very first time
+
+        # get vertex points and add them to path tree
+        vertex_radius = self.options.vertex_radius * self.calc_unit_factor()
+        vertices = []
+        self.vertex_points = list(set([i for i in self.vertex_points])) # remove duplicates 
+        for vertex_point in self.vertex_points:
+            vertices.append(Path(vertex_point, style='p', radius=vertex_radius))
+        self.path_tree.append(vertices)
 
         # Translate according to translate attribute
         g_attribs = {inkex.addNS('label', 'inkscape'): '{} Origami pattern'.format(self.options.pattern),

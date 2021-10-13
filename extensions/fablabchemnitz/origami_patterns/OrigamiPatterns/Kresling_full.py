@@ -10,8 +10,6 @@ from Kresling import Kresling
 class Kresling_Full(Kresling):
     
     def __init__(self):
-        """ Constructor
-        """
         Kresling.__init__(self)  # Must be called in order to parse common options
 
         self.add_argument('--measure_value', type=float, default=10.0, help="Length")
