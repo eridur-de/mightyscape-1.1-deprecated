@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-   <name>Polar Grid</name>
-   <id>fablabchemnitz.de.polar_grid</id>
+   <name>Bobbin Lace - Polar Grid</name>
+   <id>fablabchemnitz.de.bobbinlace.polar_grid</id>
    <label>Creates a printable polar grid of dots with a constant number of dots per circle and the distance between circles changing at the same speed as the distance between the dots on a circle.</label>
    <label appearance="header">Grid style</label>
    <hbox indent="1">

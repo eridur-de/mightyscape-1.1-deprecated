@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-   <name>Regular Grid</name>
-   <id>fablabchemnitz.de.regular_grid</id>
+   <name>Bobbin Lace - Regular Grid</name>
+   <id>fablabchemnitz.de.bobbinlace.regular_grid</id>
    <label appearance="header">Creates a grid of dots of specified angle.</label>
    <spacer/>
    <label appearance="header">Grid description</label>

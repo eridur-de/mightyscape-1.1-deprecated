@@ -151,8 +151,8 @@ class CircularGroundFromTemplate(inkex.EffectExtension):
             'stroke-opacity': '1.0', 
             'fill-opacity': '1.0',
             'stroke': self.options.linecolor, 
-            'stroke-linecap': 'round',
-            'stroke-linejoin': 'round',
+            'stroke-linecap': 'butt',
+            'stroke-linejoin': 'butt',
             'fill': 'none'
         }
 

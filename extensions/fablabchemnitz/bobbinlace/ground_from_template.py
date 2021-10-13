@@ -87,9 +87,13 @@ class GroundFromTemplate(inkex.EffectExtension):
         
         # define the stroke style
         s = {'stroke-linejoin': 'miter', 
-            'stroke-width': self.options.linewidth,            'stroke-opacity': '1.0', 
-            'fill-opacity': '1.0',            'stroke': self.options.linecolor, 
-            'stroke-linecap': 'round',            'stroke-linejoin': 'round',            'fill': 'none'
+            'stroke-width': self.options.linewidth, 
+            'stroke-opacity': '1.0', 
+            'fill-opacity': '1.0', 
+            'stroke': self.options.linecolor, 
+            'stroke-linecap': 'butt', 
+            'stroke-linejoin': 'butt', 
+            'fill': 'none'
         }
         
         # create attributes from style and path
