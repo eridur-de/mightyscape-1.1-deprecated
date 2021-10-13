@@ -1,6 +1,6 @@
 # MightyScape for Inkscape 1.0+
 
-In short: A maintained extension collection for Inkscape 1.0+, working on Windows and Linux. There are **210 extension folders** with **372 .inx files** inside. We also take part at https://inkscape.org/gallery/=extension/ (with single extension uploads).
+In short: A maintained extension collection for Inkscape 1.0+, working on Windows and Linux. There are **223 extension folders** with **388 .inx files** inside. We also take part at https://inkscape.org/gallery/=extension/ (with single extension uploads).
 
 # About MightyScape
 
