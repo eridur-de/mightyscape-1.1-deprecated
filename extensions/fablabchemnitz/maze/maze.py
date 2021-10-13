@@ -1,12 +1,11 @@
 #! /usr/bin/env python3
 
-# this extension is under licence CC-by-sa   @ Tiemen DUVILLARD 2020
-# for all questions, comments, bugs: duvillard.tiemen@gmail.com 
+# this module is under licence MIT  @ Tiemen DUVILLARD 2020
+# for all questions, comments, bugs: duvillard.tiemen@gmail.com
 
 import inkex
 from lxml import etree
 from maze_lib import *
-
 
 def points_to_svgd(p, close=False):
     """ convert list of points (x,y) pairs
@@ -42,7 +41,7 @@ class Maze(inkex.EffectExtension):
         X = self.options.verti
         Y = self.options.horiz
         
-        L = Maze(X,Y,self.options.algo)
+        L = MazeLib(X,Y,self.options.algo)
 
         for i,j,door in L.verticalDoors():
             if door:

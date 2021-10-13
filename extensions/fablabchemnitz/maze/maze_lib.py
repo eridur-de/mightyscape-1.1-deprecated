@@ -1,8 +1,7 @@
 #! /usr/bin/env python3
 
-# this module is under licence CC-by-sa  @ Tiemen DUVILLARD 2020
-# for all questions, comments, bugs: duvillard.tiemen@gmail.com 
-
+# this module is under licence MIT  @ Tiemen DUVILLARD 2020
+# for all questions, comments, bugs: duvillard.tiemen@gmail.com
 
 from random import choice, randrange
 
@@ -168,6 +167,46 @@ def recursive_backtrack(x, y):
 
     return verti, horiz
 
+
+def recursive_chamber(x, y):
+    # Initialisation of my variables
+    def recursive_chamber_recu(VERTI,HORIZ,xA,yA,xB,yB):
+        if (xB - xA <= 1):
+            return
+        elif (yB - yA <= 1):
+            return
+        else :
+            dx = xB-xA
+            dy = yB-yA
+            v = randrange(0,dx+dy)
+            if v < dx :
+                x = randrange(xA,xB-1)
+                y = randrange(yA,yB)
+                for i in range(yA,yB):
+                    if i != y:
+                        VERTI[i][x] = 1
+                recursive_chamber_recu(VERTI,HORIZ,xA,yA,x+1,yB)
+                recursive_chamber_recu(VERTI,HORIZ,x+1,yA,xB,yB)
+            else:
+                x = randrange(xA,xB)
+                y = randrange(yA,yB-1)
+                for i in range(xA,xB):
+                    if i != x:
+                        HORIZ[y][i] = 1
+                recursive_chamber_recu(VERTI,HORIZ,xA,yA,xB,y+1)
+                recursive_chamber_recu(VERTI,HORIZ,xA,y+1,xB,yB)
+
+
+    horiz = []
+    for i in range(y-1): horiz.append([0] * x)
+    verti = []
+    for i in range(y): verti.append([0] * (x-1))
+
+    # appel recursif
+    recursive_chamber_recu(verti,horiz,0,0,x,y)
+
+    return verti, horiz
+
 # a empty maze
 def empty(x, y):
     verti = []
@@ -192,7 +231,7 @@ def full(x, y):
 
 
 
-class Maze:
+class MazeLib:
     """This Class define a Maze object"""
     def __init__(self, X=5, Y=5, algorithm="empty"):
         """Use : m = Maze(X:int,Y:int, algorithm:string)"""
@@ -200,30 +239,36 @@ class Maze:
         self.Y      = Y # height
         self.verti = [] # table of vertical doors
         self.horiz = [] # table of horizontal doors
-
+        algorithm = algorithm.lower()
         
-        if algorithm in ("kruskal","K") :
+        if algorithm in ("kruskal","k") :
             self.verti, self.horiz = kruskal(self.X,self.Y)
             self.doors     = self.nbDoors()
             self.algorithm = "kruskal"
             self.perfect   = True
         
-        elif algorithm in ("recursive_backtrack","RB") :
+        elif algorithm in ("recursive_backtrack","rb") :
             self.verti, self.horiz = recursive_backtrack(self.X,self.Y)
             self.doors     = self.nbDoors()
             self.algorithm = "recursive_backtrack"
             self.perfect   = True
 
-        elif algorithm in ("empty","E") :
+        elif algorithm in ("empty","e") :
             self.verti, self.horiz = empty(self.X,self.Y)
             self.doors      = self.nbDoors() 
             self.algorithm  = "empty"
             self.perfect    = False
 
-        elif algorithm in ("full","F") :
+        elif algorithm in ("full","f") :
             self.verti, self.horiz = full(self.X,self.Y)
             self.doors      = self.nbDoors() 
             self.algorithm  = "full"
+            self.perfect    = False
+
+        elif algorithm in ("recursive_chamber","rc") :
+            self.verti, self.horiz = recursive_chamber(self.X,self.Y)
+            self.doors      = self.nbDoors() 
+            self.algorithm  = "recursive_chamber"
             self.perfect    = False
 
         else :
@@ -282,6 +327,14 @@ class Maze:
             return x+1,y
         return x,y
 
+    def liberty(self, x, y):
+        """return all cases accessible from (x,y)"""
+        r = []
+        for d in ["down","up","left","right"]:
+            if self.canMove(x,y,d):
+                r.append(d)
+        return d
+
     def toSquare(self):
         """return another representation of maze, a List of List of case in {0,1} """
         RET = []
@@ -310,35 +363,87 @@ class Maze:
         for i in range(self.Y):
             laby.append(['new'] * self.X)
 
-        while Pile[-1] != (xb,yb) and len(Pile) != 0:
+        while len(Pile) != 0  and Pile[-1] != (xb,yb):
             pos = Pile[-1]
             x,y = pos[0],pos[1]
             if laby[y][x] == 'new':
                 possibilite = []
-                for d in ['down',"up","left","right"]:
+                for d in ['down',"left","up","right"]:
                     if self.canMove(pos[0],pos[1],d) :
                         nx,ny = self.move(pos[0],pos[1],d)
                         if laby[ny][nx] == 'new' :
                             possibilite.append(d)
             
-                if len(possibilite) == 0:
-                    laby[y][x] = "old"
-                else :
-                    laby[y][x] = possibilite
+                laby[y][x] = possibilite
             elif laby[y][x] == "old":
                 del Pile[-1]
-                del Sol[-1]
+                if len(Sol) != 0:
+                    del Sol[-1]
             elif type(laby[y][x]) == list:
                 if len(laby[y][x]) == 0:
                     laby[y][x] = "old"
                 else:
-                    ichoix = randrange(len(laby[y][x]))
+                    ichoix = -1#randrange(len(laby[y][x]))
                     choix = laby[y][x][ichoix]
                     Pile.append(self.move(x,y,choix))
                     Sol.append(choix)
                     del laby[y][x][ichoix]
 
         return Sol
+
+    def furthestBox(self, xa, ya):
+        """return the case furtest of the case (xa,ya)"""
+        Sol = []
+        dmax = len(Sol)
+        pmax = Sol.copy()
+        cmax = (xa,ya)
+
+        Pile = [(xa,ya)]
+        laby = []
+        for i in range(self.Y):
+            laby.append(['new'] * self.X)
+
+        while len(Pile) != 0:
+            pos = Pile[-1]
+            x,y = pos[0],pos[1]
+            if laby[y][x] == 'new':
+                possibilite = []
+                for d in ['down',"left","up","right"]:
+                    if self.canMove(pos[0],pos[1],d) :
+                        nx,ny = self.move(pos[0],pos[1],d)
+                        if laby[ny][nx] == 'new' :
+                            possibilite.append(d)
+            
+                laby[y][x] = possibilite
+            elif laby[y][x] == "old":
+                if len(Sol) > dmax:
+                    dmax = len(Sol)
+                    pmax = Sol.copy()
+                    cmax = (x,y)
+                del Pile[-1]
+                if len(Sol) != 0:
+                    del Sol[-1]
+            elif type(laby[y][x]) == list:
+                if len(laby[y][x]) == 0:
+                    laby[y][x] = "old"
+                else:
+                    ichoix = -1#randrange(len(laby[y][x]))
+                    choix = laby[y][x][ichoix]
+                    Pile.append(self.move(x,y,choix))
+                    Sol.append(choix)
+                    del laby[y][x][ichoix]
+
+        return pmax, cmax
+
+    def longestWay(self):
+        Xa = randrange(self.X)
+        Ya = randrange(self.Y)
+        p,B = self.furthestBox(Xa,Ya)
+        path,C = self.furthestBox(B[0],B[1])
+        return B,path,C
+
+
+
 
     def save(self):
         """Return a string contain's all information. it can be save in file, print, etc.."""
