@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 Mainly written by Andras Prim github_at_primandras.hu
 
