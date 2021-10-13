@@ -1,0 +1,19 @@
+[
+  {
+    "name": "Polygen",
+    "id": "fablabchemnitz.de.polygenn",
+    "path": "polygen",
+    "original_name": "Polygen",
+    "original_id": "org.inkscape.polygen",
+    "license": "GNU GPL v3",
+    "license_url": "https://github.com/obzerving/Polygen/blob/main/LICENSE",
+    "comment": "",
+    "source_url": "https://gitea.fablabchemnitz.de/FabLab_Chemnitz/mightyscape-1.X/src/branch/master/extensions/fablabchemnitz/polygen",
+    "fork_url": "https://github.com/obzerving/Polygen",
+    "documentation_url": "https://stadtfabrikanten.org/display/IFM/Polygen",
+    "inkscape_gallery_url": null,
+    "main_authors": [
+      "github.com/vmario89"
+    ]
+  }
+]

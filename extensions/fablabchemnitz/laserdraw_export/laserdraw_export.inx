@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-   <name>LaserDraw LYZ Export</name>
-   <id>fablabchemnitz.de.lyz_export</id>
+   <name>LaserDraw Export (lyz)</name>
+   <id>fablabchemnitz.de.laserdraw_export.lyz</id>
    <!--
     <param name="area_select" type="optiongroup" appearance="combo" gui-text="Area: ">
     <option value="page_area">Page Area (use for engrave and cut)</option>

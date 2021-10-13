@@ -1,0 +1,20 @@
+[
+  {
+    "name": "Simple Inkscape (Interface)",
+    "id": "fablabchemnitz.de.simpleinkscape",
+    "path": "simpleinkscape",
+    "original_name": "Simple Inkscape",
+    "original_id": "org.inkscape.simpleinkscape",
+    "license": "GNU GPL v2",
+    "license_url": "https://inkscape.org/~Mr.Raven/%E2%98%85simpleinkscapev01+2",
+    "comment": "",
+    "source_url": "https://gitea.fablabchemnitz.de/FabLab_Chemnitz/mightyscape-1.X/src/branch/master/extensions/fablabchemnitz/simpleinkscape",
+    "fork_url": "https://inkscape.org/~Mr.Raven/%E2%98%85simpleinkscapev01+2",
+    "documentation_url": "https://stadtfabrikanten.org/pages/viewpage.action?pageId=111837633",
+    "inkscape_gallery_url": null,
+    "main_authors": [
+      "inkscape.org/Mr.Raven",
+      "github.com/vmario89"
+    ]
+  }
+]

@@ -33,9 +33,12 @@ else:
 
 class RotationsMinimumWidth(inkex.EffectExtension):
     
+    def add_arguments(self, pars):
+        pars.add_argument("--precision", type=int, default=3, help="Precision")
+    
     def effect(self):
         for node in self.svg.selected.values():
-            min_width_angle = rotate_helper.optimal_rotations(node)[0]
+            min_width_angle = rotate_helper.optimal_rotations(node, self.options.precision)[0]
             if min_width_angle is not None:
                 node.transform = rotate_helper.rotate_matrix(node, min_width_angle) * node.transform
 

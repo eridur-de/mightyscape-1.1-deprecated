@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
     <name>Clip Layer Fix Transform</name>
-    <id>fablabchemnitz.de_clip_layer_fix_transform</id>
+    <id>fablabchemnitz.de.layer_clip.clip_layer_fix_transform</id>
     <effect>
         <object-type>path</object-type>
         <effects-menu>

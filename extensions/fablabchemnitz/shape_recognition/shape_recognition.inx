@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <name>Shape Recognition</name>
+    <name>Shape Recognition (Unstable)</name>
     <id>fablabchemnitz.de.shape_recognition</id>
     <param name="MainTabs" type="notebook">
         <page name="Basic" gui-text="Basic options">
             <label>Simple shape
-        recognition. From a selection of one or many path, find straight
-        lines, recognizes those parallel or with similar angles or
-        lenght. Recognizes rectangles, circle and ellipses.</label>
+recognition. From a selection of one or many path, find straight
+lines, recognizes those parallel or with similar angles or
+lenght. Recognizes rectangles, circle and ellipses.</label>
             <param name="keepOrigin" type="bool" gui-text="Keep origin path">false</param>
             <param name="doUniformization" type="bool" gui-text="Enable uniformization">true</param>
         </page>

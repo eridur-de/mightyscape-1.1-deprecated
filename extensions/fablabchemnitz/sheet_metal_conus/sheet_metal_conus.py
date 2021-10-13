@@ -65,6 +65,7 @@ class SheetMetalConus(inkex.EffectExtension):
         pars.add_argument('-f', '--strokeColour', type=Color, default = 255, help = 'The line colour.')
         pars.add_argument('-d', '--verbose', type = inkex.Boolean, default = False, help = 'Enable verbose output of calculated parameters. Used for debugging or is someone needs the calculated values.')
 
+
     # Marker arrows
     def makeMarkerstyle(self, name, rotate):
         " Markers added to defs for reuse "
@@ -110,7 +111,7 @@ class SheetMetalConus(inkex.EffectExtension):
             self.makeMarkerstyle('ArrowDINout-start', False)
             self.makeMarkerstyle('ArrowDINout-end', True)
 
-    def drawDimArc(self, center, start, end, radius, style, parent, gap=0, lowside=True):
+    def drawDimArc(self, start, end, radius, style, parent, gap=0, lowside=True):
         " just the arrowed arc line "
         angle = abs(end-start)
         # inside or outside 
@@ -128,22 +129,22 @@ class SheetMetalConus(inkex.EffectExtension):
             start -= arrow_angle
             angle -= arrow_angle
             anglefac = -1
-        #
+
         if gap == 0:
             line_attribs = {'style' : str(inkex.Style(style)),
-                            'd'     : self.build_arc(center, start, angle*anglefac, radius, lowside) }
+                            'd'     : self.build_arc(0, 0, start, angle*anglefac, radius, lowside) }
             ell = etree.SubElement(parent, inkex.addNS('path','svg'), line_attribs )
         else: # leave a gap for label
             gap_angle = math.degrees(math.sin(gap/radius))
             startstyle = deepcopy(style)
             startstyle['marker-start'] = None
             line_attribs = {'style' : str(inkex.Style(startstyle)),
-                            'd'     : self.build_arc(center, start, angle*anglefac/2-gap_angle/2*anglefac, radius, lowside) }
+                            'd'     : self.build_arc(0, 0, start, angle*anglefac/2-gap_angle/2*anglefac, radius, lowside) }
             ell = etree.SubElement(parent, inkex.addNS('path','svg'), line_attribs )
             endstyle = deepcopy(style)
             endstyle['marker-end'] = None
             line_attribs = {'style' : str(inkex.Style(endstyle)),
-                            'd'     : self.build_arc(center, angle/2*anglefac+gap_angle/2*anglefac, angle*anglefac, radius, lowside) }
+                            'd'     : self.build_arc(0, 0, angle/2*anglefac+gap_angle/2*anglefac, angle*anglefac, radius, lowside) }
             etree.SubElement(parent, inkex.addNS('path','svg'), line_attribs )
         # return pos in center of gap (or arc)
         textposangle = angle/2*anglefac
@@ -216,9 +217,11 @@ class SheetMetalConus(inkex.EffectExtension):
         dictCone['ptD'] = ptD
 
     def effect(self):
-        """ Effect behaviour.
-            - Overrides base class' method and draws rolled out sheet metal cone into SVG document.
-        """
+        
+        if self.options.diaBase == self.options.diaCut:
+            inkex.utils.debug("Warning. Cut diameter may not be equal to base diameter.")
+            exit(1)
+        
         # calc scene scale
         convFactor = self.svg.unittouu("1" + self.options.units)   
         # Store all the relevants values in a dictionary for easy access
@@ -353,7 +356,7 @@ class SheetMetalConus(inkex.EffectExtension):
         # arc
         arc_rad = ptA[0]*unitFactor*0.50
         gap = self.svg.unittouu(str(font_height*2)+"pt")
-        textpos = self.drawDimArc(0, 0, value, arc_rad, arrow_style, parent, gap, lowside)
+        textpos = self.drawDimArc(0, value, arc_rad, arrow_style, parent, gap, lowside)
         # angle label
         textpos[1] += font_height/4 if lowside else font_height/2
         text_atts = {'style':str(inkex.Style(text_style)),

@@ -1,4 +1,4 @@
-# coding=utf-8
+#!/usr/bin/env python3
 #
 # SVG Path Ordering Extension
 # This extension uses a simple TSP algorithm to order the paths so as

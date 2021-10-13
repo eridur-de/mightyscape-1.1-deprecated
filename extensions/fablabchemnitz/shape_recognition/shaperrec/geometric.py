@@ -197,7 +197,7 @@ def toArray(parsedList):
 
         debug('newPoints ', newp)
         points = points + newp
-    a = numpy.array(points, dtype="object")
+    a = numpy.array(points)
 
 
     # Some times we have points *very* close to each other

@@ -20,23 +20,21 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 from math import copysign, cos, pi, sin
 from inkex import Transform
 
-STEPS = 360
-
 def rotate_matrix(node, a):
     bbox = node.bounding_box()
     cx = bbox.center_x / 2.0
     cy = bbox.center_y / 2.0
     return Transform([[cos(a), -sin(a), cx], [sin(a), cos(a), cy]]) * Transform([[1, 0, -cx], [0, 1, -cy]])
 	
-def optimal_rotations(node):
-    step = pi / float(STEPS)
+def optimal_rotations(node, precision):
+    step = pi / float(precision)
     bbox = node.bounding_box()
     min_width = bbox.right - bbox.left
     min_width_angle = None
     min_bbox_area = min_width * (bbox.bottom - bbox.top)
     min_bbox_area_angle = None
 
-    for i in range(STEPS):
+    for i in range(precision):
         angle = -pi/2.0 + i*step
         rotated = node.bounding_box(rotate_matrix(node, angle))		
 		

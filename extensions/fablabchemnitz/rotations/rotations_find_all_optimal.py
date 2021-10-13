@@ -34,6 +34,9 @@ else:
 	
 class RotationsFindAllOptimal(inkex.EffectExtension):
     
+    def add_arguments(self, pars):
+        pars.add_argument("--precision", type=int, default=3, help="Precision")
+    
     def effect(self):
         
         def duplicateNodes(aList):
@@ -52,7 +55,7 @@ class RotationsFindAllOptimal(inkex.EffectExtension):
             # set() removes duplicates
             angles = set(
                 # and remove Nones
-                [x for x in rotate_helper.optimal_rotations(node)
+                [x for x in rotate_helper.optimal_rotations(node, self.options.precision)
                     if x is not None])
             # Go backwards so we know if we need to duplicate the node for
             # multiple rotations. (We don't want to rotate the main node

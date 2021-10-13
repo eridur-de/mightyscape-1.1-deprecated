@@ -1,16 +1,20 @@
-{
-  "name": "Tab Generator",
-  "id": "fablabchemnitz.de.tab_generator",
-  "path": "tab_generator",
-  "original_name": "Tabgen",
-  "original_id": "org.inkscape.tabgen",
-  "license": "GNU GPL v3",
-  "license_url": "https://github.com/obzerving/Tabgen/blob/main/LICENSE",
-  "comment": "",
-  "source_url": "https://github.com/obzerving/Tabgen",
-  "documentation_url": "https://stadtfabrikanten.org/display/IFM/Tab+Generator",
-  "main_authors": [
-    "github.com/obzerving",
-    "github.com/vmario89"
-  ]
-}
+[
+  {
+    "name": "Tab Generator",
+    "id": "fablabchemnitz.de.tab_generator",
+    "path": "tab_generator",
+    "original_name": "Tabgen",
+    "original_id": "org.inkscape.tabgen",
+    "license": "GNU GPL v3",
+    "license_url": "https://github.com/obzerving/Tabgen/blob/main/LICENSE",
+    "comment": "",
+    "source_url": "https://gitea.fablabchemnitz.de/FabLab_Chemnitz/mightyscape-1.X/src/branch/master/extensions/fablabchemnitz/tab_generator",
+    "fork_url": "https://github.com/obzerving/Tabgen",
+    "documentation_url": "https://stadtfabrikanten.org/display/IFM/Tab+Generator",
+    "inkscape_gallery_url": null,
+    "main_authors": [
+      "github.com/obzerving",
+      "github.com/vmario89"
+    ]
+  }
+]
