@@ -1,0 +1,19 @@
+[
+  {
+    "name": "Draw Directions",
+    "id": "fablabchemnitz.de.draw_directions",
+    "path": "draw_directions",
+    "original_name": "Draw Directions",
+    "original_id": "fablabchemnitz.de.draw_directions",
+    "license": "GNU GPL v3",
+    "license_url": "https://gitea.fablabchemnitz.de/FabLab_Chemnitz/mightyscape-1.X/src/branch/master/LICENSE",
+    "comment": "Written by Mario Voigt",
+    "source_url": "https://gitea.fablabchemnitz.de/FabLab_Chemnitz/mightyscape-1.X/src/branch/master/extensions/fablabchemnitz/draw_directions",
+    "fork_url": null,
+    "documentation_url": "https://stadtfabrikanten.org/display/IFM/Draw+Directions",
+    "inkscape_gallery_url": null,
+    "main_authors": [
+      "github.com/vmario89"
+    ]
+  }
+]

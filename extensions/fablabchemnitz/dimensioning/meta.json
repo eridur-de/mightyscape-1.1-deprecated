@@ -1,0 +1,20 @@
+[
+  {
+    "name": "Dimensioning",
+    "id": "fablabchemnitz.de.dimensioning",
+    "path": "dimensioning",
+    "original_name": "Dimensioning",
+    "original_id": "dimensioning",
+    "license": "GNU GPL v3",
+    "license_url": "https://github.com/Rutzmoser/inkscape_dimensioning/blob/master/LICENSE",
+    "comment": "",
+    "source_url": "https://gitea.fablabchemnitz.de/FabLab_Chemnitz/mightyscape-1.X/src/branch/master/extensions/fablabchemnitz/dimensioning",
+    "fork_url": "https://github.com/Rutzmoser/inkscape_dimensioning",
+    "documentation_url": "https://stadtfabrikanten.org/display/IFM/Dimensioning",
+    "inkscape_gallery_url": null,
+    "main_authors": [
+      "github.com/Rutzmoser",
+      "github.com/vmario89"
+    ]
+  }
+]
