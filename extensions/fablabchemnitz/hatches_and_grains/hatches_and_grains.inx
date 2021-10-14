@@ -76,6 +76,6 @@ V.15.01.2020</label>
         </effects-menu>
     </effect>
     <script>
-        <command location="inx" interpreter="python">hatches_grains.py</command>
+        <command location="inx" interpreter="python">hatches_and_grains.py</command>
     </script>
 </inkscape-extension>
