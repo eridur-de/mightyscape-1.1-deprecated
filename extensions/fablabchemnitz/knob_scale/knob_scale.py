@@ -34,7 +34,9 @@ class KnobScale(inkex.EffectExtension):
         pars.add_argument("--angle", type=float, default=260.0, help="Angle of the knob scale in degrees")
         pars.add_argument("--draw_arc", type=inkex.Boolean, default='True')
         pars.add_argument("--draw_centering_circle", type=inkex.Boolean, default='False')
+        pars.add_argument("--logarithmic_scale", type=inkex.Boolean, default='False', help="")
         pars.add_argument("-u", "--units", default="px", help="units to measure size of knob")
+
         # Tick settings
         pars.add_argument("--n_ticks", type=int, default=5)
         pars.add_argument("--ticksize", type=float, default=10)
@@ -189,32 +191,59 @@ class KnobScale(inkex.EffectExtension):
         if self.options.draw_centering_circle:
             self.draw_centering_circle(arc_radius + tick_length + text_size + text_spacing, parent)
 
-        ticks_delta = angle / (n_ticks - 1)
-        start_ticks_angle = 1.5*pi - 0.5*angle
-        for tick in range(n_ticks):
-            self.draw_tick(radius, start_ticks_angle + ticks_delta*tick,
-                                tick_length, parent)
+        if self.options.logarithmic_scale:
+            start_ticks_angle = 1.5*pi - 0.5*angle
+            for tick in range(n_ticks):
+                self.draw_tick(radius, start_ticks_angle + angle*log(tick+1)/log(n_ticks),
+                                    tick_length, parent)
 
-            if self.options.labels_enabled:
-                if self.options.rounding_level > 0:
-                    tick_text = str(round(start_num +
-                                          float(tick) * (end_num - start_num) / (n_ticks - 1),
-                                          self.options.rounding_level))
-                else:
-                    tick_text = str(int(start_num + float(tick) * (end_num - start_num) / (n_ticks - 1)))
+                if self.options.labels_enabled:
+                    if self.options.rounding_level > 0:
+                        tick_text = str(round(start_num +
+                            float(tick) * (end_num - start_num) / (n_ticks - 1),
+                            self.options.rounding_level))
+                    else:
+                        tick_text = str(int(start_num + float(tick) * (end_num - start_num) / (n_ticks - 1)))
 
-                self.draw_text(tick_text, radius + tick_length + text_spacing,
-                          start_ticks_angle + ticks_delta*tick,
-                          text_size,
-                          parent)
+                    self.draw_text(tick_text, radius + tick_length + text_spacing,
+                            start_ticks_angle + angle*log(tick+1)/log(n_ticks),
+                            text_size,
+                            parent)
 
-            if tick == (n_ticks - 1):
-                break
+                if tick == (n_ticks - 1):
+                    break
+                    
+                for subtick in range(n_subticks):
+                    self.draw_tick(subtick_radius, start_ticks_angle + angle*log(tick+1+(subtick+1)/(n_subticks+1))/log(n_ticks), 
+                                 subtick_length, parent)        
+        else:
+            ticks_delta = angle / (n_ticks - 1)
+            start_ticks_angle = 1.5*pi - 0.5*angle
 
-            subticks_delta = ticks_delta / (n_subticks + 1)
-            subtick_start_angle = start_ticks_angle + ticks_delta*tick + subticks_delta
-            for subtick in range(n_subticks):
-                self.draw_tick(subtick_radius, subtick_start_angle + subticks_delta*subtick,
+            for tick in range(n_ticks):
+                self.draw_tick(radius, start_ticks_angle + ticks_delta*tick,
+                                    tick_length, parent)
+
+                if self.options.labels_enabled:
+                    if self.options.rounding_level > 0:
+                        tick_text = str(round(start_num +
+                            float(tick) * (end_num - start_num) / (n_ticks - 1),
+                            self.options.rounding_level))
+                    else:
+                        tick_text = str(int(start_num + float(tick) * (end_num - start_num) / (n_ticks - 1)))
+
+                    self.draw_text(tick_text, radius + tick_length + text_spacing,
+                            start_ticks_angle + ticks_delta*tick,
+                            text_size,
+                            parent)
+
+                if tick == (n_ticks - 1):
+                    break
+
+                subticks_delta = ticks_delta / (n_subticks + 1)
+                subtick_start_angle = start_ticks_angle + ticks_delta*tick + subticks_delta
+                for subtick in range(n_subticks):
+                    self.draw_tick(subtick_radius, subtick_start_angle + subticks_delta*subtick,
                                     subtick_length, parent)
 
 if __name__ == '__main__':

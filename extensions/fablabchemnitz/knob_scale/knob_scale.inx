@@ -11,6 +11,7 @@
          <param name="linewidth" type="float" min="0.001" max="100" precision="3" gui-text="Line width">1</param>
          <param name="draw_arc" type="bool" gui-text="Draw Arc">true</param>
          <param name="draw_centering_circle" type="bool" gui-text="Draw Centering Circle">false</param>
+         <param name="logarithmic_scale" type="bool" gui-text="Logarithmic Scale">false</param> 
          <param name="units" type="optiongroup" gui-text="Units" appearance="combo">
             <option value="px">px</option>
             <option value="mm">mm</option>
