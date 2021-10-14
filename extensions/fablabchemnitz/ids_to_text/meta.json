@@ -1,0 +1,20 @@
+[
+  {
+    "name": "Ids To Text",
+    "id": "fablabchemnitz.de.ids_to_text",
+    "path": "ids_to_text",
+    "original_name": "Ids To Text",
+    "original_id": "org.inkscape.render.ids_to_text",
+    "license": "GNU GPL v3",
+    "license_url": "https://github.com/whiplashoo/ids_to_text_inkscape/blob/master/LICENSE",
+    "comment": "",
+    "source_url": "https://gitea.fablabchemnitz.de/FabLab_Chemnitz/mightyscape-1.X/src/branch/master/extensions/fablabchemnitz/ids_to_text",
+    "fork_url": "https://github.com/whiplashoo/ids_to_text_inkscape",
+    "documentation_url": "https://stadtfabrikanten.org/display/IFM/Ids+To+Text",
+    "inkscape_gallery_url": null,
+    "main_authors": [
+      "github.com/whiplashoo",
+      "github.com/vmario89"
+    ]
+  }
+]
