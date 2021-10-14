@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
     <name>Inkcut - Cut selection</name>
-    <id>fablabchemnitz.de.inkcut_cut</id>
+    <id>fablabchemnitz.de.inkcut.inkcut_cut</id>
     <effect>
         <object-type>all</object-type>
         <effects-menu>
