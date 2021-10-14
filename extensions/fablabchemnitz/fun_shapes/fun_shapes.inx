@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
     <name>Fun Shapes</name>
-    <id>fablabchemnitz.de.funshapes</id>
+    <id>fablabchemnitz.de.fun_shapes</id>
     <effect implements-custom-gui="true">
         <object-type>path</object-type>
         <effects-menu>
@@ -11,6 +11,6 @@
          </effects-menu>
     </effect>
     <script>
-        <command location="inx" interpreter="python">funshapes.py</command>
+        <command location="inx" interpreter="python">fun_shapes.py</command>
     </script>
 </inkscape-extension>

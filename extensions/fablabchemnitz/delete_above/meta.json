@@ -5,7 +5,7 @@
     "path": "delete_above",
     "original_name": "Delete Above",
     "original_id": "com.galvanist.sw.plugins.deleteabove",
-    "license": "3-Clause BSD License",
+    "license": "BSD-3-Clause License",
     "license_url": "https://github.com/glvnst/cruft/blob/master/delete_above/LICENSE.txt",
     "comment": "",
     "source_url": "https://gitea.fablabchemnitz.de/FabLab_Chemnitz/mightyscape-1.X/src/branch/master/extensions/fablabchemnitz/delete_above",
