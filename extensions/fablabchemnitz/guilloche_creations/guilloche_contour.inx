@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
     <name>Guilloche Contour</name>
-    <id>fablabchemnitz.de.guilloche_contour</id>
+    <id>fablabchemnitz.de.guilloche_creations.guilloche_contour</id>
     <param name="contourFunction" type="optiongroup" appearance="combo" gui-text="Function">
         <option value="line">Line</option>
         <option value="sin">Sin</option>

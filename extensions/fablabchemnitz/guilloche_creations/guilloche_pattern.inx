@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
     <name>Guilloche Pattern</name>
-    <id>fablabchemnitz.de.guilloche_pattern</id>
+    <id>fablabchemnitz.de.guilloche_creations.guilloche_pattern</id>
     <param name="patternFunction" type="optiongroup" appearance="combo" gui-text="Function">
         <option value="line">Line</option>
         <option value="sin">Sin</option>
