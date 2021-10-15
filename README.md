@@ -17,7 +17,7 @@ At least this repo will help to bring alife some good things and will show hidde
 # Credits / Help to develop
 
    * This is not a repository to steal the work of others. The credits go to each developer, maintainer, commiter, issue reporter and so on. Please have a look at the meta.json in each directory to get information about licenses and authors.
-   * All plugins are open source licensed and are fully compatible to be legally inside this repository. This plugin is a fully non-commercial project too
+   * All plugins are open source licensed and are GNU GPL compatible. See https://www.gnu.org/licenses/license-list.html#GPLCompatibleLicenses for more details.
    * All plugins were taken from each git repo's master branch (if git/svn available). There might exist some development branches, fork branches or issue comments which might resolve some issues or enhance functionality of provided plugins. To check for recent github forks use https://techgaun.github.io
    * A lot of plugins were fixed by ourselves in countless hours
    * If you find bugs or have ideas please push them directly to the corresponding root repository of the developer or put it to https://github.com/vmario89/mightyscape-1.X/issues
