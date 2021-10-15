@@ -16,6 +16,7 @@
         <param name="thickness" type="float" precision="2" max="9999" gui-text="thickness" gui-description="thickness of the material">3.0</param>
         <param name="tabs" type="float" precision="2" max="9999" gui-text="tabs" gui-description="width of tabs holding the parts in place in mm (not supported everywhere)">0.0</param>
         <param name="debug" type="bool" gui-text="debug" gui-description="print surrounding boxes for some structures">false</param>
+        <param name="labels" type="bool" gui-text="labels" gui-description="label the parts (where available)">true</param>
         <param name="reference" type="float" precision="2" max="9999" gui-text="reference" gui-description="print reference rectangle with given length (zero to disable)">100</param>
         <param name="burn" type="float" precision="2" max="9999" gui-text="burn" gui-description='burn correction in mm (bigger values for tighter fit). Use BurnTest in "Parts and Samples" to find the right value.'>0.1</param>
     </page>
@@ -47,7 +48,7 @@
     <object-type>all</object-type>
     <effects-menu>
         <submenu name="Boxes.py">
-            <submenu name="Unstable"/>
+            <submenu name="Boxes with flex"/>
         </submenu>
     </effects-menu>
 </effect>

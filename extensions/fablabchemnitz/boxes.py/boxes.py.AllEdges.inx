@@ -11,6 +11,7 @@
         <param name="thickness" type="float" precision="2" max="9999" gui-text="thickness" gui-description="thickness of the material">3.0</param>
         <param name="tabs" type="float" precision="2" max="9999" gui-text="tabs" gui-description="width of tabs holding the parts in place in mm (not supported everywhere)">0.0</param>
         <param name="debug" type="bool" gui-text="debug" gui-description="print surrounding boxes for some structures">false</param>
+        <param name="labels" type="bool" gui-text="labels" gui-description="label the parts (where available)">true</param>
         <param name="reference" type="float" precision="2" max="9999" gui-text="reference" gui-description="print reference rectangle with given length (zero to disable)">100</param>
         <param name="burn" type="float" precision="2" max="9999" gui-text="burn" gui-description='burn correction in mm (bigger values for tighter fit). Use BurnTest in "Parts and Samples" to find the right value.'>0.1</param>
     </page>
@@ -47,8 +48,9 @@
     </page>
     <page name="tab_5" gui-text="Slide-on Lids">
         <param name="Lid_angle" type="float" precision="2" max="9999" gui-text="angle" gui-description="angle">90.0</param>
-        <param name="Lid_second_pin" type="bool" gui-text="second_pin" gui-description="second_pin">true</param>
-        <param name="Lid_spring" type="optiongroup" appearance="combo" gui-text="spring" gui-description="spring">
+        <param name="Lid_hole_width" type="int" max="9999" gui-text="hole_width" gui-description='width of the "finger hole" in mm'>0</param>
+        <param name="Lid_second_pin" type="bool" gui-text="second_pin" gui-description="additional pin for better positioning">true</param>
+        <param name="Lid_spring" type="optiongroup" appearance="combo" gui-text="spring" gui-description="position(s) of the extra locking springs in the lid">
             <option value="both">both</option>
             <option value="none">none</option>
             <option value="left">left</option>

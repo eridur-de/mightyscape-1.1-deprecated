@@ -9,11 +9,16 @@
         <param name="y" type="float" precision="2" max="9999" gui-text="y" gui-description="inner depth in mm (unless outside selected)">100.0</param>
         <param name="h" type="float" precision="2" max="9999" gui-text="h" gui-description="inner height in mm (unless outside selected)">100.0</param>
         <param name="outside" type="bool" gui-text="outside" gui-description="treat sizes as outside measurements that include the walls">true</param>
+        <param name="edgetype" type="optiongroup" appearance="combo" gui-text="edgetype" gui-description="edge type">
+            <option value="F">F</option>
+            <option value="h">h</option>
+    </param>
     </page>
     <page name="tab_1" gui-text="Default">
         <param name="thickness" type="float" precision="2" max="9999" gui-text="thickness" gui-description="thickness of the material">3.0</param>
         <param name="tabs" type="float" precision="2" max="9999" gui-text="tabs" gui-description="width of tabs holding the parts in place in mm (not supported everywhere)">0.0</param>
         <param name="debug" type="bool" gui-text="debug" gui-description="print surrounding boxes for some structures">false</param>
+        <param name="labels" type="bool" gui-text="labels" gui-description="label the parts (where available)">true</param>
         <param name="reference" type="float" precision="2" max="9999" gui-text="reference" gui-description="print reference rectangle with given length (zero to disable)">100</param>
         <param name="burn" type="float" precision="2" max="9999" gui-text="burn" gui-description='burn correction in mm (bigger values for tighter fit). Use BurnTest in "Parts and Samples" to find the right value.'>0.1</param>
     </page>

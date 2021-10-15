@@ -1,6 +1,6 @@
 # MightyScape for Inkscape 1.0+
 
-In short: A maintained extension collection for Inkscape 1.0+, working on Windows and Linux. There are **223 extension folders** with **388 .inx files** inside. We also take part at https://inkscape.org/gallery/=extension/ (with single extension uploads).
+In short: A maintained extension collection for Inkscape 1.0+, working on Windows and Linux. There are **220 extension folders** with **386 .inx files** inside. We also take part at https://inkscape.org/gallery/=extension/ (with single extension uploads).
 
 # About MightyScape
 
@@ -16,7 +16,7 @@ At least this repo will help to bring alife some good things and will show hidde
 
 # Credits / Help to develop
 
-   * This is not a repository to steal the work of others. The credits go to each developer, maintainer, commiter, issue reporter and so on.
+   * This is not a repository to steal the work of others. The credits go to each developer, maintainer, commiter, issue reporter and so on. Please have a look at the meta.json in each directory to get information about licenses and authors.
    * All plugins are open source licensed and are fully compatible to be legally inside this repository. This plugin is a fully non-commercial project too
    * All plugins were taken from each git repo's master branch (if git/svn available). There might exist some development branches, fork branches or issue comments which might resolve some issues or enhance functionality of provided plugins. To check for recent github forks use https://techgaun.github.io
    * A lot of plugins were fixed by ourselves in countless hours
@@ -26,21 +26,19 @@ At least this repo will help to bring alife some good things and will show hidde
 # Used software for development
 
    * Gitea and Github for hosting this
-   * GitEye and SourceTree git frontends for commiting
-   * LiClipse and NotePad++ for code
+   * LiClipse for code and git committing
    * regular Python installation (both Linux and Windows)
 
 # Requirements / Tested environment
 
    * tested with Inkscape
        * Windows portable Version (Inkscape 1.2-dev (25cba68, 2021-05-16)) @ Windows 10
-       * Linux dev trunk (https://inkscape.org/de/release/inkscape-master/gnulinux/ubuntu/ppa/dl/) @ Ubuntu 20 LTS
+       * Linux dev trunk (https://inkscape.org/de/release/inkscape-master/gnulinux/ubuntu/ppa/dl/) @ Fedora 33
    * tested using Python 3.8.5 64 Bit and 3.9.4 64 Bit
    * some extensions require custom Python installation/modules. See documentation at our FabLab Chemnitz Wiki (see below).
    * some extensions require additional commands, packages or other installers (see documentation too).
-   * the structure of this repo is intended the following way: all extensions which require exactly one *.py and one *.inx file are kept on the top level /mightyscape-1.X/extensions/fablabchemnitz. So just copy them to your Inkscape's extension directory. All extension which require additional libraries have their own sub directory. You will find redundancies in this repo like node.exe (NodeJS). We did it this way to give easy possibilty to only pick the extensions you want (instead creating ~200 repositories).
 
-# Remaining ToDos
+# Alltime ToDos
 
   * clean code
   * make more precise documentation with more examples
@@ -48,9 +46,7 @@ At least this repo will help to bring alife some good things and will show hidde
 
 # Installation, documentation and examples
 
-MightyScape does not work with any releases or feature branches. Just use "git clone" to get the recent commit from master branch.
-
-Please see at https://y.stadtfabrikanten.org/mightyscape-overview for installation tips like required python modules, file locations and other adjustments.
+The structure of this repo is intended the be easy. Just copy the complete MightyScape folder or the folders you want to your Inkscape's extension directory. You will find redundancies in this repo like node.exe (NodeJS). We did it this way to give easy possibilty to only pick the extensions you want (instead creating ~200 repositories). MightyScape does not work with any releases or feature branches. Just use "git clone" to get the recent commit from master branch. Please see at https://y.stadtfabrikanten.org/mightyscape-overview for installation tips like required python modules, file locations and other adjustments.
 
 # Donate
 
