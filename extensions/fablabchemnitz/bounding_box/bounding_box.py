@@ -9,6 +9,7 @@ class BoundingBox(inkex.EffectExtension):
     def add_arguments(self, pars):
         pars.add_argument('--offset', type=float, default=0.0, help='Offset from object (all directions)')
         pars.add_argument('--box', type=inkex.Boolean, default=0.0, help='Draw boxes')
+        pars.add_argument('--corner_radius', type=float, default=0.0, help='Corner radius')
         pars.add_argument('--circle', type=inkex.Boolean, default=0.0, help='Draw circles')
         pars.add_argument('--split', type = inkex.Boolean, default = True, help = 'Handle selection as group')
       
@@ -20,6 +21,8 @@ class BoundingBox(inkex.EffectExtension):
                 'y'     : str(bbox.top - self.options.offset),
                 'width' : str(bbox.width + 2 * self.options.offset),
                 'height': str(bbox.height + 2 * self.options.offset),
+                'ry'    : str(self.options.corner_radius),
+                'rx'    : str(self.options.corner_radius)
             }
             etree.SubElement(self.svg.get_current_layer(), inkex.addNS('rect','svg'), attribs)
 		    	

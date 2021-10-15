@@ -3,8 +3,9 @@
     <name>Bounding Box</name>
     <id>fablabchemnitz.de.bounding_box</id>
     <label>Draws bounding boxes around selected objects, useful for debugging. Author: Pawel Mosakowski. Modded by Mario Voigt.</label>
-    <param min="-10000.0" max="10000.0" name="offset" type="float" gui-text="Offset from object (all directions)">0.0</param>
+    <param name="offset" min="-10000.000" max="10000.000" precision="3" type="float" gui-text="Offset from object (all directions)">0.000</param>
     <param name="box" type="bool" gui-text="Draw boxes">true</param>
+    <param name="corner_radius" type="float" min="0.000" precision="3" max="10000.000" gui-text="Corner radius" gui-description="Only applies for box type">0.000</param>
     <param name="circle" type="bool" gui-text="Draw circles">false</param>
     <param name="split" type="bool" gui-text="Handle selection as group">true</param>
     <effect>
