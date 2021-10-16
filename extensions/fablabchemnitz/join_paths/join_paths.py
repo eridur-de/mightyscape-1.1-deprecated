@@ -263,14 +263,29 @@ class JoinPaths(inkex.EffectExtension):
                                     ellipse.set('sodipodi:cy', "{:0.6f}".format(midPoint[1]))
                                     ellipse.set('sodipodi:rx', "{:0.6f}".format(dimple_height))
                                     ellipse.set('sodipodi:ry', "{:0.6f}".format(dist2 / 2))
-                                    if self.options.draw_both_sides is False:
-                                        ellipse.set('sodipodi:open', 'true')
-                                        if self.options.dimple_invert is True:
-                                            ellipse.set('sodipodi:start', "{:0.6f}".format(math.radians(90.0)))
-                                            ellipse.set('sodipodi:end', "{:0.6f}".format(math.radians(270.0)))
-                                        else:
-                                            ellipse.set('sodipodi:start', "{:0.6f}".format(math.radians(270.0)))
-                                            ellipse.set('sodipodi:end', "{:0.6f}".format(math.radians(90.0)))
+                                    if self.options.dimple_invert is True:
+                                        ellipse.set('sodipodi:start', "{:0.6f}".format(math.radians(90.0)))
+                                        ellipse.set('sodipodi:end', "{:0.6f}".format(math.radians(270.0)))
+                                    else:
+                                        ellipse.set('sodipodi:start', "{:0.6f}".format(math.radians(270.0)))
+                                        ellipse.set('sodipodi:end', "{:0.6f}".format(math.radians(90.0)))
+                                    ellipse.style = dimple_style
+                       
+                                    if self.options.draw_both_sides is True:
+                                        ellipse = dimpleGroup.add(inkex.Ellipse(id=self.svg.get_unique_id('dimple')))
+                                        ellipse.set('transform', "rotate({:0.6f} {:0.6f} {:0.6f})".format(slope_angle, midPoint[0], midPoint[1]))
+                                        ellipse.set('sodipodi:arc-type', "arc")
+                                        ellipse.set('sodipodi:type', "arc")
+                                        ellipse.set('sodipodi:cx', "{:0.6f}".format(midPoint[0]))
+                                        ellipse.set('sodipodi:cy', "{:0.6f}".format(midPoint[1]))
+                                        ellipse.set('sodipodi:rx', "{:0.6f}".format(dimple_height))
+                                        ellipse.set('sodipodi:ry', "{:0.6f}".format(dist2 / 2))
+                                    if self.options.dimple_invert is True:
+                                        ellipse.set('sodipodi:start', "{:0.6f}".format(math.radians(270.0)))
+                                        ellipse.set('sodipodi:end', "{:0.6f}".format(math.radians(90.0)))
+                                    else:
+                                        ellipse.set('sodipodi:start', "{:0.6f}".format(math.radians(90.0)))
+                                        ellipse.set('sodipodi:end', "{:0.6f}".format(math.radians(270.0)))
                                     ellipse.style = dimple_style
                                       
                                 #cleanup groups
