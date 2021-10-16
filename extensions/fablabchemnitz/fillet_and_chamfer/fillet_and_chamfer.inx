@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <name>Fillet And Chamfer</name>
+    <name>Fillet And Chamfer (Replaced by LPE)</name>
     <id>fablabchemnitz.de.fillet_and_chamfer</id>
     <param name="fillet_type" type="optiongroup" appearance="combo" gui-text="Fillet or Chamfer:">
         <option value="fillet">Fillet</option>

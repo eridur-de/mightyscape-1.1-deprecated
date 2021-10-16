@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-   <name>Dimensioning</name>
+   <name>Dimensioning (Replaced by LPE)</name>
    <id>fablabchemnitz.de.dimensioning</id>
    <param name="tab" type="notebook">
       <page name="general" gui-text="General Settings">

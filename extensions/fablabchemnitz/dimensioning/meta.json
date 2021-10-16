@@ -1,6 +1,6 @@
 [
   {
-    "name": "Dimensioning",
+    "name": "Dimensioning (Replaced by LPE)",
     "id": "fablabchemnitz.de.dimensioning",
     "path": "dimensioning",
     "original_name": "Dimensioning",
@@ -10,7 +10,7 @@
     "comment": "",
     "source_url": "https://gitea.fablabchemnitz.de/FabLab_Chemnitz/mightyscape-1.X/src/branch/master/extensions/fablabchemnitz/dimensioning",
     "fork_url": "https://github.com/Rutzmoser/inkscape_dimensioning",
-    "documentation_url": "https://stadtfabrikanten.org/display/IFM/Dimensioning",
+    "documentation_url": "https://stadtfabrikanten.org/pages/viewpage.action?pageId=55018389",
     "inkscape_gallery_url": null,
     "main_authors": [
       "github.com/Rutzmoser",

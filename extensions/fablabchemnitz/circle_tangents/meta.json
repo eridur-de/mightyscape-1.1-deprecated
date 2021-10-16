@@ -1,6 +1,6 @@
 [
   {
-    "name": "Circle Tangents",
+    "name": "Circle Tangents (Replaced by Snap Objects Feature)",
     "id": "fablabchemnitz.de.circle_tangents",
     "path": "circle_tangents",
     "original_name": "Tangent",
@@ -10,7 +10,7 @@
     "comment": "ported to Inkscape v1 manually by Mario Voigt",
     "source_url": "https://gitea.fablabchemnitz.de/FabLab_Chemnitz/mightyscape-1.X/src/branch/master/extensions/fablabchemnitz/circle_tangents",
     "fork_url": "https://github.com/Rhysun/inkTan",
-    "documentation_url": "https://stadtfabrikanten.org/display/IFM/Circle+Tangents",
+    "documentation_url": "https://stadtfabrikanten.org/pages/viewpage.action?pageId=74645771",
     "inkscape_gallery_url": null,
     "main_authors": [
       "github.com/Rhysun",

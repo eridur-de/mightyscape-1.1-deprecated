@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <name>Round Corners</name>
+    <name>Round Corners (Replaced by LPE)</name>
     <id>fablabchemnitz.de.round_corners</id>
     <param name="radius" type="float" gui-text="Radius: [mm]" precision="2" min="0.001" max="999.99">2.0</param>
     <param name="method" type="optiongroup" appearance="radio" gui-text="Corner type:">
