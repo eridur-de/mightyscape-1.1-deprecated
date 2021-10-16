@@ -24,7 +24,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 import inkex
 from inkex.paths import CubicSuperPath
+import sys
 import copy
+import math
 
 def floatCmpWithMargin(float1, float2, margin):
     return abs(float1 - float2) < margin 
@@ -104,20 +106,44 @@ def getArrangedIds(pathMap, startPathId):
         nextPathId = closestId
     return orderPathIds
     
+def rotate(origin, point, angle):
+    """
+    Rotate a point counterclockwise by a given angle around a given origin.
+
+    The angle should be given in radians.
+    """
+    ox, oy = origin
+    px, py = point
+
+    qx = ox + math.cos(angle) * (px - ox) - math.sin(angle) * (py - oy)
+    qy = oy + math.sin(angle) * (px - ox) + math.cos(angle) * (py - oy)
+    return qx, qy
+
 class JoinPaths(inkex.EffectExtension):
 
     def add_arguments(self, pars):
         pars.add_argument("--optimized", type=inkex.Boolean, default=True)
+        pars.add_argument("--add_dimples", type=inkex.Boolean, default=False)
+        pars.add_argument("--draw_dimple_centers", type=inkex.Boolean, default=False)
+        pars.add_argument("--dimple_invert", type=inkex.Boolean, default=False)
+        pars.add_argument("--dimple_type", default="lines")
+        pars.add_argument("--dimples_to_group", type=inkex.Boolean, default=False)
+        pars.add_argument("--draw_both_sides", type=inkex.Boolean, default=False)
+        pars.add_argument("--dimple_height_mode", default="by_height")
+        pars.add_argument("--dimple_height", type=float, default=4)
+        pars.add_argument("--dimple_angle", type=float, default=45)
+        pars.add_argument("--dimple_height_units", default="mm")
         pars.add_argument("--tab", default="sampling", help="Tab") 
           
     def effect(self):
         selections = self.svg.selected        
         pathNodes = self.document.xpath('//svg:path',namespaces=inkex.NSS)
-
-        paths = {p.get('id'): getPartsFromCubicSuper(CubicSuperPath(p.get('d'))) for p in  pathNodes }
-   
+        paths = {p.get('id'): getPartsFromCubicSuper(CubicSuperPath(p.get('d'))) for p in  pathNodes }  
         #paths.keys() Order disturbed
         pathIds = [p.get('id') for p in pathNodes]
+        
+        if self.options.dimples_to_group is True:
+            dimpleUnifyGroup = self.svg.get_current_layer().add(inkex.Group(id=self.svg.get_unique_id("dimplesCollection")))
         
         if(len(paths) > 1):
             if(self.options.optimized):
@@ -140,16 +166,130 @@ class JoinPaths(inkex.EffectExtension):
                         if(vectCmpWithMargin(start, newParts[-1][-1][-1], margin = .01)):
                             newParts[-1] += parts[0]
                         else:
-                            newSeg = [newParts[-1][-1][-1], newParts[-1][-1][-1], start, start]
-                            newParts[-1].append(newSeg)                    
-                            newParts[-1] += parts[0]
-                        
+                            if self.options.add_dimples is True:
+                                if self.options.dimples_to_group is True:
+                                    dimpleGroup = dimpleUnifyGroup.add(inkex.Group(id="dimpleGroup-{}".format(elem.attrib["id"])))
+                                else:
+                                    dimpleGroup = elem.getparent().add(inkex.Group(id="dimpleGroup-{}".format(elem.attrib["id"])))
+
+                                p1 = newParts[-1][-1][-1]
+                                p2 = start
+                                midPoint = [(p1[0] + p2[0])/2, (p1[1] + p2[1])/2]
+                                newParts[-1].append([newParts[-1][-1][-1], newParts[-1][-1][-1], midPoint, midPoint])                
+                                newParts[-1].append([newParts[-1][-1][-1], newParts[-1][-1][-1], p2, p2])
+                                newParts[-1] += parts[0]
+                                
+                                #angle=self.options.dimple_angle
+                                #p3 = rotate(midPoint, p2, math.radians(angle))
+                                #p4 = rotate(midPoint, p2, math.radians(360-angle))
+
+                                #add a new dimple
+                                #line = self.svg.get_current_layer().add(inkex.PathElement(id=self.svg.get_unique_id('dimple')))
+                                #line.set('d', "m{:0.6f},{:0.6f} L{:0.6f},{:0.6f}".format(midPoint[0], midPoint[1], p3[0], p3[1]))
+                                #line.style = {'stroke': '#000000', 'fill': 'none', 'stroke-width': str(self.svg.unittouu('1px'))}
+                                
+                                #add a new dimple
+                                #line = self.svg.get_current_layer().add(inkex.PathElement(id=self.svg.get_unique_id('dimple')))
+                                #line.set('d', "m{:0.6f},{:0.6f} L{:0.6f},{:0.6f}".format(midPoint[0], midPoint[1], p4[0], p4[1]))
+                                #line.style = {'stroke': '#000000', 'fill': 'none', 'stroke-width': str(self.svg.unittouu('1px'))}  
+                                
+                                dx = midPoint[0]-p1[0]
+                                dy = midPoint[1]-p1[1]
+                                dist = math.sqrt(dx*dx + dy*dy)
+                                dx /= dist
+                                dy /= dist
+                            
+                                dx2 = p2[0]-p1[0]
+                                dy2 = p2[1]-p1[1] 
+                                dist2 = math.sqrt(dx2*dx2 + dy2*dy2)
+                                
+                                if dx2 == 0:
+                                    slope=sys.float_info.max #vertical
+                                else:
+                                    slope=(p2[1] - p1[1]) / dx2
+                                slope_angle = 90 + math.degrees(math.atan(slope))
+                                
+                                if self.options.dimple_height_mode == "by_height":
+                                    dimple_height = self.svg.unittouu(str(self.options.dimple_height) + self.options.dimple_height_units)
+                                else:
+                                    dimple_height = dist * math.sin(math.radians(self.options.dimple_angle))
+                                
+                                x3 = midPoint[0] + (dimple_height)*dy
+                                y3 = midPoint[1] - (dimple_height)*dx
+                                x4 = midPoint[0] - (dimple_height)*dy
+                                y4 = midPoint[1] + (dimple_height)*dx 
+                                
+                                dimple_style = {'stroke': '#0000FF', 'fill': 'none', 'stroke-width': str(self.svg.unittouu('1px'))}
+                                
+                                if self.options.draw_dimple_centers is True:
+                                    #add a new dimple center cross (4 segments)
+                                    line = dimpleGroup.add(inkex.PathElement(id=self.svg.get_unique_id('dimple_center_perp1')))
+                                    line.set('d', "M{:0.6f},{:0.6f} L{:0.6f},{:0.6f}".format(midPoint[0], midPoint[1], x3, y3))
+                                    line.style = dimple_style
+                                    line = dimpleGroup.add(inkex.PathElement(id=self.svg.get_unique_id('dimple_center_perp2')))
+                                    line.set('d', "M{:0.6f},{:0.6f} L{:0.6f},{:0.6f}".format(midPoint[0], midPoint[1], x4, y4))
+                                    line.style = dimple_style
+                                    line = dimpleGroup.add(inkex.PathElement(id=self.svg.get_unique_id('dimple_center_join1')))
+                                    line.set('d', "M{:0.6f},{:0.6f} L{:0.6f},{:0.6f}".format(p1[0], p1[1], midPoint[0], midPoint[1]))
+                                    line.style = dimple_style
+                                    line = dimpleGroup.add(inkex.PathElement(id=self.svg.get_unique_id('dimple_center_join1')))
+                                    line.set('d', "M{:0.6f},{:0.6f} L{:0.6f},{:0.6f}".format(midPoint[0], midPoint[1], p2[0], p2[1]))
+                                    line.style = dimple_style
+                                            
+                                if self.options.dimple_type == "lines":
+                                    if self.options.dimple_invert is True:
+                                        x5 = x3
+                                        y5 = y3
+                                        x3 = x4
+                                        y3 = y4
+                                        x4 = x5
+                                        y4 = y5
+                                    #add a new dimple center
+                                    line = dimpleGroup.add(inkex.PathElement(id=self.svg.get_unique_id('dimple')))
+                                    line.set('d', "M{:0.6f},{:0.6f} L{:0.6f},{:0.6f} L{:0.6f},{:0.6f}".format(p1[0], p1[1], x3, y3, p2[0], p2[1]))
+                                    line.style = dimple_style 
+                                 
+                                    if self.options.draw_both_sides is True:
+                                        #add a new opposite dimple center
+                                        line = dimpleGroup.add(inkex.PathElement(id=self.svg.get_unique_id('dimple')))
+                                        line.set('d', "M{:0.6f},{:0.6f} L{:0.6f},{:0.6f} L{:0.6f},{:0.6f}".format(p1[0], p1[1], x4, y4, p2[0], p2[1]))
+                                        line.style = dimple_style  
+                                else:   
+                                    ellipse = dimpleGroup.add(inkex.Ellipse(id=self.svg.get_unique_id('dimple')))
+                                    ellipse.set('transform', "rotate({:0.6f} {:0.6f} {:0.6f})".format(slope_angle, midPoint[0], midPoint[1]))
+                                    ellipse.set('sodipodi:arc-type', "arc")
+                                    ellipse.set('sodipodi:type', "arc")
+                                    ellipse.set('sodipodi:cx', "{:0.6f}".format(midPoint[0]))
+                                    ellipse.set('sodipodi:cy', "{:0.6f}".format(midPoint[1]))
+                                    ellipse.set('sodipodi:rx', "{:0.6f}".format(dimple_height))
+                                    ellipse.set('sodipodi:ry', "{:0.6f}".format(dist2 / 2))
+                                    if self.options.draw_both_sides is False:
+                                        ellipse.set('sodipodi:open', 'true')
+                                        if self.options.dimple_invert is True:
+                                            ellipse.set('sodipodi:start', "{:0.6f}".format(math.radians(90.0)))
+                                            ellipse.set('sodipodi:end', "{:0.6f}".format(math.radians(270.0)))
+                                        else:
+                                            ellipse.set('sodipodi:start', "{:0.6f}".format(math.radians(270.0)))
+                                            ellipse.set('sodipodi:end', "{:0.6f}".format(math.radians(90.0)))
+                                    ellipse.style = dimple_style
+                                      
+                                #cleanup groups
+                                if len(dimpleGroup) == 1: ##move up child if group has only one child
+                                    for child in dimpleGroup:
+                                        dimpleGroup.getparent().insert(elem.getparent().index(elem), child)
+                                    dimpleGroup.delete() #delete the empty group now
+                                         
+                            else:
+                                newParts[-1].append([newParts[-1][-1][-1], newParts[-1][-1][-1], start, start])
+                                newParts[-1] += parts[0]
+    
                         if(len(parts) > 1):
                             newParts += parts[1:]
                     
                     parent = elem.getparent()
                     idx = parent.index(elem)
-                    parent.remove(elem)
+                    if self.options.add_dimples is False:
+                        parent.remove(elem)
                 except:
                     pass #elem might come from group item - in this case we need to ignore it
 					
@@ -157,7 +297,8 @@ class JoinPaths(inkex.EffectExtension):
             oldId = firstElem.get('id')
             newElem.set('d', CubicSuperPath(getCubicSuperFromParts(newParts)))
             newElem.set('id', oldId + '_joined')
-            parent.insert(idx, newElem)
+            if self.options.add_dimples is False:
+                parent.insert(idx, newElem)
 
 if __name__ == '__main__':
     JoinPaths().run()

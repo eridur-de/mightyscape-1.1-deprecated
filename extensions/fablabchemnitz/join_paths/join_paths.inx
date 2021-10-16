@@ -1,10 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <name>Join Paths</name>
+    <name>Join Paths / Create Dimples</name>
     <id>fablabchemnitz.de.join_paths</id>
     <param name="tab" type="notebook">
         <page name="subdividePath" gui-text="Join Paths">
-            <param name="optimized" type="bool" gui-text="Optimized">true</param>
+            <param name="optimized" type="bool" gui-text="Optimized joining">true</param>
+            <label appearance="header">Create Dimples</label>
+            <label>Enable to insert dimples (pressfit noses) into the gaps (instead regular straight lines)</label>
+            <param name="add_dimples" type="bool" gui-text="Create dimples">false</param>
+            <param name="dimple_type" type="optiongroup" appearance="combo" gui-text="Dimple type">
+                <option value="lines">lines</option>
+                <option value="arcs">arcs</option>
+            </param>
+            <param name="draw_dimple_centers" type="bool" gui-text="Draw dimple centers">false</param>
+            <param name="dimple_invert" type="bool" gui-text="Invert dimples">false</param>
+            <param name="draw_both_sides" type="bool" gui-text="Draw both sides">false</param>
+            <param name="dimple_height_mode" type="optiongroup" appearance="combo" gui-text="Height by">
+                <option value="by_height">by height</option>
+                <option value="by_angle">by angle</option>
+            </param>
+            <param name="dimple_angle" type="float" min="0.000" max="360.000" precision="3" gui-text="Angle">45.000</param>
+            <param name="dimple_height" type="float" min="0.001" max="99999.000" precision="3" gui-text="Height">4.000</param>
+             <param name="dimple_height_units" gui-text="Height units" type="optiongroup" appearance="combo">
+                <option value="px">px</option>
+                <option value="pt">pt</option>
+                <option value="in">in</option>
+                <option value="cm">cm</option>
+                <option value="mm">mm</option>
+             </param>
+            <param name="dimples_to_group" type="bool" gui-text="Unify into single group">false</param>
         </page>
         <page name="desc" gui-text="Help">
             <label xml:space="preserve">This effect joins the Bezier curves, with straight line segments. If the end nodes are close enough, they are merged into a single one. With the optimized option selected, the new curve starts from the top most curve from the selection. The curves are then joined based on the distance of their closest end point to the previous curve.
