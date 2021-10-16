@@ -1,6 +1,6 @@
 [
   {
-    "name": "Set View Box",
+    "name": "Set View Box (Replaced by CTRL + SHIFT + R)",
     "id": "fablabchemnitz.de.set_view_box",
     "path": "set_view_box",
     "original_name": "Set viewBox",
@@ -10,7 +10,7 @@
     "comment": "ported to Inkscape v1 manually by Mario Voigt",
     "source_url": "https://gitea.fablabchemnitz.de/FabLab_Chemnitz/mightyscape-1.X/src/branch/master/extensions/fablabchemnitz/set_view_box",
     "fork_url": "http://www.pernsteiner.org/inkscape/viewbox",
-    "documentation_url": "https://stadtfabrikanten.org/display/IFM/Set+View+Box",
+    "documentation_url": "https://stadtfabrikanten.org/pages/viewpage.action?pageId=74645779",
     "inkscape_gallery_url": null,
     "main_authors": [
       "pernsteiger.org/Stuart Pernsteiner",

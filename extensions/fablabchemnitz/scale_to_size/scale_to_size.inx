@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-   <name>Scale To Size</name>
+   <name>Scale To Size (Replaced by default transform scale)</name>
    <id>fablabchemnitz.de.scale_to_size</id>
     <param name="unit" gui-text="Unit" type="optiongroup" appearance="combo">
         <option value="mm">mm</option>
@@ -21,7 +21,7 @@
       <object-type>all</object-type>
       <effects-menu>
          <submenu name="FabLab Chemnitz">
-            <submenu name="Modify existing Path(s)"/>
+            <submenu name="Legacy Tools"/>
          </submenu>
       </effects-menu>
    </effect>
