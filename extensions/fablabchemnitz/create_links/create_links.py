@@ -280,10 +280,11 @@ class LinksCreator(inkex.EffectExtension):
                             length = length - dash
                             idash = (idash + 1) % len(dashes)
                             dash = dashes[idash]
-                        if idash % 2:
-                            new.append([sub[i]])
-                        else:
-                            new[-1].append(sub[i])
+                        if sub[-1] != sub[i]: #avoid pointy paths
+                            if idash % 2:
+                                new.append([sub[i]])
+                            else:
+                                new[-1].append(sub[i])
                         i += 1
                 style.pop('stroke-dasharray')
                 element.pop('sodipodi:type')
