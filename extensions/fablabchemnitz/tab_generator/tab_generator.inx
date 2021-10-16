@@ -6,7 +6,7 @@
         <page name="settings" gui-text="Settings">
             <label appearance="header">Measures and tab generation</label>
             <param name="tabangle" type="float" min="0.01" max="90.0" precision="2" gui-text="Angle of tab edges (degrees):">45.00</param>
-            <param name="tabheight" type="float" min="0.01" max="9999.0" precision="2" gui-text="Height of tab:">0.40</param>
+            <param name="tabheight" type="float" min="0.01" max="9999.0" precision="3" gui-text="Height of tab:">0.400</param>
             <param name="dashlength" type="float" min="0.0" max="9999.0"  precision="3" gui-text="Length of dash line (zero for solid line):" gui-description="If value larger than zero the line will split up into real dash lines (no cosmetic one's)">0.1</param>
             <param name="tabsets" type="optiongroup" appearance="combo" gui-text="Tab placement on polygons with cutouts:">
                 <option value="outside">outside</option>
