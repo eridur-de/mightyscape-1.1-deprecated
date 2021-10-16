@@ -38,7 +38,7 @@ class Netting(inkex.EffectExtension):
     
     def effect(self):
         #static
-        style = {'stroke-width': str(self.options.stroke_width) +'px', 'stroke': '#000000', 'fill': 'none'}  
+        style = {'stroke-width': "{:0.6f}".format(self.svg.unittouu(str(self.options.stroke_width) + "px")), 'stroke': '#000000', 'fill': 'none'}  
         old_segments = []
         new_segments = []
         
