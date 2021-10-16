@@ -280,12 +280,15 @@ class LinksCreator(inkex.EffectExtension):
                             length = length - dash
                             idash = (idash + 1) % len(dashes)
                             dash = dashes[idash]
-                        if sub[-1] != sub[i]: #avoid pointy paths
+                        if sub[-1] != sub[i] and sub[i][0] != sub[i][1]: #avoid pointy paths
                             if idash % 2:
                                 new.append([sub[i]])
                             else:
                                 new[-1].append(sub[i])
                         i += 1
+                if new[-1][0] == new[-1][0]: #avoid pointy paths
+                    new.remove(new[-1])
+   
                 style.pop('stroke-dasharray')
                 element.pop('sodipodi:type')
                 csp = CubicSuperPath(new)
