@@ -4,18 +4,20 @@
     <id>fablabchemnitz.de.join_paths</id>
     <param name="tab" type="notebook">
         <page name="subdividePath" gui-text="Join Paths / Create Tabs And Dimples">
+            <label appearance="header">Join Paths</label>
             <param name="optimized" type="bool" gui-text="Optimized joining">true</param>
             <param name="margin" type="float" min="0.0001" max="99999.0000" precision="4" gui-text="Merge margin">0.0100</param>
             <label appearance="header">Create Tabs And Dimples</label>
             <label>Enable to insert dimples (pressfit noses) into the gaps (instead regular straight lines)</label>
             <param name="add_dimples" type="bool" gui-text="Create dimples">false</param>
+            <param name="dimples_to_group" type="bool" gui-text="Unify into single group">false</param>
             <param name="dimple_type" type="optiongroup" appearance="combo" gui-text="Dimple type">
                 <option value="peaks">peaks</option>
                 <option value="arcs">arcs</option>
                 <option value="tabs">tabs</option>
             </param>
             <param name="draw_dimple_centers" type="bool" gui-text="Draw dimple centers">false</param>
-            <param name="dimple_invert" type="bool" gui-text="Invert dimples">false</param>
+            <param name="dimple_invert" type="bool" gui-text="Invert dimple sides">false</param>
             <param name="draw_both_sides" type="bool" gui-text="Draw both sides">false</param>
             <param name="dimple_height_mode" type="optiongroup" appearance="combo" gui-text="Height by ...">
                 <option value="by_height">by height</option>
@@ -31,7 +33,17 @@
                 <option value="pt">pt</option>
                 <option value="px">px</option>
              </param>
-            <param name="dimples_to_group" type="bool" gui-text="Unify into single group">false</param>
+            <label appearance="header">Dimple gap filter</label>
+            <param name="dimple_gap_filter" type="bool" gui-text="Apply min/max filter">false</param>
+            <param name="dimple_min_gap" type="float" min="0.000" max="99999.000" precision="3" gui-text="Min">1</param>
+            <param name="dimple_max_gap" type="float" min="0.000" max="99999.000" precision="3" gui-text="Max">40</param>
+            <param name="dimple_gap_filter_units" gui-text="Filter units" type="optiongroup" appearance="combo">
+                <option value="mm">mm</option>
+                <option value="cm">cm</option>
+                <option value="in">in</option>
+                <option value="pt">pt</option>
+                <option value="px">px</option>
+             </param>
         </page>
         <page name="desc" gui-text="Help">
             <label xml:space="preserve">This effect joins the Bezier curves, with straight line segments. If the end nodes are close enough, they are merged into a single one. With the optimized option selected, the new curve starts from the top most curve from the selection. The curves are then joined based on the distance of their closest end point to the previous curve.

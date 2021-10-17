@@ -20,7 +20,6 @@
                     <param name="creationunit" type="optiongroup" appearance="combo" gui-text="Creation Units">
                         <option value="mm">mm</option>
                         <option value="cm">cm</option>
-                        <option value="m">m</option>
                         <option value="in">in</option>
                         <option value="pt">pt</option>
                         <option value="px">px</option>
@@ -44,7 +43,6 @@
 					<param name="length_filter_unit" type="optiongroup" appearance="combo" gui-text="Length filter unit">
 						<option value="mm">mm</option>
 						<option value="cm">cm</option>
-						<option value="m">m</option>
 						<option value="in">in</option>
 						<option value="pt">pt</option>
 						<option value="px">px</option>
