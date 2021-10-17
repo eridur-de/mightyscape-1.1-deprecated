@@ -39,7 +39,7 @@ class UnwindPaths(inkex.EffectExtension):
         
     def add_arguments(self, pars):
         pars.add_argument('--tab')
-        pars.add_argument('--keep_original', type=inkex.Boolean, default=False, help="If selected, the original paths get deleted")
+        pars.add_argument('--keep_original', type=inkex.Boolean, default=False, help="If not selected, the original paths get deleted")
         pars.add_argument('--break_apart', type=inkex.Boolean, default=False, help="Split each path into single curve segments")
         pars.add_argument('--break_only', type=inkex.Boolean, default=False, help="Only splits root paths into segments (no unwinding)")
         pars.add_argument('--colorize', type=inkex.Boolean, default=False, help="Colorize original paths and glue pairs")
