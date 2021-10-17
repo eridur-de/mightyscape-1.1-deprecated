@@ -13,6 +13,7 @@ class PathsToStrokes(inkex.EffectExtension):
         pars.add_argument("--flattenbezier", type=inkex.Boolean, default=False, help="Flatten bezier curves to polylines")
         pars.add_argument("--flatness", type=float, default=0.1, help="Minimum flatness = 0.1. The smaller the value the more fine segments you will get (quantization).")
         pars.add_argument("--decimals", type=int, default=3)
+        pars.add_argument("--keep_style", type=inkex.Boolean, default=False)
 
     def effect(self):
         
@@ -88,31 +89,30 @@ class PathsToStrokes(inkex.EffectExtension):
             element.delete()
         
             if len(path) == 2 and pathIsClosed is False:
-                line = inkex.Line(id=oldId)
-                line.set('x1', '{:0.{dec}f}'.format(path[0][1][0], dec=self.options.decimals))
-                line.set('y1', '{:0.{dec}f}'.format(path[0][1][1], dec=self.options.decimals))
-                line.set('x2', '{:0.{dec}f}'.format(path[1][1][0], dec=self.options.decimals))
-                line.set('y2', '{:0.{dec}f}'.format(path[1][1][1], dec=self.options.decimals))
-                line.style = oldStyle
-                parent.insert(idx, line) 
+                ll = inkex.Line(id=oldId)
+                ll.set('x1', '{:0.{dec}f}'.format(path[0][1][0], dec=self.options.decimals))
+                ll.set('y1', '{:0.{dec}f}'.format(path[0][1][1], dec=self.options.decimals))
+                ll.set('x2', '{:0.{dec}f}'.format(path[1][1][0], dec=self.options.decimals))
+                ll.set('y2', '{:0.{dec}f}'.format(path[1][1][1], dec=self.options.decimals))
          
             if len(path) > 2 and pathIsClosed is False:
-                polyline = inkex.Polyline(id=oldId)
+                ll = inkex.Polyline(id=oldId)
                 points = ""
                 for i in range(0, len(path)):
                     points += '{:0.{dec}f},{:0.{dec}f} '.format(path[i][1][0], path[i][1][1], dec=self.options.decimals)  
-                polyline.set('points', points)
-                polyline.style = oldStyle
-                parent.insert(idx, polyline)
+                ll.set('points', points)
             
             if len(path) > 2 and pathIsClosed is True:
-                polygon = inkex.Polygon(id=oldId)
+                ll = inkex.Polygon(id=oldId)
                 points = ""
                 for i in range(0, len(path) - 1):
                     points += '{:0.{dec}f},{:0.{dec}f} '.format(path[i][1][0], path[i][1][1], dec=self.options.decimals) 
-                polygon.set('points', points)
-                polygon.style = oldStyle
-                parent.insert(idx, polygon)
+                ll.set('points', points)
+            if self.options.keep_style is True:    
+                ll.style = oldStyle
+            else:
+                ll.style = "fill:none;stroke:#0000FF;stroke-width:" + str(self.svg.unittouu("1px"))
+            parent.insert(idx, ll)
     
 if __name__ == '__main__':
     PathsToStrokes().run()
