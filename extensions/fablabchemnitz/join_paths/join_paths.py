@@ -74,6 +74,9 @@ def getArrangedIds(pathMap, startPathId):
         minDist = 9e+100 #A large float
         closestId = None        
         np = pathMap[nextPathId]
+        if np[-1] == []:
+            inkex.utils.debug("Warning. Selection seems to contain invalid paths, e.g. pointy paths like M 54,54 Z. Please check and try again!")
+            exit(1)
         npPts = [np[-1][-1][-1]]
         if(len(orderPathIds) == 1):#compare both the ends for the first path
             npPts.append(np[0][0][0])
@@ -148,7 +151,7 @@ class JoinPaths(inkex.EffectExtension):
             self.msg('Please select some paths first.')
             return
         pathNodes = self.document.xpath('//svg:path',namespaces=inkex.NSS)
-        paths = {p.get('id'): getPartsFromCubicSuper(CubicSuperPath(p.get('d'))) for p in  pathNodes }  
+        paths = {p.get('id'): getPartsFromCubicSuper(CubicSuperPath(p.get('d'))) for p in pathNodes }  
         #paths.keys() Order disturbed
         pathIds = [p.get('id') for p in pathNodes]
         
