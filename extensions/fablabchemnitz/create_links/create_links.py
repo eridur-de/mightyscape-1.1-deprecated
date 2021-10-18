@@ -59,7 +59,7 @@ class LinksCreator(inkex.EffectExtension):
         pars.add_argument("--length_filter_unit", default="mm", help="Length filter unit")
         pars.add_argument("--keep_selected", type=inkex.Boolean, default=False, help="Keep selected elements")
         pars.add_argument("--no_convert", type=inkex.Boolean, default=False, help="Do not create segments (cosmetic gaps only)")
-        pars.add_argument("--breakapart", type=inkex.Boolean, default=False, help="Performs CTRL + SHIFT + K to break the new output path into it's parts")
+        pars.add_argument("--breakapart", type=inkex.Boolean, default=True, help="Performs CTRL + SHIFT + K to break the new output path into it's parts. Recommended to enable because default break apart of Inkscape might produce pointy paths.")
         pars.add_argument("--show_info", type=inkex.Boolean, default=False, help="Print some length and pattern information")
         pars.add_argument("--skip_errors", type=inkex.Boolean, default=False, help="Skip errors")
 
@@ -283,15 +283,12 @@ class LinksCreator(inkex.EffectExtension):
                             length = length - dash
                             idash = (idash + 1) % len(dashes)
                             dash = dashes[idash]
-                        if sub[-1] != sub[i] and sub[i][0] != sub[i][1]: #avoid pointy paths
-                            if idash % 2:
-                                new.append([sub[i]])
-                            else:
-                                new[-1].append(sub[i])
+                        if idash % 2:
+                            new.append([sub[i]])
+                        else:
+                            new[-1].append(sub[i])
                         i += 1
-                if new[-1][0] == new[-1][0]: #avoid pointy paths
-                    new.remove(new[-1])
-   
+
                 style.pop('stroke-dasharray')
                 element.pop('sodipodi:type')
                 csp = CubicSuperPath(new)

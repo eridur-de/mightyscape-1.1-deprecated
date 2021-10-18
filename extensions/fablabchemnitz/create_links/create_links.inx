@@ -50,7 +50,7 @@
 					</param>
 					<param name="keep_selected" type="bool" gui-text="Keep selected elements">false</param>
 					<param name="no_convert" type="bool" gui-text="Do not create output path(s) (cosmetic style only)">false</param>
-					<param name="breakapart" type="bool" gui-text="Break apart output path(s) into segments" gui-description="Performs CTRL + SHIFT + K to break the new output path into it's parts">false</param>
+					<param name="breakapart" type="bool" gui-text="Break apart output path(s) into segments" gui-description="Performs CTRL + SHIFT + K to break the new output path into it's parts. Recommended to enable because default break apart of Inkscape might produce pointy paths.">true</param>
 					<param name="show_info" type="bool" gui-text="Print length, pattern and filtering information/errors" gui-description="Warning: might freeze Inkscape forever if you have a lot of nodes because we create too much print output. Use for debugging only!">false</param>
 					<param name="skip_errors" type="bool" gui-text="Skip errors">false</param>
 				</vbox>
