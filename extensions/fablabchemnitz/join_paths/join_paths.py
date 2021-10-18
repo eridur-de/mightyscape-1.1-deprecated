@@ -126,6 +126,7 @@ class JoinPaths(inkex.EffectExtension):
         pars.add_argument("--margin", type=float, default=0.0100)
         pars.add_argument("--add_dimples", type=inkex.Boolean, default=False)
         pars.add_argument("--draw_dimple_centers", type=inkex.Boolean, default=False)
+        pars.add_argument("--draw_arcs_as_paths", type=inkex.Boolean, default=False)
         pars.add_argument("--dimple_invert", type=inkex.Boolean, default=False)
         pars.add_argument("--dimple_type", default="lines")
         pars.add_argument("--dimples_to_group", type=inkex.Boolean, default=False)
@@ -234,6 +235,11 @@ class JoinPaths(inkex.EffectExtension):
                                         line = dimpleGroup.add(inkex.PathElement(id=self.svg.get_unique_id('dimple_center_join1')))
                                         line.set('d', "M{:0.6f},{:0.6f} L{:0.6f},{:0.6f}".format(midPoint[0], midPoint[1], p2[0], p2[1]))
                                         line.style = dimple_style
+                                    
+                                    if self.options.dimple_type == "lines":
+                                        line = dimpleGroup.add(inkex.PathElement(id=self.svg.get_unique_id('dimple_line')))
+                                        line.set('d', "M{:0.6f},{:0.6f} L{:0.6f},{:0.6f}".format(p1[0], p1[1], p2[0], p2[1]))
+                                        line.style = dimple_style
                                                 
                                     if self.options.dimple_type == "peaks":
                                         if self.options.dimple_invert is True:
@@ -252,25 +258,10 @@ class JoinPaths(inkex.EffectExtension):
                                             #add a new opposite dimple center
                                             line = dimpleGroup.add(inkex.PathElement(id=self.svg.get_unique_id('dimple_peak')))
                                             line.set('d', "M{:0.6f},{:0.6f} L{:0.6f},{:0.6f} L{:0.6f},{:0.6f}".format(p1[0], p1[1], x4, y4, p2[0], p2[1]))
-                                            line.style = dimple_style  
+                                            line.style = dimple_style
+                                            
                                     elif self.options.dimple_type == "arcs":
-                                        ellipse = dimpleGroup.add(inkex.Ellipse(id=self.svg.get_unique_id('dimple_arc')))
-                                        ellipse.set('transform', "rotate({:0.6f} {:0.6f} {:0.6f})".format(slope_angle, midPoint[0], midPoint[1]))
-                                        ellipse.set('sodipodi:arc-type', "arc")
-                                        ellipse.set('sodipodi:type', "arc")
-                                        ellipse.set('sodipodi:cx', "{:0.6f}".format(midPoint[0]))
-                                        ellipse.set('sodipodi:cy', "{:0.6f}".format(midPoint[1]))
-                                        ellipse.set('sodipodi:rx', "{:0.6f}".format(dimple_height))
-                                        ellipse.set('sodipodi:ry', "{:0.6f}".format(dist2 / 2))
-                                        if self.options.dimple_invert is True:
-                                            ellipse.set('sodipodi:start', "{:0.6f}".format(math.radians(90.0)))
-                                            ellipse.set('sodipodi:end', "{:0.6f}".format(math.radians(270.0)))
-                                        else:
-                                            ellipse.set('sodipodi:start', "{:0.6f}".format(math.radians(270.0)))
-                                            ellipse.set('sodipodi:end', "{:0.6f}".format(math.radians(90.0)))
-                                        ellipse.style = dimple_style
-                           
-                                        if self.options.draw_both_sides is True:
+                                        if self.options.draw_arcs_as_paths is False:
                                             ellipse = dimpleGroup.add(inkex.Ellipse(id=self.svg.get_unique_id('dimple_arc')))
                                             ellipse.set('transform', "rotate({:0.6f} {:0.6f} {:0.6f})".format(slope_angle, midPoint[0], midPoint[1]))
                                             ellipse.set('sodipodi:arc-type', "arc")
@@ -279,13 +270,53 @@ class JoinPaths(inkex.EffectExtension):
                                             ellipse.set('sodipodi:cy', "{:0.6f}".format(midPoint[1]))
                                             ellipse.set('sodipodi:rx', "{:0.6f}".format(dimple_height))
                                             ellipse.set('sodipodi:ry', "{:0.6f}".format(dist2 / 2))
-                                        if self.options.dimple_invert is True:
-                                            ellipse.set('sodipodi:start', "{:0.6f}".format(math.radians(270.0)))
-                                            ellipse.set('sodipodi:end', "{:0.6f}".format(math.radians(90.0)))
-                                        else:
-                                            ellipse.set('sodipodi:start', "{:0.6f}".format(math.radians(90.0)))
-                                            ellipse.set('sodipodi:end', "{:0.6f}".format(math.radians(270.0)))
-                                        ellipse.style = dimple_style
+                                            if self.options.dimple_invert is True:
+                                                ellipse.set('sodipodi:start', "{:0.6f}".format(math.radians(90.0)))
+                                                ellipse.set('sodipodi:end', "{:0.6f}".format(math.radians(270.0)))
+                                            else:
+                                                ellipse.set('sodipodi:start', "{:0.6f}".format(math.radians(270.0)))
+                                                ellipse.set('sodipodi:end', "{:0.6f}".format(math.radians(90.0)))
+                                            ellipse.style = dimple_style
+                               
+                                            if self.options.draw_both_sides is True:
+                                                ellipse = dimpleGroup.add(inkex.Ellipse(id=self.svg.get_unique_id('dimple_arc')))
+                                                ellipse.set('transform', "rotate({:0.6f} {:0.6f} {:0.6f})".format(slope_angle, midPoint[0], midPoint[1]))
+                                                ellipse.set('sodipodi:arc-type', "arc")
+                                                ellipse.set('sodipodi:type', "arc")
+                                                ellipse.set('sodipodi:cx', "{:0.6f}".format(midPoint[0]))
+                                                ellipse.set('sodipodi:cy', "{:0.6f}".format(midPoint[1]))
+                                                ellipse.set('sodipodi:rx', "{:0.6f}".format(dimple_height))
+                                                ellipse.set('sodipodi:ry', "{:0.6f}".format(dist2 / 2))
+                                            if self.options.dimple_invert is True:
+                                                ellipse.set('sodipodi:start', "{:0.6f}".format(math.radians(270.0)))
+                                                ellipse.set('sodipodi:end', "{:0.6f}".format(math.radians(90.0)))
+                                            else:
+                                                ellipse.set('sodipodi:start', "{:0.6f}".format(math.radians(90.0)))
+                                                ellipse.set('sodipodi:end', "{:0.6f}".format(math.radians(270.0)))
+                                            ellipse.style = dimple_style
+                                        else: #if draw_arcs_as_paths is True
+                                            #                                    +--- x-end point
+                                            #                                    |  
+                                            #            counterclockwise ---+   |   +--- y-end point
+                                            #                                |   |   |
+                                            #<path d="M 85 350 A 150 180 0 0 0  280 79" stroke="red" fill="none"/>
+                                            #                     |   |  | |
+                                            #  1 Radius x-Axis ---+   |  | +--- 4 short / long way
+                                            #                         |  |
+                                            #      2 Radius y-Axis ---+  +--- 3 Rotation x 
+                                            if self.options.dimple_invert is True:
+                                                b1 = 1
+                                                b2 = 0
+                                            else:
+                                                b1 = 0
+                                                b2 = 1
+                                            ellipse = dimpleGroup.add(inkex.PathElement(id=self.svg.get_unique_id('dimple_arc')))
+                                            ellipse.set('d', "M {:0.6f} {:0.6f} A {:0.6f} {:0.6f} {:0.6f} 0 {} {:0.6f} {:0.6f}".format(p1[0], p1[1], dimple_height, dist2 / 2, slope_angle, b1, p2[0], p2[1]))
+                                            ellipse.style = dimple_style
+                                            if self.options.draw_both_sides is True:
+                                                ellipse = dimpleGroup.add(inkex.PathElement(id=self.svg.get_unique_id('dimple_arc')))
+                                                ellipse.set('d', "M {:0.6f} {:0.6f} A {:0.6f} {:0.6f} {:0.6f} 0 {} {:0.6f} {:0.6f}".format(p1[0], p1[1], dimple_height, dist2 / 2, slope_angle, b2, p2[0], p2[1]))
+                                                ellipse.style = dimple_style  
                                      
                                     elif self.options.dimple_type == "tabs":
                                         pbottom1 = [p1[0] + (dimple_height)*dy, p1[1] - (dimple_height)*dx]
