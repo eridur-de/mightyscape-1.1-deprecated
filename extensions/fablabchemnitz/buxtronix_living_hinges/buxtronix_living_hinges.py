@@ -136,8 +136,7 @@ class Generator(object):
 
         link = self.canvas.add(inkex.PathElement())
         link.update(**{"style": style, "inkscape:label": "lattice", "d": path_command})
-        link.description("%s hinge %s" % (self.name, self.parameter_text()))
-
+        link.insert(0, inkex.Desc("%s hinge %s" % (self.name, self.parameter_text())))
 
 class StraightLatticeGenerator(Generator):
     def __init__(self, *args, **kwargs):

@@ -295,7 +295,8 @@ class StylesToLayers(inkex.EffectExtension):
         #call does not apply for this so we need to do it as PREVIOUS step before!
         for i in range(0, len(layerNodeList)):
             if len(layerNodeList[i][0]) == 0:
-                layerNodeList[i][0].getparent().remove(layerNodeList[i][0])
+                if layerNodeList[i][0].getparent() is not None:
+                    layerNodeList[i][0].getparent().remove(layerNodeList[i][0])
         
         if self.options.cleanup == True:
             try:
