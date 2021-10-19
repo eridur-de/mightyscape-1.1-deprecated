@@ -126,6 +126,7 @@ class JoinPaths(inkex.EffectExtension):
 
     def add_arguments(self, pars):
         pars.add_argument("--optimized", type=inkex.Boolean, default=True)
+        pars.add_argument("--reverse", type=inkex.Boolean, default=False)
         pars.add_argument("--margin", type=float, default=0.0100)
         pars.add_argument("--add_dimples", type=inkex.Boolean, default=False)
         pars.add_argument("--draw_dimple_centers", type=inkex.Boolean, default=False)
@@ -146,23 +147,24 @@ class JoinPaths(inkex.EffectExtension):
         pars.add_argument("--tab", default="sampling", help="Tab") 
           
     def effect(self):
-        selections = self.svg.selected
-        if len(self.svg.selected) == 0:
-            self.msg('Please select some paths first.')
-            return
+
         pathNodes = self.document.xpath('//svg:path',namespaces=inkex.NSS)
-        paths = {p.get('id'): getPartsFromCubicSuper(CubicSuperPath(p.get('d'))) for p in pathNodes }  
+        if self.options.reverse is True: #helps debugging some strange Z orders (try out)
+            pathNodes = pathNodes[::-1]
+            #pathNodes[0].path = pathNodes[0].path.reverse()
+            #pathNodes[0].path = pathNodes[-1].path.reverse()
+
+        paths = {p.get('id'): getPartsFromCubicSuper(CubicSuperPath(p.get('d'))) for p in pathNodes }
         #paths.keys() Order disturbed
         pathIds = [p.get('id') for p in pathNodes]
-        
+
         if self.options.dimples_to_group is True:
             dimpleUnifyGroup = self.svg.get_current_layer().add(inkex.Group(id=self.svg.get_unique_id("dimplesCollection")))
         
         if(len(paths) > 1):
             if(self.options.optimized):
                 startPathId = pathIds[0]
-                pathIds = getArrangedIds(paths, startPathId)
-                
+                pathIds = getArrangedIds(paths, startPathId)                
             newParts = []
             firstElem = None
             for key in pathIds:
@@ -171,7 +173,7 @@ class JoinPaths(inkex.EffectExtension):
                 start = parts[0][0][0]
                 try:
                     elem = self.svg.selected[key]
-			
+            
                     if(len(newParts) == 0):
                         newParts += parts[:]
                         firstElem = elem
@@ -373,6 +375,9 @@ class JoinPaths(inkex.EffectExtension):
                 except:
                     pass #elem might come from group item - in this case we need to ignore it
 					
+            if firstElem is None:
+                self.msg('Please select some paths first. Check if you selected a group or an object instead.')
+                exit()  
             newElem = copy.copy(firstElem)
             oldId = firstElem.get('id')
             newElem.set('d', CubicSuperPath(getCubicSuperFromParts(newParts)))

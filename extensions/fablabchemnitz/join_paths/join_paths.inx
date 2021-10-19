@@ -8,6 +8,7 @@
                 <vbox>
                 <label appearance="header">Join Paths</label>
                 <param name="optimized" type="bool" gui-text="Optimized joining">true</param>
+                <param name="reverse" type="bool" gui-text="Reverse">true</param>
                 <param name="margin" type="float" min="0.0001" max="99999.0000" precision="4" gui-text="Merge margin">0.0100</param>
                 <label appearance="header">Tabs And Dimples</label>
                 <label>Enable to insert dimples (pressfit noses) into</label> 
