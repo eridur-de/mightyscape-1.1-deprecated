@@ -8,7 +8,7 @@ Features
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 19.08.2020
-Last patch: 11.04.2021
+Last patch: 17.10.2021
 License: GNU GPL v3
 """
 import inkex
@@ -115,7 +115,11 @@ class StylesToLayers(inkex.EffectExtension):
                     #the Styles to Layers extension still might brick the gradients (some tests failed)
                     if style and element.tag != inkex.addNS('stop','svg') and element.tag != inkex.addNS('tspan','svg'): 
                         
-                        if self.options.separateby == "stroke":
+                        if self.options.separateby == "element_tag":
+                            neutral_value = 1
+                            layer_name = "element_tag-" + element.tag.replace("{http://www.w3.org/2000/svg}", "")
+                                      
+                        elif self.options.separateby == "stroke":
                             stroke = re.search('(;|^)stroke:(.*?)(;|$)', style)
                             if stroke is not None:
                                 stroke = stroke[0]
@@ -287,12 +291,18 @@ class StylesToLayers(inkex.EffectExtension):
                 for newLayerNode in topLevelLayerNodeList:            
                     newLayerNode[0].append(newLayerNode[1]) #append newlayer to layer     
         
+        #clean all empty layers from node list. Please note that the following remove_empty_groups 
+        #call does not apply for this so we need to do it as PREVIOUS step before!
+        for i in range(0, len(layerNodeList)):
+            if len(layerNodeList[i][0]) == 0:
+                layerNodeList[i][0].getparent().remove(layerNodeList[i][0])
+        
         if self.options.cleanup == True:
             try:
                 import remove_empty_groups
                 remove_empty_groups.RemoveEmptyGroups.effect(self)
             except:
                 self.msg("Calling 'Remove Empty Groups' extension failed. Maybe the extension is not installed. You can download it from official InkScape Gallery. Skipping ...")
-            
+                
 if __name__ == '__main__':
     StylesToLayers().run()

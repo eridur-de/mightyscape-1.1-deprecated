@@ -111,9 +111,12 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
                 csp = CubicSuperPath(subPath)
                 if len(subPath) > 1 and csp[0][0] != csp[0][1]: #avoids pointy paths like M "31.4794 57.6024 Z"
                     replacedelement.path = subPath
-                    replacedelement.set('id', oldId + str(idSuffix))
+                    if len(subPaths) == 1:
+                        replacedelement.set('id', oldId)
+                    else:
+                        replacedelement.set('id', oldId + str(idSuffix))
+                        idSuffix += 1
                     parent.insert(idx, replacedelement)
-                    idSuffix += 1
                     breakelements.append(replacedelement)
             element.delete()
         for child in element.getchildren():

@@ -5,6 +5,7 @@
     <param name="tab" type="notebook">
         <page name="tab_settings" gui-text="Settings">
             <param name="separateby" gui-text="Separate by" type="optiongroup" appearance="combo">
+               <option value="element_tag">Element tag</option>
                <option value="stroke">Stroke color</option>
                <option value="stroke_width">Stroke width</option>
                <option value="stroke_hairline">Stroke hairline</option>

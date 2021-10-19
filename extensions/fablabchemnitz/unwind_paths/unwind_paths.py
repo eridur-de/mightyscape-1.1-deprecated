@@ -39,7 +39,7 @@ class UnwindPaths(inkex.EffectExtension):
         
     def add_arguments(self, pars):
         pars.add_argument('--tab')
-        pars.add_argument('--keep_original', type=inkex.Boolean, default=False, help="If selected, the original paths get deleted")
+        pars.add_argument('--keep_original', type=inkex.Boolean, default=False, help="If not selected, the original paths get deleted")
         pars.add_argument('--break_apart', type=inkex.Boolean, default=False, help="Split each path into single curve segments")
         pars.add_argument('--break_only', type=inkex.Boolean, default=False, help="Only splits root paths into segments (no unwinding)")
         pars.add_argument('--colorize', type=inkex.Boolean, default=False, help="Colorize original paths and glue pairs")
@@ -73,9 +73,12 @@ class UnwindPaths(inkex.EffectExtension):
                     csp = CubicSuperPath(subpath)
                     if len(subpath) > 1 and csp[0][0] != csp[0][1]: #avoids pointy paths like M "31.4794 57.6024 Z"
                         replacedelement.set('d', csp)
-                        replacedelement.set('id', oldId + str(idSuffix))
+                        if len(subPaths) == 1:
+                            replacedelement.set('id', oldId)
+                        else:
+                            replacedelement.set('id', oldId + str(idSuffix))
+                            idSuffix += 1
                         parent.insert(idx, replacedelement)
-                        idSuffix += 1
                         breakelements.append(replacedelement)
                 parent.remove(element)
             else:
@@ -228,7 +231,7 @@ class UnwindPaths(inkex.EffectExtension):
                                 self.drawline(d, "segmented-" + element.get('id'), newOriginalPathGroup, new_original_line_style)
     
                     if self.options.keep_original is False:
-                        element.delete() 
+                        element.delete()
 
         else:
             self.msg('Please select some paths first.')

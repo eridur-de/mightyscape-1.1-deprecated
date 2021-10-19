@@ -59,7 +59,7 @@ class LinksCreator(inkex.EffectExtension):
         pars.add_argument("--length_filter_unit", default="mm", help="Length filter unit")
         pars.add_argument("--keep_selected", type=inkex.Boolean, default=False, help="Keep selected elements")
         pars.add_argument("--no_convert", type=inkex.Boolean, default=False, help="Do not create segments (cosmetic gaps only)")
-        pars.add_argument("--breakapart", type=inkex.Boolean, default=False, help="Performs CTRL + SHIFT + K to break the new output path into it's parts")
+        pars.add_argument("--breakapart", type=inkex.Boolean, default=True, help="Performs CTRL + SHIFT + K to break the new output path into it's parts. Recommended to enable because default break apart of Inkscape might produce pointy paths.")
         pars.add_argument("--show_info", type=inkex.Boolean, default=False, help="Print some length and pattern information")
         pars.add_argument("--skip_errors", type=inkex.Boolean, default=False, help="Skip errors")
 
@@ -83,9 +83,12 @@ class LinksCreator(inkex.EffectExtension):
                 csp = CubicSuperPath(subpath)
                 if len(subpath) > 1 and csp[0][0] != csp[0][1]: #avoids pointy paths like M "31.4794 57.6024 Z"
                     replacedelement.set('d', csp)
-                    replacedelement.set('id', oldId + str(idSuffix))
+                    if len(subPaths) == 1:
+                        replacedelement.set('id', oldId)
+                    else:
+                        replacedelement.set('id', oldId + str(idSuffix))
+                        idSuffix += 1
                     parent.insert(idx, replacedelement)
-                    idSuffix += 1
                     breakelements.append(replacedelement)
             parent.remove(element)
         for child in element.getchildren():
@@ -280,15 +283,12 @@ class LinksCreator(inkex.EffectExtension):
                             length = length - dash
                             idash = (idash + 1) % len(dashes)
                             dash = dashes[idash]
-                        if sub[-1] != sub[i] and sub[i][0] != sub[i][1]: #avoid pointy paths
-                            if idash % 2:
-                                new.append([sub[i]])
-                            else:
-                                new[-1].append(sub[i])
+                        if idash % 2:
+                            new.append([sub[i]])
+                        else:
+                            new[-1].append(sub[i])
                         i += 1
-                if new[-1][0] == new[-1][0]: #avoid pointy paths
-                    new.remove(new[-1])
-   
+
                 style.pop('stroke-dasharray')
                 element.pop('sodipodi:type')
                 csp = CubicSuperPath(new)

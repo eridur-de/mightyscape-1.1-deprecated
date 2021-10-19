@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
     <name>Convert To Localized Braille</name>
-    <id>fablabchemnitz.de.braille-l18n</id>
+    <id>fablabchemnitz.de.braille_l18n</id>
     <param name="locale" gui-text="Alphabet:" type="optiongroup" appearance="combo">
         <option value="en">English (ASCII)</option>
         <option value="es">Spanish</option>
@@ -20,6 +20,6 @@
         </effects-menu>
     </effect>
     <script>
-        <command location="inx" interpreter="python">braille-l18n.py</command>
+        <command location="inx" interpreter="python">braille_l18n.py</command>
     </script>
 </inkscape-extension>
