@@ -20,6 +20,7 @@
                     <option value="peaks">peaks</option>
                     <option value="arcs">arcs</option>
                     <option value="tabs">tabs</option>
+                    <option value="sheetmetal">sheetmetal</option>
                 </param>
                 <param name="draw_dimple_centers" type="bool" gui-text="Draw dimple centers">false</param>
                 <param name="dimple_invert" type="bool" gui-text="Invert dimple sides">false</param>
@@ -28,14 +29,15 @@
                 </vbox>
                 <separator/>
                 <vbox>
-                <label appearance="header">Tab Dimensions</label>
-                <param name="dimple_height_mode" type="optiongroup" appearance="combo" gui-text="Height by ...">
+                <label appearance="header">Dimple/Tab Dimensions</label>
+                <param name="dimple_height_mode" type="optiongroup" appearance="combo" gui-text="Basic height by ...">
                     <option value="by_height">by height</option>
                     <option value="by_angle">by angle</option>
                 </param>
                 <param name="dimple_angle" type="float" min="0.000" max="360.000" precision="3" gui-text="... angle">45.000</param>
                 <param name="dimple_height" type="float" min="0.001" max="99999.000" precision="3" gui-text="... height">4.000</param>
-                <param name="dimple_tab_angle" type="float" min="0.000" max="360.000" precision="3" gui-text="Tab angle" gui-description="Only applies for dimple type 'tabs'">45.000</param>
+                <param name="dimple_tab_angle" type="float" min="0.000" max="360.000" precision="3" gui-text="Tab: angle" gui-description="Only applies for dimple type 'tabs'">45.000</param>
+                <param name="dimple_sheetmetal_depth" type="float" min="0.000" max="99999.000" precision="3" gui-text="Sheetmetal: depth" gui-description="Only applies for dimple type 'sheetmetal'">4.000</param>
                 <param name="dimple_height_units" gui-text="Height units" type="optiongroup" appearance="combo">
                     <option value="mm">mm</option>
                     <option value="cm">cm</option>

@@ -139,6 +139,7 @@ class JoinPaths(inkex.EffectExtension):
         pars.add_argument("--dimple_height", type=float, default=4)
         pars.add_argument("--dimple_angle", type=float, default=45)
         pars.add_argument("--dimple_tab_angle", type=float, default=45)
+        pars.add_argument("--dimple_sheetmetal_depth", type=float, default=4)
         pars.add_argument("--dimple_gap_filter", type=inkex.Boolean, default=False)
         pars.add_argument("--dimple_min_gap", type=float, default=1)
         pars.add_argument("--dimple_max_gap", type=float, default=40)
@@ -224,29 +225,36 @@ class JoinPaths(inkex.EffectExtension):
                                     x4 = midPoint[0] - (dimple_height)*dy
                                     y4 = midPoint[1] + (dimple_height)*dx
                                     
+                                    dimple_center_style = {'stroke': '#00FFFF', 'fill': 'none', 'stroke-width': str(self.svg.unittouu('1px'))}
                                     dimple_style = {'stroke': '#0000FF', 'fill': 'none', 'stroke-width': str(self.svg.unittouu('1px'))}
                                     
                                     if self.options.draw_dimple_centers is True:
                                         #add a new dimple center cross (4 segments)
                                         line = dimpleGroup.add(inkex.PathElement(id=self.svg.get_unique_id('dimple_center_perp1')))
                                         line.set('d', "M{:0.6f},{:0.6f} L{:0.6f},{:0.6f}".format(midPoint[0], midPoint[1], x3, y3))
-                                        line.style = dimple_style
+                                        line.style = dimple_center_style
                                         line = dimpleGroup.add(inkex.PathElement(id=self.svg.get_unique_id('dimple_center_perp2')))
                                         line.set('d', "M{:0.6f},{:0.6f} L{:0.6f},{:0.6f}".format(midPoint[0], midPoint[1], x4, y4))
-                                        line.style = dimple_style
+                                        line.style = dimple_center_style
                                         line = dimpleGroup.add(inkex.PathElement(id=self.svg.get_unique_id('dimple_center_join1')))
                                         line.set('d', "M{:0.6f},{:0.6f} L{:0.6f},{:0.6f}".format(p1[0], p1[1], midPoint[0], midPoint[1]))
-                                        line.style = dimple_style
+                                        line.style = dimple_center_style
                                         line = dimpleGroup.add(inkex.PathElement(id=self.svg.get_unique_id('dimple_center_join1')))
                                         line.set('d', "M{:0.6f},{:0.6f} L{:0.6f},{:0.6f}".format(midPoint[0], midPoint[1], p2[0], p2[1]))
-                                        line.style = dimple_style
+                                        line.style = dimple_center_style
                                     
+                                    ##########
+                                    ### LINES
+                                    ##########
                                     if self.options.dimple_type == "lines":
                                         line = dimpleGroup.add(inkex.PathElement(id=self.svg.get_unique_id('dimple_line')))
                                         line.set('d', "M{:0.6f},{:0.6f} L{:0.6f},{:0.6f}".format(p1[0], p1[1], p2[0], p2[1]))
                                         line.style = dimple_style
-                                                
-                                    if self.options.dimple_type == "peaks":
+                                              
+                                    ##########
+                                    ### PEAKS
+                                    ##########
+                                    elif self.options.dimple_type == "peaks":
                                         if self.options.dimple_invert is True:
                                             x5 = x3
                                             y5 = y3
@@ -264,7 +272,9 @@ class JoinPaths(inkex.EffectExtension):
                                             line = dimpleGroup.add(inkex.PathElement(id=self.svg.get_unique_id('dimple_peak')))
                                             line.set('d', "M{:0.6f},{:0.6f} L{:0.6f},{:0.6f} L{:0.6f},{:0.6f}".format(p1[0], p1[1], x4, y4, p2[0], p2[1]))
                                             line.style = dimple_style
-                                            
+                                    ##########
+                                    ### ARCS
+                                    ##########
                                     elif self.options.dimple_type == "arcs":
                                         if self.options.draw_arcs_as_paths is False:
                                             ellipse = dimpleGroup.add(inkex.Ellipse(id=self.svg.get_unique_id('dimple_arc')))
@@ -323,12 +333,10 @@ class JoinPaths(inkex.EffectExtension):
                                                 ellipse.set('d', "M {:0.6f} {:0.6f} A {:0.6f} {:0.6f} {:0.6f} 0 {} {:0.6f} {:0.6f}".format(p1[0], p1[1], dimple_height, dist2 / 2, slope_angle, b2, p2[0], p2[1]))
                                                 ellipse.style = dimple_style  
                                      
+                                    ##########
+                                    ### TABS
+                                    ##########
                                     elif self.options.dimple_type == "tabs":
-                                        pbottom1 = [p1[0] + (dimple_height)*dy, p1[1] - (dimple_height)*dx]
-                                        pbottom2 = [p2[0] + (dimple_height)*dy, p2[1] - (dimple_height)*dx]          
-                                        ptop1 = [p1[0] - (dimple_height)*dy, p1[1] + (dimple_height)*dx]
-                                        ptop2 = [p2[0] - (dimple_height)*dy, p2[1] + (dimple_height)*dx] 
-                                          
                                         l_hypo = dimple_height / (math.cos(math.radians(90.0 - self.options.dimple_tab_angle)))
                                         pbottom1 = rotate(p1, [p1[0] + l_hypo * dx, p1[1] + l_hypo * dy], math.radians(-self.options.dimple_tab_angle))
                                         pbottom2 = rotate(p2, [p2[0] - l_hypo * dx, p2[1] - l_hypo * dy], math.radians(-360.0 + self.options.dimple_tab_angle))        
@@ -354,7 +362,39 @@ class JoinPaths(inkex.EffectExtension):
                                             line.set('d', "M{:0.6f},{:0.6f} L{:0.6f},{:0.6f} L{:0.6f},{:0.6f} L{:0.6f},{:0.6f}".format(
                                                 p1[0], p1[1], ptop1[0], ptop1[1], ptop2[0], ptop2[1], p2[0], p2[1]))
                                             line.style = dimple_style
-                                                                    
+                             
+                                    ##########
+                                    ### sHEETMETAL
+                                    ##########
+                                    elif self.options.dimple_type == "sheetmetal":
+                                        
+                                        if self.options.dimple_invert is True:
+                                            self.options.dimple_tab_angle = 360.0 - self.options.dimple_tab_angle
+                                        
+                                        pbottom1 = rotate(p1, [p1[0] + dimple_height * dx, p1[1] + dimple_height * dy], math.radians(-self.options.dimple_tab_angle))
+                                        pbottom2 = rotate(p2, [p2[0] - dimple_height * dx, p2[1] - dimple_height * dy], math.radians(-360.0 + self.options.dimple_tab_angle))                                                
+
+                                        depth = self.svg.unittouu(str(self.options.dimple_sheetmetal_depth) + self.options.dimple_height_units)
+                                        poff1 = [p1[0] + (depth)*dx, p1[1] + (depth)*dy]
+                                        poff2 = [p2[0] - (depth)*dx, p2[1] - (depth)*dy]          
+                                        poff1_start = rotate(poff1, [poff1[0] + dimple_height * dx, poff1[1] + dimple_height * dy], math.radians(180.0 - self.options.dimple_tab_angle))
+                                        poff2_end = rotate(poff2, [poff2[0] + dimple_height * dx, poff2[1] + dimple_height * dy], math.radians(self.options.dimple_tab_angle))
+
+                                        line = dimpleGroup.add(inkex.PathElement(id=self.svg.get_unique_id('dimple_sheetmetal_start')))
+                                        line.set('d', "M{:0.6f},{:0.6f} L{:0.6f},{:0.6f}".format(
+                                            p1[0], p1[1], pbottom1[0], pbottom1[1]))
+                                        line.style = dimple_style
+
+                                        line = dimpleGroup.add(inkex.PathElement(id=self.svg.get_unique_id('dimple_sheetmetal_middle')))
+                                        line.set('d', "M{:0.6f},{:0.6f} L{:0.6f},{:0.6f} L{:0.6f},{:0.6f} L{:0.6f},{:0.6f}".format(
+                                            poff1_start[0], poff1_start[1], poff1[0], poff1[1], poff2[0], poff2[1], poff2_end[0], poff2_end[1]))
+                                        line.style = dimple_style
+
+                                        line = dimpleGroup.add(inkex.PathElement(id=self.svg.get_unique_id('dimple_sheetmetal_end')))
+                                        line.set('d', "M{:0.6f},{:0.6f} L{:0.6f},{:0.6f}".format(
+                                            p2[0], p2[1], pbottom2[0], pbottom2[1]))
+                                        line.style = dimple_style
+
                                     #cleanup groups
                                     if len(dimpleGroup) == 1: ##move up child if group has only one child
                                         for child in dimpleGroup:
