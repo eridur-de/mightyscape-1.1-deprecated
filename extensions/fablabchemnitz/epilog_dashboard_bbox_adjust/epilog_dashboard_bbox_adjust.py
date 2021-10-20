@@ -91,8 +91,7 @@ class EpilogDashboardBboxAdjust(inkex.EffectExtension):
         mat = Transform("translate(%f, %f)" % (-bbox.left,-bbox.top))
         for element in self.document.getroot().iter("*"):
             if isinstance (element, inkex.ShapeElement) and element.tag != inkex.addNS('g', 'svg'):
-                element.transform = Transform(mat) * element.transform
-                #element.transform = Transform(element.composed_transform().add_matrix(mat)) * element.transform
+                element.transform = Transform(mat) * element.composed_transform()
 
         if self.options.removal == "outside_canvas":
             for element in self.document.getroot().iter("*"):
