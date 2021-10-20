@@ -254,7 +254,8 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         elif self.options.trimming_path_types == 'closed_paths' and isClosed == 'False': return #skip this call
         elif self.options.trimming_path_types == 'both': pass
      
-        csp = subSplitLineArray[subSplitIndex].path.to_arrays()
+        csp = Path(subSplitLineArray[subSplitIndex].path.transform(subSplitLineArray[subSplitIndex].composed_transform())).to_arrays() #will be buggy if draw subsplit lines is deactivated
+
         ls = LineString([(csp[0][1][0], csp[0][1][1]), (csp[1][1][0], csp[1][1][1])])
         
         trimLineStyle = {'stroke': str(self.options.color_trimmed), 'fill': 'none', 'stroke-width': self.options.strokewidth}
@@ -263,10 +264,11 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         trimGroupParentId = subSplitLineArray[subSplitIndex].attrib['originalPathId']
         trimGroupId = '{}-{}-{}'.format(idPrefixTrimming, idPrefixSubSplit, trimGroupParentId)
         trimGroupParent = self.svg.getElementById(trimGroupParentId)
-        #trimGroupParentTransform = trimGroupParent.composed_transform()
         trimGroup = self.find_group(trimGroupId)
+
         if trimGroup is None:
             trimGroup = trimGroupParent.getparent().add(inkex.Group(id=trimGroupId))
+            trimGroup.transform = -subSplitLineArray[subSplitIndex].composed_transform()
           
         #apply isBezier and original path id information to group (required for bezier splitting the original path at the end)
         trimGroup.attrib['originalPathIsBezier'] = subSplitLineArray[subSplitIndex].attrib['originalPathIsBezier']
@@ -834,6 +836,15 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         #if so.draw_subsplit is disabled bu we filter sub split lines and follow with trim operation we lose a lot of elements which may not be deleted!
             so.draw_subsplit = True
 
+        if so.draw_subsplit is False and so.draw_trimmed is True:
+            so.delete_original_after_split_trim = True
+
+        if so.draw_trimmed is True:
+            so.draw_subsplit = True
+            
+        if so.bent_ott_use_debug is True:
+            so.show_debug = True
+
         #some constant stuff / styles
         relativePathStyle = {'stroke': str(so.color_relative), 'fill': 'none', 'stroke-width': so.strokewidth}
         absolutePathStyle = {'stroke': str(so.color_absolute), 'fill': 'none', 'stroke-width': so.strokewidth}
@@ -1200,43 +1211,31 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
         if so.draw_trimmed is True:     
             try:
                 allSubSplitLineStrings = []
-                allSubSplitLineStringsTransformed = []
                 for subSplitLine in subSplitLineArray:
-                    csp = subSplitLine.path.to_arrays()
-                    if subSplitLine.getparent() != None:
-                        cspTransformed = Path(subSplitLine.path.transform(subSplitLine.getparent().composed_transform())).to_arrays()
-                    else:
-                        cspTransformed = csp
-                    lineString = [(csp[0][1][0], csp[0][1][1]), (csp[1][1][0], csp[1][1][1])]
-                    lineStringTransformed = [(cspTransformed[0][1][0], cspTransformed[0][1][1]), (cspTransformed[1][1][0], cspTransformed[1][1][1])]
+                    csp = Path(subSplitLine.path.transform(subSplitLine.composed_transform())).to_arrays() #will be buggy if draw subsplit lines is deactivated
+                    lineString = [(csp[0][1][0], csp[0][1][1]), (csp[1][1][0], csp[1][1][1])]                    
+                    #lineStringStyle = {'stroke': '#0000FF', 'fill': 'none', 'stroke-width': str(self.svg.unittouu('1px'))}
+                    #line = self.svg.get_current_layer().add(inkex.PathElement(id=self.svg.get_unique_id('lineString')))
+                    #line.set('d', "M{:0.6f},{:0.6f} L{:0.6f},{:0.6f}".format(lineString[0][0],lineString[0][1],lineString[1][0],lineString[1][1]))
+                    #line.style = lineStringStyle
+                    #line.transform = -self.svg.get_current_layer().transform
+                    
                     if so.remove_trim_duplicates is True:
-                        if so.visualize_global_intersections is True: #ignore that calculation if false
-                            if lineStringTransformed not in allSubSplitLineStringsTransformed:
-                                allSubSplitLineStringsTransformed.append(lineStringTransformed)
-                            else:
-                                if so.show_debug is True:
-                                    self.msg("transformed line {} already in sub split line collection. Dropping ...".format(lineStringTransformed))
                         if lineString not in allSubSplitLineStrings:
                             allSubSplitLineStrings.append(lineString)
                         else:
                             if so.show_debug is True:
                                 self.msg("line {} already in sub split line collection. Dropping ...".format(lineString))
                     else: #if false we append all segments without filtering duplicate ones
-                        allSubSplitLineStrings.append(lineString)
-                        if so.visualize_global_intersections is True: #ignore that calculation if false
-                            allSubSplitLineStringsTransformed.append(allSubSplitLineStringsTransformed)
-                
+                        allSubSplitLineStrings.append(lineString)        
                 if so.show_debug is True:
                     self.msg("Going to calculate intersections using Bentley Ottmann Sweep Line Algorithm") 
-                globalIntersectionPoints = MultiPoint(isect_segments(allSubSplitLineStrings, validate=True))
-                if so.visualize_global_intersections is True: #ignore that calculation to save time
-                    globalIntersectionPointsTransformed = MultiPoint(isect_segments(allSubSplitLineStringsTransformed, validate=True))
-       
+                globalIntersectionPoints = MultiPoint(isect_segments(allSubSplitLineStrings, validate=True))       
                 if so.show_debug is True:
                     self.msg("global intersection points count: {}".format(len(globalIntersectionPoints)))   
                 if len(globalIntersectionPoints) > 0:
                     if so.visualize_global_intersections is True:
-                        self.visualize_global_intersections(globalIntersectionPointsTransformed)
+                        self.visualize_global_intersections(globalIntersectionPoints)
     
                     '''
                     now we trim the sub split lines at all calculated intersection points. 
