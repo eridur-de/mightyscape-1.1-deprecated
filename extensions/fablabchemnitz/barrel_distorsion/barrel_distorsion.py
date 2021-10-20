@@ -67,6 +67,9 @@ class BarrelDistorsion(inkex.EffectExtension):
             if node.tag == inkex.addNS('path', 'svg'):
                 path = Path(node.get('d')).to_arrays()
                 nodes += path
+        if len(nodes) == 0:
+           inkex.utils.debug("Selection is invalid. Please change selection to paths only.")
+           exit(1)
         nodes_filtered = [x for x in nodes if x[0] != 'Z']
         x_coordinates = [x[-1][-2] for x in nodes_filtered]
         y_coordinates = [y[-1][-1] for y in nodes_filtered]
