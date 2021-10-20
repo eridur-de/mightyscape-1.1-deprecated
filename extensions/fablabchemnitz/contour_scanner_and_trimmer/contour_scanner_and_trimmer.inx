@@ -75,7 +75,8 @@
                         <option value="open_paths">open:open paths</option>
                         <option value="closed_paths">closed:closed paths</option>
                     </param>
-                    <param name="draw_trimmed" type="bool" gui-text="Draw trimmed lines">false</param> 
+                    <param name="draw_trimmed" type="bool" gui-text="Draw trimmed lines">false</param>
+                    <separator/>
                     <param name="combine_nonintersects" type="bool" gui-text="Chain + combine non-intersected lines" gui-description="This will colorize all paths segments which were not intersected ('non-intersected lines'). If the whole path was not intersected at all, it will get another color ('non-intersected paths').">true</param> 
                     <param name="remove_trim_duplicates" type="bool" gui-text="Remove duplicate trim lines" gui-description="Has no effect if option 'Filter collinear overlapping lines' is enabled because duplicates get pre-filtered.">true</param>
                     <param name="reverse_trim_removal_order" type="bool" gui-text="Reverse trim line removal order" gui-description="Reverses the order of removal. Relevant for keeping certain styles of elements">false</param>
@@ -86,7 +87,7 @@
                     <label appearance="header">Sweep line settings</label>
                     <param name="bent_ott_use_ignore_segment_endings" type="bool" gui-text="Ignore segment endings" gui-description="Whether to ignore intersections of line segments when both their end points form the intersection point">true</param>
                     <param name="bent_ott_use_debug" type="bool" gui-text="Debug">false</param>
-                    <param name="bent_ott_use_verbose" type="bool" gui-text="Verbose">false</param>
+                    <param name="bent_ott_use_verbose" type="bool" gui-text="Verbose" gui-description="Will automatically enable 'Show debug infos'">false</param>
                     <param name="bent_ott_use_paranoid" type="bool" gui-text="Paranoid checks">false</param>
                     <param name="bent_ott_use_vertical" type="bool" gui-text="Support vertical segments">true</param>
                     <param name="bent_ott_number_type" type="optiongroup" appearance="combo" gui-text="Number type">
