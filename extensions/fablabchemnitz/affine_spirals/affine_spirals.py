@@ -15,19 +15,22 @@ def ff(v, ww=.25, ds=.4):
     r,u = exp(-ds*x), cos(pi*ww*y) + 1J*sin(pi*ww*y)
     return r*u
     
-def mk_plugs(pts):
+def mk_plugs(pts, noses):
 	#returns a list of complex representing a plug type segment
-    segs = [fit_plug(end_pts) for end_pts in zip(pts,pts[1:]) ]
+    segs = [fit_plug(end_pts, noses) for end_pts in zip(pts,pts[1:]) ]
     tmp  = []
     for seg in segs:
         tmp.extend(seg) 
     return tmp
 	
-def fit_plug(ss):
+def fit_plug(ss, noses):
     a,b = ss
     rot = complex(b-a)
     pts = [0,.45,.4 + .15*1J, .6 + .15*1J, .55, 1]
-    return [rot*z + a for z in pts]
+    if noses is True:
+        return [rot*z + a for z in pts]
+    else:
+        return ss
 
 def pts2curve(cplxs):
     '''makes a polyline path element from a list of complex
@@ -46,7 +49,8 @@ class AffineSpirals(inkex.EffectExtension):
         pars.add_argument("--num_lines", type=int, default=3)    
         pars.add_argument("--num_petals", type=int, default=3)   
         pars.add_argument("--shrink_ratio", type=float, default=3)
-        pars.add_argument("--active-tab", default='title')
+        pars.add_argument("--active-tab")
+        pars.add_argument("--noses", type=inkex.Boolean, default=True)
              
     def calc_unit_factor(self):
         unit_factor = self.svg.unittouu(str(1.0) + self.options.units)
@@ -82,9 +86,9 @@ class AffineSpirals(inkex.EffectExtension):
         payload = []
         for y in range(-NP,NP):    
             mpts = [ff(z,ww=1./NP, ds=SF) for z in line(npts=NN, y0=y)]
-            payload.append(mk_plugs(mpts))
+            payload.append(mk_plugs(mpts, self.options.noses))
             mpts = [ff(z,ww=1./NP, ds=SF) for z in line(npts=NN, y0=y,sgn=-1 )]
-            payload.append(mk_plugs(mpts))
+            payload.append(mk_plugs(mpts, self.options.noses))
         
         payload = [pts2curve(cc) for cc in payload]
         payload = ' '.join(payload)

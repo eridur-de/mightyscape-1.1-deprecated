@@ -7,6 +7,7 @@
          <param name="num_lines" type="int" min="1" max="100" gui-text="Depth">3</param>
          <param name="num_petals" type="int" min="2" max="100" gui-text="petals">2</param>
          <param name="shrink_ratio" type="float" min="0.01" max="0.99" precision="2" gui-text="shrink factor">0.8</param>
+         <param name="noses" type="bool" gui-text="Enabled noses">true</param>
       </page>
    </param>
    <effect>
