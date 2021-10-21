@@ -153,7 +153,7 @@ class LinksCreator(inkex.EffectExtension):
                     return False if self.options.skip_errors is True else exit(1)
                
                 if self.options.creationunit == "percent":
-                    stroke_dashoffset = self.options.link_offset / 100.0
+                    stroke_dashoffset = (self.options.link_offset / 100.0 * stotal) - length_link/2
                 else:         
                     stroke_dashoffset = self.svg.unittouu(str(self.options.link_offset) + self.options.creationunit)
                     
