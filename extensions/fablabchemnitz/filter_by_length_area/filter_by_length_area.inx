@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <name>Filter Small Things</name>
-    <id>fablabchemnitz.de.filter_small_things</id>
+    <name>Filter By Length/Area</name>
+    <id>fablabchemnitz.de.filter_by_length_area</id>
     <label>Paths with value smaller than the given threshold will be deleted</label>
     <param name="unit" gui-text="Unit" type="optiongroup" appearance="combo">
         <option value="mm">mm</option>
         <option value="cm">cm</option>
         <option value="m">m</option>
     </param>
-    <param name="threshold" type="float" min="0.0" max="10000000.0" gui-text="Threshold">1.0</param>
+    <label appearance="heder">Threshold</label>
+    <param name="min_filter_enable" type="bool" gui-text="Enable filtering min.">false</param>
+    <param name="min_threshold" type="float" min="0.000" precision="3" max="10000000.000" gui-text="Min.">1.000</param>
+    <param name="max_filter_enable" type="bool" gui-text="Enable filtering max.">false</param>
+    <param name="max_threshold" type="float" min="0.000"  precision="3"  max="10000000.000" gui-text="Max.">10000000.000</param>
+    <label appearance="heder">Equation</label>
     <param name="measure" type="optiongroup" appearance="combo" gui-text="Measure by">
         <option value="length">Length (Unit)</option>
         <option value="area">Area (Unit^2)</option>
@@ -22,6 +27,6 @@
         </effects-menu>
     </effect>
     <script>
-        <command location="inx" interpreter="python">filter_small_things.py</command>
+        <command location="inx" interpreter="python">filter_by_length_area.py</command>
     </script>
 </inkscape-extension>
