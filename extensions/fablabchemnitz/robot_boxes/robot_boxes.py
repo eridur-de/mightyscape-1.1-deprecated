@@ -305,9 +305,9 @@ class RobotBoxes(inkex.EffectExtension):
 
         # Embed drawing in group to make animation easier:
         # Translate group
-        t = 'translate(' + str( self.svg.namedview.center[0] ) + ',' + str( self.svg.namedview.center[1] ) + ')'
-        g_attribs = {inkex.addNS('label','inkscape'):'RobotBox', 'transform':t }
-        g = etree.SubElement(self.svg.get_current_layer(), 'g', g_attribs)
+        #transform = 'translate(' + str( self.svg.namedview.center[0] ) + ',' + str( self.svg.namedview.center[1] ) + ')'
+        g = etree.SubElement(self.svg.get_current_layer(), 'g', {inkex.addNS('label','inkscape'):'RobotBox'})
+        #g.transform = transform 
 
         # Create SVG Path for box bounds
         style = { 'stroke': '#000000', 'fill': 'none', 'stroke-width':'0.1' }
@@ -323,7 +323,7 @@ class RobotBoxes(inkex.EffectExtension):
 
         # Create SVG Paths for bend lines
         # draw bend lines with blue
-        style = { 'stroke': '#44aaff', 'fill': 'none', 'stroke-width':'0.1', 
+        style = { 'stroke': '#44aaff', 'fill': 'none', 'stroke-width': str(self.svg.unittouu("1px")), 
             #'stroke-dasharray': str(dashwidth) + ',' + str(dashstep),
             # positive dash offset moves dash backward
             #'stroke-dashoffset': str(dashwidth) 
