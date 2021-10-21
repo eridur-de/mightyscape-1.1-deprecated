@@ -307,10 +307,10 @@ class RobotBoxes(inkex.EffectExtension):
         # Translate group
         #transform = 'translate(' + str( self.svg.namedview.center[0] ) + ',' + str( self.svg.namedview.center[1] ) + ')'
         g = etree.SubElement(self.svg.get_current_layer(), 'g', {inkex.addNS('label','inkscape'):'RobotBox'})
-        #g.transform = transform 
+        g.transform = transform 
 
         # Create SVG Path for box bounds
-        style = { 'stroke': '#000000', 'fill': 'none', 'stroke-width':'0.1' }
+        style = { 'stroke': '#000000', 'fill': 'none', 'stroke-width':str(self.svg.unittouu("1px")) }
         etree.SubElement(g, inkex.addNS('path','svg'), {'style':str(inkex.Style(style)), 'd':dirtyFormat(bound_points)} )
 
         # Create SVG paths for crmap slots if set

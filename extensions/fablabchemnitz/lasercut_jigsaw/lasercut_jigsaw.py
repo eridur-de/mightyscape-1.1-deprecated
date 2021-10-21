@@ -408,7 +408,7 @@ class LasercutJigsaw(inkex.EffectExtension):
     def effect(self):
         
         # internal useful variables
-        self.stroke_width = 0.1 # default for visiblity
+        self.stroke_width =str(self.svg.unittouu("1px")) # default for visiblity
         self.borderLineStyle = {'stroke': self.options.color_border, 'fill': 'none', 'stroke-width': self.stroke_width,
                            'stroke-linecap': 'butt', 'stroke-linejoin': 'miter'}
         self.jigsawLineStyle = {'stroke': self.options.color_jigsaw, 'fill': 'none', 'stroke-width': self.stroke_width,
