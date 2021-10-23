@@ -3,6 +3,7 @@
     <name>Duplicate + Reverse + Join</name>
     <id>fablabchemnitz.de.duplicate_reverse_join</id>
     <effect>
+        <object-type>path</object-type>
         <effects-menu>
          <submenu name="FabLab Chemnitz">
             <submenu name="Modify existing Path(s)"/>

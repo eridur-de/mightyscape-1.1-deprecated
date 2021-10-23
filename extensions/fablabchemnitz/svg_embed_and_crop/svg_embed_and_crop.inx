@@ -5,7 +5,9 @@
      <effect>
           <object-type>all</object-type>
           <effects-menu>
-               <submenu name="Images"/>
+            <submenu name="FabLab Chemnitz">
+                <submenu name="Various"/>
+            </submenu>
           </effects-menu>
      </effect>
      <script>

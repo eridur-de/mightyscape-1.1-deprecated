@@ -8,12 +8,12 @@
         <option value="cm">cm</option>
         <option value="m">m</option>
     </param>
-    <label appearance="heder">Threshold</label>
+    <label appearance="header">Threshold</label>
     <param name="min_filter_enable" type="bool" gui-text="Enable filtering min.">false</param>
     <param name="min_threshold" type="float" min="0.000" precision="3" max="10000000.000" gui-text="Min.">1.000</param>
     <param name="max_filter_enable" type="bool" gui-text="Enable filtering max.">false</param>
-    <param name="max_threshold" type="float" min="0.000"  precision="3"  max="10000000.000" gui-text="Max.">10000000.000</param>
-    <label appearance="heder">Equation</label>
+    <param name="max_threshold" type="float" min="0.000" precision="3"  max="10000000.000" gui-text="Max.">10000000.000</param>
+    <label appearance="header">Equation</label>
     <param name="measure" type="optiongroup" appearance="combo" gui-text="Measure by">
         <option value="length">Length (Unit)</option>
         <option value="area">Area (Unit^2)</option>

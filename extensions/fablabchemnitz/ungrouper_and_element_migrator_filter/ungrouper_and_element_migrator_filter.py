@@ -62,6 +62,7 @@ class UngrouperAndElementMigratorFilter(inkex.EffectExtension):
         pars.add_argument("--script",         type=inkex.Boolean, default=True)
         pars.add_argument("--symbol",         type=inkex.Boolean, default=True)
         pars.add_argument("--stop",           type=inkex.Boolean, default=True)
+        pars.add_argument("--style",          type=inkex.Boolean, default=True)
         pars.add_argument("--switch",         type=inkex.Boolean, default=True)
         pars.add_argument("--use",            type=inkex.Boolean, default=True)
         pars.add_argument("--flowRoot",       type=inkex.Boolean, default=True)
@@ -98,6 +99,7 @@ class UngrouperAndElementMigratorFilter(inkex.EffectExtension):
         namespace.append("{http://www.w3.org/2000/svg}mask")                          if self.options.mask           else ""
         namespace.append("{http://www.w3.org/2000/svg}metadata")                      if self.options.metadata       else ""
         namespace.append("{http://www.w3.org/2000/svg}stop")                          if self.options.stop           else ""
+        namespace.append("{http://www.w3.org/2000/svg}style")                         if self.options.style          else ""
         namespace.append("{http://www.w3.org/2000/svg}switch")                        if self.options.switch         else ""
         namespace.append("{http://www.w3.org/2000/svg}use")                           if self.options.use            else ""
         namespace.append("{http://www.w3.org/2000/svg}flowRoot")                      if self.options.flowRoot       else ""

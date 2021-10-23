@@ -10,7 +10,6 @@ class LaserCheck(inkex.EffectExtension):
     
     '''
     check for old styles which should be upgraded
-    border around complete content
     '''
     
     #def add_arguments(self, pars):
