@@ -59,7 +59,7 @@ class EpilogDashboardBboxAdjust(inkex.EffectExtension):
         else:
             #for element in self.svg.root.getchildren():
             for element in self.document.getroot().iter("*"):
-                if isinstance (element, inkex.ShapeElement):
+                if isinstance (element, inkex.ShapeElement) and element.tag != inkex.addNS('use','svg') and element.get('inkscape:groupmode') != 'layer': #bbox fails for svg:use elements and layers:
                     bbox += element.bounding_box()
 
         if abs(bbox.width) == math.inf or abs(bbox.height) == math.inf:

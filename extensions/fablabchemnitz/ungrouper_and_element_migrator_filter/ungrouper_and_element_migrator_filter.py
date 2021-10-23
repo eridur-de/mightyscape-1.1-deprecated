@@ -41,6 +41,7 @@ class UngrouperAndElementMigratorFilter(inkex.EffectExtension):
         pars.add_argument("--circle",         type=inkex.Boolean, default=True)
         pars.add_argument("--clipPath",       type=inkex.Boolean, default=True)
         pars.add_argument("--defs",           type=inkex.Boolean, default=True)
+        pars.add_argument("--desc",           type=inkex.Boolean, default=True)
         pars.add_argument("--ellipse",        type=inkex.Boolean, default=True)
         pars.add_argument("--image",          type=inkex.Boolean, default=True)
         pars.add_argument("--guide",          type=inkex.Boolean, default=True)
@@ -77,6 +78,7 @@ class UngrouperAndElementMigratorFilter(inkex.EffectExtension):
         namespace.append("{http://www.w3.org/2000/svg}circle")                        if self.options.circle         else ""
         namespace.append("{http://www.w3.org/2000/svg}clipPath")                      if self.options.clipPath       else ""
         namespace.append("{http://www.w3.org/2000/svg}defs")                          if self.options.defs           else ""     
+        namespace.append("{http://www.w3.org/2000/svg}desc")                          if self.options.desc           else ""     
         namespace.append("{http://www.w3.org/2000/svg}ellipse")                       if self.options.ellipse        else ""
         namespace.append("{http://www.w3.org/2000/svg}image")                         if self.options.image          else ""
         namespace.append("{http://www.w3.org/2000/svg}line")                          if self.options.line           else ""

@@ -5,7 +5,7 @@
     "path": "optimize_sequence_lasercut_sequence",
     "original_name": "Fix cutting sequence",
     "original_id": "L0laapk3.filter.lasercut_sequence",
-    "license": "CC BY-NC-SA 4.0",
+    "license": "GNU AGPL v3",
     "license_url": "https://github.com/L0laapk3/inkscape-laser-sequence-extension/blob/master/LICENSE",
     "comment": "ported to Inkscape v1 by Mario Voigt",
     "source_url": "https://gitea.fablabchemnitz.de/FabLab_Chemnitz/mightyscape-1.X/src/branch/master/extensions/fablabchemnitz/optimize_sequence_lasercut_sequence",
