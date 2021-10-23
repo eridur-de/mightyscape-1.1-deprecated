@@ -34,7 +34,9 @@
     <effect>
         <object-type>all</object-type>
         <effects-menu>
-            <submenu name="Laser Tools" />
+            <submenu name="FabLab Chemnitz">
+                <submenu name="Finger-jointed/Tabbed Boxes"/>
+            </submenu>
         </effects-menu>
     </effect>
     <script>
