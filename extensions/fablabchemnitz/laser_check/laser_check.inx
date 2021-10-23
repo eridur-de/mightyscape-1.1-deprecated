@@ -2,8 +2,67 @@
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
     <name>Laser Check</name>
     <id>fablabchemnitz.de.laser_check</id>
-    <!--<param name="depth" type="int" gui-text="Max nested group depth">1</param>-->
-    <effect>
+    <param name="tab" type="notebook">
+        <page name="tab_settings" gui-text="Checks">
+            <param name="checks" type="optiongroup" appearance="combo" gui-text="Select checks">
+                <option value="check_all">Check all</option>
+                <option value="check_section">Check selection</option>
+            </param>
+            <separator/>
+            <hbox>
+                <vbox>
+                    <param name="bbox" type="bool" gui-text="Bounding box">false</param>
+                    <param name="bbox_offset" type="float" min="0.000" max="9999.000" precision="3" gui-text=" > Minimum required offset (mm)">5.000</param>
+                    <param name="groups_and_layers" type="bool" gui-text="Groups and layers">false</param>
+                    <param name="clones" type="bool" gui-text="Clones">false</param>
+                    <param name="clippaths" type="bool" gui-text="Clippings">false</param>
+                    <param name="images" type="bool" gui-text="Images">false</param>
+                    <param name="texts" type="bool" gui-text="Texts">false</param>
+                    <param name="lowlevelstrokes" type="bool" gui-text="Low level strokes">false</param>
+                    <param name="stroke_colors" type="bool" gui-text="Stroke colors">false</param>
+                </vbox>
+                <separator/>    
+                <vbox>
+                    <param name="stroke_widths" type="bool" gui-text="Stroke widths">false</param>
+                    <param name="stroke_opacities" type="bool" gui-text="Stroke opacities">false</param>
+                    <param name="cosmestic_dashes" type="bool" gui-text="Cosmetic dash styles">false</param>
+                    <param name="invisible_shapes" type="bool" gui-text="Invisible shapes">false</param>
+                    <param name="pointy_paths" type="bool" gui-text="Pointy paths">false</param>
+                    <param name="transformations" type="bool" gui-text="Transformations">false</param>
+                    <param name="short_paths" type="bool" gui-text="Short paths">false</param>
+                    <param name="short_paths_min" type="float" min="0.000" max="9999.000" precision="3" gui-text=" > Check below length (mm)">1.000</param>
+                    <param name="non_path_shapes" type="bool" gui-text="Non-path shapes">false</param>
+                </vbox>
+            </hbox>
+        </page>
+        <page name="tab_about" gui-text="About">
+            <label appearance="header">Laser Check</label>
+            <label>A utility to check for common issue potencials in vector graphics, especially regarding to laser cutting jobs.</label>
+            <label>2021 / written by Mario Voigt (Stadtfabrikanten e.V. / FabLab Chemnitz)</label>
+            <spacer/>
+            <label appearance="header">Online Documentation</label>
+            <label appearance="url">https://y.stadtfabrikanten.org/lasercheck</label>
+            <spacer/>
+            <label appearance="header">Contributing</label>
+            <label appearance="url">https://gitea.fablabchemnitz.de/FabLab_Chemnitz/mightyscape-1.X</label>
+            <label appearance="url">mailto:mario.voigt@stadtfabrikanten.org</label>
+            <spacer/>
+            <label appearance="header">MightyScape Extension Collection</label>
+            <label>This piece of software is part of the MightyScape for Inkscape Extension Collection and is licensed under GNU GPL v3</label>
+            <label appearance="url">https://y.stadtfabrikanten.org/mightyscape-overview</label>
+        </page>
+        <page name="tab_donate" gui-text="Donate">
+            <label appearance="header">Coffee + Pizza</label>
+            <label>We are the Stadtfabrikanten, running the FabLab Chemnitz since 2016. A FabLab is an open workshop that gives people access to machines and digital tools like 3D printers, laser cutters and CNC milling machines.</label>
+            <spacer/>           
+            <label>You like our work and want to support us? You can donate to our non-profit organization by different ways:</label>
+            <label appearance="url">https://y.stadtfabrikanten.org/donate</label>
+            <spacer/>
+            <label>Thanks for using our extension and helping us!</label>
+            <image>../000_about_fablabchemnitz.svg</image>
+        </page>
+    </param>
+    <effect needs-live-preview="false">
         <object-type>all</object-type>
         <effects-menu>
             <submenu name="FabLab Chemnitz">
