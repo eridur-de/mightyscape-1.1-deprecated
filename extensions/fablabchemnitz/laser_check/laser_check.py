@@ -194,25 +194,25 @@ class LaserCheck(inkex.EffectExtension):
             page_width = self.svg.unittouu(self.document.getroot().attrib['width'])
             width_height = self.svg.unittouu(self.document.getroot().attrib['height'])
             fmm = self.svg.unittouu(str(so.bbox_offset) + "mm")
-            if bbox.left > fmm:
+            if bbox.left >= fmm:
                 inkex.utils.debug("left border... ok")
             else:
-                inkex.utils.debug("left border... fail")
+                inkex.utils.debug("left border... fail: {:0.3f} mm".format(self.svg.uutounit(bbox.left, "mm")))
                  
-            if bbox.top > fmm:
+            if bbox.top >= fmm:
                 inkex.utils.debug("top border... ok")
             else:
-                inkex.utils.debug("top border... fail")
+                inkex.utils.debug("top border... fail: {:0.3f} mm".format(self.svg.uutounit(bbox.top, "mm")))
                 
             if bbox.right + fmm <= page_width:
                 inkex.utils.debug("right border... ok")
             else:
-                inkex.utils.debug("right border... fail")
+                inkex.utils.debug("right border... fail: {:0.3f} mm".format(self.svg.uutounit(bbox.right, "mm")))
                 
             if bbox.bottom + fmm <= width_height:
                 inkex.utils.debug("bottom border... ok")
             else:
-                inkex.utils.debug("bottom border... fail")
+                inkex.utils.debug("bottom border... fail: {:0.3f} mm".format(self.svg.uutounit(bbox.bottom, "mm")))
              
              
         if so.checks == "check_all" or so.stroke_widths is True:              
@@ -384,6 +384,7 @@ class LaserCheck(inkex.EffectExtension):
             for nonPathShape in nonPathShapes:
                 inkex.utils.debug("id={}".format(nonPathShape.get('id')))         
          
+        exit(0)
                              
 if __name__ == '__main__':
     LaserCheck().run()

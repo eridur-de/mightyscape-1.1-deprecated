@@ -190,7 +190,7 @@ class ApplyTransformations(inkex.EffectExtension):
         elif element.tag in [inkex.addNS('rect', 'svg'),
                           inkex.addNS('text', 'svg'),
                           inkex.addNS('image', 'svg')]:
-            node.attrib['transform'] = str(transf)
+            element.attrib['transform'] = str(transf)
             inkex.utils.errormsg(
                 "Shape %s (%s) not yet supported. Not all transforms will be applied. Try Object to path first"
                 % (element.TAG, element.get("id"))
