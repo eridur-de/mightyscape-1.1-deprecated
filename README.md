@@ -1,6 +1,6 @@
 # MightyScape for Inkscape 1.0+
 
-In short: A maintained extension collection for Inkscape 1.0+, working on Windows and Linux. There are **231 extension folders** with **402 .inx files** inside. We also take part at https://inkscape.org/gallery/=extension/ (with single extension uploads).
+In short: A maintained extension collection for Inkscape 1.0+, working on Windows and Linux. There are **233 extension folders** with **406 .inx files** inside. We also take part at https://inkscape.org/gallery/=extension/ (with single extension uploads).
 
 # About MightyScape
 
@@ -64,3 +64,9 @@ https://y.stadtfabrikanten.org/donate
 This repo has two remotes:
 * https://gitea.fablabchemnitz.de/FabLab_Chemnitz/mightyscape-1.X (root repo origin)
 * https://github.com/vmario89/mightyscape-1.X (repo for collaboration. You can create your issues here. Active since May 2021)
+
+# Zip Archives Mirrors
+
+If you only want to download single parts of MightyScape, use one of the following mirrors:
+* https://gitea.fablabchemnitz.de/FabLab_Chemnitz/mightyscape-1.X-zipmirror
+* https://github.com/vmario89/mightyscape-1.X-zipmirror
