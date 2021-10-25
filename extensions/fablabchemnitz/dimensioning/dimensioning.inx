@@ -27,7 +27,6 @@
             <option value="pt">pt</option>
             <option value="mm">mm</option>
             <option value="cm">cm</option>
-            <option value="m">m</option>
          </param>
          <param name="digit" type="int" min="-3" max="5" gui-text="Precision">0</param>
          <!--

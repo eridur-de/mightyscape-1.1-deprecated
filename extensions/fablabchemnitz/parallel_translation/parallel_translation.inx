@@ -31,12 +31,7 @@ Alignment groups shall contain an object to mark its 'rotation center'. The exte
                     <option value="in">in</option>
                     <option value="mm">mm</option>
                     <option value="cm">cm</option>
-                    <option value="m">m</option>
-                    <option value="km">km</option>
-                    <option value="Q">Q</option>
                     <option value="pc">pc</option>
-                    <option value="yd">yd</option>
-                    <option value="ft">ft</option>
                 </param>
             </hbox>
             <param name="reverse" type="bool" gui-text="Translate in opposite direction">false</param>
@@ -74,12 +69,7 @@ Alignment groups shall contain an object to mark its 'rotation center'. The exte
                     <option value="in">in</option>
                     <option value="mm">mm</option>
                     <option value="cm">cm</option>
-                    <option value="m">m</option>
-                    <option value="km">km</option>
-                    <option value="Q">Q</option>
                     <option value="pc">pc</option>
-                    <option value="yd">yd</option>
-                    <option value="ft">ft</option>
                 </param>
             </hbox>
             <param name="reverseG" type="bool" gui-text="Rotate group by an additional angle of 180 degrees" gui-description="This may be handy in case the start- and end-node of the controlling path segment are reversed.">false</param>

@@ -16,9 +16,7 @@
     </param>
     <param name="unit" type="optiongroup" appearance="combo" gui-text="Unit">
         <option value="cm">cm</option>
-        <option value="ft">ft</option>
         <option value="in">in</option>
-        <option value="m">m</option>
         <option value="mm">mm</option>
         <option value="pc">pc</option>
         <option value="pt">pt</option>

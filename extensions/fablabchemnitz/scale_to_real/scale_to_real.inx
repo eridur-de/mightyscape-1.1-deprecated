@@ -8,14 +8,11 @@
          <param name="length" type="float" min="0.1" max="100000.0" precision="3" gui-text="Length of scaling path:" gui-description="Real-world length of the scaling path">100.0</param>
          <param name="unit" type="optiongroup" appearance="combo" gui-text="Unit: " gui-description="Real-world unit for drawing">
             <option value="px">px</option>
+            <option value="pc">pc</option>
             <option value="pt">pt</option>
             <option value="in">in</option>
-            <option value="ft">ft</option>
-            <option value="yd">yd</option>
             <option value="mm">mm</option>
             <option value="cm">cm</option>
-            <option value="m">m</option>
-            <option value="km">km</option>
          </param>
          <label appearance="header">Scale Drawing</label>
          <param name="choosescale" gui-text="Scale Category"  gui-description="Select which kind of scaling you would like to use, then select the actual scale in the corresponding dropdown." type="optiongroup" appearance="combo">

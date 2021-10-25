@@ -12,13 +12,10 @@
         <param name="unit" type="optiongroup" appearance="combo" gui-text="Dimensional units of above parameters and the selected paths:">
             <option value="mm">mm</option>
             <option value="cm">cm</option>
-            <option value="m">m</option>
-            <option value="km">km</option>
             <option value="px">px</option>
             <option value="pt">pt</option>
+            <option value="pc">pc</option>
             <option value="in">in</option>
-            <option value="ft">ft</option>
-            <option value="yd">yd</option>
         </param>
             <label appearance="header">Styles</label>
             <param name="generate_decorative_wrapper" type="bool" gui-text="Generate decorative wrapper">false</param>

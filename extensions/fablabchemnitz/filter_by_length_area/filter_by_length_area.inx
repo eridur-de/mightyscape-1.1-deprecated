@@ -6,7 +6,10 @@
     <param name="unit" gui-text="Unit" type="optiongroup" appearance="combo">
         <option value="mm">mm</option>
         <option value="cm">cm</option>
-        <option value="m">m</option>
+        <option value="px">px</option>
+        <option value="pt">pt</option>
+        <option value="pc">pc</option>
+        <option value="in">in</option>
     </param>
     <label appearance="header">Threshold</label>
     <param name="min_filter_enable" type="bool" gui-text="Enable filtering min.">false</param>
