@@ -57,19 +57,24 @@ class LaserCheck(inkex.EffectExtension):
                     selected.append(element)
         else:
             for element in self.svg.selected.values():
-                parseChildren(element)     
+                parseChildren(element)
         namedView = self.document.getroot().find(inkex.addNS('namedview', 'sodipodi'))
         doc_units = namedView.get(inkex.addNS('document-units', 'inkscape'))            
         pagecolor = namedView.get('pagecolor')
         inkex.utils.debug("---------- Default checks")
         inkex.utils.debug("Document units: {}".format(doc_units))
+        '''
+        The SVG format is highly complex and offers a lot of possibilities. Most things of SVG we do not
+        need for a laser cutter. Usually we need svg:path and maybe svg:image; we can drop a lot of stuff
+        like svg:defs, svg:desc, gradients, etc.
+        '''
         nonShapes = []
         shapes = []
         for element in selected:       
             if not isinstance(element, inkex.ShapeElement):
                 nonShapes.append(element)
             else:
-                shapes.append(element)  
+                shapes.append(element)
         inkex.utils.debug("{} shape elements in total".format(len(shapes)))
         inkex.utils.debug("{} non-shape elements in total".format(len(nonShapes)))
         for nonShape in nonShapes:
@@ -98,7 +103,9 @@ class LaserCheck(inkex.EffectExtension):
                 if len(layer) == 0:
                     inkex.utils.debug("id={} is empty layer".format(layer.get('id')))
 
-
+        '''
+        Clones should be unlinked because they cause similar issues like transformations
+        '''
         if so.checks == "check_all" or so.clones is True:
             inkex.utils.debug("\n---------- Clones (svg:use) - maybe unlink") 
             uses = []
@@ -110,6 +117,10 @@ class LaserCheck(inkex.EffectExtension):
                 inkex.utils.debug("id={}".format(use.get('id')))
    
    
+        '''
+        Clip paths are neat to visualize things, but they do not perform a real path cutting.
+        Please perform real intersections to have an intact target geometry.
+        '''
         if so.checks == "check_all" or so.clippaths is True:
             inkex.utils.debug("\n---------- Clippings (svg:clipPath) - please replace with real cut paths") 
             clipPaths = []
@@ -121,6 +132,10 @@ class LaserCheck(inkex.EffectExtension):
                 inkex.utils.debug("id={}".format(clipPath.get('id')))
    
    
+        '''
+        Sometimes images look like vector but they are'nt. In case you dont want to perform engraving, either
+        check to drop or trace to vector paths
+        '''
         if so.checks == "check_all" or so.images is True:
             inkex.utils.debug("\n---------- Images (svg:image) - maybe trace to svg") 
             images = []
@@ -132,6 +147,9 @@ class LaserCheck(inkex.EffectExtension):
                 inkex.utils.debug("image id={}".format(image.get('id')))
     
     
+        '''
+        Low level strokes cannot be properly edited in Inkscape (no node handles). Converting helps
+        '''
         if so.checks == "check_all" or so.lowlevelstrokes is True:
             inkex.utils.debug("\n---------- Low level strokes (svg:line/polyline/polygon) - maybe convert to path") 
             lowlevels = []
@@ -143,6 +161,11 @@ class LaserCheck(inkex.EffectExtension):
                 inkex.utils.debug("id={}".format(lowlevel.get('id')))
     
     
+        '''
+        Texts cause problems when sharing with other people. You must ensure that everyone has the
+        font files installed you used. Convert to paths avoids this issue and guarantees same result
+        everywhere.
+        '''
         if so.checks == "check_all" or so.texts is True:
             inkex.utils.debug("\n---------- Texts (should be converted to paths)") 
             texts = []
@@ -154,6 +177,11 @@ class LaserCheck(inkex.EffectExtension):
                 inkex.utils.debug("id={}".format(text.get('id')))
              
 
+        
+        '''
+        The more stroke colors the more laser job configuration is required. Reduce the SVG file
+        to a minimum of stroke colors to be quicker
+        '''
         if so.checks == "check_all" or so.stroke_colors is True:
             inkex.utils.debug("\n---------- Stroke colors")
             strokeColors = []
@@ -170,6 +198,11 @@ class LaserCheck(inkex.EffectExtension):
                 inkex.utils.debug("stroke color {}".format(strokeColor))
       
       
+        '''
+        Nearly each laser job needs a bit of border to place the material inside the laser. Often
+        we have to fixate on vector grid, pin grid or task plate. Thus we need tapes or pins. So we 
+        leave some borders off the actual part geometries.
+        '''
         if so.checks == "check_all" or so.bbox is True:  
             inkex.utils.debug("\n---------- Borders around all elements - minimum offset {} mm from each side".format(so.bbox_offset))
             bbox = inkex.BoundingBox()
@@ -215,6 +248,10 @@ class LaserCheck(inkex.EffectExtension):
                 inkex.utils.debug("bottom border... fail: {:0.3f} mm".format(self.svg.uutounit(bbox.bottom, "mm")))
              
              
+        '''
+        Different stroke widths might behave the same like different stroke colors. Reduce to a minimum set.
+        Ideally all stroke widths are set to 1 pixel.
+        '''
         if so.checks == "check_all" or so.stroke_widths is True:              
             inkex.utils.debug("\n---------- Stroke widths")
             strokeWidths = []
@@ -231,6 +268,10 @@ class LaserCheck(inkex.EffectExtension):
                 inkex.utils.debug("stroke width {}".format(strokeWidth))
           
           
+        '''
+        Cosmetic dashes cause simulation issues and are no real cut paths. It's similar to the thing
+        with clip paths. Please convert lines to real dash segments if you want to laser them.
+        '''
         if so.checks == "check_all" or so.cosmestic_dashes is True:   
             inkex.utils.debug("\n---------- Cosmetic dashes - should be converted to paths")
             strokeDasharrays = []
@@ -247,6 +288,11 @@ class LaserCheck(inkex.EffectExtension):
                 inkex.utils.debug("stroke dash array {}".format(strokeDasharray))
      
   
+        '''
+        Shapes/paths with the same color like the background, 0% opacity, etc. lead to strange
+        laser cutting results, like duplicated edges, enlarged laser times and more. Please double
+        check for such occurences.
+        '''
         if so.checks == "check_all" or so.invisible_shapes is True:     
             inkex.utils.debug("\n---------- Invisible shapes")
             invisibles = []
@@ -311,6 +357,10 @@ class LaserCheck(inkex.EffectExtension):
                 inkex.utils.debug("id={}".format(invisible.get('id')))
           
                 
+        '''
+        Additionally, stroke opacities less than 1.0 cause problems in most laser softwares. Please
+        adjust all strokes to use full opacity.
+        '''
         if so.checks == "check_all" or so.stroke_opacities is True:
             inkex.utils.debug("\n---------- Objects with stroke transparencies < 1.0 - should be set to 1.0")
             transparencies = []
@@ -326,7 +376,10 @@ class LaserCheck(inkex.EffectExtension):
             for transparency in transparencies:
                 inkex.utils.debug("id={}".format(transparency.get('id')))  
       
-              
+        '''
+        We look for paths which are just points. Those are useless in case of lasercutting.
+        Note: this scan only works for paths, not for subpaths. If so, you need to break apart before
+        '''
         if so.checks == "check_all" or so.pointy_paths is True:          
             inkex.utils.debug("\n---------- Pointy paths - should be deleted")
             pointyPaths = []
@@ -344,6 +397,11 @@ class LaserCheck(inkex.EffectExtension):
                 inkex.utils.debug("id={}".format(pointyPath.get('id')))    
    
    
+        '''
+        Transformations often lead to wrong stroke widths or mis-rendering in end software. The best we
+        can do with a final SVG is to remove all relative translations, rotations and scalings. We should
+        apply absolute coordinates only.
+        '''
         if so.checks == "check_all" or so.transformations is True:
             inkex.utils.debug("\n---------- Transformations - should be applied to absolute")
             transformations = []
@@ -354,7 +412,10 @@ class LaserCheck(inkex.EffectExtension):
             for transformation in transformations:
                 inkex.utils.debug("transformation in id={}".format(transformation.get('id')))    
           
-          
+        '''
+        Really short paths can cause issues with laser cutter mechanics and should be avoided to 
+        have healthier stepper motor belts, etc.
+        '''
         if so.checks == "check_all" or so.short_paths is True:  
             inkex.utils.debug("\n---------- Short paths (< {} mm)".format(so.short_paths_min))
             shortPaths = []
@@ -374,6 +435,10 @@ class LaserCheck(inkex.EffectExtension):
                 inkex.utils.debug("id={}".format(shortPath.get('id')))    
           
                    
+        '''
+        Shapes like rectangles, ellipses, arcs, spirals should be converted to svg:path to have more
+        convenience in the file
+        '''
         if so.checks == "check_all" or so.non_path_shapes is True:          
             inkex.utils.debug("\n---------- Non-path shapes - should be converted to paths")
             nonPathShapes = []
