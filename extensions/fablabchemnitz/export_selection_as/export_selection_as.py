@@ -32,6 +32,7 @@ class ExportObject(inkex.EffectExtension):
         pars.add_argument("--tab")
         pars.add_argument("--wrap_transform", type=inkex.Boolean, default=False, help="Wrap final document in transform")
         pars.add_argument("--border_offset", type=float, default=1.000, help="Add border offset around selection")
+        pars.add_argument("--border_offset_unit", default="mm", help="Offset unit")
         pars.add_argument("--export_dir", default="~/inkscape_export/",    help="Location to save exported documents")
         pars.add_argument("--opendir", type=inkex.Boolean, default=False, help="Open containing output directory after export")
         pars.add_argument("--dxf_exporter_path", default="/usr/share/inkscape/extensions/dxf_outlines.py", help="Location of dxf_outlines.py")
@@ -42,6 +43,7 @@ class ExportObject(inkex.EffectExtension):
         pars.add_argument("--png_dpi", type=float, default=96, help="PNG DPI (applies for export and replace)")
         pars.add_argument("--replace_by_png", type=inkex.Boolean, default=False, help="Replace selection by png export")
         pars.add_argument("--newwindow", type=inkex.Boolean, default=False, help="Open file in new Inkscape window")      
+        pars.add_argument("--skip_errors", type=inkex.Boolean, default=False, help="Skip on errors")
 
     def openExplorer(self, dir):
         if os.name == 'nt':
@@ -61,6 +63,7 @@ class ExportObject(inkex.EffectExtension):
         warnings.simplefilter("default", ResourceWarning)
 
     def effect(self):
+        scale_factor = self.svg.unittouu("1px")
         
         svg_export = self.options.export_svg
         extra_param = "--batch-process"
@@ -90,7 +93,7 @@ class ExportObject(inkex.EffectExtension):
         export_dir = Path(self.absolute_href(self.options.export_dir))
         os.makedirs(export_dir, exist_ok=True)
 
-        offset = self.options.border_offset
+        offset = self.svg.unittouu(str(self.options.border_offset) + self.options.border_offset_unit)
 
         bbox = inkex.BoundingBox()
 
@@ -98,21 +101,35 @@ class ExportObject(inkex.EffectExtension):
         firstId = selected[0].get('id')
         parent = self.svg.getElementById(firstId).getparent()
 
-        for elem in selected.values():
+        for element in selected.values():
             transform = inkex.Transform()
-            parent = elem.getparent()
+            parent = element.getparent()
             if parent is not None and isinstance(parent, inkex.ShapeElement):
                 transform = parent.composed_transform()
             try:
-                bbox += elem.bounding_box(transform)
+                '''
+                ...rectangles cause some strangle scaling issue, offendingly caused by namedview units.
+                The rectangle attributes are set in px. They ignore the real units from namedview. 
+                Strange fact: ellipses, spirals and other primitives work flawlessly.
+                '''
+                if isinstance (element, inkex.Rectangle):
+                    bbox += element.bounding_box(transform) * scale_factor
+                elif isinstance (element, inkex.TextElement):
+                    if self.options.skip_errors is False:
+                        self.msg("Text elements are not supported!")
+                        return
+                    else:
+                        continue  
+                else:
+                    bbox += element.bounding_box(transform)
             except Exception:
                 logger.exception("Bounding box not computed")
                 logger.info("Skipping bounding box")
-                transform = elem.composed_transform()
+                transform = element.composed_transform()
                 x1, y1 = transform.apply_to_point([0, 0])
                 x2, y2 = transform.apply_to_point([1, 1])
                 bbox += inkex.BoundingBox((x1, x2), (y1, y2))
-
+             
         template = self.create_document()
         svg_filename = None
 
@@ -120,12 +137,12 @@ class ExportObject(inkex.EffectExtension):
         group.attrib['id'] = GROUP_ID
         group.attrib['transform'] = str(inkex.Transform(((1, 0, -bbox.left), (0, 1, -bbox.top))))
 
-        for elem in self.svg.selected.values():
-            if elem.tag == inkex.addNS('image', 'svg'):
+        for element in self.svg.selected.values():
+            if element.tag == inkex.addNS('image', 'svg'):
                 continue #skip images
-            elem_copy = deepcopy(elem)
-            elem_copy.attrib['transform'] = str(elem.composed_transform())
-            elem_copy.attrib['style'] = str(elem.composed_style())            
+            elem_copy = deepcopy(element)
+            elem_copy.attrib['transform'] = str(element.composed_transform())
+            elem_copy.attrib['style'] = str(element.composed_style())            
             group.append(elem_copy)
 
         template.attrib['viewBox'] = f'{-offset} {-offset} {bbox.width + offset * 2} {bbox.height + offset * 2}'
@@ -133,7 +150,7 @@ class ExportObject(inkex.EffectExtension):
         template.attrib['height'] = f'{bbox.height + offset * 2}' + self.svg.unit
 
         if svg_filename is None:
-            filename_base = elem.attrib.get('id', None).replace(os.sep, '_')
+            filename_base = element.attrib.get('id', None).replace(os.sep, '_')
             if filename_base:
                 svg_filename = filename_base + '.svg'
         if not filename_base: #should never be the case. Inkscape might crash if the id attribute is empty or not existent due to invalid SVG
@@ -241,8 +258,8 @@ class ExportObject(inkex.EffectExtension):
                 self.msg(cli_output)         
             #then remove the selection and replace it by png
             #self.msg(parent.get('id'))
-            for elem in selected.values():
-                elem.delete()
+            for element in selected.values():
+                element.delete()
             #read png file and get base64 string from it
             try:
                 img = Image.open(png_export)

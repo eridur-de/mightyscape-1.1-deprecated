@@ -10,7 +10,7 @@ So we add a default (small) amount of 1.0 doc units to expand the document's can
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 21.04.2021
-Last patch: 27.05.2021
+Last patch: 26.0510.2021
 License: GNU GPL v3
 
 #known bugs:
@@ -23,8 +23,10 @@ License: GNU GPL v3
 '''
 
 import math
+import sys
 import inkex
 from inkex import Transform
+sys.path.append("../apply_transformations")
 
 class EpilogDashboardBboxAdjust(inkex.EffectExtension):
 
@@ -39,32 +41,104 @@ class EpilogDashboardBboxAdjust(inkex.EffectExtension):
 
     def add_arguments(self, pars):
         pars.add_argument("--tab")
+        pars.add_argument("--apply_transformations", type=inkex.Boolean, default=False, help="Run 'Apply Transformations' extension before running vpype. Helps avoiding geometry shifting")
         pars.add_argument("--offset", type=float, default="1.0", help="XY Offset (mm) from top left corner")
         pars.add_argument("--removal", default="none", help="Remove all elements outside the bounding box or selection")
         pars.add_argument("--use_machine_size", type=inkex.Boolean, default=False, help="Use machine size")
         pars.add_argument("--machine_size", default="812x508", help="Machine/Size")
         pars.add_argument("--debug", type=inkex.Boolean, default=False, help="Debug output")
-
+        pars.add_argument("--skip_errors", type=inkex.Boolean, default=False, help="Skip on errors")
+        
     def effect(self):
+        
+        applyTransformationsAvailable = False # at first we apply external extension
+        try:
+            import apply_transformations
+            applyTransformationsAvailable = True
+        except Exception as e:
+            # self.msg(e)
+            self.msg("Calling 'Apply Transformations' extension failed. Maybe the extension is not installed. You can download it from official InkScape Gallery. Skipping ...")
+             
+        if self.options.apply_transformations is True and applyTransformationsAvailable is True:
+            apply_transformations.ApplyTransformations().recursiveFuseTransform(self.document.getroot()) 
+        
         offset = self.options.offset
-        #units = self.svg.unit
         units = "mm" #force millimeters
+        scale_factor = self.svg.unittouu("1px")
+        #namedView = self.document.getroot().find(inkex.addNS('namedview', 'sodipodi'))
+        #doc_units = namedView.get(inkex.addNS('document-units', 'inkscape'))
+        #doc_units = self.svg.unit
+        #https://wiki.inkscape.org/wiki/Units_In_Inkscape
+        #remove sodipodi units. Some actions add units to namedview, but we already have "inkscape:document-units".
+        #namedView.pop('units')
+        #del namedView.attrib["units"] #does the same like namedView.pop('units')
 
         # create a new bounding box and get the bbox size of all elements of the document (we cannot use the page's bbox)
         bbox = inkex.BoundingBox()
         if len(self.svg.selected) > 0:
-            bbox = self.svg.selection.bounding_box()
-            #for element in self.svg.selected.values():
-            #    bbox += element.bounding_box()
+            #bbox = self.svg.selection.bounding_box() #it could be so easy! But ...
+            for element in self.svg.selected.values():
+                '''
+                ...rectangles cause some strangle scaling issue, offendingly caused by namedview units.
+                The rectangle attributes are set in px. They ignore the real units from namedview. 
+                Strange fact: ellipses, spirals and other primitives work flawlessly.
+                '''
+                if isinstance (element, inkex.Rectangle):
+                    bbox += element.bounding_box() * scale_factor
+                elif isinstance (element, inkex.TextElement):
+                    if self.options.skip_errors is False:
+                        self.msg("Text elements are not supported!")
+                        return
+                    else:
+                        continue
+                else:
+                    bbox += element.bounding_box()
         else:
             #for element in self.svg.root.getchildren():
             for element in self.document.getroot().iter("*"):
                 if isinstance (element, inkex.ShapeElement) and element.tag != inkex.addNS('use','svg') and element.get('inkscape:groupmode') != 'layer': #bbox fails for svg:use elements and layers:
-                    bbox += element.bounding_box()
+                    if isinstance (element, inkex.Rectangle):
+                        bbox += element.bounding_box() * scale_factor
+                    elif isinstance (element, inkex.TextElement):
+                        if self.options.skip_errors is False:
+                            self.msg("Text elements are not supported!")
+                            return
+                        else:
+                            continue
+                    else:
+                        bbox += element.bounding_box()         
 
         if abs(bbox.width) == math.inf or abs(bbox.height) == math.inf:
-            inkex.utils.debug("Error calculating bounding box! Impossible to continue!")
+            inkex.utils.debug("Error while calculating overall bounding box! Check your element types. Things like svg:text or svg:use are not supported. Impossible to continue!")
             return
+
+        #if len(self.svg.selected) > 0:
+        #    selected = self.svg.selected
+        #else:
+        #    selected = self.svg.root.getchildren()
+        #for element in selected:
+        #    transform = inkex.Transform()
+        #    parent = element.getparent()
+        #    if parent is not None and isinstance(parent, inkex.ShapeElement):
+        #        transform = parent.composed_transform()
+        #    try:
+        #        '''
+        #        ...rectangles cause some strangle scaling issue, offendingly caused by namedview units.
+        #        The rectangle attributes are set in px. They ignore the real units from namedview. 
+        #        Strange fact: ellipses, spirals and other primitives work flawlessly.
+        #        '''
+        #        if isinstance (element, inkex.Rectangle) or isinstance (element, inkex.TextElement):
+        #            bbox += element.bounding_box(transform) * scale_factor
+        #        else:
+        #            bbox += element.bounding_box(transform)
+        #    except Exception:
+        #        logger.exception("Bounding box not computed")
+        #        logger.info("Skipping bounding box")
+        #        transform = element.composed_transform()
+        #        x1, y1 = transform.apply_to_point([0, 0])
+        #        x2, y2 = transform.apply_to_point([1, 1])
+        #        bbox += inkex.BoundingBox((x1, x2), (y1, y2))
+        
 
     # adjust the viewBox to the bbox size and add the desired offset
         if self.options.use_machine_size is True:
