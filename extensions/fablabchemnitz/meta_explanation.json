@@ -5,6 +5,7 @@
     "name": "The readable name of the extension in menu",
     "id": "The id which is used to store paramters in inkscape UI configuration",
     "path": "the folder where the extensions is in",
+    "dependent_extension": "extensions which should be installed to because they are used by THIS extension",
     "original_name": "the readble extension name which was assigned before putting it into MightyScape (origin)",
     "original_id": "the id which was assigned before putting it into MightyScape (origin)",
     "license": "the license, like GPL v2 or MIT",
