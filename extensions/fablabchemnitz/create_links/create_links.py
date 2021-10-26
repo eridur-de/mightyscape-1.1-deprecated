@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# coding=utf-8
 #
 # Copyright (C) 2005,2007 Aaron Spike, aaron@ekips.org
 # Copyright (C) 2009 Alvin Penner, penner@vaxxine.com
@@ -28,7 +27,7 @@ Extension for InkScape 1.X
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 09.04.2021
-Last patch: 14.04.2021
+Last patch: 26.10.2021
 License: GNU GPL v3
 """
 
@@ -288,11 +287,16 @@ class LinksCreator(inkex.EffectExtension):
                         else:
                             new[-1].append(sub[i])
                         i += 1
-
+                     
+                #filter pointy subpaths
+                final = []
+                for sub in new:
+                    if len(sub) > 1:
+                        final.append(sub)
+       
                 style.pop('stroke-dasharray')
                 element.pop('sodipodi:type')
-                csp = CubicSuperPath(new)
-                element.path = CubicSuperPath(new)
+                element.path = CubicSuperPath(final)
                 element.style = style
                 
                 # break apart the combined path to have multiple elements
