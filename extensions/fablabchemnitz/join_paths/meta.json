@@ -3,6 +3,7 @@
     "name": "Join Paths / Create Tabs And Dimples",
     "id": "fablabchemnitz.de.join_paths",
     "path": "join_paths",
+    "dependent_extensions": null,
     "original_name": "Join Paths Optimized",
     "original_id": "khema.optim.join.paths",
     "license": "GNU GPL v2",

@@ -3,6 +3,7 @@
     "name": "Archimedes Spiral",
     "id": "fablabchemnitz.de.archimedes_spiral",
     "path": "archimedes_spiral",
+    "dependent_extensions": null,
     "original_name": "speira",
     "original_id": "org.ekips.filter.s2",
     "license": "GNU GPL v2",

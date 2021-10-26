@@ -3,6 +3,7 @@
     "name": "Playing Cards",
     "id": "fablabchemnitz.de.playing_cards",
     "path": "playing_cards",
+    "dependent_extensions": null,
     "original_name": "Playing Cards",
     "original_id": "elam.playingcards",
     "license": "GNU GPL v3",

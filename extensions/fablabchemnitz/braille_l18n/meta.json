@@ -3,6 +3,7 @@
     "name": "Convert To Localized Braille",
     "id": "fablabchemnitz.de.braille_l18n",
     "path": "braille_l18n",
+    "dependent_extensions": null,
     "original_name": "Convert to localized Braille",
     "original_id": "org.inkscape.text.braille-l18n",
     "license": "BSD-3-Clause License",

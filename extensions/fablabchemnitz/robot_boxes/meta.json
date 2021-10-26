@@ -3,6 +3,7 @@
     "name": "Robot Boxes",
     "id": "fablabchemnitz.de.robot_boxes",
     "path": "robot_boxes",
+    "dependent_extensions": null,
     "original_name": "Robot Boxes",
     "original_id": "robotbox",
     "license": "Apache-2.0 License",

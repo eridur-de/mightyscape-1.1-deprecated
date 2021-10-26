@@ -3,6 +3,7 @@
     "name": "Flip",
     "id": "fablabchemnitz.de.flip",
     "path": "flip",
+    "dependent_extensions": null,
     "original_name": "Flip",
     "original_id": "aconz2.Flip",
     "license": "Unlicense License",

@@ -3,6 +3,7 @@
     "name": "Optimize Sequence: Small Holes First",
     "id": "fablabchemnitz.de.optimize_sequence_lasercut_sequence",
     "path": "optimize_sequence_lasercut_sequence",
+    "dependent_extensions": null,
     "original_name": "Fix cutting sequence",
     "original_id": "L0laapk3.filter.lasercut_sequence",
     "license": "GNU AGPL v3",

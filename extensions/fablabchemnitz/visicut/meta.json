@@ -3,6 +3,7 @@
     "name": "<various>",
     "id": "fablabchemnitz.de.open_in_visicut_<various>",
     "path": "visicut",
+    "dependent_extensions": null,
     "original_name": "<various>",
     "original_id": "visicut.<various>",
     "license": "GNU LGPL v3",

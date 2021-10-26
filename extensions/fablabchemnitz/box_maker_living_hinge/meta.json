@@ -3,6 +3,7 @@
     "name": "Box Maker - Living Hinge",
     "id": "fablabchemnitz.de.box_maker_living_hinge",
     "path": "box_maker_living_hinge",
+    "dependent_extensions": null,
     "original_name": "",
     "original_id": "eu.twot.render.livinghinge",
     "license": "GNU GPL v3",

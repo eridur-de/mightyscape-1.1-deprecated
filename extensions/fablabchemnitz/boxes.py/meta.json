@@ -3,6 +3,7 @@
     "name": "<various>",
     "id": "info.festi.boxes.py.<various>",
     "path": "boxes.py",
+    "dependent_extensions": null,
     "original_name": "<various>",
     "original_id": "info.festi.boxes.py.<various>",
     "license": "GNU GPL v3",

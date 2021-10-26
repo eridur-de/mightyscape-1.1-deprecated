@@ -3,6 +3,7 @@
     "name": "Starshine",
     "id": "fablabchemnitz.de.starshine",
     "path": "starshine",
+    "dependent_extensions": null,
     "original_name": "Starshine",
     "original_id": "hipix.Starshine",
     "license": "GNU AGPL v3",

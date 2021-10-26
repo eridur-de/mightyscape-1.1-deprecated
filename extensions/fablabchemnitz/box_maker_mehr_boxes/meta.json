@@ -3,6 +3,7 @@
     "name": "Box Maker - Mehr Boxes",
     "id": "fablabchemnitz.de.box_maker_mehr_boxes",
     "path": "box_maker_mehr_boxes",
+    "dependent_extensions": null,
     "original_name": "Mehr Box Maker",
     "original_id": "de.mehr.laser.mehr_box_maker",
     "license": "GNU GPL v3",

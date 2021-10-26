@@ -3,6 +3,7 @@
     "name": "Inset Alignment",
     "id": "fablabchemnitz.de.inset_alignment",
     "path": "inset_alignment",
+    "dependent_extensions": null,
     "original_name": "Inset Alignment",
     "original_id": "phillips.effect.insetalignment",
     "license": "GNU GPL v2",

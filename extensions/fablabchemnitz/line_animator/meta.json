@@ -3,6 +3,7 @@
     "name": "Line Animator",
     "id": "fablabchemnitz.de.line_animator",
     "path": "line_animator",
+    "dependent_extensions": null,
     "original_name": "Line Animator",
     "original_id": "vektorrascheln.contributed.animation.line_animator",
     "license": "GNU GPL v2",

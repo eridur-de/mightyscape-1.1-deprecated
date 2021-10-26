@@ -3,6 +3,7 @@
     "name": "Duplicate + Reverse + Join",
     "id": "fablabchemnitz.de.duplicate_reverse_join",
     "path": "duplicate_reverse_join",
+    "dependent_extensions": null,
     "original_name": "Duplicate, reverse, join",
     "original_id": "EllenWasbo.cutlings.duplicateReverseJoin",
     "license": "GNU GPL v2",

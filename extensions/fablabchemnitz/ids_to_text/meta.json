@@ -3,6 +3,7 @@
     "name": "Ids To Text",
     "id": "fablabchemnitz.de.ids_to_text",
     "path": "ids_to_text",
+    "dependent_extensions": null,
     "original_name": "Ids To Text",
     "original_id": "org.inkscape.render.ids_to_text",
     "license": "GNU GPL v3",

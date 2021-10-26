@@ -3,6 +3,7 @@
     "name": "<various>",
     "id": "fablabchemnitz.de.vpype_<various>",
     "path": "vpypetools",
+    "dependent_extensions": null,
     "original_name": "vpypetools",
     "original_id": "fablabchemnitz.de.vpype_<various>",
     "license": "GNU GPL v3",

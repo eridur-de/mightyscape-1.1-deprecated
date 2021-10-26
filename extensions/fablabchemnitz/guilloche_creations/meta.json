@@ -3,6 +3,7 @@
     "name": "Guilloche <various>",
     "id": "fablabchemnitz.de.guilloche_creations.guilloche_contour",
     "path": "guilloche_contour",
+    "dependent_extensions": null,
     "original_name": "Guilloche <various>",
     "original_id": "org.inkscape.effect.guilloche_<various>",
     "license": "GNU GPL v3",

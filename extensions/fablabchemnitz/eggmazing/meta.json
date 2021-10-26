@@ -3,6 +3,7 @@
     "name": "Eggmazing",
     "id": "fablabchemnitz.de.eggmazing",
     "path": "eggmazing",
+    "dependent_extensions": null,
     "original_name": "Eggmazing",
     "original_id": "command.eggbot.contributed.eggmazing",
     "license": "GNU GPL v3",

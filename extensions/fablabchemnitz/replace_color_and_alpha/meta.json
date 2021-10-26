@@ -3,6 +3,7 @@
     "name": "Replace Color And Alpha",
     "id": "fablabchemnitz.de.replace_color_and_alpha",
     "path": "replace_color_and_alpha",
+    "dependent_extensions": null,
     "original_name": "Replace color and alpha",
     "original_id": "com.www.marker.es.ReplaceColorAlpha",
     "license": "GNU GPL v2",

@@ -3,6 +3,7 @@
     "name": "Blueprint Maker",
     "id": "fablabchemnitz.de.blueprint_maker",
     "path": "blueprint_maker",
+    "dependent_extensions": null,
     "original_name": "Blueprint Maker",
     "original_id": "org.inkscape.blueprint-maker",
     "license": "GNU AGPL v3",

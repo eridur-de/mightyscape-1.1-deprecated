@@ -3,6 +3,7 @@
     "name": "Create Hexmap",
     "id": "fablabchemnitz.de.create_hexmap",
     "path": "create_hexmap",
+    "dependent_extensions": null,
     "original_name": "Create Hexmap",
     "original_id": "pelles.effect.hexmap",
     "license": "GNU GPL v2",

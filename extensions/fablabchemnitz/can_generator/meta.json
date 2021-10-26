@@ -3,6 +3,7 @@
     "name": "Can Generator",
     "id": "fablabchemnitz.de.can_generator",
     "path": "can_generator",
+    "dependent_extensions": null,
     "original_name": "Dosengenerator",
     "original_id": "githubacct.uniqueid.Dosengenerator",
     "license": "GNU GPL v3",

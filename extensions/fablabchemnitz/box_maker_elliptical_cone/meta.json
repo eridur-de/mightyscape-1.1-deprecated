@@ -3,6 +3,7 @@
     "name": "Box Maker - Elliptical Cone",
     "id": "fablabchemnitz.de.box_maker_elliptical_cone",
     "path": "box_maker_elliptical_cone",
+    "dependent_extensions": null,
     "original_name": "Elliptical cone box maker",
     "original_id": "fr.fablab-lannion.inkscape.ell_conical_box",
     "license": "MIT License",

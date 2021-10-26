@@ -3,6 +3,7 @@
     "name": "Destructive Clip",
     "id": "fablabchemnitz.de.destructive_clip",
     "path": "destructive_clip",
+    "dependent_extensions": null,
     "original_name": "Destructive Clip",
     "original_id": "com.funnypolynomial.inkscape.extension.destructiveclip",
     "license": "MIT License",

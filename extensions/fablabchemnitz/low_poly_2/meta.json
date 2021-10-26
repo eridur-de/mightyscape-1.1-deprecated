@@ -3,6 +3,7 @@
     "name": "Low Poly 2",
     "id": "fablabchemnitz.de.low_poly_2",
     "path": "low_poly_2",
+    "dependent_extensions": null,
     "original_name": "★Delauney From Path",
     "original_id": "miffy.sora.polygonalart",
     "license": "MIT License",

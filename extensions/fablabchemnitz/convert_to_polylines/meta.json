@@ -3,6 +3,7 @@
     "name": "Convert To Polylines",
     "id": "fablabchemnitz.de.convert_to_polylines",
     "path": "convert_to_polylines",
+    "dependent_extensions": null,
     "original_name": "Convert To Polylines",
     "original_id": "fablabchemnitz.de.convert_to_polylines",
     "license": "GNU GPL v3",

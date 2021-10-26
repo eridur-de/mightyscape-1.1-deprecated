@@ -3,6 +3,7 @@
     "name": "Remove Obsolete Attributes",
     "id": "fablabchemnitz.de.remove_obsolete_attributes",
     "path": "remove_obsolete_attributes",
+    "dependent_extensions": null,
     "original_name": "Remove Obsolete",
     "original_id": "com.mathem.absref_remover",
     "license": "GNU LGPL v2",

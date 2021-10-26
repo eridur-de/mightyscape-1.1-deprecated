@@ -3,6 +3,7 @@
     "name": "Blobs Texture",
     "id": "fablabchemnitz.de.blobs",
     "path": "blobs",
+    "dependent_extensions": null,
     "original_name": "Blobs texture",
     "original_id": "org.ekips.filter.blobsTexture",
     "license": "GNU GPL v2",

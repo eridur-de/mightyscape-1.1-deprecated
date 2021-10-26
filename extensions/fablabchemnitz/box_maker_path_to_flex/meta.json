@@ -3,6 +3,7 @@
     "name": "Box Maker - Path To Flex",
     "id": "fablabchemnitz.de.box_maker_path_to_flex",
     "path": "box_maker_path_to_flex",
+    "dependent_extensions": null,
     "original_name": "Paths To Flex",
     "original_id": "fr.fablab-lannion.inkscape.Path2Flex",
     "license": "GNU GPL v3",

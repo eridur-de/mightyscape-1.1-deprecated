@@ -3,6 +3,7 @@
     "name": "Longest Continuous Path",
     "id": "fablabchemnitz.de.longest_continuous_path",
     "path": "longest_continuous_path",
+    "dependent_extensions": null,
     "original_name": "Optimize Paths",
     "original_id": "org.daekkyn.filter.optimizePaths",
     "license": "GNU GPL v3",

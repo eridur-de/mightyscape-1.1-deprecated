@@ -3,6 +3,7 @@
     "name": "<various>",
     "id": "fablabchemnitz.de.bobbinlace.<various>",
     "path": "bobbinlace",
+    "dependent_extensions": null,
     "original_name": "<various>",
     "original_id": "tesselace.<various>",
     "license": "GNU GPL v3 / Simplified BSD License",

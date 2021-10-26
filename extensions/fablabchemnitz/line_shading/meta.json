@@ -3,6 +3,7 @@
     "name": "Line Shading",
     "id": "fablabchemnitz.de.line_shading",
     "path": "line_shading",
+    "dependent_extensions": null,
     "original_name": "Endurance Line Shading",
     "original_id": "org.ekips.filter.line_shading",
     "license": "MIT License",

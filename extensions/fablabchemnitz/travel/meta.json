@@ -3,6 +3,7 @@
     "name": "Travel",
     "id": "fablabchemnitz.de.travel",
     "path": "travel",
+    "dependent_extensions": null,
     "original_name": "Travel",
     "original_id": "travel.rkp8000.inkscape",
     "license": "MIT License",

@@ -3,6 +3,7 @@
     "name": "Reload",
     "id": "fablabchemnitz.de.reload",
     "path": "reload",
+    "dependent_extensions": null,
     "original_name": "Reload",
     "original_id": "fablabchemnitz.de.reload",
     "license": "GNU GPL v3",

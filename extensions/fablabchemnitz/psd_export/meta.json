@@ -3,6 +3,7 @@
     "name": "Photoshop PSD Export",
     "id": "fablabchemnitz.de.psd_export",
     "path": "psd_export",
+    "dependent_extensions": null,
     "original_name": "GIMP PSD",
     "original_id": "org.ekips.output.gimp_psd",
     "license": "GNU GPL v2",

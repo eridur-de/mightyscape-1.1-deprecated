@@ -3,6 +3,7 @@
     "name": "Piano Scale",
     "id": "fablabchemnitz.de.piano_scale",
     "path": "piano_scale",
+    "dependent_extensions": null,
     "original_name": "Piano scale",
     "original_id": "Page::Blank",
     "license": "GNU GPL v2",

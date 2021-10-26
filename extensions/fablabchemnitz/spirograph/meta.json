@@ -3,6 +3,7 @@
     "name": "SpiroGraph",
     "id": "fablabchemnitz.de.spirograph",
     "path": "spirograph",
+    "dependent_extensions": null,
     "original_name": "SpiroGraph",
     "original_id": "fsmMLK.spiroGraph",
     "license": "GNU GPL v3",

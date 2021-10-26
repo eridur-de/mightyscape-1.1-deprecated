@@ -3,6 +3,7 @@
     "name": "Gears2",
     "id": "fablabchemnitz.de.gears2",
     "path": "gears2",
+    "dependent_extensions": null,
     "original_name": "Gears2",
     "original_id": "com.attoparsec.filter.gears",
     "license": "GNU GPL v2",

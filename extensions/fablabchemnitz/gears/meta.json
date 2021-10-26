@@ -3,6 +3,7 @@
     "name": "Gears",
     "id": "fablabchemnitz.de.gears",
     "path": "gears",
+    "dependent_extensions": null,
     "original_name": "Gear-dev",
     "original_id": "com.gihub.jnweiger.inkscape-gears-dev",
     "license": "GNU GPL v2",

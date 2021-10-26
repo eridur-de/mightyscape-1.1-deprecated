@@ -3,6 +3,7 @@
     "name": "Purge Duplicate Path Segments",
     "id": "fablabchemnitz.de.purge_duplicate_path_segments",
     "path": "purge_duplicate_path_segments",
+    "dependent_extensions": null,
     "original_name": "Remove redundant edges",
     "original_id": "org.novalis.filter.removeredundant",
     "license": "GNU GPL v2",

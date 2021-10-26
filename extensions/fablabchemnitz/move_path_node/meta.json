@@ -3,6 +3,7 @@
     "name": "Move Path Node",
     "id": "fablabchemnitz.de.move_path_node",
     "path": "move_path_node",
+    "dependent_extensions": null,
     "original_name": "Move Path Node",
     "original_id": "fablabchemnitz.de.move_path_node",
     "license": "GNU GPL v3",

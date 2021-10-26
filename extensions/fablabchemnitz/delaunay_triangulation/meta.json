@@ -3,6 +3,7 @@
     "name": "Delaunay Triangulation",
     "id": "fablabchemnitz.de.delaunay_triangulation",
     "path": "delaunay_triangulation",
+    "dependent_extensions": null,
     "original_name": "Delaunay Triangulation",
     "original_id": "org.pakin.filter.delaunay",
     "license": "GNU GPL v3",

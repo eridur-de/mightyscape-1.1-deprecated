@@ -3,6 +3,7 @@
     "name": "Hatches And Grains",
     "id": "fablabchemnitz.de.hatches_and_grains",
     "path": "hatches_and_grains",
+    "dependent_extensions": null,
     "original_name": "Hatches and grains",
     "original_id": "carto",
     "license": "GNU GPL v3",

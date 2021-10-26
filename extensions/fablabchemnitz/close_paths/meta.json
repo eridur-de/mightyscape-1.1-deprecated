@@ -3,6 +3,7 @@
     "name": "Close Paths",
     "id": "fablabchemnitz.de.close_paths",
     "path": "close_paths",
+    "dependent_extensions": null,
     "original_name": "Close curves",
     "original_id": "ru.cnc-club.filter.close_curves",
     "license": "GNU GPL v2",

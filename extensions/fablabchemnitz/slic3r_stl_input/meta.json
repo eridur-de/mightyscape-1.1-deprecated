@@ -3,6 +3,7 @@
     "name": "Slic3r STL Input",
     "id": "fablabchemnitz.de.slic3r_stl_input",
     "path": "slic3r_stl_input",
+    "dependent_extensions": null,
     "original_name": "STL Input",
     "original_id": "com.github.jnweiger.inkscape.input.stl",
     "license": "GNU GPL v2",

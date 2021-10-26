@@ -3,6 +3,7 @@
     "name": "Remove Empty Groups",
     "id": "fablabchemnitz.de.remove_empty_groups",
     "path": "remove_empty_groups",
+    "dependent_extensions": null,
     "original_name": "Remove Empty Groups",
     "original_id": "fablabchemnitz.de.remove_empty_groups",
     "license": "GNU GPL v3",

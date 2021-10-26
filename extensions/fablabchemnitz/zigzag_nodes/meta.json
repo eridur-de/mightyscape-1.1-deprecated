@@ -3,6 +3,7 @@
     "name": "Zigzag Nodes",
     "id": "fablabchemnitz.de.zigzag_nodes",
     "path": "zigzag_nodes",
+    "dependent_extensions": null,
     "original_name": "<unknown>",
     "original_id": "<unknown>",
     "license": "GNU GPL v2",

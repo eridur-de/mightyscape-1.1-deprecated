@@ -3,6 +3,7 @@
     "name": "Reverse Order Of Subpaths",
     "id": "fablabchemnitz.de.reverse_order_of_subpaths",
     "path": "reverse_order_of_subpaths",
+    "dependent_extensions": null,
     "original_name": "Reverse order of subpaths",
     "original_id": "EllenWasbo.cutlings.reverse_order_subpaths",
     "license": "GNU GPL v2",

@@ -3,6 +3,7 @@
     "name": "Bounding Box",
     "id": "fablabchemnitz.de.bounding_box",
     "path": "bounding_box",
+    "dependent_extensions": null,
     "original_name": "Bounding Box",
     "original_id": "fablabchemnitz.de.bounding_box",
     "license": "GNU GPL v3",

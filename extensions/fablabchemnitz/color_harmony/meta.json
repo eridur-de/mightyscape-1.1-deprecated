@@ -3,6 +3,7 @@
     "name": "Color Harmony",
     "id": "fablabchemnitz.de.color_harmony",
     "path": "color_harmony",
+    "dependent_extensions": null,
     "original_name": "Color harmony",
     "original_id": "de.vektorrascheln.color_harmony",
     "license": "GNU GPL v2",

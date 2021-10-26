@@ -3,6 +3,7 @@
     "name": "J Tech Photonics Laser Tool",
     "id": "fablabchemnitz.de.j_tech_photonics_laser_tool",
     "path": "j_tech_photonics_laser_tool",
+    "dependent_extensions": null,
     "original_name": "J Tech Community Laser Tool",
     "original_id": "community.jtechphotonics.com",
     "license": "GNU GPL v2",

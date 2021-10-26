@@ -3,6 +3,7 @@
     "name": "Twist",
     "id": "fablabchemnitz.de.twist",
     "path": "twist",
+    "dependent_extensions": null,
     "original_name": "Twist",
     "original_id": "command.eggbot.contributed.twist",
     "license": "GNU GPL v3",

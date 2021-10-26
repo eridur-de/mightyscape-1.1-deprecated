@@ -3,6 +3,7 @@
     "name": "Label Feature With Fill Color",
     "id": "fablabchemnitz.de.label_feature_with_fill_color",
     "path": "label_feature_with_fill_color",
+    "dependent_extensions": null,
     "original_name": "Label feature with fill color",
     "original_id": "org.inkscape.labelColour",
     "license": "GNU GPL v3",

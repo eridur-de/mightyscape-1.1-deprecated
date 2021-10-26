@@ -3,6 +3,7 @@
     "name": "About/Upgrade MightyScape",
     "id": "fablabchemnitz.de.about_upgrade_mightyscape",
     "path": "about_upgrade_mightyscape",
+    "dependent_extensions": null,
     "original_name": "About/Upgrade MightyScape",
     "original_id": "fablabchemnitz.de.about_upgrade_mightyscape",
     "license": "GNU GPL v3",

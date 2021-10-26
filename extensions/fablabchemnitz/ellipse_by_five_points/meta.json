@@ -3,6 +3,7 @@
     "name": "Ellipse By Five Points (Replaced by LPE)",
     "id": "fablabchemnitz.de.ellipse_by_five_points",
     "path": "ellipse_by_five_points",
+    "dependent_extensions": null,
     "original_name": "Ellipse by 5 Points",
     "original_id": "org.pernsteiner.inkscape.ellipse_5pts",
     "license": "BSD-2-Clause License",

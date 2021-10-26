@@ -3,6 +3,7 @@
     "name": "Open Closed Path",
     "id": "fablabchemnitz.de.open_closed_path",
     "path": "open_closed_path",
+    "dependent_extensions": null,
     "original_name": "Open closed Path",
     "original_id": "EllenWasbo.cutlings.OpenClosedPath",
     "license": "GNU GPL v2",

@@ -3,6 +3,7 @@
     "name": "Create Links (Breakaway Connectors)",
     "id": "fablabchemnitz.de.create_links",
     "path": "create_links",
+    "dependent_extensions": null,
     "original_name": "Create Links (Breakaway Connectors)",
     "original_id": "fablabchemnitz.de.create_links",
     "license": "GNU GPL v3",

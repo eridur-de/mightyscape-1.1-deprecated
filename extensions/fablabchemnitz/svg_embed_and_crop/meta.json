@@ -3,6 +3,7 @@
     "name": "SVG Embed And Crop Images",
     "id": "fablabchemnitz.de.svg_embed_and_crop",
     "path": "svg_embed_and_crop",
+    "dependent_extensions": null,
     "original_name": "Embed and crop images",
     "original_id": "edu.emory.cellbio.svg.embedandcrop",
     "license": "MIT License",

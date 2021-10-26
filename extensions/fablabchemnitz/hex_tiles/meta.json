@@ -3,6 +3,7 @@
     "name": "Hex Tiles",
     "id": "fablabchemnitz.de.hex_tiles",
     "path": "hex_tiles",
+    "dependent_extensions": null,
     "original_name": "Hex tiles",
     "original_id": "phillips.effect.hexlayoutguides",
     "license": "GNU GPL v2",

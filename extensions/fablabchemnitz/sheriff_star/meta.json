@@ -3,6 +3,7 @@
     "name": "Sheriff Star",
     "id": "fablabchemnitz.de.sheriff_star",
     "path": "sheriff_star",
+    "dependent_extensions": null,
     "original_name": "Sheriff Star",
     "original_id": "com.kacmarcik.pathmonkey.sheriff-star",
     "license": "MIT License",

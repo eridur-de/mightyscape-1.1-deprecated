@@ -3,6 +3,7 @@
     "name": "Inventory Sticker",
     "id": "fablabchemnitz.de.inventory_sticker",
     "path": "inventory_sticker",
+    "dependent_extensions": null,
     "original_name": "Inventory Sticker",
     "original_id": "fablabchemnitz.de.inventory_sticker",
     "license": "GNU GPL v3",

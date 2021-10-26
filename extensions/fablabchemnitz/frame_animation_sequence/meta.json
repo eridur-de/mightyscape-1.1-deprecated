@@ -3,6 +3,7 @@
     "name": "Frame Animation Sequence",
     "id": "fablabchemnitz.de.frame_animation_sequence",
     "path": "frame_animation_sequence",
+    "dependent_extensions": null,
     "original_name": "Animate Extension",
     "original_id": "org.inkscape.katkitty.animate",
     "license": "GNU GPL v2",

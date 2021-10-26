@@ -3,6 +3,7 @@
     "name": "Number Subpaths",
     "id": "fablabchemnitz.de.number_subpaths",
     "path": "number_subpaths",
+    "dependent_extensions": null,
     "original_name": "Number Subpaths",
     "original_id": "org.inkscape.filter.number_subpaths",
     "license": "GNU GPL v2",

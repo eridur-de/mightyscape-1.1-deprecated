@@ -3,6 +3,7 @@
     "name": "Cutting Optimizer (Nesting)",
     "id": "fablabchemnitz.de.cutting_optimizer",
     "path": "cutting_optimizer",
+    "dependent_extensions": null,
     "original_name": "Laser Cutting Optmizer",
     "original_id": "fr.fablab-lannion.inkscape.cutopimiser",
     "license": "MIT License",

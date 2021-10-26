@@ -3,6 +3,7 @@
     "name": "Set View Box (Replaced by CTRL + SHIFT + R)",
     "id": "fablabchemnitz.de.set_view_box",
     "path": "set_view_box",
+    "dependent_extensions": null,
     "original_name": "Set viewBox",
     "original_id": "org.pernsteiner.inkscape.viewbox",
     "license": "BSD-2-Clause License",

@@ -3,6 +3,7 @@
     "name": "Triangle",
     "id": "fablabchemnitz.de.triangle",
     "path": "triangle",
+    "dependent_extensions": null,
     "original_name": "Triangle",
     "original_id": "math.triangle",
     "license": "GNU GPL v2",

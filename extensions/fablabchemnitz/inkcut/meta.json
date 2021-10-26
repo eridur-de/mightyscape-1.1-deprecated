@@ -3,6 +3,7 @@
     "name": "Inkcut - <various>",
     "id": "fablabchemnitz.de.inkcut.<various>",
     "path": "inkcut",
+    "dependent_extensions": null,
     "original_name": "<various>",
     "original_id": "org.ekips.filter.inkcut.<various>",
     "license": "GNU GPL v3",

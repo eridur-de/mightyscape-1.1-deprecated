@@ -3,6 +3,7 @@
     "name": "Quick Joint",
     "id": "fablabchemnitz.de.quick_joint",
     "path": "quick_joint",
+    "dependent_extensions": null,
     "original_name": "QuickJoint",
     "original_id": "org.inkscape.filter.quickjoint",
     "license": "GNU GPL v3",

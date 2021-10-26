@@ -3,6 +3,7 @@
     "name": "Label Guides",
     "id": "fablabchemnitz.de.label_guides",
     "path": "label_guides",
+    "dependent_extensions": null,
     "original_name": "Label Guides",
     "original_id": "org.inkscape.effect.labelguides",
     "license": "GNU GPL v2",

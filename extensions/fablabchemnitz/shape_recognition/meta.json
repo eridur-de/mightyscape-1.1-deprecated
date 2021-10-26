@@ -3,6 +3,7 @@
     "name": "Shape Recognition (Unstable)",
     "id": "fablabchemnitz.de.shape_recognition",
     "path": "shape_recognition",
+    "dependent_extensions": null,
     "original_name": "Shape recognition",
     "original_id": "qpad",
     "license": "GNU GPL v3",

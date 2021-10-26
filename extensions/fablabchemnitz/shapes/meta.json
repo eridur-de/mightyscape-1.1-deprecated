@@ -3,6 +3,7 @@
     "name": "Shapes",
     "id": "fablabchemnitz.de.shapes",
     "path": "shapes",
+    "dependent_extensions": null,
     "original_name": "Shapes for 1.0",
     "original_id": "org.inkscape.effect.shapes1",
     "license": "GNU GPL v2",

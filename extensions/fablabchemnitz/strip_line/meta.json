@@ -3,6 +3,7 @@
     "name": "Strip Line",
     "id": "fablabchemnitz.de.strip_line",
     "path": "strip_line",
+    "dependent_extensions": null,
     "original_name": "ストリップライン",
     "original_id": "miffy.sora.stripline",
     "license": "MIT License",

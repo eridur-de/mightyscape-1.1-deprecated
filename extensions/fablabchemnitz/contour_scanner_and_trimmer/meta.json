@@ -3,6 +3,7 @@
     "name": "Contour Scanner And Trimmer",
     "id": "fablabchemnitz.de.contour_scanner_and_trimmer",
     "path": "contour_scanner_and_trimmer",
+    "dependent_extensions": null,
     "original_name": "Contour Scanner And Trimmer",
     "original_id": "fablabchemnitz.de.contour_scanner_and_trimmer",
     "license": "GNU GPL v3",

@@ -3,6 +3,7 @@
     "name": "Import 3D Mesh",
     "id": "fablabchemnitz.de.import_3d_mesh",
     "path": "import_3d_mesh",
+    "dependent_extensions": null,
     "original_name": "3D Polyhedron",
     "original_id": "org.inkscape.render.poly_3d",
     "license": "GNU GPL v2",

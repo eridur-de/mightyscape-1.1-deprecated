@@ -3,6 +3,7 @@
     "name": "Split And Break Bezier At t",
     "id": "fablabchemnitz.de.split_and_break_bezier_at_t",
     "path": "split_and_break_bezier_at_t",
+    "dependent_extensions": null,
     "original_name": "fablabchemnitz.de.split_and_break_bezier_at_t",
     "original_id": "split_and_break_bezier_at_t",
     "license": "GNU GPL v3",

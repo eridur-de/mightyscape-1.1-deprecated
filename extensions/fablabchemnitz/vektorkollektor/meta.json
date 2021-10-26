@@ -3,6 +3,7 @@
     "name": "Vektorkollektor",
     "id": "fablabchemnitz.de.vektorkollektor",
     "path": "vektorkollektor",
+    "dependent_extensions": null,
     "original_name": "Vektorkollektor",
     "original_id": "fablabchemnitz.de.vektorkollektor",
     "license": "GNU GPL v3",

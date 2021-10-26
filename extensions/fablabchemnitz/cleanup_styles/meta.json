@@ -3,6 +3,7 @@
     "name": "Cleanup Styles",
     "id": "fablabchemnitz.de.cleanup_styles",
     "path": "cleanup_styles",
+    "dependent_extensions": null,
     "original_name": "Cleanup",
     "original_id": "com.attoparsec.filter.cleanup",
     "license": "GNU GPL v2",

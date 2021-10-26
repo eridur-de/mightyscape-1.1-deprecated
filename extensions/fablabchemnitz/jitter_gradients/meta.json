@@ -3,6 +3,7 @@
     "name": "Jitter Gradients",
     "id": "fablabchemnitz.de.jitter_gradients",
     "path": "jitter_gradients",
+    "dependent_extensions": null,
     "original_name": "Jitter Gradients",
     "original_id": "org.inkscape.color.jittergradients",
     "license": "GNU GPL v2",

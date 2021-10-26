@@ -3,6 +3,7 @@
     "name": "Extruder",
     "id": "fablabchemnitz.de.extruder",
     "path": "extruder",
+    "dependent_extensions": null,
     "original_name": "Extruder",
     "original_id": "org.inkscape.extruderz<",
     "license": "GNU GPL v3",

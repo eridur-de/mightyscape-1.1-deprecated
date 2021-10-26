@@ -3,6 +3,7 @@
     "name": "<various>",
     "id": "fablabchemnitz.de.pathops_<various>",
     "path": "pathops",
+    "dependent_extensions": null,
     "original_name": "<various>",
     "original_id": "su-v/org.inkscape.effect.path.<various>",
     "license": "GNU GPL v2",

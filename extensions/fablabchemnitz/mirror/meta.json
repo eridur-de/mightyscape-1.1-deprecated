@@ -3,6 +3,7 @@
     "name": "Mirror",
     "id": "fablabchemnitz.de.mirror",
     "path": "mirror",
+    "dependent_extensions": null,
     "original_name": "Mirror",
     "original_id": "test.apex.mirror",
     "license": "GNU GPL v2",

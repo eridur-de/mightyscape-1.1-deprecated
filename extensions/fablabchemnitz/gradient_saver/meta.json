@@ -3,6 +3,7 @@
     "name": "Gradient Saver",
     "id": "fablabchemnitz.de.gradient_saver",
     "path": "gradient_saver",
+    "dependent_extensions": null,
     "original_name": "Gradient Saver",
     "original_id": "id.artemtech.gradient_saver",
     "license": "GNU GPL v3",

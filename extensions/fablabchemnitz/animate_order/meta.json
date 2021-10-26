@@ -3,6 +3,7 @@
     "name": "Animate Order",
     "id": "fablabchemnitz.de.animate_order",
     "path": "animate_order",
+    "dependent_extensions": null,
     "original_name": "Animate Order",
     "original_id": "fablabchemnitz.de.animate_order",
     "license": "GNU GPL v3",

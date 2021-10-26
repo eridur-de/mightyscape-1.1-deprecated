@@ -3,6 +3,7 @@
     "name": "Isometric Projection",
     "id": "fablabchemnitz.de.isometric_projection",
     "path": "isometric_projection",
+    "dependent_extensions": null,
     "original_name": "Isometric Projection",
     "original_id": "nl.jeroenhoek.inkscape.filter.isometric_projection_tool",
     "license": "GNU GPL v3",

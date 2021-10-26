@@ -3,6 +3,7 @@
     "name": "Silhouette Cameo Registration Marks",
     "id": "fablabchemnitz.de.render_silhouette_regmarks",
     "path": "render_silhouette_regmarks",
+    "dependent_extensions": null,
     "original_name": "Classic",
     "original_id": "org.inkscape.render.silhouette-regmarks",
     "license": "GNU GPL v3",

@@ -3,6 +3,7 @@
     "name": "Grid Strip Creator (qlocktwo)",
     "id": "fablabchemnitz.de.grid_strip_creator",
     "path": "grid_strip_creator",
+    "dependent_extensions": null,
     "original_name": "Grid strip creator",
     "original_id": "org.inkscape.effect.gridstripcreator",
     "license": "GNU GPL v2",

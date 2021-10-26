@@ -3,6 +3,7 @@
     "name": "Leather Case",
     "id": "fablabchemnitz.de.leather_case",
     "path": "leather_case",
+    "dependent_extensions": null,
     "original_name": "Leather Case 1",
     "original_id": "com.zerjio.inkscape.lcmp1",
     "license": "GNU GPL v3",

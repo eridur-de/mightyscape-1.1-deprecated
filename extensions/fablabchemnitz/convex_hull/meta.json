@@ -3,6 +3,7 @@
     "name": "Convex Hull",
     "id": "fablabchemnitz.de.convex_hull",
     "path": "convex_hull",
+    "dependent_extensions": null,
     "original_name": "ConvexHull",
     "original_id": "org.simarilius.filter.ConvexHull",
     "license": "MIT License",

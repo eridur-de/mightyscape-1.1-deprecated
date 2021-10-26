@@ -3,6 +3,7 @@
     "name": "Barrel Distortion",
     "id": "fablabchemnitz.de.barrel_distorsion",
     "path": "barrel_distorsion",
+    "dependent_extensions": null,
     "original_name": "Distortion",
     "original_id": "org.pub.dIstorsion",
     "license": "MIT License",

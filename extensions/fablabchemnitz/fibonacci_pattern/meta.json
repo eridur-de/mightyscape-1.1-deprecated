@@ -3,6 +3,7 @@
     "name": "Fibonacci Pattern",
     "id": "fablabchemnitz.de.fibonacci_pattern",
     "path": "fibonacci_pattern",
+    "dependent_extensions": null,
     "original_name": "Beauty Full Day Fibonacci Pattern",
     "original_id": "com.beautyfullday.inkscape.fibonaccipattern",
     "license": "GNU GPL v2",

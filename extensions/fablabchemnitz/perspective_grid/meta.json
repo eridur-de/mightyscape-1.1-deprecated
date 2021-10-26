@@ -3,6 +3,7 @@
     "name": "Perspective Grid",
     "id": "fablabchemnitz.de.perspective_grid",
     "path": "perspective_grid",
+    "dependent_extensions": null,
     "original_name": "Perspective Grid",
     "original_id": "grid.perspective",
     "license": "GNU GPL v2",

@@ -3,6 +3,7 @@
     "name": "Streaks",
     "id": "fablabchemnitz.de.streaks",
     "path": "streaks",
+    "dependent_extensions": null,
     "original_name": "streaks",
     "original_id": "ca.sfu.AT.kurn.Streaks",
     "license": "GNU GPL v3",

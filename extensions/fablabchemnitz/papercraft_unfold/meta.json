@@ -3,6 +3,7 @@
     "name": "Papercraft Unfold",
     "id": "fablabchemnitz.de.papercraft_unfold",
     "path": "papercraft_unfold",
+    "dependent_extensions": null,
     "original_name": "Papercraft Unfold",
     "original_id": "fablabchemnitz.de.papercraft_unfold",
     "license": "GNU GPL v3",

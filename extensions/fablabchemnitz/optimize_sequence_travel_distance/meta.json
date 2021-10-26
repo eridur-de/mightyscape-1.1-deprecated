@@ -3,6 +3,7 @@
     "name": "Optimize Sequence: Travel Distances",
     "id": "fablabchemnitz.de.optimize_sequence_travel_distance",
     "path": "optimize_sequence_travel_distance",
+    "dependent_extensions": null,
     "original_name": "Reorder Paths for Speed",
     "original_id": "command.evilmadscientist.eggbot.reorder",
     "license": "GNU GPL v3",

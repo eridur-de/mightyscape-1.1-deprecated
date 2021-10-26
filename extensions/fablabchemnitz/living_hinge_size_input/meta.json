@@ -3,6 +3,7 @@
     "name": "Living Hinge (Size Input)",
     "id": "fablabchemnitz.de.living_hinge_size_input",
     "path": "living_hinge_size_input",
+    "dependent_extensions": null,
     "original_name": "Bend Wood Cuts Pattern",
     "original_id": "com.zerjio.inkscape.bwcp",
     "license": "GNU GPL v3",

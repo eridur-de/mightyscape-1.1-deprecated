@@ -3,6 +3,7 @@
     "name": "Unwind Paths",
     "id": "fablabchemnitz.de.unwind_paths",
     "path": "unwind_paths",
+    "dependent_extensions": null,
     "original_name": "Unwind Paths",
     "original_id": "fablabchemnitz.de.unwind_paths",
     "license": "GNU GPL v3",

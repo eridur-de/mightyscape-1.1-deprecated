@@ -3,6 +3,7 @@
     "name": "Chip Scratches",
     "id": "fablabchemnitz.de.chip_scratches",
     "path": "chip_scratches",
+    "dependent_extensions": null,
     "original_name": "ChipScratches",
     "original_id": "ca.sfu.AT.kurn.ChipScratches",
     "license": "GNU GPL v2",

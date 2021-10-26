@@ -3,6 +3,7 @@
     "name": "Paths To OpenSCAD",
     "id": "fablabchemnitz.de.paths_to_openscad",
     "path": "paths_to_openscad",
+    "dependent_extensions": null,
     "original_name": "aths to OpenSCAD<",
     "original_id": "command.extrude.openscad",
     "license": "GNU GPL v2",

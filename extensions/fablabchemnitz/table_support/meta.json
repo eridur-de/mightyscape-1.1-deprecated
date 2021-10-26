@@ -3,6 +3,7 @@
     "name": "<various>",
     "id": "fablabchemnitz.de.table_<various>",
     "path": "table_support",
+    "dependent_extensions": null,
     "original_name": "<various>",
     "original_id": "org.greygreen.inkscape.effects.table_<various>",
     "license": "GNU GPL v2",

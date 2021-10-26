@@ -3,6 +3,7 @@
     "name": "Parallel Translation",
     "id": "fablabchemnitz.de.parallel_translation",
     "path": "parallel_translation",
+    "dependent_extensions": null,
     "original_name": "Parallel Translation",
     "original_id": "org.inkscape.parallel-translation_extension",
     "license": "GNU GPL v2",

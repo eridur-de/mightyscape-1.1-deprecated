@@ -3,6 +3,7 @@
     "name": "Tuckbox",
     "id": "fablabchemnitz.de.tuckbox",
     "path": "tuckbox",
+    "dependent_extensions": null,
     "original_name": "Create Tuckbox",
     "original_id": "phillips.effect.tuckbox",
     "license": "GNU GPL v2",

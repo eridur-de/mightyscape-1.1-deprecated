@@ -3,6 +3,7 @@
     "name": "Bezier Envelope",
     "id": "fablabchemnitz.de.bezier_envelope",
     "path": "bezier_envelope",
+    "dependent_extensions": null,
     "original_name": "Bezier Envelope",
     "original_id": "de.gerrit_karius.envelope",
     "license": "GNU GPL v2",

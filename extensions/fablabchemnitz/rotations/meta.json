@@ -3,6 +3,7 @@
     "name": "Rotations - <various>",
     "id": "fablabchemnitz.de.rotations_<various>",
     "path": "rotations",
+    "dependent_extensions": null,
     "original_name": "Rotate for <various>",
     "original_id": "org.bg.filter.rotate<various>",
     "license": "GNU GPL v2",

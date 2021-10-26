@@ -3,6 +3,7 @@
     "name": "Sprocket",
     "id": "fablabchemnitz.de.sprocket",
     "path": "sprocket",
+    "dependent_extensions": null,
     "original_name": "Sprocket",
     "original_id": "com.attoparsec.filter.sprockets",
     "license": "GNU GPL v2",

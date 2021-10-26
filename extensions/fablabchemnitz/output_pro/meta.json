@@ -3,6 +3,7 @@
     "name": "Inkscape Output Pro",
     "id": "fablabchemnitz.de.output_pro",
     "path": "output_pro",
+    "dependent_extensions": null,
     "original_name": "Inkscape Output Pro",
     "original_id": "org.inkscape.outputpro",
     "license": "GNU GPL v2",

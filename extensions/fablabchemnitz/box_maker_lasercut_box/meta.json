@@ -3,6 +3,7 @@
     "name": "Box Maker - Lasercut Box",
     "id": "fablabchemnitz.de.box_maker_lasercut_box",
     "path": "box_maker_lasercut_box",
+    "dependent_extensions": null,
     "original_name": "Lasercut Box",
     "original_id": "org.inkscape.LasercutBox",
     "license": "GNU GPL v2",

@@ -3,6 +3,7 @@
     "name": "Ratchet",
     "id": "fablabchemnitz.de.ratchet",
     "path": "ratchet",
+    "dependent_extensions": null,
     "original_name": "Ratchet",
     "original_id": "ratchet",
     "license": "GNU GPL v3",

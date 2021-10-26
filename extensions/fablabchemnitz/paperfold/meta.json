@@ -3,6 +3,7 @@
     "name": "Paperfold",
     "id": "fablabchemnitz.de.paperfold",
     "path": "paperfold",
+    "dependent_extensions": null,
     "original_name": "Paperfold",
     "original_id": "fablabchemnitz.de.paperfold",
     "license": "GNU GPL v3",

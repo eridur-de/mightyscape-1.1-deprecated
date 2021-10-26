@@ -3,6 +3,7 @@
     "name": "Styles To Layers",
     "id": "fablabchemnitz.de.styles_to_layers",
     "path": "styles_to_layers",
+    "dependent_extensions": null,
     "original_name": "Styles To Layers",
     "original_id": "fablabchemnitz.de.styles_to_layers",
     "license": "GNU GPL v3",

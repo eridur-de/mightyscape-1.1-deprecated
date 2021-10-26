@@ -3,6 +3,7 @@
     "name": "Dimensioning (Replaced by LPE)",
     "id": "fablabchemnitz.de.dimensioning",
     "path": "dimensioning",
+    "dependent_extensions": null,
     "original_name": "Dimensioning",
     "original_id": "dimensioning",
     "license": "GNU GPL v3",

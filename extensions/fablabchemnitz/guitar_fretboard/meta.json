@@ -3,6 +3,7 @@
     "name": "Guitar Fretboard",
     "id": "fablabchemnitz.de.guitar_fretboard",
     "path": "guitar_fretboard",
+    "dependent_extensions": null,
     "original_name": "Guitar Fretboard",
     "original_id": "org.inkscape.render.Guitar-Fretboard",
     "license": "MIT License",

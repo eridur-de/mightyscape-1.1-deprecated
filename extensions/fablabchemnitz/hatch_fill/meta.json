@@ -3,6 +3,7 @@
     "name": "Hatch Fill",
     "id": "fablabchemnitz.de.hatch_fill",
     "path": "hatch_fill",
+    "dependent_extensions": null,
     "original_name": "Hatch Fill 2",
     "original_id": "command.dapperfu.inkscape_hatchfill2",
     "license": "GNU GPL v3",

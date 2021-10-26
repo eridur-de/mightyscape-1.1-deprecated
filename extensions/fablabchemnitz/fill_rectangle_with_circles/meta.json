@@ -3,6 +3,7 @@
     "name": "Fill Rectangle With Circles",
     "id": "fablabchemnitz.de.fill_rectangle_with_circles",
     "path": "fill_rectangle_with_circles",
+    "dependent_extensions": null,
     "original_name": "Remplir de cercles",
     "original_id": "org.ekips.filter.fill_circle",
     "license": "GNU GPL v3",

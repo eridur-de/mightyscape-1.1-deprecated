@@ -3,6 +3,7 @@
     "name": "Apply Transformations",
     "id": "fablabchemnitz.de.apply_transformations",
     "path": "apply_transformations",
+    "dependent_extensions": null,
     "original_name": "Apply Transform",
     "original_id": "com.klowner.filter.apply_transform",
     "license": "GNU GPL v2",

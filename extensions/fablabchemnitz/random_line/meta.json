@@ -3,6 +3,7 @@
     "name": "Random Line",
     "id": "fablabchemnitz.de.random_line",
     "path": "random_line",
+    "dependent_extensions": null,
     "original_name": "Random Line",
     "original_id": "org.inkscape.render.randomline",
     "license": "GNU GPL v3",

@@ -3,6 +3,7 @@
     "name": "Bouwkamp Code",
     "id": "fablabchemnitz.de.bouwkamp_code",
     "path": "boukamp_code",
+    "dependent_extensions": null,
     "original_name": "Bouwkamp code",
     "original_id": "de.pascalwagler.inkscape.bouwkamp",
     "license": "BSD-3-Clause License",

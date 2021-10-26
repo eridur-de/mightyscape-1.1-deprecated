@@ -3,6 +3,7 @@
     "name": "Simple Inkscape (Interface)",
     "id": "fablabchemnitz.de.simpleinkscape",
     "path": "simpleinkscape",
+    "dependent_extensions": null,
     "original_name": "Simple Inkscape",
     "original_id": "org.inkscape.simpleinkscape",
     "license": "GNU GPL v2",

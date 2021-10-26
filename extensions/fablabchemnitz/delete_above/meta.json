@@ -3,6 +3,7 @@
     "name": "Delete Above",
     "id": "fablabchemnitz.de.delete_above",
     "path": "delete_above",
+    "dependent_extensions": null,
     "original_name": "Delete Above",
     "original_id": "com.galvanist.sw.plugins.deleteabove",
     "license": "BSD-3-Clause License",

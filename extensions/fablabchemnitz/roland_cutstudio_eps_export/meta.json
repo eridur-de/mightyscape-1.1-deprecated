@@ -3,6 +3,7 @@
     "name": "Roland CutStudio *.eps Export",
     "id": "fablabchemnitz.de.roland_cutstudio_eps_export",
     "path": "roland_cutstudio_eps_export",
+    "dependent_extensions": null,
     "original_name": "Open in CutStudio",
     "original_id": "roland_custudio.export",
     "license": "GNU GPL v2",

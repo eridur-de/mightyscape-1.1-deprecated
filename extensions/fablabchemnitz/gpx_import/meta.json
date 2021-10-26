@@ -3,6 +3,7 @@
     "name": "GPX Import",
     "id": "fablabchemnitz.de.gpx_import",
     "path": "gpx_import",
+    "dependent_extensions": null,
     "original_name": "GPX Import",
     "original_id": "mono.inkscape.pgx_input",
     "license": "GNU GPL v2",

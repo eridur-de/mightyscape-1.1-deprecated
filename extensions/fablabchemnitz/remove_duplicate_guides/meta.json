@@ -3,6 +3,7 @@
     "name": "Remove Duplicate Guides",
     "id": "fablabchemnitz.de.remove_duplicate_guides",
     "path": "remove_duplicate_guides",
+    "dependent_extensions": null,
     "original_name": "Remove Duplicate Guides",
     "original_id": "phillips.effect.removeduplicateguides",
     "license": "GNU GPL v2",

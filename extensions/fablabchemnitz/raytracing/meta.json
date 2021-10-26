@@ -3,6 +3,7 @@
     "name": "Ray Tracing - <various>",
     "id": "fablabchemnitz.de.raytracing.<various>",
     "path": "raytracing",
+    "dependent_extensions": null,
     "original_name": "<various>",
     "original_id": "damienBloch/inkscape-raytracing/<various>",
     "license": "GNU GPL v3",

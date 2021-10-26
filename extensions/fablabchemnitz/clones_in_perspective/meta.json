@@ -3,6 +3,7 @@
     "name": "Clones In Perspective",
     "id": "fablabchemnitz.de.clones_in_perspective",
     "path": "clones_in_perspective",
+    "dependent_extensions": null,
     "original_name": "Clones in Perspective",
     "original_id": "org.ekips.filter.clonesPerspective",
     "license": "GNU GPL v2",

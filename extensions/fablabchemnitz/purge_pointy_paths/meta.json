@@ -3,6 +3,7 @@
     "name": "Purge Pointy Paths",
     "id": "fablabchemnitz.de.purge_pointy_paths",
     "path": "purge_pointy_paths",
+    "dependent_extensions": null,
     "original_name": "Purge Pointy Paths",
     "original_id": "fablabchemnitz.de.purge_pointy_paths",
     "license": "GNU GPL v3",

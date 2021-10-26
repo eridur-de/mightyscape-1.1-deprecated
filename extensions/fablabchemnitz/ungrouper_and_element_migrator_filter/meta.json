@@ -3,6 +3,7 @@
     "name": "Ungrouper And Element Migrator/Filter",
     "id": "fablabchemnitz.de.ungrouper_and_element_migrator_filter",
     "path": "ungrouper_and_element_migrator_filter",
+    "dependent_extensions": null,
     "original_name": "Ungrouper And Element Migrator/Filter",
     "original_id": "fablabchemnitz.de.ungrouper_and_element_migrator_filter",
     "license": "GNU GPL v3",

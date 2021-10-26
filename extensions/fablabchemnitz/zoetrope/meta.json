@@ -3,6 +3,7 @@
     "name": "Zoetrope",
     "id": "fablabchemnitz.de.zoetrope",
     "path": "zoetrope",
+    "dependent_extensions": null,
     "original_name": "Zoetrope",
     "original_id": "neon22.zoetrope",
     "license": "MIT License",

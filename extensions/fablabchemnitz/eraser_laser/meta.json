@@ -3,6 +3,7 @@
     "name": "Eraser Layer",
     "id": "fablabchemnitz.de.eraser_laser",
     "path": "eraser_laser",
+    "dependent_extensions": null,
     "original_name": "Erase Layer",
     "original_id": "org.inkscape.erase.layer",
     "license": "GNU GPL v2",

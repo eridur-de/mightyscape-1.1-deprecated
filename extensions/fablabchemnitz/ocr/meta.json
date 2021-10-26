@@ -3,6 +3,7 @@
     "name": "OCR (Image To Text)",
     "id": "fablabchemnitz.de.ocr",
     "path": "ocr",
+    "dependent_extensions": null,
     "original_name": "Image To Text",
     "original_id": "org.inkscape.ocr",
     "license": "Apache-2.0 License",

@@ -3,6 +3,7 @@
     "name": "Round Corners (Replaced by LPE)",
     "id": "fablabchemnitz.de.round_corners",
     "path": "round_corners",
+    "dependent_extensions": null,
     "original_name": "Round Corners",
     "original_id": "org.inkscape.jnweiger.round_corners",
     "license": "GNU GPL v2",

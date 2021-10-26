@@ -3,6 +3,7 @@
     "name": "Polygen",
     "id": "fablabchemnitz.de.polygenn",
     "path": "polygen",
+    "dependent_extensions": null,
     "original_name": "Polygen",
     "original_id": "org.inkscape.polygen",
     "license": "GNU GPL v3",

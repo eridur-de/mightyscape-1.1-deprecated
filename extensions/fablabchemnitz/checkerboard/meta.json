@@ -3,6 +3,7 @@
     "name": "Checkerboard",
     "id": "fablabchemnitz.de.checkerboard",
     "path": "checkerboard",
+    "dependent_extensions": null,
     "original_name": "Checkerboard",
     "original_id": "org.jeffkayser.checkerboard",
     "license": "GNU GPL v2",

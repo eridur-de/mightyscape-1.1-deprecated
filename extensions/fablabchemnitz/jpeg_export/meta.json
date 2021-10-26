@@ -3,6 +3,7 @@
     "name": "JPEG Export",
     "id": "fablabchemnitz.de.jpeg_export",
     "path": "jpeg_export",
+    "dependent_extensions": null,
     "original_name": "JPEG Export",
     "original_id": "id.giac.export.jpg",
     "license": "GNU GPL v3",

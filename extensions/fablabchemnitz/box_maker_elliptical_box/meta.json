@@ -3,6 +3,7 @@
     "name": "Box Maker - Elliptical Box",
     "id": "fablabchemnitz.de.box_maker_elliptical_box",
     "path": "box_maker_elliptical_box",
+    "dependent_extensions": null,
     "original_name": " Elliptical Box Maker",
     "original_id": "be.fablab-leuven.inkscape.elliptical_box",
     "license": "MIT License",

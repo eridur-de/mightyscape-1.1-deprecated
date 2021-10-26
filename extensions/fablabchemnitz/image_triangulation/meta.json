@@ -3,6 +3,7 @@
     "name": "Image Triangulation",
     "id": "fablabchemnitz.de.image_triangulation",
     "path": "image_triangulation",
+    "dependent_extensions": null,
     "original_name": "Triangulation",
     "original_id": "org.inkscape.triangulation",
     "license": "GNU GPL v2",

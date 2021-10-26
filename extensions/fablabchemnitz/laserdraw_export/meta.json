@@ -3,6 +3,7 @@
     "name": "LaserDraw Export (<various>)",
     "id": "fablabchemnitz.de.laserdraw_export.<various>",
     "path": "laserdraw_export",
+    "dependent_extensions": null,
     "original_name": "LaserDraw (LaserDRW) <various>",
     "original_id": "com.scorchworks.output.<various>",
     "license": "GNU GPL v2",

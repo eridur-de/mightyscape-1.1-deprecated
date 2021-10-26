@@ -3,6 +3,7 @@
     "name": "Sheet Metal Conus",
     "id": "fablabchemnitz.de.sheet_metal_conus",
     "path": "sheet_metal_conus",
+    "dependent_extensions": null,
     "original_name": "Sheet Metal Conus",
     "original_id": "sheet_metal_conus",
     "license": "GNU LGPL v3",

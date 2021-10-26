@@ -3,6 +3,7 @@
     "name": "Scale To Size (Replaced by default transform scale)",
     "id": "fablabchemnitz.de.scale_to_size",
     "path": "scale_to_size",
+    "dependent_extensions": null,
     "original_name": "Scale To Size (Replaced by default transform scale)",
     "original_id": "fablabchemnitz.de.scale_to_size",
     "license": "GNU GPL v3",

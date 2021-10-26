@@ -3,6 +3,7 @@
     "name": "Convert Vertical/Horizontal To Line",
     "id": "fablabchemnitz.de.convert_vertical_horizontal_to_line",
     "path": "convert_vertical_horizontal_to_line",
+    "dependent_extensions": null,
     "original_name": "Convert Vertical/Horizontal To Line",
     "original_id": "fablabchemnitz.de.convert_vertical_horizontal_to_line",
     "license": "GNU GPL v3",

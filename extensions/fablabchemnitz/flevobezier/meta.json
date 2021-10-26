@@ -3,6 +3,7 @@
     "name": "Flevobézier",
     "id": "fablabchemnitz.de.flevobezier",
     "path": "flevobezier",
+    "dependent_extensions": null,
     "original_name": "Flevobézier",
     "original_id": "org.parclytaxel.inkscape.flevobezier",
     "license": "MIT License",

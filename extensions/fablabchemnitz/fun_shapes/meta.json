@@ -3,6 +3,7 @@
     "name": "Fun Shapes",
     "id": "fablabchemnitz.de.fun_shapes",
     "path": "fun_shapes",
+    "dependent_extensions": null,
     "original_name": "Fun Shapes",
     "original_id": "org.inkscape.funshapes",
     "license": "GNU GPL v3",

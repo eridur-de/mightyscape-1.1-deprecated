@@ -3,6 +3,7 @@
     "name": "Export Selection As ...",
     "id": "fablabchemnitz.de.export_selection_as",
     "path": "export_selection_as",
+    "dependent_extensions": null,
     "original_name": "Export selection as svg",
     "original_id": "sk.linuxos.export_selection",
     "license": "MIT License",

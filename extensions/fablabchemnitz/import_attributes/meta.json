@@ -3,6 +3,7 @@
     "name": "Import Attributes",
     "id": "fablabchemnitz.de.import_attributes",
     "path": "import_attributes",
+    "dependent_extensions": null,
     "original_name": "Import Attributes",
     "original_id": "com.mathem.attrib_import.py",
     "license": "GNU LGPL v2",

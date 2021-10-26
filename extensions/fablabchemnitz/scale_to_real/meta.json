@@ -3,6 +3,7 @@
     "name": "Scale To Real",
     "id": "fablabchemnitz.de.scale_to_real",
     "path": "scale_to_real",
+    "dependent_extensions": null,
     "original_name": "RealScale",
     "original_id": "org.inkscape.effect.realscale",
     "license": "GNU GPL v3",

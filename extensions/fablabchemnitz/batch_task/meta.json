@@ -3,6 +3,7 @@
     "name": "Batch Task",
     "id": "fablabchemnitz.de.batch_task",
     "path": "batch_task",
+    "dependent_extensions": null,
     "original_name": "BatchTask",
     "original_id": "org.inkscape.batch_task",
     "license": "MIT License",

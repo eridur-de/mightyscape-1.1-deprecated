@@ -3,6 +3,7 @@
     "name": "Sundial Declining",
     "id": "fablabchemnitz.de.sundial_declining",
     "path": "sundial_declining",
+    "dependent_extensions": null,
     "original_name": "Sundial",
     "original_id": "fr.electropol.tableausimple.inkscape",
     "license": "Public Domain",

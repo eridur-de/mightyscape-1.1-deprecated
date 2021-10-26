@@ -3,6 +3,7 @@
     "name": "X-Agram",
     "id": "fablabchemnitz.de.x_agram",
     "path": "x_agram",
+    "dependent_extensions": null,
     "original_name": "X-agram",
     "original_id": "com.kacmarcik.pathmonkey.x-agram",
     "license": "MIT License",

@@ -3,6 +3,7 @@
     "name": "Remove Duplicate Lines",
     "id": "fablabchemnitz.de.remove_duplicate_lines",
     "path": "remove_duplicate_lines",
+    "dependent_extensions": null,
     "original_name": "Remove duplicate lines",
     "original_id": "EllenWasbo.cutlings.RemoveDuplicateLines",
     "license": "GNU GPL v2",

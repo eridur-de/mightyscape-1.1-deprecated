@@ -3,6 +3,7 @@
     "name": "DXF 2 Papercraft",
     "id": "fablabchemnitz.de.dxf2papercraft",
     "path": "dxf2papercraft",
+    "dependent_extensions": null,
     "original_name": "DXF 2 Papercraft",
     "original_id": "fablabchemnitz.de.dxf2papercraft",
     "license": "GNU GPL v3",

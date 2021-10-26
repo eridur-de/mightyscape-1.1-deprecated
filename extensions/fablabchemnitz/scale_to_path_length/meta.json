@@ -3,6 +3,7 @@
     "name": "Scale To Path Length",
     "id": "fablabchemnitz.de.scale_to_path_length",
     "path": "scale_to_path_length",
+    "dependent_extensions": null,
     "original_name": "Paste Length",
     "original_id": "paste.svg.paste.length",
     "license": "GNU GPL v2",

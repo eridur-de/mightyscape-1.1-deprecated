@@ -3,6 +3,7 @@
     "name": "Edit Attributes",
     "id": "fablabchemnitz.de.edit_attributes",
     "path": "edit_attributes",
+    "dependent_extensions": null,
     "original_name": "Edit Attributes",
     "original_id": "com.mathem.attrib_editor",
     "license": "GNU LGPL v2",

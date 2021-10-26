@@ -3,6 +3,7 @@
     "name": "Collar",
     "id": "fablabchemnitz.de.collar",
     "path": "collar",
+    "dependent_extensions": null,
     "original_name": "Collar",
     "original_id": "org.inkscape.collarz",
     "license": "GNU GPL v3",

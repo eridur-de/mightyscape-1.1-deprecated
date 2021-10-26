@@ -3,6 +3,7 @@
     "name": "SVGO Output",
     "id": "fablabchemnitz.de.svgo_output",
     "path": "svgo_output",
+    "dependent_extensions": null,
     "original_name": "SVGO Output",
     "original_id": "org.inkscape.output.svgo",
     "license": "MIT License",

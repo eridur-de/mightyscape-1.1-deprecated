@@ -3,6 +3,7 @@
     "name": "Box Maker - T-Slot",
     "id": "fablabchemnitz.de.box_maker_t_slot",
     "path": "box_maker_t_slot",
+    "dependent_extensions": null,
     "original_name": "T-Slot Box Maker",
     "original_id": "eu.twot.render.my_boxmaker",
     "license": "GNU GPL v3",

@@ -3,6 +3,7 @@
     "name": "Buxtronix Living Hinges",
     "id": "fablabchemnitz.de.buxtronix_living_hinges",
     "path": "buxtronix_living_hinges",
+    "dependent_extensions": null,
     "original_name": "Living Hinges",
     "original_id": "net.buxtronix.living_hinge",
     "license": "GNU GPL v3",

@@ -3,6 +3,7 @@
     "name": "Pixels To Objects",
     "id": "fablabchemnitz.de.pixels2objects",
     "path": "pixels2objects",
+    "dependent_extensions": null,
     "original_name": "Pixels To Objects",
     "original_id": "org.pakin.filter.pixels2objects",
     "license": "GNU GPL v3",

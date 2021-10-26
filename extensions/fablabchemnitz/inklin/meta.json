@@ -3,6 +3,7 @@
     "name": "Inklin",
     "id": "fablabchemnitz.de.inklin",
     "path": "inklin",
+    "dependent_extensions": null,
     "original_name": "Inklin",
     "original_id": "org.inkscape.inklin",
     "license": "GNU GPL v3",

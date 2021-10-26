@@ -3,6 +3,7 @@
     "name": "Chain Paths",
     "id": "fablabchemnitz.de.chain_paths",
     "path": "chain_paths",
+    "dependent_extensions": null,
     "original_name": "Chain Paths",
     "original_id": "com.github.fablabnbg.inskscape-chain-paths",
     "license": "GNU GPL v2",

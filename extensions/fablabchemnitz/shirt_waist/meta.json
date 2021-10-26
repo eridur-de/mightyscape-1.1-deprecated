@@ -3,6 +3,7 @@
     "name": "Shirt Waist (Sara May Allington)",
     "id": "fablabchemnitz.de.shirt_waist",
     "path": "shirt_waist",
+    "dependent_extensions": null,
     "original_name": "unknown",
     "original_id": "unknown",
     "license": "GNU GPL v2 / CC BY-NC 3.0",

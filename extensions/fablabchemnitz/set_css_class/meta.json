@@ -3,6 +3,7 @@
     "name": "Set CSS Class On Elements",
     "id": "fablabchemnitz.de.set_css_class",
     "path": "set_css_class",
+    "dependent_extensions": null,
     "original_name": "Set CSS class on elements",
     "original_id": "org.inkscape.stylesheet.set",
     "license": "GNU GPL",

@@ -3,6 +3,7 @@
     "name": "Guillotine Plus",
     "id": "fablabchemnitz.de.guillotine_plus",
     "path": "guillotine_plus",
+    "dependent_extensions": null,
     "original_name": "Guillotine Plus",
     "original_id": "org.inkscape.guillotineplus",
     "license": "GNU GPL v2",

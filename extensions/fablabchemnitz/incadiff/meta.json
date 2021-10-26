@@ -3,6 +3,7 @@
     "name": "Incadiff",
     "id": "fablabchemnitz.de.incadiff",
     "path": "incadiff",
+    "dependent_extensions": null,
     "original_name": "Incadiff",
     "original_id": "org.incaya.incadiff",
     "license": "GNU GPL v2",

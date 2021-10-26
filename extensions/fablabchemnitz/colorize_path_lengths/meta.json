@@ -3,6 +3,7 @@
     "name": "Colorize Path Lengths",
     "id": "fablabchemnitz.de.colorize_path_lengths",
     "path": "colorize_path_lengths",
+    "dependent_extensions": null,
     "original_name": "<unknown>",
     "original_id": "<unknown>",
     "license": "GNU GPL v2",

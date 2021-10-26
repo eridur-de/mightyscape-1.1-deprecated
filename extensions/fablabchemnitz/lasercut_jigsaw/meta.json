@@ -3,6 +3,7 @@
     "name": "Lasercut Jigsaw",
     "id": "fablabchemnitz.de.lasercut_jigsaw",
     "path": "lasercut_jigsaw",
+    "dependent_extensions": null,
     "original_name": "Lasercut Jigsaw",
     "original_id": "org.inkscape.LasercutJigsa",
     "license": "GNU GPL v2",

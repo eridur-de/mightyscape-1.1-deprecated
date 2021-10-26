@@ -3,6 +3,7 @@
     "name": "Open In Roland CutStudio",
     "id": "fablabchemnitz.de.open_in_roland_cutstudio",
     "path": "open_in_roland_cutstudio",
+    "dependent_extensions": null,
     "original_name": "Open in CutStudio",
     "original_id": "roland_custudio.export",
     "license": "GNU GPL v2",

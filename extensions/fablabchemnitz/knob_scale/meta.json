@@ -3,6 +3,7 @@
     "name": "Knob Scale",
     "id": "fablabchemnitz.de.knob_scale",
     "path": "knob_scale",
+    "dependent_extensions": null,
     "original_name": "Knob Scale",
     "original_id": "com.knob_scale",
     "license": "GNU GPL v3",

@@ -3,6 +3,7 @@
     "name": "Rounder",
     "id": "fablabchemnitz.de.rounder",
     "path": "rounder",
+    "dependent_extensions": null,
     "original_name": "Rounder",
     "original_id": "jtx.rounder",
     "license": "GNU GPL v2",

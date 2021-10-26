@@ -3,6 +3,7 @@
     "name": "WebP Import",
     "id": "fablabchemnitz.de.webp_import",
     "path": "webp_import",
+    "dependent_extensions": null,
     "original_name": "WebP Import",
     "original_id": "fablabchemnitz.de.webp_import",
     "license": "GNU GPL v3",

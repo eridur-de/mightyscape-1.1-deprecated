@@ -3,6 +3,7 @@
     "name": "Offset Paths",
     "id": "fablabchemnitz.de.offset_paths",
     "path": "offset_paths",
+    "dependent_extensions": null,
     "original_name": "Offset Paths",
     "original_id": "fablabchemnitz.de.offset_paths",
     "license": "GNU GPL v3",

@@ -3,6 +3,7 @@
     "name": "Filter By Length/Area",
     "id": "fablabchemnitz.de.filter_by_length_area",
     "path": "filter_by_length_area",
+    "dependent_extensions": null,
     "original_name": "Filter By Length/Area",
     "original_id": "com.filter_by_length_area",
     "license": "GNU GPL v3",

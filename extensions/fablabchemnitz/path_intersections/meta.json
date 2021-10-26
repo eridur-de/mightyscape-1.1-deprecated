@@ -3,6 +3,7 @@
     "name": "Path Intersections",
     "id": "fablabchemnitz.de.path_intersections",
     "path": "path_intersections",
+    "dependent_extensions": null,
     "original_name": "<unknown>",
     "original_id": "<unknown>",
     "license": "GNU GPL v2",

@@ -3,6 +3,7 @@
     "name": "Imagetracer.js",
     "id": "fablabchemnitz.de.imagetracerjs",
     "path": "imagetracerjs",
+    "dependent_extensions": null,
     "original_name": "Imagetracer.js",
     "original_id": "fablabchemnitz.de.imagetracerjs",
     "license": "GNU GPL v3",

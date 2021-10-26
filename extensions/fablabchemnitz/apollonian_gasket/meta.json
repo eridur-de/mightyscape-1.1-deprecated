@@ -3,6 +3,7 @@
     "name": "Apollonian Gasket",
     "id": "fablabchemnitz.de.apollonian_gasket",
     "path": "apollonian_gasket",
+    "dependent_extensions": null,
     "original_name": "Apollonian Gasket 0.0",
     "original_id": "githubacct.uniqueid.apollonian",
     "license": "MIT License",

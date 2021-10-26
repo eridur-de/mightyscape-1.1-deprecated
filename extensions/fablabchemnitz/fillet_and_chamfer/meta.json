@@ -3,6 +3,7 @@
     "name": "Fillet And Chamfer (Replaced by LPE)",
     "id": "fablabchemnitz.de.fillet_and_chamfer",
     "path": "fillet_and_chamfer",
+    "dependent_extensions": null,
     "original_name": "Fillet and Chamfer",
     "original_id": "org.ekips.filter.filletchamfer",
     "license": "GNU GPL v2",

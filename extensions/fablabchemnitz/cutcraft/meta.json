@@ -3,6 +3,7 @@
     "name": "<various>",
     "id": "fablabchemnitz.de.cutcraft.<various>",
     "path": "cutcraft",
+    "dependent_extensions": null,
     "original_name": "<various>",
     "original_id": "cutcraft.<various>",
     "license": "GNU GPL v3",

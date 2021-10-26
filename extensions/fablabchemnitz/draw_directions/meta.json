@@ -3,6 +3,7 @@
     "name": "Draw Directions",
     "id": "fablabchemnitz.de.draw_directions",
     "path": "draw_directions",
+    "dependent_extensions": null,
     "original_name": "Draw Directions",
     "original_id": "fablabchemnitz.de.draw_directions",
     "license": "GNU GPL v3",

@@ -3,6 +3,7 @@
     "name": "Simple Frame",
     "id": "fablabchemnitz.de.simple_frame",
     "path": "simple_frame",
+    "dependent_extensions": null,
     "original_name": "Simple Frame",
     "original_id": "org.inkscape.estucheria.caja4p",
     "license": "GNU GPL v3",

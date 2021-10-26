@@ -3,6 +3,7 @@
     "name": "Polyhedra",
     "id": "fablabchemnitz.de.polyhedra",
     "path": "polyhedra",
+    "dependent_extensions": null,
     "original_name": "<various>",
     "original_id": "net.fabhub.polyhedra.<various>",
     "license": "GNU GPL v2",

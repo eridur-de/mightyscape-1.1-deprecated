@@ -3,6 +3,7 @@
     "name": "DXF/DWG Importer",
     "id": "fablabchemnitz.de.dxf_dwg_importer",
     "path": "dxf_dwg_importer",
+    "dependent_extensions": null,
     "original_name": "DXF/DWG Importer",
     "original_id": "fablabchemnitz.de.dxf_dwg_importer",
     "license": "GNU GPL v3",

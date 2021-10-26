@@ -3,6 +3,7 @@
     "name": "Flash Burst",
     "id": "fablabchemnitz.de.flash_burst",
     "path": "flash_burst",
+    "dependent_extensions": null,
     "original_name": "FlashBurst",
     "original_id": "hipix.FlashBurst",
     "license": "GNU AGPL v3",

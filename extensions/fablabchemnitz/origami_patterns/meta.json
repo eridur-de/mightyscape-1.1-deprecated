@@ -3,6 +3,7 @@
     "name": "Origami Pattern - <various>",
     "id": "fablabchemnitz.de.origami_patterns.<various>",
     "path": "origami_patterns",
+    "dependent_extensions": null,
     "original_name": "<various>",
     "original_id": "org.inkscape.Origami_patterns.<various>",
     "license": "MIT License",

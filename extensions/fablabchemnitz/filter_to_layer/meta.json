@@ -3,6 +3,7 @@
     "name": "Filter To Layer",
     "id": "fablabchemnitz.de.filter_to_layer",
     "path": "filter_to_layer",
+    "dependent_extensions": null,
     "original_name": "Filter to layer",
     "original_id": "org.inkscape.filter.layer",
     "license": "GNU GPL v2",

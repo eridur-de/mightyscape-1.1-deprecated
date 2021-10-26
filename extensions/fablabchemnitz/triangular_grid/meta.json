@@ -3,6 +3,7 @@
     "name": "Triangular Grid",
     "id": "fablabchemnitz.de.triangular_grid",
     "path": "triangular_grid",
+    "dependent_extensions": null,
     "original_name": "Triangular Grid",
     "original_id": "grid.triangular",
     "license": "GNU GPL v2",

@@ -3,6 +3,7 @@
     "name": "Laser Check",
     "id": "fablabchemnitz.de.laser_check",
     "path": "laser_check",
+    "dependent_extensions": null,
     "original_name": "Laser Checkr",
     "original_id": "fablabchemnitz.de.laser_check",
     "license": "GNU GPL v4",

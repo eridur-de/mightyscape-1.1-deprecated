@@ -3,6 +3,7 @@
     "name": "Tab Generator",
     "id": "fablabchemnitz.de.tab_generator",
     "path": "tab_generator",
+    "dependent_extensions": null,
     "original_name": "Tabgen",
     "original_id": "org.inkscape.tabgen",
     "license": "GNU GPL v3",

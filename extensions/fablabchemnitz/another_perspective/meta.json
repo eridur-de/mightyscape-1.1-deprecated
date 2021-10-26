@@ -3,6 +3,7 @@
     "name": "Another Perspective",
     "id": "fablabchemnitz.de.another_perspective",
     "path": "another_perspective",
+    "dependent_extensions": null,
     "original_name": "AnotherPerspective",
     "original_id": "macrico.anotherperspective",
     "license": "GNU GPL v3",

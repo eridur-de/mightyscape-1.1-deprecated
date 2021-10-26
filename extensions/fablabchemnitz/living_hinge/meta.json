@@ -3,6 +3,7 @@
     "name": "Living Hinge (Fit To Rectangle)",
     "id": "fablabchemnitz.de.living_hinge",
     "path": "living_hinge",
+    "dependent_extensions": null,
     "original_name": "Living Hinge",
     "original_id": "org.lvl1.living_hinge",
     "license": "GNU GPL v3",

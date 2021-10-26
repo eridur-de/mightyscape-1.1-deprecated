@@ -3,6 +3,7 @@
     "name": "Show Path Coordinates",
     "id": "fablabchemnitz.de.show_path_coordinates",
     "path": "show_path_coordinates",
+    "dependent_extensions": null,
     "original_name": "Export XY",
     "original_id": "org.simarilius.filter.ExportXY",
     "license": "GNU GPL v3",

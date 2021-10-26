@@ -3,6 +3,7 @@
     "name": "AI compatible EPS output",
     "id": "fablabchemnitz.de.ai_compatible_eps_output",
     "path": "ai_compatible_eps_output",
+    "dependent_extensions": null,
     "original_name": "AI compatible EPS output",
     "original_id": "org.inkscape.output.ai_eps",
     "license": "MIT License",

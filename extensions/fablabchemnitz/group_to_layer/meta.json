@@ -3,6 +3,7 @@
     "name": "Group To Layer",
     "id": "fablabchemnitz.de.group_to_layer",
     "path": "group_to_layer",
+    "dependent_extensions": null,
     "original_name": "Group to Layer",
     "original_id": "org.pernsteiner.inkscape.group_to_layer",
     "license": "BSD-2-Clause License",

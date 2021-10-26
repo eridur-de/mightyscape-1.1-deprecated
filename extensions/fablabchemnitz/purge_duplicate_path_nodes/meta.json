@@ -3,6 +3,7 @@
     "name": "Purge Duplicate Path Nodes",
     "id": "fablabchemnitz.de.purge_duplicate_path_nodes",
     "path": "purge_duplicate_path_nodes",
+    "dependent_extensions": null,
     "original_name": "Remove duplicate nodes",
     "original_id": "EllenWasbo.cutlings.RemoveDuplicateNodes",
     "license": "GNU GPL v2",

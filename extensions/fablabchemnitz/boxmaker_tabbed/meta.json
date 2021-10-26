@@ -3,6 +3,7 @@
     "name": "Box Maker - <various>",
     "id": "fablabchemnitz.de.boxmaker_tabbed.<various>",
     "path": "boxmaker_tabbed",
+    "dependent_extensions": null,
     "original_name": [
       "Schroff Box Maker",
       "CNC Tabbed Box Maker"

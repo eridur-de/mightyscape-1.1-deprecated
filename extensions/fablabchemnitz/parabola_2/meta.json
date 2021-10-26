@@ -3,6 +3,7 @@
     "name": "Parabola 2",
     "id": "fablabchemnitz.de.parabola_2",
     "path": "parabola_2",
+    "dependent_extensions": null,
     "original_name": "Parabola",
     "original_id": "org.inkscape.render.parabola",
     "license": "GNU GPL v3",
