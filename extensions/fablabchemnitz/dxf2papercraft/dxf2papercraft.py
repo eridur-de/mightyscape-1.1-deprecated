@@ -17,7 +17,7 @@ To make it work you need to install at least java.
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 11.09.2020
-Last patch: 18.04.2021
+Last patch: 26.10.2021
 License: GNU GPL v3
 
 Module licenses
@@ -29,7 +29,7 @@ ToDos:
 - maybe add some DXF model preview tool (maybe a useless idea at all)
 """
 
-class PapercraftUnfold(inkex.EffectExtension):
+class DXF2Papercraft(inkex.EffectExtension):
     
     def add_arguments(self, pars):
         pars.add_argument("--tab")    
@@ -145,4 +145,4 @@ class PapercraftUnfold(inkex.EffectExtension):
                 self.msg("Error resizing to bounding box.")
 
 if __name__ == '__main__':
-    PapercraftUnfold().run()
+    DXF2Papercraft().run()

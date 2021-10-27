@@ -1,10 +1,10 @@
 [
   {
-    "name": "PlyCutter",
+    "name": "PlyCutter (Unstable)",
     "id": "fablabchemnitz.de.plycutter",
     "path": "plycutter",
     "dependent_extensions": null,
-    "original_name": "PlyCutter",
+    "original_name": "PlyCutter (Unstable)",
     "original_id": "fablabchemnitz.de.plycutter",
     "license": "GNU AGPL v3",
     "license_url": "https://github.com/tjltjl/plycutter/blob/master/LICENSE-agpl-3.0.txt",
