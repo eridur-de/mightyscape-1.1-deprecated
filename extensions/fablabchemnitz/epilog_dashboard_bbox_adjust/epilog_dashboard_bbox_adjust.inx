@@ -12,7 +12,7 @@
                 <option value="outside_selection">outside of selection</option>
             </param>
             <param name="use_machine_size" type="bool" gui-text="Use machine size (else use symmetric border)">false</param>
-            <param name="machine_size" gui-text="Machine/Size" type="optiongroup" appearance="combo">
+            <param name="machine_size" gui-text="Machine/Size (mm)" type="optiongroup" appearance="combo">
                 <option value="406x305">406 x 305 mm (Zing 16)</option>
                 <option value="610x305">610 x 305 mm (Zing 24 / Fusion Edge 12)</option>    
                 <option value="812x508">812 x 508 mm (Fusion Pro 32 / Fusion M2 32)</option>

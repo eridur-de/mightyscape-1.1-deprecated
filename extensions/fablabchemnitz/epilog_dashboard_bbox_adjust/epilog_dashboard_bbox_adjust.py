@@ -10,7 +10,7 @@ So we add a default (small) amount of 1.0 doc units to expand the document's can
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 21.04.2021
-Last patch: 26.0510.2021
+Last patch: 28.10.2021
 License: GNU GPL v3
 
 #known bugs:
@@ -45,7 +45,7 @@ class EpilogDashboardBboxAdjust(inkex.EffectExtension):
         pars.add_argument("--offset", type=float, default="1.0", help="XY Offset (mm) from top left corner")
         pars.add_argument("--removal", default="none", help="Remove all elements outside the bounding box or selection")
         pars.add_argument("--use_machine_size", type=inkex.Boolean, default=False, help="Use machine size")
-        pars.add_argument("--machine_size", default="812x508", help="Machine/Size")
+        pars.add_argument("--machine_size", default="812x508", help="Machine/Size (mm)")
         pars.add_argument("--debug", type=inkex.Boolean, default=False, help="Debug output")
         pars.add_argument("--skip_errors", type=inkex.Boolean, default=False, help="Skip on errors")
         
@@ -63,15 +63,9 @@ class EpilogDashboardBboxAdjust(inkex.EffectExtension):
             apply_transformations.ApplyTransformations().recursiveFuseTransform(self.document.getroot()) 
         
         offset = self.options.offset
-        units = "mm" #force millimeters
+        units = self.svg.unit
         scale_factor = self.svg.unittouu("1px")
-        #namedView = self.document.getroot().find(inkex.addNS('namedview', 'sodipodi'))
-        #doc_units = namedView.get(inkex.addNS('document-units', 'inkscape'))
-        #doc_units = self.svg.unit
         #https://wiki.inkscape.org/wiki/Units_In_Inkscape
-        #remove sodipodi units. Some actions add units to namedview, but we already have "inkscape:document-units".
-        #namedView.pop('units')
-        #del namedView.attrib["units"] #does the same like namedView.pop('units')
 
         # create a new bounding box and get the bbox size of all elements of the document (we cannot use the page's bbox)
         bbox = inkex.BoundingBox()
@@ -142,8 +136,8 @@ class EpilogDashboardBboxAdjust(inkex.EffectExtension):
 
     # adjust the viewBox to the bbox size and add the desired offset
         if self.options.use_machine_size is True:
-            machineWidth = float(self.options.machine_size.split('x')[0])
-            machineHeight = float(self.options.machine_size.split('x')[1])
+            machineWidth = self.svg.unittouu(self.options.machine_size.split('x')[0] + "mm")
+            machineHeight = self.svg.unittouu(self.options.machine_size.split('x')[1] + "mm")
             width = f'{machineWidth}' + units
             height = f'{machineHeight}' + units
             viewBoxXmin = -offset
