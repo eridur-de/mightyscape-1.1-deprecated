@@ -27,7 +27,7 @@ Extension for InkScape 1.X
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 09.04.2021
-Last patch: 26.10.2021
+Last patch: 28.10.2021
 License: GNU GPL v3
 """
 
@@ -50,7 +50,8 @@ class LinksCreator(inkex.EffectExtension):
         pars.add_argument("--link_multiplicator", type=int, default=1, help="If set, we create a set of multiple gaps of same size next to the main gap")
         pars.add_argument("--length_link", type=float, default=1.000, help="Link length")
         pars.add_argument("--link_offset", type=float, default=0.000, help="Link offset (+/-)")
-        pars.add_argument("--switch_pattern", type=inkex.Boolean, default=False, help="If enabled, we use gap length as dash length (switches the dasharray pattern")       
+        pars.add_argument("--switch_pattern", type=inkex.Boolean, default=False, help="If enabled, we use gap length as dash length (switches the dasharray pattern")
+        pars.add_argument("--weakening_mode", type=inkex.Boolean, default=False, help="If enabled, we colorize the swap links in #0000ff (blue) and disable the option 'Keep selected elements'")
         pars.add_argument("--custom_dasharray_value", default="", help="A list of separated lengths that specify the lengths of alternating dashes and gaps. Input only accepts numbers. It ignores percentages or other characters.")
         pars.add_argument("--custom_dashoffset_value", type=float, default=0.000, help="Link offset (+/-)")       
         pars.add_argument("--length_filter", type=inkex.Boolean, default=False, help="Enable path length filtering")
@@ -113,7 +114,7 @@ class LinksCreator(inkex.EffectExtension):
                 pass
                          
             # if keeping is enabled we make of copy of the current element and insert it while modifying the original ones. We could also delete the original and modify a copy...
-            if self.options.keep_selected is True:
+            if self.options.keep_selected is True and self.options.weakening_mode is False:
                 parent = element.getparent()
                 idx = parent.index(element)
                 copyelement = copy.copy(element)
@@ -238,6 +239,18 @@ class LinksCreator(inkex.EffectExtension):
                 style = 'fill:{};stroke:{};stroke-width:{};stroke-dasharray:{};stroke-dashoffset:{};'.format(default_fill, default_stroke, default_stroke_width, stroke_dasharray, stroke_dashoffset)
                 element.set('style', style)
 
+            #if enabled, we override stroke color with blue (now, as the element definitely has a style)
+            if self.options.weakening_mode is True and self.options.switch_pattern is True:
+                declarations = element.get('style').split(';')
+                for i, decl in enumerate(declarations):
+                    parts = decl.split(':', 2)
+                    if len(parts) == 2:
+                        (prop, val) = parts
+                        prop = prop.strip().lower()
+                        if prop == 'stroke':
+                            declarations[i] = prop + ':{}'.format("#0000ff")
+                element.set('style', ';'.join(declarations)) #apply new style to element
+
             # Print some info about values
             if self.options.show_info is True:
                 self.msg("element " + element.get('id') + ":")
@@ -259,6 +272,7 @@ class LinksCreator(inkex.EffectExtension):
             if self.options.no_convert is False:
                 style = element.style #get the style again, but this time as style class    
                     
+                gaps = []    
                 new = []
                 for sub in element.path.to_superpath():
                     idash = 0
@@ -286,17 +300,17 @@ class LinksCreator(inkex.EffectExtension):
                             new.append([sub[i]])
                         else:
                             new[-1].append(sub[i])
-                        i += 1
+                        i += 1  
                      
                 #filter pointy subpaths
-                final = []
+                final_new = []
                 for sub in new:
                     if len(sub) > 1:
-                        final.append(sub)
-       
+                        final_new.append(sub)
+                        
                 style.pop('stroke-dasharray')
                 element.pop('sodipodi:type')
-                element.path = CubicSuperPath(final)
+                element.path = CubicSuperPath(final_new)
                 element.style = style
                 
                 # break apart the combined path to have multiple elements
