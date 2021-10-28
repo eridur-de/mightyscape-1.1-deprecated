@@ -7,13 +7,11 @@ Extension for InkScape 1.X
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 14.05.2021
-Last patch: 23.07.2021
+Last patch: 28.10.2021
 License: GNU GPL v3
 
 ToDo
-    - enable stash option
-    - add while loop to list all remoteCommits by jumping from parent to parent
-    - add option to create/init .git repo from zip downloaded MightyScape version (to enable upgrader) if no .git dir was found
+    - add routine to check for differences between remotes (unequal commits)
 """
 
 import inkex
@@ -29,23 +27,30 @@ except:
 
 class AboutUpgradeMightyScape(inkex.EffectExtension):
 
-    def update(self, local_repo, remote):
+    def update(self, local_repo, remote, localCommitCount):
+        self.msg("Chosen remote is: {}".format(remote))
         try:
             localCommit = local_repo.head.commit
-            remote_repo = git.remote.Remote(local_repo, 'origin')
+            remote_repo = git.remote.Remote(local_repo, remote)
             remoteCommit = remote_repo.fetch()[0].commit
             self.msg("Latest remote commit is: " + str(remoteCommit)[:7])
-
+            remoteCommitCount = 0 
+            for c in remote_repo.repo.iter_commits('origin/master'):
+                remoteCommitCount += 1
+            self.msg("Commits at remote: {}".format(remoteCommitCount))
+                
             if localCommit.hexsha != remoteCommit.hexsha:
                 ssh_executable = 'git'
                 with local_repo.git.custom_environment(GIT_SSH=ssh_executable):
-                    origin = local_repo.remotes.origin
-                    origin.fetch()
-                      
-                    fetch_info = origin.pull() #finally pull new data               
+                    #origin = local_repo.remotes.origin
+                    #origin.fetch()
+                    #fetch_info = origin.pull() #finally pull new data
+                    fetch_info = remote_repo.fetch()
+                    remote_repo.pull() #finally pull new data
+    
                     for info in fetch_info: #should return only one line in total
-                        inkex.utils.debug("Updated %s to commit id %s" % (info.ref, str(info.commit)[:7])) 
-                    
+                        inkex.utils.debug("Updated {} to commit id {}. {} commits were pulled".format(info.ref, str(info.commit)[:7], remoteCommitCount - localCommitCount)) 
+    
                     inkex.utils.debug("Please restart Inkscape to let the changes take effect.")  
 
             else:
@@ -125,15 +130,17 @@ class AboutUpgradeMightyScape(inkex.EffectExtension):
                         inkex.utils.debug("There are some untracked files in your MightyScape directory. Still trying to pull recent files from git...")
               
             localLatestCommit = local_repo.head.commit
-            localCommits = list(local_repo.iter_commits("origin/master", max_count=10, skip=0))
+            localCommits = list(local_repo.iter_commits("origin/master", skip=0))
+            localCommitCount = len(localCommits)
             self.msg("Local commit id is: " + str(localLatestCommit)[:7])
-            self.msg("There are {} local commits at the moment.".format(len(localCommits)))
+            self.msg("There are {} local commits at the moment.".format(localCommitCount))
+            localCommits = localCommits[:10] #get only last ten commits
             localCommitList = []
             for localCommit in localCommits:
                 localCommitList.append(localCommit)
             #localCommitList.reverse()
             self.msg("*"*40)
-            self.msg("Latest local commits are:")
+            self.msg("Latest {} local commits are:".format(len(localCommits)))
             for i in range(0, len(localCommits)):
                 self.msg("{} | {} : {}".format(
                     datetime.utcfromtimestamp(localCommitList[i].committed_date).strftime('%Y-%m-%d %H:%M:%S'),
@@ -144,10 +151,10 @@ class AboutUpgradeMightyScape(inkex.EffectExtension):
             self.msg("*"*40)
             
             #finally run the update
-            success = self.update(local_repo, remotes[0][0])
+            success = self.update(local_repo, remotes[0][1], localCommitCount)
             if success is False: #try the second remote if first failed
                 self.msg("Error receiving latest remote commit from main git remote {}. Trying second remote ...".format(remotes[0][0]))
-                success = self.update(local_repo, remotes[1][0])
+                success = self.update(local_repo, remotes[1][1], localCommitCount)
             if success is False: #if still false:
                 self.msg("Error receiving latest remote commit from second git remote {}.\nAre you offline? Cannot continue!".format(remotes[0][0]))
                 exit(1)

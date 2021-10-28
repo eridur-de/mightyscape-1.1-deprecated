@@ -4,8 +4,14 @@
 	<id>fablabchemnitz.de.about_upgrade_mightyscape</id>
     <param name="tab" type="notebook">
         <page name="tab_settings" gui-text="Upgrade Options">
+            <label appearance="header">Install Updates / Options</label>
             <param name="convert_to_git" type="bool" gui-text="Convert to .git" gui-description="If you downloaded MightyScape as .zip or .tar.gz you cannot upgrade using this extension. But you can convert your downloaded directory to a .git one by enabling this option">false</param>
             <param name="stash_untracked" type="bool" gui-text="Stash untracked files" gui-description="Enable to drop your local changes">false</param>
+            <label>Click "Apply" to upgrade MightyScape to recent version!</label>
+            <spacer />
+            <label appearance="header">Hint: Zip File Mirror</label>
+            <label>There's also a zip file mirror of all MightyScape extensions. This was made for the lazy or picky one's!</label>
+            <label appearance="url">https://gitea.fablabchemnitz.de/FabLab_Chemnitz/mightyscape-1.X-zipmirror</label>
         </page>
         <page name="tab_about" gui-text="About">
             <label appearance="header">MightyScape Extension Collection</label>
@@ -17,8 +23,6 @@
             <label appearance="header">Contributing</label>
             <label appearance="url">https://gitea.fablabchemnitz.de/FabLab_Chemnitz/mightyscape-1.X</label>
             <label appearance="url">mailto:mario.voigt@stadtfabrikanten.org</label>
-            <spacer />
-            <label appearance="header">Click "Apply" to upgrade MightyScape to recent version!</label>
         </page>
         <page name="tab_donate" gui-text="Donate">
             <label appearance="header">Coffee + Pizza</label>
