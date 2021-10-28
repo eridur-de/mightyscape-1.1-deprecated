@@ -12,14 +12,18 @@ grep -v "validates\|warning: failed to load external entity" 000_xmllint.out; rm
 #complete set of meta information
 AGGLOMERATED_JSON=""
 for folder in */ ; do 
-	if [[ ! -f "${folder}/meta.json" ]]; then
+	if [[ ! -f "${folder}meta.json" ]]; then
     	echo "meta.json missing for ${folder}"
 	else
-		echo ${AGGLOMERATED_JSON} > /tmp/prevJson
-		AGGLOMERATED_JSON=$(jq -s ".[0] + .[1]" /tmp/prevJson ${folder}/meta.json)
-
+	    JSON_OKAY=$(jq -e . ${folder}meta.json)
+	    if [ $? -eq 0 ]; then
+    		echo ${AGGLOMERATED_JSON} > /tmp/prevJson
+    		AGGLOMERATED_JSON=$(jq -s ".[0] + .[1]" /tmp/prevJson ${folder}meta.json)
+        else
+            echo Format error in ${folder}meta.json
+        fi
 		#DEBUG
-		#cat ${folder}/meta.json | jq
+		#cat ${folder}meta.json | jq
 	fi
 done
 #print overall json
@@ -59,7 +63,7 @@ sed -i 's/\*\* with .* \.inx files\*\*/\*\* with \*\*'${INX}' \.inx files\*\*/g'
 
 
 echo "Removing unrequired pyc cache files"
-find . -type d -name "__pycache__" -exec rm -rf {} \;
+find . -type d -name "__pycache__" -exec rm -rf {} \; > /dev/null
 
 
 read -p "Build local gallery extension zip files?" -n 1 -r

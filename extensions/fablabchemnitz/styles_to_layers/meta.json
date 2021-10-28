@@ -6,7 +6,7 @@
     "dependent_extensions": [
       "apply_transformations",
       "remove_empty_groups"
-    ],,
+    ],
     "original_name": "Styles To Layers",
     "original_id": "fablabchemnitz.de.styles_to_layers",
     "license": "GNU GPL v3",
