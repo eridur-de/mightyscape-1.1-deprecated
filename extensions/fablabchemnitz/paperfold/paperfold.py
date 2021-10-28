@@ -52,6 +52,15 @@ class Paperfold(inkex.EffectExtension):
     minAngle = 0
     angleRange = 0
 
+    def getElementChildren(self, element, elements = None):
+        if elements == None:
+            elements = []
+        if element.tag != inkex.addNS('g','svg'):
+                elements.append(element)
+        for child in element.getchildren():
+            self.getElementChildren(child, elements)
+        return elements
+
     # Compute the third point of a triangle when two points and all edge lengths are given
     def getThirdPoint(self, v0, v1, l01, l12, l20):
         v2rotx = (l01 ** 2 + l20 ** 2 - l12 ** 2) / (2 * l01)
@@ -952,12 +961,37 @@ class Paperfold(inkex.EffectExtension):
             paperfoldPageGroup = self.writeSVG(unfoldedComponents[i], maxSize, randomColorSet)
             #translate the groups next to each other to remove overlappings
             if i != 0:
-                previous_bbox = paperfoldMainGroup[i-1].bounding_box()
-                this_bbox = paperfoldPageGroup.bounding_box()
+                #previous_bbox = paperfoldMainGroup[i-1].bounding_box()
+                #as TextElement, Tspan and Circle cause wrong BBox calculation, we have to make it more complex
+                previous_bbox = inkex.BoundingBox()
+                for child in self.getElementChildren(paperfoldMainGroup[i-1]):
+                    if not isinstance (child, inkex.TextElement) and \
+                       not isinstance (child, inkex.Tspan) and \
+                       not isinstance (child, inkex.Circle):
+                        transform = inkex.Transform()
+                        parent = child.getparent()
+                        if parent is not None and isinstance(parent, inkex.ShapeElement):
+                            transform = parent.composed_transform()
+                        previous_bbox += child.bounding_box(transform)
+                          
+                #this_bbox = paperfoldPageGroup.bounding_box()
+                this_bbox = inkex.BoundingBox()
+                for child in self.getElementChildren(paperfoldPageGroup):
+                #as TextElement, Tspan and Circle cause wrong BBox calculation, we have to make it more complex
+                    if not isinstance (child, inkex.TextElement) and \
+                       not isinstance (child, inkex.Tspan) and \
+                       not isinstance (child, inkex.Circle):
+                        transform = inkex.Transform()
+                        parent = child.getparent()
+                        if parent is not None and isinstance(parent, inkex.ShapeElement):
+                            transform = parent.composed_transform()
+                        this_bbox += child.bounding_box(transform)   
+                
+                #self.msg(previous_bbox)
+                #self.msg(this_bbox)
                 paperfoldPageGroup.set("transform", "translate({:0.6f}, 0.0)".format(previous_bbox.left + previous_bbox.width - this_bbox.left + xSpacing))
             paperfoldMainGroup.append(paperfoldPageGroup) 
 
-        
         #apply scale factor
         translation_matrix = [[self.options.scalefactor, 0.0, 0.0], [0.0, self.options.scalefactor, 0.0]]
         paperfoldMainGroup.transform = Transform(translation_matrix) * paperfoldMainGroup.transform

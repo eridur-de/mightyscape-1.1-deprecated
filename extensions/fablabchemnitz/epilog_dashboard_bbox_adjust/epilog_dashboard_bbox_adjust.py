@@ -77,9 +77,12 @@ class EpilogDashboardBboxAdjust(inkex.EffectExtension):
                 The rectangle attributes are set in px. They ignore the real units from namedview. 
                 Strange fact: ellipses, spirals and other primitives work flawlessly.
                 '''
-                if isinstance (element, inkex.Rectangle):
+                if isinstance (element, inkex.Rectangle) or \
+                   isinstance (element, inkex.Circle) or \
+                   isinstance (element, inkex.Ellipse):
                     bbox += element.bounding_box() * scale_factor
-                elif isinstance (element, inkex.TextElement):
+                elif isinstance (element, inkex.TextElement) or \
+                     isinstance (element, inkex.Tspan):
                     if self.options.skip_errors is False:
                         self.msg("Text elements are not supported!")
                         return
@@ -91,9 +94,12 @@ class EpilogDashboardBboxAdjust(inkex.EffectExtension):
             #for element in self.svg.root.getchildren():
             for element in self.document.getroot().iter("*"):
                 if isinstance (element, inkex.ShapeElement) and element.tag != inkex.addNS('use','svg') and element.get('inkscape:groupmode') != 'layer': #bbox fails for svg:use elements and layers:
-                    if isinstance (element, inkex.Rectangle):
-                        bbox += element.bounding_box() * scale_factor
-                    elif isinstance (element, inkex.TextElement):
+                    if isinstance (element, inkex.Rectangle) or \
+                       isinstance (element, inkex.Circle) or \
+                       isinstance (element, inkex.Ellipse):
+                            bbox += element.bounding_box() * scale_factor
+                    elif isinstance (element, inkex.TextElement) or \
+                         isinstance (element, inkex.Tspan):
                         if self.options.skip_errors is False:
                             self.msg("Text elements are not supported!")
                             return
