@@ -17,6 +17,7 @@ class LaserCheck(inkex.EffectExtension):
         pars.add_argument('--checks', default="check_all")
         pars.add_argument('--bbox', type=inkex.Boolean, default=False)
         pars.add_argument('--bbox_offset', type=float, default=5.000)
+        pars.add_argument("--machine_size", default="812x508")
         pars.add_argument('--groups_and_layers', type=inkex.Boolean, default=False)
         pars.add_argument('--clones', type=inkex.Boolean, default=False)
         pars.add_argument('--clippaths', type=inkex.Boolean, default=False)
@@ -63,6 +64,7 @@ class LaserCheck(inkex.EffectExtension):
         pagecolor = namedView.get('pagecolor')
         inkex.utils.debug("---------- Default checks")
         inkex.utils.debug("Document units: {}".format(doc_units))
+        
         '''
         The SVG format is highly complex and offers a lot of possibilities. Most things of SVG we do not
         need for a laser cutter. Usually we need svg:path and maybe svg:image; we can drop a lot of stuff
@@ -79,6 +81,83 @@ class LaserCheck(inkex.EffectExtension):
         inkex.utils.debug("{} non-shape elements in total".format(len(nonShapes)))
         for nonShape in nonShapes:
             inkex.utils.debug("non-shape id={}".format(nonShape.get('id')))
+        
+        
+        '''
+        Nearly each laser job needs a bit of border to place the material inside the laser. Often
+        we have to fixate on vector grid, pin grid or task plate. Thus we need tapes or pins. So we 
+        leave some borders off the actual part geometries.
+        '''
+        if so.checks == "check_all" or so.bbox is True:  
+            inkex.utils.debug("\n---------- Borders around all elements - minimum offset {} mm from each side".format(so.bbox_offset))
+            bbox = inkex.BoundingBox()
+            for element in self.document.getroot().iter(tag=etree.Element):
+                if element != self.document.getroot() and isinstance(element, inkex.ShapeElement) and element.tag != inkex.addNS('use','svg') and element.get('inkscape:groupmode') != 'layer': #bbox fails for svg:use elements and layers
+                    transform = inkex.Transform()
+                    parent = element.getparent()
+                    if parent is not None and isinstance(parent, inkex.ShapeElement):
+                        transform = parent.composed_transform()
+                    try:
+                        if isinstance (element, inkex.Rectangle) or \
+                           isinstance (element, inkex.Circle) or \
+                           isinstance (element, inkex.Ellipse):
+                            bbox += element.bounding_box() * scale_factor   
+                        elif isinstance (element, inkex.TextElement) or \
+                             isinstance (element, inkex.Tspan):
+                            continue
+                        else:  
+                            bbox += element.bounding_box(transform)
+                    except Exception:
+                        transform = element.composed_transform()
+                        x1, y1 = transform.apply_to_point([0, 0])
+                        x2, y2 = transform.apply_to_point([1, 1])
+                        bbox += inkex.BoundingBox((x1, x2), (y1, y2))
+     
+            if abs(bbox.width) == math.inf or abs(bbox.height) == math.inf:
+                inkex.utils.debug("bounding box could not be calculated. SVG seems to be empty.")
+            #else:
+            #    inkex.utils.debug("bounding box is {}".format(bbox))
+            scale_factor = self.svg.unittouu("1px")
+            page_width = self.svg.unittouu(self.document.getroot().attrib['width'])
+            width_height = self.svg.unittouu(self.document.getroot().attrib['height'])
+            fmm = self.svg.unittouu(str(so.bbox_offset) + "mm")
+            bb_left = round(bbox.left, 3)
+            bb_right = round(bbox.right, 3)
+            bb_top = round(bbox.top, 3)
+            bb_bottom = round(bbox.bottom, 3)
+            bb_width = round(bbox.width, 3)
+            bb_height = round(bbox.height, 3)
+            if bb_left >= fmm:
+                inkex.utils.debug("left border... ok")
+            else:
+                inkex.utils.debug("left border... fail: {:0.3f} mm".format(self.svg.uutounit(bb_left, "mm")))
+                 
+            if bb_top >= fmm:
+                inkex.utils.debug("top border... ok")
+            else:
+                inkex.utils.debug("top border... fail: {:0.3f} mm".format(self.svg.uutounit(bb_top, "mm")))
+                
+            if bb_right + fmm <= page_width:
+                inkex.utils.debug("right border... ok")
+            else:
+                inkex.utils.debug("right border... fail: {:0.3f} mm".format(self.svg.uutounit(bb_right, "mm")))
+                
+            if bb_bottom + fmm <= width_height:
+                inkex.utils.debug("bottom border... ok")
+            else:
+                inkex.utils.debug("bottom border... fail: {:0.3f} mm".format(self.svg.uutounit(bb_bottom, "mm")))
+
+            machineWidth = self.svg.unittouu(self.options.machine_size.split('x')[0] + "mm")
+            if bb_width <= machineWidth:
+                inkex.utils.debug("page width... ok")
+            else:
+                inkex.utils.debug("page width... fail: {:0.3f} mm".format(bb_width))
+            machineHeight = self.svg.unittouu(self.options.machine_size.split('x')[1] + "mm")
+            if bb_height <= machineHeight:
+                inkex.utils.debug("page height... ok")
+            else:
+                inkex.utils.debug("page height... fail: {:0.3f} mm".format(bb_height))
+             
         
         if so.checks == "check_all" or so.groups_and_layers is True:
             inkex.utils.debug("\n---------- Groups and layers") 
@@ -197,57 +276,6 @@ class LaserCheck(inkex.EffectExtension):
             for strokeColor in strokeColors:
                 inkex.utils.debug("stroke color {}".format(strokeColor))
       
-      
-        '''
-        Nearly each laser job needs a bit of border to place the material inside the laser. Often
-        we have to fixate on vector grid, pin grid or task plate. Thus we need tapes or pins. So we 
-        leave some borders off the actual part geometries.
-        '''
-        if so.checks == "check_all" or so.bbox is True:  
-            inkex.utils.debug("\n---------- Borders around all elements - minimum offset {} mm from each side".format(so.bbox_offset))
-            bbox = inkex.BoundingBox()
-            for element in self.document.getroot().iter(tag=etree.Element):
-                if element != self.document.getroot() and isinstance(element, inkex.ShapeElement) and element.tag != inkex.addNS('use','svg') and element.get('inkscape:groupmode') != 'layer': #bbox fails for svg:use elements and layers
-                    transform = inkex.Transform()
-                    parent = element.getparent()
-                    if parent is not None and isinstance(parent, inkex.ShapeElement):
-                        transform = parent.composed_transform()
-                    try:
-                        bbox += element.bounding_box(transform)
-                    except Exception:
-                        transform = element.composed_transform()
-                        x1, y1 = transform.apply_to_point([0, 0])
-                        x2, y2 = transform.apply_to_point([1, 1])
-                        bbox += inkex.BoundingBox((x1, x2), (y1, y2))
-     
-            if abs(bbox.width) == math.inf or abs(bbox.height) == math.inf:
-                inkex.utils.debug("bounding box could not be calculated")
-            #else:
-            #    inkex.utils.debug("bounding box is {}".format(bbox))
-            page_width = self.svg.unittouu(self.document.getroot().attrib['width'])
-            width_height = self.svg.unittouu(self.document.getroot().attrib['height'])
-            fmm = self.svg.unittouu(str(so.bbox_offset) + "mm")
-            if bbox.left >= fmm:
-                inkex.utils.debug("left border... ok")
-            else:
-                inkex.utils.debug("left border... fail: {:0.3f} mm".format(self.svg.uutounit(bbox.left, "mm")))
-                 
-            if bbox.top >= fmm:
-                inkex.utils.debug("top border... ok")
-            else:
-                inkex.utils.debug("top border... fail: {:0.3f} mm".format(self.svg.uutounit(bbox.top, "mm")))
-                
-            if bbox.right + fmm <= page_width:
-                inkex.utils.debug("right border... ok")
-            else:
-                inkex.utils.debug("right border... fail: {:0.3f} mm".format(self.svg.uutounit(bbox.right, "mm")))
-                
-            if bbox.bottom + fmm <= width_height:
-                inkex.utils.debug("bottom border... ok")
-            else:
-                inkex.utils.debug("bottom border... fail: {:0.3f} mm".format(self.svg.uutounit(bbox.bottom, "mm")))
-             
-             
         '''
         Different stroke widths might behave the same like different stroke colors. Reduce to a minimum set.
         Ideally all stroke widths are set to 1 pixel.
