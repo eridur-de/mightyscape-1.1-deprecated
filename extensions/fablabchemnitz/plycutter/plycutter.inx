@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <name>PlyCutter (Unstable)</name>
+    <name>PlyCutter</name>
     <id>fablabchemnitz.de.plycutter</id>
 	 <param name="tab" type="notebook">
 		<page name="tab_settings" gui-text="PlyCutter">
