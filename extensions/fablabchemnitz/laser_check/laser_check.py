@@ -296,7 +296,7 @@ class LaserCheck(inkex.EffectExtension):
                 swConverted = self.svg.uutounit(float(self.svg.unittouu(strokeWidth))) #possibly w/o units. we unify to some internal float
                 inkex.utils.debug("stroke width {}px ({}mm)".format(
                     round(self.svg.uutounit(swConverted, "px"),4),
-                    round(self.svg.unittouu(str(swConverted) + "mm"),4)
+                    round(self.svg.uutounit(swConverted, "mm"),4),
                     )
                 )
                 
