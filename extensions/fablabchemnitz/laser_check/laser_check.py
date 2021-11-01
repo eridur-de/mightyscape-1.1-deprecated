@@ -288,14 +288,19 @@ class LaserCheck(inkex.EffectExtension):
                 if style is not None:
                     stroke_width = re.search('stroke-width:(.*?)(;|$)', style)
                     if stroke_width is not None:
-                        strokeWidth = self.svg.unittouu(stroke_width[0].split("stroke-width:")[1].split(";")[0])
+                        strokeWidth = stroke_width[0].split("stroke-width:")[1].split(";")[0] #possibly w/o units. could contain units from css
                         if strokeWidth not in strokeWidths:
                             strokeWidths.append(strokeWidth)
             inkex.utils.debug("{} different stroke widths in total".format(len(strokeWidths)))
             for strokeWidth in strokeWidths:
-                inkex.utils.debug("stroke width {}".format(strokeWidth))
-          
-          
+                swConverted = self.svg.uutounit(float(self.svg.unittouu(strokeWidth))) #possibly w/o units. we unify to some internal float
+                inkex.utils.debug("stroke width {}px ({}mm)".format(
+                    round(self.svg.uutounit(swConverted, "px"),4),
+                    round(self.svg.unittouu(str(swConverted) + "mm"),4)
+                    )
+                )
+                
+                
         '''
         Cosmetic dashes cause simulation issues and are no real cut paths. It's similar to the thing
         with clip paths. Please convert lines to real dash segments if you want to laser them.
