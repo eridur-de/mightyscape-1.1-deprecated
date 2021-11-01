@@ -27,10 +27,6 @@ class FilterByLengthArea(inkex.EffectExtension):
 		
     def effect(self):
         
-        if len(self.svg.selected) == 0:
-            inkex.utils.debug("Your selection is empty.")
-            return
-        
         if self.options.min_filter_enable is False and self.options.max_filter_enable is False:
             inkex.utils.debug("You need to enabled at least one filter rule!")
             return
@@ -41,8 +37,13 @@ class FilterByLengthArea(inkex.EffectExtension):
         if self.options.min_threshold == 0 or self.options.max_threshold == 0:
             inkex.utils.debug("One or both tresholds are zero. Please adjust.")
             return
+        
+        if len(self.svg.selected) > 0:
+            elements = self.svg.selection.filter(inkex.PathElement).values()
+        else:
+            elements = self.document.xpath("//svg:path", namespaces=inkex.NSS)
 
-        for element in self.document.xpath("//svg:path", namespaces=inkex.NSS):
+        for element in elements:
             try:
                 csp = element.path.transform(element.composed_transform()).to_superpath()
 

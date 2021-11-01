@@ -15,6 +15,7 @@ class LaserCheck(inkex.EffectExtension):
     def add_arguments(self, pars):
         pars.add_argument('--tab')
         pars.add_argument('--checks', default="check_all")
+        pars.add_argument('--show_issues_only', type=inkex.Boolean, default=False)
         pars.add_argument('--bbox', type=inkex.Boolean, default=False)
         pars.add_argument('--bbox_offset', type=float, default=5.000)
         pars.add_argument("--machine_size", default="812x508")
@@ -60,10 +61,12 @@ class LaserCheck(inkex.EffectExtension):
             for element in self.svg.selected.values():
                 parseChildren(element)
         namedView = self.document.getroot().find(inkex.addNS('namedview', 'sodipodi'))
-        doc_units = namedView.get(inkex.addNS('document-units', 'inkscape'))            
+        doc_units = namedView.get(inkex.addNS('document-units', 'inkscape'))        
+        user_units = namedView.get(inkex.addNS('units'))  
         pagecolor = namedView.get('pagecolor')
         inkex.utils.debug("---------- Default checks")
         inkex.utils.debug("Document units: {}".format(doc_units))
+        inkex.utils.debug("User units: {}".format(user_units))
         
         '''
         The SVG format is highly complex and offers a lot of possibilities. Most things of SVG we do not
@@ -77,8 +80,9 @@ class LaserCheck(inkex.EffectExtension):
                 nonShapes.append(element)
             else:
                 shapes.append(element)
-        inkex.utils.debug("{} shape elements in total".format(len(shapes)))
-        inkex.utils.debug("{} non-shape elements in total".format(len(nonShapes)))
+        if self.options.show_issues_only is False:        
+            inkex.utils.debug("{} shape elements in total".format(len(shapes)))
+            inkex.utils.debug("{} non-shape elements in total".format(len(nonShapes)))
         for nonShape in nonShapes:
             inkex.utils.debug("non-shape id={}".format(nonShape.get('id')))
         
@@ -169,8 +173,9 @@ class LaserCheck(inkex.EffectExtension):
                         layers.append(element)
                     else:
                         groups.append(element)
-            inkex.utils.debug("{} groups in total".format(len(groups)))
-            inkex.utils.debug("{} layers in total".format(len(layers)))
+            if self.options.show_issues_only is False:  
+                inkex.utils.debug("{} groups in total".format(len(groups)))
+                inkex.utils.debug("{} layers in total".format(len(layers)))
     
             #check for empty groups
             for group in groups:
@@ -191,7 +196,8 @@ class LaserCheck(inkex.EffectExtension):
             for element in selected:
                 if element.tag == inkex.addNS('use','svg'):
                     uses.append(element)
-            inkex.utils.debug("{} svg:use clones in total".format(len(uses)))
+            if self.options.show_issues_only is False:
+                inkex.utils.debug("{} svg:use clones in total".format(len(uses)))
             for use in uses:
                 inkex.utils.debug("id={}".format(use.get('id')))
    
@@ -206,7 +212,8 @@ class LaserCheck(inkex.EffectExtension):
             for element in selected:
                 if element.tag == inkex.addNS('clipPath','svg'):
                     clipPaths.append(element)
-            inkex.utils.debug("{} svg:clipPath in total".format(len(clipPaths)))
+            if self.options.show_issues_only is False:
+                inkex.utils.debug("{} svg:clipPath in total".format(len(clipPaths)))
             for clipPath in clipPaths:
                 inkex.utils.debug("id={}".format(clipPath.get('id')))
    
@@ -221,7 +228,8 @@ class LaserCheck(inkex.EffectExtension):
             for element in selected:
                 if element.tag == inkex.addNS('image','svg'):
                     images.append(element)
-            inkex.utils.debug("{} svg:image in total".format(len(images)))
+            if self.options.show_issues_only is False:
+                inkex.utils.debug("{} svg:image in total".format(len(images)))
             for image in images:
                 inkex.utils.debug("image id={}".format(image.get('id')))
     
@@ -235,7 +243,8 @@ class LaserCheck(inkex.EffectExtension):
             for element in selected:
                 if element.tag in (inkex.addNS('line','svg'), inkex.addNS('polyline','svg'), inkex.addNS('polygon','svg')):
                     lowlevels.append(element)
-            inkex.utils.debug("{} low level strokes in total".format(len(lowlevels)))
+            if self.options.show_issues_only is False:
+                inkex.utils.debug("{} low level strokes in total".format(len(lowlevels)))
             for lowlevel in lowlevels:
                 inkex.utils.debug("id={}".format(lowlevel.get('id')))
     
@@ -251,7 +260,8 @@ class LaserCheck(inkex.EffectExtension):
             for element in selected:
                 if element.tag == inkex.addNS('text','svg'):
                     texts.append(element)
-            inkex.utils.debug("{} svg:text in total".format(len(texts)))
+            if self.options.show_issues_only is False:
+                inkex.utils.debug("{} svg:text in total".format(len(texts)))
             for text in texts:
                 inkex.utils.debug("id={}".format(text.get('id')))
              
@@ -272,7 +282,8 @@ class LaserCheck(inkex.EffectExtension):
                         strokeColor = stroke[0].split("stroke:")[1].split(";")[0]
                         if strokeColor not in strokeColors:
                             strokeColors.append(strokeColor)
-            inkex.utils.debug("{} different stroke colors in total".format(len(strokeColors)))
+            if self.options.show_issues_only is False:
+                inkex.utils.debug("{} different stroke colors in total".format(len(strokeColors)))
             for strokeColor in strokeColors:
                 inkex.utils.debug("stroke color {}".format(strokeColor))
       
@@ -291,7 +302,8 @@ class LaserCheck(inkex.EffectExtension):
                         strokeWidth = stroke_width[0].split("stroke-width:")[1].split(";")[0] #possibly w/o units. could contain units from css
                         if strokeWidth not in strokeWidths:
                             strokeWidths.append(strokeWidth)
-            inkex.utils.debug("{} different stroke widths in total".format(len(strokeWidths)))
+            if self.options.show_issues_only is False:
+                inkex.utils.debug("{} different stroke widths in total".format(len(strokeWidths)))
             for strokeWidth in strokeWidths:
                 swConverted = self.svg.uutounit(float(self.svg.unittouu(strokeWidth))) #possibly w/o units. we unify to some internal float
                 inkex.utils.debug("stroke width {}px ({}mm)".format(
@@ -316,7 +328,8 @@ class LaserCheck(inkex.EffectExtension):
                         strokeDasharray = stroke_dasharray[0].split("stroke-dasharray:")[1].split(";")[0]
                         if strokeDasharray not in strokeDasharrays:
                             strokeDasharrays.append(strokeDasharray)
-            inkex.utils.debug("{} different stroke dash arrays in total".format(len(strokeDasharrays)))
+            if self.options.show_issues_only is False:
+                inkex.utils.debug("{} different stroke dash arrays in total".format(len(strokeDasharrays)))
             for strokeDasharray in strokeDasharrays:
                 inkex.utils.debug("stroke dash array {}".format(strokeDasharray))
      
@@ -385,7 +398,8 @@ class LaserCheck(inkex.EffectExtension):
                         if (strokeVis == 0 or widthVis == 0 or strokeOpacityVis == 0) and (fillVis == 0 or fillOpacityVis == 0):
                             if element not in invisibles:
                                 invisibles.append(element)
-            inkex.utils.debug("{} invisible shapes in total".format(len(invisibles)))
+            if self.options.show_issues_only is False:
+                inkex.utils.debug("{} invisible shapes in total".format(len(invisibles)))
             for invisible in invisibles:
                 inkex.utils.debug("id={}".format(invisible.get('id')))
           
@@ -405,7 +419,8 @@ class LaserCheck(inkex.EffectExtension):
                           if float(stroke_opacity[0].split("stroke-opacity:")[1].split(";")[0]) < 1.0:
                               if element not in transparencies:
                                   transparencies.append(element)
-            inkex.utils.debug("{} objects with stroke transparencies < 1.0 in total".format(len(transparencies)))
+            if self.options.show_issues_only is False:
+                inkex.utils.debug("{} objects with stroke transparencies < 1.0 in total".format(len(transparencies)))
             for transparency in transparencies:
                 inkex.utils.debug("id={}".format(transparency.get('id')))  
       
@@ -425,7 +440,8 @@ class LaserCheck(inkex.EffectExtension):
                         (len(commandsCoords) == 2 and commandsCoords[-1][0] == 'Z') or \
                         (len(commandsCoords) == 3 and commandsCoords[0][1] == commandsCoords[1][1] and commandsCoords[2][1] == 'Z'):
                         pointyPaths.append(element)
-            inkex.utils.debug("{} pointy paths in total".format(len(pointyPaths)))
+            if self.options.show_issues_only is False:
+                inkex.utils.debug("{} pointy paths in total".format(len(pointyPaths)))
             for pointyPath in pointyPaths:
                 inkex.utils.debug("id={}".format(pointyPath.get('id')))    
    
@@ -441,7 +457,8 @@ class LaserCheck(inkex.EffectExtension):
             for element in shapes:
                 if element.get('transform') is not None:
                     transformations.append(element)
-            inkex.utils.debug("{} transformation in total".format(len(transformations)))
+            if self.options.show_issues_only is False:
+                inkex.utils.debug("{} transformation in total".format(len(transformations)))
             for transformation in transformations:
                 inkex.utils.debug("transformation in id={}".format(transformation.get('id')))    
           
@@ -459,13 +476,14 @@ class LaserCheck(inkex.EffectExtension):
                     slengths, stotal = csplength(element.path.transform(element.composed_transform()).to_superpath())
                     totalLength += stotal
                     if stotal < self.svg.unittouu(str(so.short_paths_min) + "mm"):
-                        shortPaths.append(element)
+                        shortPaths.append([element, stotal])
                         totalDropLength += stotal
-            inkex.utils.debug("{} short paths in total".format(len(shortPaths)))
+            if self.options.show_issues_only is False:
+                inkex.utils.debug("{} short paths in total".format(len(shortPaths)))
             if totalLength > 0:
-                inkex.utils.debug("{:0.2f}% of total ({:0.2f} mm /{:0.2f} mm)".format(totalDropLength / totalLength, totalDropLength, totalLength))
+                inkex.utils.debug("{:0.2f}% of total ({:0.2f} mm /{:0.2f} mm)".format(totalDropLength / totalLength, self.svg.uutounit(str(totalDropLength), "mm"), self.svg.uutounit(str(totalLength), "mm")))
             for shortPath in shortPaths:
-                inkex.utils.debug("id={}".format(shortPath.get('id')))    
+                inkex.utils.debug("id={}, length={}mm".format(shortPath[0].get('id'), round(self.svg.uutounit(str(shortPath[1]), "mm"), 3)))    
           
                    
         '''
@@ -478,7 +496,8 @@ class LaserCheck(inkex.EffectExtension):
             for element in shapes:
                 if not isinstance(element, inkex.PathElement) and not isinstance(element, inkex.Group):
                     nonPathShapes.append(element)
-            inkex.utils.debug("{} non-path shapes in total".format(len(nonPathShapes)))
+            if self.options.show_issues_only is False:
+                inkex.utils.debug("{} non-path shapes in total".format(len(nonPathShapes)))
             for nonPathShape in nonPathShapes:
                 inkex.utils.debug("id={}".format(nonPathShape.get('id')))         
          

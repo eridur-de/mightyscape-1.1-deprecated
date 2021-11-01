@@ -4,6 +4,7 @@
     <id>fablabchemnitz.de.laser_check</id>
     <param name="tab" type="notebook">
         <page name="tab_settings" gui-text="Checks">
+            <param name="show_issues_only" type="bool" gui-text="Show potential issues only" gui-description="Shortens the report a little bit">false</param>
             <param name="checks" type="optiongroup" appearance="combo" gui-text="Select checks">
                 <option value="check_all">Check all</option>
                 <option value="check_section">Check selection</option>
