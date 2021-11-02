@@ -36,7 +36,7 @@
 <effect>
     <object-type>all</object-type>
     <effects-menu>
-        <submenu name="Boxes.py">
+        <submenu name="FabLab Chemnitz Boxes.py">
             <submenu name="Misc"/>
         </submenu>
     </effects-menu>

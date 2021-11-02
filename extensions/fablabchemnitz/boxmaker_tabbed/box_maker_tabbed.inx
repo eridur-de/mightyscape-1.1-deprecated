@@ -81,9 +81,9 @@
     <effect needs-live-preview="true">
         <object-type>path</object-type>
         <effects-menu>
-            <submenu name="FabLab Chemnitz">
-                <submenu name="Finger-jointed/Tabbed Boxes" />
-            </submenu>
+        <submenu name="FabLab Chemnitz Boxes/Papercraft">
+            <submenu name="Finger-jointed/Tabbed Boxes"/>
+        </submenu>
         </effects-menu>
     </effect>
     <script>

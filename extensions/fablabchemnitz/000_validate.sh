@@ -66,7 +66,7 @@ echo "Removing unrequired pyc cache files"
 find . -type d -name "__pycache__" -exec rm -rf {} \; > /dev/null
 
 
-read -p "Build local gallery extension zip files?" -n 1 -r
+read -p "Update zip files for zipmirror?" -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo "Building extension zip files for zipmirror"

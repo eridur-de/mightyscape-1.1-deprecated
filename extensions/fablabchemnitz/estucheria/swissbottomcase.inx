@@ -15,9 +15,9 @@
     <effect>
         <object-type>all</object-type>
         <effects-menu>
-            <submenu name="FabLab Chemnitz">
-				<submenu name="Paper/Cardboard Boxes"/>
-			</submenu>
+            <submenu name="FabLab Chemnitz Boxes/Papercraft">
+                <submenu name="Paper/Cardboard Boxes" />
+            </submenu>
         </effects-menu>
     </effect>
     <script>
