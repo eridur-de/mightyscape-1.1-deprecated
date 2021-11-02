@@ -39,6 +39,7 @@ class LaserCheck(inkex.EffectExtension):
     def effect(self):
         
         so = self.options
+        selected = [] #total list of elements to parse
         
         def parseChildren(element):
             if element not in selected:
@@ -48,10 +49,9 @@ class LaserCheck(inkex.EffectExtension):
                 for child in children:
                     if child not in selected:
                         selected.append(child)
-                    parseChildren(child) #go deeper and deeper       
+                    parseChildren(child) #go deeper and deeper
         
         #check if we have selected elements or if we should parse the whole document instead
-        selected = [] #total list of elements to parse
         if len(self.svg.selected) == 0:
             for element in self.document.getroot().iter(tag=etree.Element):
                 if element != self.document.getroot():
@@ -60,6 +60,7 @@ class LaserCheck(inkex.EffectExtension):
         else:
             for element in self.svg.selected.values():
                 parseChildren(element)
+                
         namedView = self.document.getroot().find(inkex.addNS('namedview', 'sodipodi'))
         doc_units = namedView.get(inkex.addNS('document-units', 'inkscape'))        
         user_units = namedView.get(inkex.addNS('units'))  
@@ -164,7 +165,19 @@ class LaserCheck(inkex.EffectExtension):
              
         
         if so.checks == "check_all" or so.groups_and_layers is True:
-            inkex.utils.debug("\n---------- Groups and layers") 
+            inkex.utils.debug("\n---------- Groups and layers")
+            global md
+            md = 0
+            def maxDepth(element, level): 
+                global md
+                if (level == md):
+                    md += 1
+                for child in element:
+                    maxDepth(child, level + 1) 
+            maxDepth(self.document.getroot(), -1)
+            self.msg("Maximum group depth={}".format(md - 1))
+            if md - 1 > 2:
+                self.msg("Warning: this group depth might cause issues!")
             groups = []
             layers = []
             for element in selected:
