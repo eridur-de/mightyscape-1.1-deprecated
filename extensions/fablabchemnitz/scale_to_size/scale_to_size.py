@@ -23,12 +23,20 @@ class ScaleToSize(inkex.EffectExtension):
 
     def effect(self):
         unit_factor = 1.0 / self.svg.uutounit(1.0,self.options.unit)
-        for id, node in self.svg.selected.items():
-		
-            #get recent XY coordinates (top left corner of the bounding box)
-            bbox = node.bounding_box()
-            new_horiz_scale = self.options.expected_size * unit_factor / bbox.width
-            new_vert_scale = self.options.expected_size * unit_factor / bbox.height
+        scale_factor = self.svg.unittouu("1px")
+
+        #get recent XY coordinates (top left corner of the bounding box)
+        for element in self.svg.selected.values():
+            if isinstance (element, inkex.Rectangle) or \
+               isinstance (element, inkex.Circle) or \
+               isinstance (element, inkex.Ellipse):
+                bbox = element.bounding_box() * unit_factor
+                new_horiz_scale = self.options.expected_size * unit_factor / bbox.width / scale_factor
+                new_vert_scale = self.options.expected_size * unit_factor / bbox.height / scale_factor
+            else:
+                bbox = element.bounding_box()
+                new_horiz_scale = self.options.expected_size * unit_factor / bbox.width
+                new_vert_scale = self.options.expected_size * unit_factor / bbox.height
 			
             if self.options.scale_type == "Horizontal":
                 translation_matrix = [[new_horiz_scale, 0.0, 0.0], [0.0, 1.0, 0.0]]
@@ -36,32 +44,43 @@ class ScaleToSize(inkex.EffectExtension):
                 translation_matrix = [[1.0, 0.0, 0.0], [0.0, new_vert_scale, 0.0]]
             else: #Uniform
                 translation_matrix = [[new_horiz_scale, 0.0, 0.0], [0.0, new_vert_scale, 0.0]]			
-            node.transform = Transform(translation_matrix) * node.transform
+            element.transform = Transform(translation_matrix) * element.composed_transform()
 			
-            # now that the node moved we need to get the nodes XY coordinates again to fix them
-            bbox_new = node.bounding_box()
+            # now that the element moved we need to get the elements XY coordinates again to fix them
+            bbox_new = element.bounding_box()
 
             #inkex.utils.debug(cx)
             #inkex.utils.debug(cy)
             #inkex.utils.debug(cx_new)
             #inkex.utils.debug(cy_new)
 		
-            # We remove the transformation attribute from SVG XML tree in case it's regular path. In case the node is an object like arc,circle, ellipse or star we have the attribute "sodipodi:type". Then we do not play with it's path because the size transformation will not apply (this code block is ugly)
-            if node.get ('sodipodi:type') is None and 'd' in node.attrib:
+            # We remove the transformation attribute from SVG XML tree in case it's regular path. In case the element is an object like arc,circle, ellipse or star we have the attribute "sodipodi:type". Then we do not play with it's path because the size transformation will not apply (this code block is ugly)
+            if element.get ('sodipodi:type') is None and 'd' in element.attrib:
                 #inkex.utils.debug("it's a path!")
-                d = node.get('d')
+                d = element.get('d')
                 p = CubicSuperPath(d)
-                transf = Transform(node.get("transform", None))
-                if 'transform' in node.attrib:
-                    del node.attrib['transform']
+                transf = Transform(element.get("transform", None))
+                if 'transform' in element.attrib:
+                    del element.attrib['transform']
                 p = Path(p).to_absolute().transform(transf, True)
-                node.set('d', Path(CubicSuperPath(p).to_path()))
+                element.set('d', Path(CubicSuperPath(p).to_path()))
             #else:
                 #inkex.utils.debug("it's an object!")
 		
-            #we perform second translation to reset the center of the path				
-            translation_matrix = [[1.0, 0.0, bbox.left - bbox_new.left + (bbox.width - bbox_new.width)/2], [0.0, 1.0, bbox.top - bbox_new.top + (bbox.height - bbox_new.height)/2]]			
-            node.transform = Transform(translation_matrix) * node.transform	
+            #we perform second translation to reset the center of the path	
+            if isinstance (element, inkex.Rectangle) or \
+               isinstance (element, inkex.Circle) or \
+               isinstance (element, inkex.Ellipse):
+                translation_matrix = [
+                                [1.0, 0.0, scale_factor * (bbox.left - bbox_new.left + (bbox.width - bbox_new.width)/2)], 
+                                [0.0, 1.0, scale_factor * (bbox.top - bbox_new.top + (bbox.height - bbox_new.height)/2)]
+                            ]            
+            else:	
+                translation_matrix = [
+                                [1.0, 0.0, bbox.left - bbox_new.left + (bbox.width - bbox_new.width)/2], 
+                                [0.0, 1.0, bbox.top - bbox_new.top + (bbox.height - bbox_new.height)/2]
+                            ]			
+            element.transform = Transform(translation_matrix) * element.composed_transform()	
 		
 if __name__ == '__main__':
     ScaleToSize().run()
