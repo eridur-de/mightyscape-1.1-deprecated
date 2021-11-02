@@ -9,7 +9,9 @@ import math
 class LaserCheck(inkex.EffectExtension):
     
     '''
-    check for old styles which should be upgraded
+    ToDos:
+        - check for old styles which should be upgraded
+        - this code is horrible ugly stuff
     '''
     
     def add_arguments(self, pars):
@@ -26,7 +28,9 @@ class LaserCheck(inkex.EffectExtension):
         pars.add_argument('--texts', type=inkex.Boolean, default=False)
         pars.add_argument('--lowlevelstrokes', type=inkex.Boolean, default=False)
         pars.add_argument('--stroke_colors', type=inkex.Boolean, default=False)
+        pars.add_argument('--stroke_colors_max', type=int, default=3)
         pars.add_argument('--stroke_widths', type=inkex.Boolean, default=False)
+        pars.add_argument('--stroke_widths_max', type=int, default=1)
         pars.add_argument('--stroke_opacities', type=inkex.Boolean, default=False)
         pars.add_argument('--cosmestic_dashes', type=inkex.Boolean, default=False)
         pars.add_argument('--invisible_shapes', type=inkex.Boolean, default=False)
@@ -35,6 +39,9 @@ class LaserCheck(inkex.EffectExtension):
         pars.add_argument('--short_paths', type=inkex.Boolean, default=False)
         pars.add_argument('--short_paths_min', type=float, default=1.000)
         pars.add_argument('--non_path_shapes', type=inkex.Boolean, default=False)
+        pars.add_argument('--nodes_per_path', type=inkex.Boolean, default=False)
+        pars.add_argument('--nodes_per_path_max', type=int, default=2)
+        pars.add_argument('--nodes_per_path_interval', type=float, default=10.000)
         
     def effect(self):
         
@@ -133,33 +140,39 @@ class LaserCheck(inkex.EffectExtension):
             bb_width = round(bbox.width, 3)
             bb_height = round(bbox.height, 3)
             if bb_left >= fmm:
-                inkex.utils.debug("left border... ok")
+                if self.options.show_issues_only is False:
+                    inkex.utils.debug("left border... ok")
             else:
                 inkex.utils.debug("left border... fail: {:0.3f} mm".format(self.svg.uutounit(bb_left, "mm")))
                  
             if bb_top >= fmm:
-                inkex.utils.debug("top border... ok")
+                if self.options.show_issues_only is False:
+                    inkex.utils.debug("top border... ok")
             else:
                 inkex.utils.debug("top border... fail: {:0.3f} mm".format(self.svg.uutounit(bb_top, "mm")))
                 
             if bb_right + fmm <= page_width:
-                inkex.utils.debug("right border... ok")
+                if self.options.show_issues_only is False:
+                    inkex.utils.debug("right border... ok")
             else:
                 inkex.utils.debug("right border... fail: {:0.3f} mm".format(self.svg.uutounit(bb_right, "mm")))
                 
             if bb_bottom + fmm <= width_height:
-                inkex.utils.debug("bottom border... ok")
+                if self.options.show_issues_only is False:
+                    inkex.utils.debug("bottom border... ok")
             else:
                 inkex.utils.debug("bottom border... fail: {:0.3f} mm".format(self.svg.uutounit(bb_bottom, "mm")))
 
             machineWidth = self.svg.unittouu(self.options.machine_size.split('x')[0] + "mm")
             if bb_width <= machineWidth:
-                inkex.utils.debug("page width... ok")
+                if self.options.show_issues_only is False:
+                    inkex.utils.debug("page width... ok")
             else:
                 inkex.utils.debug("page width... fail: {:0.3f} mm".format(bb_width))
             machineHeight = self.svg.unittouu(self.options.machine_size.split('x')[1] + "mm")
             if bb_height <= machineHeight:
-                inkex.utils.debug("page height... ok")
+                if self.options.show_issues_only is False:
+                    inkex.utils.debug("page height... ok")
             else:
                 inkex.utils.debug("page height... fail: {:0.3f} mm".format(bb_height))
              
@@ -175,7 +188,8 @@ class LaserCheck(inkex.EffectExtension):
                 for child in element:
                     maxDepth(child, level + 1) 
             maxDepth(self.document.getroot(), -1)
-            self.msg("Maximum group depth={}".format(md - 1))
+            if self.options.show_issues_only is False:        
+               inkex.utils.debug("Maximum group depth={}".format(md - 1))
             if md - 1 > 2:
                 self.msg("Warning: this group depth might cause issues!")
             groups = []
@@ -285,7 +299,7 @@ class LaserCheck(inkex.EffectExtension):
         to a minimum of stroke colors to be quicker
         '''
         if so.checks == "check_all" or so.stroke_colors is True:
-            inkex.utils.debug("\n---------- Stroke colors")
+            inkex.utils.debug("\n---------- Stroke colors ({} are allowed)".format(so.stroke_colors_max))
             strokeColors = []
             for element in shapes:          
                 style = element.get('style')
@@ -297,15 +311,17 @@ class LaserCheck(inkex.EffectExtension):
                             strokeColors.append(strokeColor)
             if self.options.show_issues_only is False:
                 inkex.utils.debug("{} different stroke colors in total".format(len(strokeColors)))
-            for strokeColor in strokeColors:
-                inkex.utils.debug("stroke color {}".format(strokeColor))
+            if len(strokeColors) > so.stroke_colors_max:
+                for strokeColor in strokeColors:
+                    inkex.utils.debug("stroke color {}".format(strokeColor))
+                    
       
         '''
         Different stroke widths might behave the same like different stroke colors. Reduce to a minimum set.
         Ideally all stroke widths are set to 1 pixel.
         '''
         if so.checks == "check_all" or so.stroke_widths is True:              
-            inkex.utils.debug("\n---------- Stroke widths")
+            inkex.utils.debug("\n---------- Stroke widths ({} are allowed)".format(so.stroke_widths_max))
             strokeWidths = []
             for element in shapes:          
                 style = element.get('style')
@@ -317,13 +333,14 @@ class LaserCheck(inkex.EffectExtension):
                             strokeWidths.append(strokeWidth)
             if self.options.show_issues_only is False:
                 inkex.utils.debug("{} different stroke widths in total".format(len(strokeWidths)))
-            for strokeWidth in strokeWidths:
-                swConverted = self.svg.uutounit(float(self.svg.unittouu(strokeWidth))) #possibly w/o units. we unify to some internal float
-                inkex.utils.debug("stroke width {}px ({}mm)".format(
-                    round(self.svg.uutounit(swConverted, "px"),4),
-                    round(self.svg.uutounit(swConverted, "mm"),4),
+            if len(strokeWidths) > so.stroke_widths_max:
+                for strokeWidth in strokeWidths:
+                    swConverted = self.svg.uutounit(float(self.svg.unittouu(strokeWidth))) #possibly w/o units. we unify to some internal float
+                    inkex.utils.debug("stroke width {}px ({}mm)".format(
+                        round(self.svg.uutounit(swConverted, "px"),4),
+                        round(self.svg.uutounit(swConverted, "mm"),4),
+                        )
                     )
-                )
                 
                 
         '''
@@ -493,11 +510,37 @@ class LaserCheck(inkex.EffectExtension):
                         totalDropLength += stotal
             if self.options.show_issues_only is False:
                 inkex.utils.debug("{} short paths in total".format(len(shortPaths)))
-            if totalLength > 0:
+            if totalDropLength > 0:
                 inkex.utils.debug("{:0.2f}% of total ({:0.2f} mm /{:0.2f} mm)".format(totalDropLength / totalLength, self.svg.uutounit(str(totalDropLength), "mm"), self.svg.uutounit(str(totalLength), "mm")))
             for shortPath in shortPaths:
                 inkex.utils.debug("id={}, length={}mm".format(shortPath[0].get('id'), round(self.svg.uutounit(str(shortPath[1]), "mm"), 3)))    
           
+        
+        
+        '''
+        Paths with a high amount of nodes will cause issues because each node means slowing down/speeding up the laser mechanics
+        '''
+        if so.checks == "check_all" or so.nodes_per_path is True:  
+            inkex.utils.debug("\n---------- Heavy node-loaded paths (allowed: {} node(s) per {} mm) - should be simplified".format(so.nodes_per_path_max, round(so.nodes_per_path_interval, 3)))
+            heavyPaths = []
+            for element in shapes:
+                if isinstance(element, inkex.PathElement):
+                    slengths, stotal = csplength(element.path.transform(element.composed_transform()).to_superpath())
+                    nodes = len(element.path)
+                    if nodes /  stotal > so.nodes_per_path_max / self.svg.unittouu(str(so.nodes_per_path_interval) + "mm"):
+                        heavyPaths.append([element, nodes, stotal])
+            if self.options.show_issues_only is False:
+                inkex.utils.debug("{} Heavy node-loaded paths in total".format(len(heavyPaths)))
+            for heavyPath in heavyPaths:
+                inkex.utils.debug("id={}, nodes={}, length={}mm, density={}nodes/mm".format(
+                        heavyPath[0].get('id'), 
+                        heavyPath[1], 
+                        round(self.svg.uutounit(str(heavyPath[2]), "mm"), 3),
+                        round(heavyPath[1] / self.svg.uutounit(str(heavyPath[2]), "mm"), 3)
+                        )
+                    )    
+          
+        
                    
         '''
         Shapes like rectangles, ellipses, arcs, spirals should be converted to svg:path to have more
