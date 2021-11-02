@@ -437,7 +437,12 @@ class DXFDWGImport(inkex.EffectExtension):
              
         #adjust viewport and width/height to have the import at the center of the canvas
         if self.options.resizetoimport:
-            bbox = docGroup.bounding_box()
+            for element in self.document.getroot().iter("*"):
+                try:
+                    element.bounding_box()
+                except:
+                    pass
+            bbox = docGroup.bounding_box() #only works because we process bounding boxes previously. see top 
             if bbox is not None:
                 root = self.document.getroot();
                 offset = self.svg.unittouu(str(self.options.extraborder) + self.options.extraborder_units)

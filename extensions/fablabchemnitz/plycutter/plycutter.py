@@ -100,7 +100,13 @@ class PlyCutter(inkex.EffectExtension):
             
         #Adjust viewport and width/height to have the import at the center of the canvas
         if self.options.resizetoimport:
-            bbox = g.bounding_box() #does not work correctly if only 2 objects are inside (strangely). need at least 3 (e.g. one svg:desc and 2 svg:path elements)
+            #push some calculation of all bounding boxes. seems to refresh something in the background which makes the bbox calculation working at the bottom
+            for element in self.document.getroot().iter("*"):
+                try:
+                    element.bounding_box()
+                except:
+                    pass
+            bbox = g.bounding_box() #only works because we process bounding boxes previously. see top
             if bbox is not None:
                 root = self.svg.getElement('//svg:svg');
                 offset = self.svg.unittouu(str(self.options.extraborder) + self.options.extraborder_units)

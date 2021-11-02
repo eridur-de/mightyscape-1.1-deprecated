@@ -33,11 +33,7 @@ For optional(!) rotation support:
  * does not work with IceSL slicer (https://icesl.loria.fr; no command line options) 
 
 #ToDos
- * use svg_pathstats(path_d): to compute bounding boxes.
- * fix bbox calc in Linux systems: ValueError: b'/tmp/.mount_Slic3rQi5kIt/AppRun: line 65: 10415 Segmentation fault 
-   (core dumped) LD_LIBRARY_PATH="$DIR/usr/lib:${LD_LIBRARY_PATH}" "${DIR}/usr/bin/perl-local" -I"${DIR}/usr/lib/local-lib/lib/perl5" 
-   "${DIR}/usr/bin/slic3r.pl" --gui "$@"\n'
- * add some algorithm to handle fill handling for alternating paths. Issue at the moment: Imagine a char "A" in 3D. 
+ * add some algorithm to handle fill for alternating paths. Issue at the moment: Imagine a char "A" in 3D. 
    It conatains an outline and a line path. Because those two paths are not combined both get filled but they do not render the char A correctly
  
 '''
@@ -179,62 +175,6 @@ class SlicerSTLInput(inkex.EffectExtension):
         def scale_points(pts, scale):
             """ str='276.422496,309.4 260.209984,309.4 260.209984,209.03 276.422496,209.03' """
             return re.sub('\d*\.\d*', lambda x: str(float(x.group(0))*scale), pts)
-             
-        ## CAUTION: keep svg_pathstats() in sync with inkscape-centerlinetrace
-        def svg_pathstats(path_d):
-            """ calculate statistics from an svg path:
-                    length (measuring bezier splines as straight lines through the handles).
-                    points (all, including duplicates)
-                    segments (number of not-connected!) path segments.
-                    simple bounding box (ignoring curves of splines, but inclding handles.)
-            """
-            xmin = 1e99
-            ymin = 1e99
-            xmax = -1e99
-            ymax = -1e99
-            p_points = 0
-            p_length = 0
-            p_segments = 0
-        
-            path_d = path_d.lower()
-            for p in path_d.split('m'):
-        
-                pp = re.sub('[cl,]', ' ', p)
-                pp,closed = re.subn('z\s*$','',pp)
-                xy = pp.split()
-                if len(xy) < 2:
-                    # inkex.utils.debug(len(pp))
-                    # inkex.utils.debug("short path error")
-                    continue
-                x0 = float(xy[0])
-                y0 = float(xy[1])
-                if x0 > xmax: xmax = x0
-                if x0 < xmin: xmin = x0
-                if y0 > ymax: ymax = y0
-                if y0 < ymin: ymin = y0
-        
-                p_points += 1
-                x = xy[2::2]
-                y = xy[3::2]
-                if len(x):
-                    p_segments += 1
-                    if closed:
-                        x.extend(x0)
-                        y.extend(y0)
-        
-                for i in range(len(x)):
-                    p_points += 1
-                    dx = float(x[i]) - x0
-                    dy = float(y[i]) - y0
-                    p_length += math.sqrt( dx * dx + dy * dy )
-                    x0,y0 = float(x[i]),float(y[i])
-                    if x0 > xmax: xmax = x0
-                    if x0 < xmin: xmin = x0
-                    if y0 > ymax: ymax = y0
-                    if y0 < ymin: ymin = y0
-        
-            return { 'points':p_points, 'segments':p_segments, 'length':p_length, 'bbox': (xmin,ymin, xmax, ymax) }
-        
         
         def bbox_info(slic3r, file):
             cmd = [ slic3r, '--no-gui', '--info', file ]
@@ -360,7 +300,9 @@ class SlicerSTLInput(inkex.EffectExtension):
         for e in doc.iterfind('//{*}g'):
             if e.attrib['{http://slic3r.org/namespaces/slic3r}z'] and e.attrib['id']:
                 layercount+=1
-                e.attrib['{http://www.inkscape.org/namespaces/inkscape}label'] = e.attrib['id'] + ' slic3r:z=' + e.attrib['{http://slic3r.org/namespaces/slic3r}z']
+                e.attrib['{http://www.inkscape.org/namespaces/inkscape}label'] = \
+                    e.attrib['id'] \
+                    + " slic3r:z={}mm".format(round(float(e.attrib['{http://slic3r.org/namespaces/slic3r}z']),3))
                 del e.attrib['{http://slic3r.org/namespaces/slic3r}z']
                 e.attrib['id'] = "stl-layer{}".format(layercount)
                 # for some fun with our inkscape-paths2openscad extension, add sibling to e:
@@ -404,7 +346,10 @@ class SlicerSTLInput(inkex.EffectExtension):
             inkex.utils.debug("No polygons imported (empty groups). Try to lower your layer height")
             exit(1)
 
-        stl_group = self.document.getroot().add(inkex.Group(id=self.svg.get_unique_id("slic3r-stl-input-"))) #make a new group at root level
+        stl_group = inkex.Group(id=self.svg.get_unique_id("slic3r-stl-input-")) #make a new group at root level
+        stl_group.insert(0, inkex.Desc("Imported file: {}".format(self.options.inputfile)))
+        self.svg.get_current_layer().append(stl_group)
+
         for element in doc.getroot().iter("{http://www.w3.org/2000/svg}g"):
             stl_group.append(element)
 
@@ -414,7 +359,13 @@ class SlicerSTLInput(inkex.EffectExtension):
 
         #adjust canvas to the inserted unfolding
         if args.resizetoimport:
-            bbox = stl_group.bounding_box() #seems the bbox is not calculated if only one element is in the group. Thats a bug of Inkscape!
+            #push some calculation of all bounding boxes. seems to refresh something in the background which makes the bbox calculation working at the bottom
+            for element in self.document.getroot().iter("*"):
+                try:
+                    element.bounding_box()
+                except:
+                    pass
+            bbox = stl_group.bounding_box() #only works because we process bounding boxes previously. see top 
             if bbox is not None:
                 namedView = self.document.getroot().find(inkex.addNS('namedview', 'sodipodi'))
                 root = self.svg.getElement('//svg:svg');
