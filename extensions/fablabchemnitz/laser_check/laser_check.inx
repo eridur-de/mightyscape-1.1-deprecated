@@ -23,6 +23,7 @@
                         <option value="1219x914">1219 x 914 mm (Fusion Pro 48)</option>
                     </param>
                     <separator/>
+                    <param name="elements_outside_canvas" type="bool" gui-text="Elements outside canvas">false</param>
                     <param name="groups_and_layers" type="bool" gui-text="Groups and layers">false</param>
                     <param name="clones" type="bool" gui-text="Clones">false</param>
                     <param name="clippaths" type="bool" gui-text="Clippings">false</param>

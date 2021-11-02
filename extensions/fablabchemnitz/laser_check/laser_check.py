@@ -11,6 +11,7 @@ class LaserCheck(inkex.EffectExtension):
     '''
     ToDos:
         - check for old styles which should be upgraded
+        - add some inkex.Desc to all elements which were checked and which have some issue. use special syntax to remove old stuff each time the check is applied again
         - this code is horrible ugly stuff
     '''
     
@@ -20,7 +21,8 @@ class LaserCheck(inkex.EffectExtension):
         pars.add_argument('--show_issues_only', type=inkex.Boolean, default=False)
         pars.add_argument('--bbox', type=inkex.Boolean, default=False)
         pars.add_argument('--bbox_offset', type=float, default=5.000)
-        pars.add_argument("--machine_size", default="812x508")
+        pars.add_argument('--machine_size', default="812x508")
+        pars.add_argument('--elements_outside_canvas', type=inkex.Boolean, default=False)
         pars.add_argument('--groups_and_layers', type=inkex.Boolean, default=False)
         pars.add_argument('--clones', type=inkex.Boolean, default=False)
         pars.add_argument('--clippaths', type=inkex.Boolean, default=False)
@@ -538,9 +540,56 @@ class LaserCheck(inkex.EffectExtension):
                         round(self.svg.uutounit(str(heavyPath[2]), "mm"), 3),
                         round(heavyPath[1] / self.svg.uutounit(str(heavyPath[2]), "mm"), 3)
                         )
-                    )    
+                    )
           
-        
+        '''
+        Elements outside canvas or touching the border. These are critical because they won't be lasered
+        '''
+        if so.checks == "check_all" or so.elements_outside_canvas is True:  
+            inkex.utils.debug("\n---------- Elements outside canvas or touching the border")
+            elementsOutside = []
+            for element in shapes:
+                if element.tag != inkex.addNS('g', 'svg'):
+                    ebbox = element.bounding_box()
+                    precision = 3
+                    #inkex.utils.debug("{} | bbox: left = {:0.3f} right = {:0.3f} top = {:0.3f} bottom = {:0.3f}".format(element.get('id'), ebbox.left, ebbox.right, ebbox.top, ebbox.bottom))
+                    pagew = round(self.svg.unittouu(self.svg.get('width')), precision)
+                    pageh = round(self.svg.unittouu(self.svg.get('height')), precision)
+                    if round(ebbox.right,  precision) == 0 or \
+                       round(ebbox.left,   precision) == pagew or \
+                       round(ebbox.top,    precision) == 0 or \
+                       round(ebbox.bottom, precision) == pageh:
+                        elementsOutside.append([element, "touching"])
+                    elif \
+                       round(ebbox.right,  precision) < 0 or \
+                       round(ebbox.left,   precision) > pagew or \
+                       round(ebbox.top,    precision) < 0 or \
+                       round(ebbox.bottom, precision) > pageh:
+                        elementsOutside.append([element, "fully outside"])
+                    else: #fully inside or partially inside/outside. we check if one or more corners is outside the canvas
+                        rightOutside = False
+                        leftOutside = False
+                        topOutside = False
+                        bottomOutside = False
+                        if round(ebbox.right,  precision) < 0 or round(ebbox.right,  precision) > pagew:
+                           rightOutside = True
+                        if round(ebbox.left,  precision) < 0 or round(ebbox.left,  precision) > pagew:
+                           leftOutside = True  
+                        if round(ebbox.top,  precision) < 0 or round(ebbox.top,  precision) > pageh:
+                           topOutside = True
+                        if round(ebbox.bottom,  precision) < 0 or round(ebbox.bottom,  precision) > pageh:
+                           bottomOutside = True
+                        if rightOutside is True or leftOutside is True or topOutside is True or bottomOutside is True:
+                            elementsOutside.append([element, "partially outside"])
+            if self.options.show_issues_only is False:
+                inkex.utils.debug("{} Elements outside canvas or touching the border in total".format(len(elementsOutside)))
+            for elementOutside in elementsOutside:
+                inkex.utils.debug("id={}, status={}".format(
+                        elementOutside[0].get('id'), 
+                        elementOutside[1]
+                        )
+                    )    
+             
                    
         '''
         Shapes like rectangles, ellipses, arcs, spirals should be converted to svg:path to have more

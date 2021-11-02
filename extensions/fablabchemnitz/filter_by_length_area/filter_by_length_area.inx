@@ -3,6 +3,7 @@
     <name>Filter By Length/Area</name>
     <id>fablabchemnitz.de.filter_by_length_area</id>
     <label>Paths with value smaller than the given threshold will be deleted</label>
+    <param name="debug" type="bool" gui-text="Enable debug">false</param>
     <param name="unit" gui-text="Unit" type="optiongroup" appearance="combo">
         <option value="mm">mm</option>
         <option value="cm">cm</option>
@@ -11,14 +12,20 @@
         <option value="pc">pc</option>
         <option value="in">in</option>
     </param>
+    <label>The unit applies to interval and thresholds</label>
     <label appearance="header">Threshold</label>
+    <param name="nodes_interval" type="float" min="0.000" max="99999.000" precision="3" gui-text="Interval">10.000</param>
+    <separator/>
     <param name="min_filter_enable" type="bool" gui-text="Enable filtering min.">false</param>
-    <param name="min_threshold" type="float" min="0.000" precision="3" max="10000000.000" gui-text="Min.">1.000</param>
+    <param name="min_threshold" type="float" min="0.000" precision="3" max="10000000.000" gui-text="Min. length/area">1.000</param>
+    <param name="min_nodes" type="int" min="0" max="99999" gui-text="Min. nodes/&lt;interval&gt;">2</param>
     <param name="max_filter_enable" type="bool" gui-text="Enable filtering max.">false</param>
-    <param name="max_threshold" type="float" min="0.000" precision="3"  max="10000000.000" gui-text="Max.">10000000.000</param>
-    <label appearance="header">Equation</label>
-    <param name="measure" type="optiongroup" appearance="combo" gui-text="Measure by">
+    <param name="max_threshold" type="float" min="0.000" precision="3"  max="10000000.000" gui-text="Max. length/area">10000000.000</param>
+    <param name="max_nodes" type="int" min="0" max="99999" gui-text="Max. nodes/&lt;interval&gt;">10000000</param>
+    <label appearance="header">Filter</label>
+    <param name="measure" type="optiongroup" appearance="combo" gui-text="By">
         <option value="length">Length (Unit)</option>
+        <option value="nodes">Nodes per length (Unit)</option>
         <option value="area">Area (Unit^2)</option>
     </param>
     <effect>
