@@ -3,8 +3,20 @@
     <name>Laser Check</name>
     <id>fablabchemnitz.de.laser_check</id>
     <param name="tab" type="notebook">
-        <page name="tab_settings" gui-text="Checks">
+        <page name="tab_settings" gui-text="Laser Check">
+            <label appearance="header">General</label>
             <param name="show_issues_only" type="bool" gui-text="Show potential issues only" gui-description="Shortens the report a little bit">false</param>
+            <separator/>
+            <label appearance="header">Machine Settings</label>
+            <param name="machine_size" gui-text="Machine/Size (mm)" type="optiongroup" appearance="combo">
+                <option value="406x305">406 x 305 mm (Zing 16)</option>
+                <option value="610x305">610 x 305 mm (Zing 24 / Fusion Edge 12)</option>    
+                <option value="812x508">812 x 508 mm (Fusion Pro 32 / Fusion M2 32)</option>
+                <option value="1016x711">1016 x 711 mm (Fusion M2 40)</option>
+                <option value="1219x914">1219 x 914 mm (Fusion Pro 48)</option>
+            </param>
+            <param name="max_cutting_speed" type="float" min="0.000" max="9999.000" gui-text="Max. cutting speed (mm/s)">100</param>
+            <label appearance="header">Checks</label>
             <param name="checks" type="optiongroup" appearance="combo" gui-text="Select checks">
                 <option value="check_all">Check all</option>
                 <option value="check_section">Check selection</option>
@@ -15,14 +27,8 @@
                 <vbox>
                     <param name="bbox" type="bool" gui-text="Bounding box">false</param>
                     <param name="bbox_offset" type="float" min="0.000" max="9999.000" precision="3" gui-text="Minimum required offset (mm)">5.000</param>
-                    <param name="machine_size" gui-text="Machine/Size (mm)" type="optiongroup" appearance="combo">
-                        <option value="406x305">406 x 305 mm (Zing 16)</option>
-                        <option value="610x305">610 x 305 mm (Zing 24 / Fusion Edge 12)</option>    
-                        <option value="812x508">812 x 508 mm (Fusion Pro 32 / Fusion M2 32)</option>
-                        <option value="1016x711">1016 x 711 mm (Fusion M2 40)</option>
-                        <option value="1219x914">1219 x 914 mm (Fusion Pro 48)</option>
-                    </param>
                     <separator/>
+                    <param name="cutting_estimation" type="bool" gui-text="Cutting time estimation">false</param>
                     <param name="elements_outside_canvas" type="bool" gui-text="Elements outside canvas">false</param>
                     <param name="groups_and_layers" type="bool" gui-text="Groups and layers">false</param>
                     <param name="clones" type="bool" gui-text="Clones">false</param>

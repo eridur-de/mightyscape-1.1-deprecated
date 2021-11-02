@@ -17,10 +17,12 @@ class LaserCheck(inkex.EffectExtension):
     
     def add_arguments(self, pars):
         pars.add_argument('--tab')
+        pars.add_argument('--show_issues_only', type=inkex.Boolean, default=False)  
         pars.add_argument('--checks', default="check_all")
-        pars.add_argument('--show_issues_only', type=inkex.Boolean, default=False)
+        pars.add_argument('--max_cutting_speed', type=float, default=100)
         pars.add_argument('--bbox', type=inkex.Boolean, default=False)
         pars.add_argument('--bbox_offset', type=float, default=5.000)
+        pars.add_argument('--cutting_estimation', type=inkex.Boolean, default=False)
         pars.add_argument('--machine_size', default="812x508")
         pars.add_argument('--elements_outside_canvas', type=inkex.Boolean, default=False)
         pars.add_argument('--groups_and_layers', type=inkex.Boolean, default=False)
@@ -517,7 +519,24 @@ class LaserCheck(inkex.EffectExtension):
             for shortPath in shortPaths:
                 inkex.utils.debug("id={}, length={}mm".format(shortPath[0].get('id'), round(self.svg.uutounit(str(shortPath[1]), "mm"), 3)))    
           
-        
+        '''
+        Really short paths can cause issues with laser cutter mechanics and should be avoided to 
+        have healthier stepper motor belts, etc.
+        '''
+        if so.checks == "check_all" or so.cutting_estimation is True:
+            inkex.utils.debug("\n---------- Cutting time estimation")
+            totalLength = 0
+            for element in shapes:
+                if isinstance(element, inkex.PathElement):
+                    slengths, stotal = csplength(element.path.transform(element.composed_transform()).to_superpath())
+                    totalLength += stotal
+            inkex.utils.debug("cutting length (mm) = {:0.2f} mm".format(self.svg.uutounit(str(totalLength), "mm"), self.svg.uutounit(str(totalLength), "mm")))
+            for f in range(100, 0, -10):
+                v = so.max_cutting_speed * f/100.0
+                tsec = totalLength / v
+                tmin = tsec / 60
+                inkex.utils.debug("cutting time @{:0.0f}% (={}mm/s): {:0.2f}min (={:0.1f}s)".format(f, v, tmin, tsec))
+                
         
         '''
         Paths with a high amount of nodes will cause issues because each node means slowing down/speeding up the laser mechanics
