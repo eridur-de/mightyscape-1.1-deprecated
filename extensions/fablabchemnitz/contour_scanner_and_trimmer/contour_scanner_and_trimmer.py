@@ -19,6 +19,7 @@ Extension for InkScape 1.0+
             replacedelement.path = replacedelement.path.to_absolute().to_superpath().to_path()
         - maybe option: break apart while keeping relative/absolute commands (more complex and not sure if we have a great advantage having this)
     - note: running this extension might leave some empty parent groups in some circumstances. run the clean groups extension separately to fix that
+    - sort to groups by path type (open, closed, ...)
     
 - important to notice
     - this algorithm might be really slow. Reduce flattening quality to speed up

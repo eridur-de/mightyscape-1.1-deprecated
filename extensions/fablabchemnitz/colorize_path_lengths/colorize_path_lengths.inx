@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <name>Colorize Path Lengths</name>
+    <name>Colorize Path Lengths/Slants</name>
     <id>fablabchemnitz.de.colorize_path_lengths</id>
     <param name="selection" type="optiongroup" appearance="combo" gui-text="Selection: ">
         <option value="path_lengthselection">Length selection</option>

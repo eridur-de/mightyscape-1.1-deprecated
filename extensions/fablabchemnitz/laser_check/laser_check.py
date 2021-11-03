@@ -16,6 +16,13 @@ class LaserCheck(inkex.EffectExtension):
         - number of parts to weed in total; number of parts which are smaller than vector grid
         - add some inkex.Desc to all elements which were checked and which have some issue. use special syntax to remove old stuff each time the check is applied again
         - this code is horrible ugly stuff
+        - output time/cost estimations per stroke color
+        - add check for stroke colors -> make some useful predefinitions like (for default modes)
+            - black = cutting
+            - blue = cutting inside
+            - green = cutting outside
+            - pink = Vektorgravur
+            ...
     '''
     
     def add_arguments(self, pars):
