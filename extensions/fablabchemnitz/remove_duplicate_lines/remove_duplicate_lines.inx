@@ -17,15 +17,14 @@
 Remove duplicate line segments (with exact same coordinates) will always be performed.
 
 For more information: 
-https://gitlab.com/EllenWasbo/inkscape-extension-removeduplicatelines
-</label>
+https://gitlab.com/EllenWasbo/inkscape-extension-removeduplicatelines</label>
         </page>
     </param>
     <effect>
         <object-type>all</object-type>
         <effects-menu>
             <submenu name="FabLab Chemnitz">
-                <submenu name="Nesting/Cut Optimization"/>
+                <submenu name="Paths - Cut/Intersect/Purge" />
             </submenu>
         </effects-menu>
     </effect>

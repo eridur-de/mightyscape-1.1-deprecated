@@ -25,7 +25,7 @@
         <object-type>path</object-type>
         <effects-menu>
             <submenu name="FabLab Chemnitz">
-                <submenu name="Legacy Tools"/>
+                <submenu name="Paths - Cut/Intersect/Purge"/>
             </submenu>
         </effects-menu>
     </effect>

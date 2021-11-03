@@ -53,7 +53,7 @@
 		<object-type>all</object-type>
 		<effects-menu>
             <submenu name="FabLab Chemnitz">
-				<submenu name="Various"/>
+                <submenu name="Transformations" />
             </submenu>
 		</effects-menu>
         <menu-tip>Widen the document to send all lines properly to Epilog Dashboard</menu-tip>

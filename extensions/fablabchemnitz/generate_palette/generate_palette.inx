@@ -31,7 +31,9 @@
     <effect needs-live-preview="false">
         <object-type>all</object-type>
         <effects-menu>
-            <submenu name="Palette" />
+            <submenu name="FabLab Chemnitz">
+                <submenu name="Colors/Gradients/Filters"/>
+            </submenu>
         </effects-menu>
     </effect>
     <script>

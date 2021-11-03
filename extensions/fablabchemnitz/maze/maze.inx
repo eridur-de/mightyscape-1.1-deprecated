@@ -23,8 +23,8 @@
     <effect>
         <object-type>path</object-type>
         <effects-menu>
-            <submenu name="FabLab Chemnitz">
-                <submenu name="Shape/Pattern from Generator"/>
+            <submenu name="FabLab Chemnitz Shape Generators">
+                <submenu name="Puzzles/Mazes/Nests" />
             </submenu>
         </effects-menu>
     </effect>

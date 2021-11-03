@@ -165,7 +165,7 @@ Typical ruler set: 7.25, 9.5, 10, 12, 14, 15, 16, 20
         <object-type>path</object-type>
         <effects-menu>
            <submenu name="FabLab Chemnitz">
-                <submenu name="Dimensioning/Measuring"/>
+                <submenu name="Music"/>
             </submenu>
         </effects-menu>
     </effect>

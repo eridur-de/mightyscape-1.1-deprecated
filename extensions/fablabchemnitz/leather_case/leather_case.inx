@@ -20,8 +20,8 @@
     <effect>
         <object-type>all</object-type>
         <effects-menu>
-            <submenu name="FabLab Chemnitz">
-                <submenu name="Shape/Pattern from Generator"/>
+            <submenu name="FabLab Chemnitz Boxes/Papercraft">
+                <submenu name="Finger-jointed/Tabbed Boxes"/>
             </submenu>
         </effects-menu>
     </effect>

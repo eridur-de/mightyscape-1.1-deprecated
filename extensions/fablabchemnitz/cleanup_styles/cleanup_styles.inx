@@ -59,7 +59,7 @@
         <object-type>all</object-type>
         <effects-menu>
             <submenu name="FabLab Chemnitz">
-                <submenu name="Nesting/Cut Optimization"/>
+                <submenu name="Colors/Gradients/Filters"/>
             </submenu>
         </effects-menu>
     </effect>

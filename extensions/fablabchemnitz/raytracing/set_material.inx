@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
-    <name>Ray Tracing - Set Lens Material</name>
+    <name>Set Lens Material</name>
     <id>fablabchemnitz.de.raytracing.set_lens_material</id>
     <param name="optical_material" type="optiongroup" appearance="combo" gui-text="Select material:">
         <option value="none">None</option>
@@ -15,7 +15,7 @@
         <object-type>all</object-type>
         <effects-menu>
             <submenu name="FabLab Chemnitz">
-                <submenu name="Various"/>
+                <submenu name="Ray Tracing"/>
             </submenu>
         </effects-menu>
     </effect>

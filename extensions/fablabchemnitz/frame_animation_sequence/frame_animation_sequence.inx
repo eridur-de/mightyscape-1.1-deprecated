@@ -9,7 +9,7 @@
         <object-type>all</object-type>
         <effects-menu>
             <submenu name="FabLab Chemnitz">
-                <submenu name="Various"/>
+                <submenu name="Animation"/>
             </submenu>
         </effects-menu>
     </effect>

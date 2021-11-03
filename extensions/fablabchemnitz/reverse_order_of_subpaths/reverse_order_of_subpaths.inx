@@ -5,10 +5,10 @@
     <label>Reverse order of subpaths (combined paths) without reversing the node order nor the order of the paths.</label>      
     <effect>
         <object-type>path</object-type>
-            <effects-menu>
+        <effects-menu>
             <submenu name="FabLab Chemnitz">
-                <submenu name="Modify existing Path(s)"/>
-            </submenu>          
+                <submenu name="Paths - Join/Order" />
+            </submenu>         
     </effects-menu>
     </effect>
     <script>

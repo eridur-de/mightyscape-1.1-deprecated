@@ -54,7 +54,7 @@ Applies independently for each sub path in selection. Use 'Path > Reverse' to ch
         <object-type>path</object-type>
         <effects-menu>
             <submenu name="FabLab Chemnitz">
-                <submenu name="Modify existing Path(s)"/>
+                <submenu name="Paths - Cut/Intersect/Purge"/>
             </submenu>
         </effects-menu>
     </effect>

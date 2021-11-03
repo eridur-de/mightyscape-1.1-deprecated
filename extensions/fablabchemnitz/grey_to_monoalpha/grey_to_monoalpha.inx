@@ -38,7 +38,7 @@
         <object-type>path</object-type>
         <effects-menu>
             <submenu name="FabLab Chemnitz">
-                <submenu name="Various"/>
+                <submenu name="Colors/Gradients/Filters"/>
             </submenu>
         </effects-menu>
     </effect>

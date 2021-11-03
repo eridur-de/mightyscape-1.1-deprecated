@@ -42,7 +42,7 @@ lenght. Recognizes rectangles, circle and ellipses.</label>
         <object-type>path</object-type>
         <effects-menu>
 			<submenu name="FabLab Chemnitz">
-				<submenu name="Tracing/Edge Detection"/>
+				<submenu name="Tracing/Images/Edge Detection"/>
 			</submenu>
         </effects-menu>
     </effect>

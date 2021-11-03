@@ -6,7 +6,7 @@
 		<object-type>rect</object-type>
 		<effects-menu>
 			<submenu name="FabLab Chemnitz">
-				<submenu name="Legacy Tools"/>
+				<submenu name="Transformations"/>
 			</submenu>
 		</effects-menu>
 	</effect>

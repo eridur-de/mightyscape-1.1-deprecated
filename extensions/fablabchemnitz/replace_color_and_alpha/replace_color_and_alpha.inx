@@ -7,9 +7,9 @@
     <effect needs-document="true">
         <object-type>all</object-type>
         <effects-menu>
-			<submenu name="FabLab Chemnitz">
-				<submenu name="Legacy Tools"/>
-			</submenu>
+            <submenu name="FabLab Chemnitz">
+                <submenu name="Colors/Gradients/Filters"/>
+            </submenu>
         </effects-menu>
     </effect>
     <script>

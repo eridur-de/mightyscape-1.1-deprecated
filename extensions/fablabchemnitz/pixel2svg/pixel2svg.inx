@@ -34,7 +34,7 @@ http://florian-berger.de/en/software/pixel2svg
         <object-type>all</object-type>
         <effects-menu>
             <submenu name="FabLab Chemnitz">
-                <submenu name="Tracing/Edge Detection" />
+                <submenu name="Tracing/Images/Edge Detection" />
             </submenu>
         </effects-menu>
     </effect>

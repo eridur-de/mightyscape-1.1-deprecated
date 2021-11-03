@@ -178,7 +178,7 @@ Tips:
         <object-type>all</object-type>
         <effects-menu>
             <submenu name="FabLab Chemnitz">
-                <submenu name="Modify existing Path(s)"/>
+                <submenu name="Paths - Cut/Intersect/Purge" />
             </submenu>
         </effects-menu>
     </effect>

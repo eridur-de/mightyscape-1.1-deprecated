@@ -76,7 +76,7 @@
         <object-type>all</object-type>
         <effects-menu>
             <submenu name="FabLab Chemnitz">
-                <submenu name="Various"/>
+                <submenu name="Colors/Gradients/Filters"/>
             </submenu>
         </effects-menu>
         <menu-tip>Generate color harmonies and save as palette file</menu-tip>

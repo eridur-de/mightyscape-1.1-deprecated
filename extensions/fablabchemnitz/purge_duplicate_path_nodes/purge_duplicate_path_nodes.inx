@@ -27,15 +27,14 @@ To join paths, make sure that the paths to consider are already combined (subpat
 To combine paths, select them and press Ctrl+K. 
 
 For more information: 
-https://gitlab.com/EllenWasbo/inkscape-extension-removeduplicatenodes
-</label>
+https://gitlab.com/EllenWasbo/inkscape-extension-removeduplicatenodes</label>
         </page>
     </param>
     <effect>
         <object-type>path</object-type>
         <effects-menu>
             <submenu name="FabLab Chemnitz">
-                <submenu name="Nesting/Cut Optimization" />
+                <submenu name="Paths - Cut/Intersect/Purge" />
             </submenu>
         </effects-menu>
     </effect>

@@ -10,7 +10,7 @@
          <param name="timezone" type="int" min="-12" max="12" gui-text="Time zone:">0</param>
          <param name="summer_time" type="bool" gui-text="Summer time:">false</param>
       </page>
-      <page name="input_2"  gui-text="Add">
+      <page name="input_2" gui-text="Add">
          <label appearance="header">Add 1</label>
          <param name="gnom" type="float" min="10" max="50" precision="1" gui-text="Length of the gnomon:">40</param>
          <param name="decl" type="float" min="-90" max="90" precision="1" gui-text="Azimuth wall:">40</param>

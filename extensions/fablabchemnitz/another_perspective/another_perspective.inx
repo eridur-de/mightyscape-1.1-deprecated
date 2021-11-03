@@ -6,7 +6,7 @@
 	<object-type>path</object-type>
         <effects-menu>
             <submenu name="FabLab Chemnitz">
-                <submenu name="Modify existing Path(s)"/>
+                <submenu name="Transformations"/>
             </submenu>
         </effects-menu>
     </effect>

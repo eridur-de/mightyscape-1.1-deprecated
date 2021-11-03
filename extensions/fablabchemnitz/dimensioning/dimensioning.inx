@@ -48,7 +48,7 @@
       <object-type>path</object-type>
       <effects-menu>
          <submenu name="FabLab Chemnitz">
-                <submenu name="Legacy Tools"/>
+                <submenu name="Dimensioning/Measuring"/>
          </submenu>
       </effects-menu>
    </effect>

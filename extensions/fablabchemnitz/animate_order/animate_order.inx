@@ -54,7 +54,7 @@
         <object-type>all</object-type>
 		<effects-menu>
          <submenu name="FabLab Chemnitz">
-            <submenu name="Nesting/Cut Optimization"/>
+            <submenu name="Animation"/>
          </submenu>
 		</effects-menu>
     </effect>

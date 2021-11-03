@@ -18,7 +18,7 @@
         <object-type>path</object-type>
         <effects-menu>
             <submenu name="FabLab Chemnitz">
-                <submenu name="Tracing/Edge Detection"/>
+                <submenu name="Dimensioning/Measuring"/>
             </submenu>
         </effects-menu>
     </effect>

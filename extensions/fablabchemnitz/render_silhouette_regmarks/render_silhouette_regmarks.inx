@@ -11,7 +11,8 @@
         <object-type>all</object-type>
         <effects-menu>
             <submenu name="FabLab Chemnitz">
-                <submenu name="Nesting/Cut Optimization"/></submenu>
+                <submenu name="Cutting/Plotting/Printing"/>
+            </submenu>
         </effects-menu>
     </effect>
     <script>

@@ -5,9 +5,9 @@
     <effect>
         <object-type>path</object-type>
         <effects-menu>
-         <submenu name="FabLab Chemnitz">
-            <submenu name="Modify existing Path(s)"/>
-         </submenu>
+            <submenu name="FabLab Chemnitz">
+                <submenu name="Paths - Join/Order" />
+            </submenu>
         </effects-menu>
     </effect>
     <script>
