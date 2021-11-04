@@ -196,60 +196,22 @@ class LinksCreator(inkex.EffectExtension):
             # check if the element has a style attribute. If not we create a blank one with a black stroke and without fill
             style = None
             default_fill = 'none'
-            default_stroke_width = '1px'
             default_stroke = '#000000'
+            default_stroke_width = str(self.svg.unittouu('1px'))
             if element.attrib.has_key('style'):
-                style = element.get('style')
-                if style.endswith(';') is False:
-                    style += ';'
-                    
-                # if has style attribute and dasharray and/or dashoffset are present we modify it accordingly
-                declarations = style.split(';')  # parse the style content and check what we need to adjust
-                for i, decl in enumerate(declarations):
-                    parts = decl.split(':', 2)
-                    if len(parts) == 2:
-                        (prop, val) = parts
-                        prop = prop.strip().lower()
-                        #if prop == 'fill':
-                        #    declarations[i] = prop + ':{}'.format(default_fill) 
-                        #if prop == 'stroke':
-                        #    declarations[i] = prop + ':{}'.format(default_stroke)
-                        #if prop == 'stroke-width':
-                        #    declarations[i] = prop + ':{}'.format(default_stroke_width)
-                        if prop == 'stroke-dasharray': #comma separated list of one or more float values
-                            declarations[i] = prop + ':{}'.format(stroke_dasharray)
-                        if prop == 'stroke-dashoffset':
-                            declarations[i] = prop + ':{}'.format(stroke_dashoffset)
-                element.set('style', ';'.join(declarations)) #apply new style to element
-                    
+                element.style['stroke-dasharray'] = stroke_dasharray
+                element.style['stroke-dashoffset'] = stroke_dashoffset
                 #if has style attribute but the style attribute does not contain fill, stroke, stroke-width, stroke-dasharray or stroke-dashoffset yet
-                style = element.style
-                if re.search('fill:(.*?)(;|$)', str(style)) is None:
-                    style += 'fill:{};'.format(default_fill)
-                if re.search('(;|^)stroke:(.*?)(;|$)', str(style)) is None: #if "stroke" is None, add one. We need to distinguish because there's also attribute "-inkscape-stroke" that's why we check starting with ^ or ;
-                    style += 'stroke:{};'.format(default_stroke)
-                if not 'stroke-width' in style:
-                    style += 'stroke-width:{};'.format(default_stroke_width)
-                if not 'stroke-dasharray' in style:
-                    style += 'stroke-dasharray:{};'.format(stroke_dasharray)
-                if not 'stroke-dashoffset' in style:
-                    style += 'stroke-dashoffset:{};'.format(stroke_dashoffset)
-                element.set('style', style)
+                if element.style.get('fill') is None: element.style['fill'] = default_fill
+                if element.style.get('stroke') is None: element.style['stroke'] = default_stroke
+                if element.style.get('stroke-width') is None: element.style['stroke-width'] = default_stroke_width
             else:
-                style = 'fill:{};stroke:{};stroke-width:{};stroke-dasharray:{};stroke-dashoffset:{};'.format(default_fill, default_stroke, default_stroke_width, stroke_dasharray, stroke_dashoffset)
-                element.set('style', style)
+                element.style = 'fill:{};stroke:{};stroke-width:{};stroke-dasharray:{};stroke-dashoffset:{};'.format(
+                    default_fill, default_stroke, default_stroke_width, stroke_dasharray, stroke_dashoffset)
 
             #if enabled, we override stroke color with blue (now, as the element definitely has a style)
             if self.options.weakening_mode is True and self.options.switch_pattern is True:
-                declarations = element.get('style').split(';')
-                for i, decl in enumerate(declarations):
-                    parts = decl.split(':', 2)
-                    if len(parts) == 2:
-                        (prop, val) = parts
-                        prop = prop.strip().lower()
-                        if prop == 'stroke':
-                            declarations[i] = prop + ':{}'.format("#0000ff")
-                element.set('style', ';'.join(declarations)) #apply new style to element
+                element.style['stroke'] = "#0000ff"
 
             # Print some info about values
             if self.options.show_info is True:

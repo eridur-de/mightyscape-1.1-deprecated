@@ -50,7 +50,7 @@ class StylesToLayers(inkex.EffectExtension):
         pars.add_argument("--parsecolors",default = "hexval", help = "Sort colors by")
         pars.add_argument("--subdividethreshold", type=int, default = 1, help = "Threshold for splitting into sub layers")
         pars.add_argument("--decimals", type=int, default = 1, help = "Decimal tolerance")
-        pars.add_argument("--cleanup", type=inkex.Boolean, default = True, help = "Decimal tolerance")
+        pars.add_argument("--cleanup", type=inkex.Boolean, default = True, help = "Cleanup all unused groups/layers (requires separate extension)")
         pars.add_argument("--put_unfiltered", type=inkex.Boolean, default = False, help = "Put unfiltered elements to a separate layer")  
         pars.add_argument("--show_info", type=inkex.Boolean, default = False, help = "Show elements which have no style attributes to filter")
 
