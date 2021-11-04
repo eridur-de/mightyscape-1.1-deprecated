@@ -112,7 +112,7 @@ class FilterByLengthArea(inkex.EffectExtension):
                     stotal = round(stotal, so.precision)
                     nodes = len(element.path)
                     if (so.min_filter_enable is True and nodes / stotal < so.min_nodes / self.svg.unittouu(str(so.nodes_interval) + so.unit)) or \
-                       (so.max_filter_enable is True and nodes / stotal < so.max_nodes / self.svg.unittouu(str(so.nodes_interval) + so.unit)) or \
+                       (so.max_filter_enable is True and nodes / stotal > so.max_nodes / self.svg.unittouu(str(so.nodes_interval) + so.unit)) or \
                        (so.min_filter_enable is False and so.max_filter_enable is False): #complete selection
                         if so.debug is True: 
                             inkex.utils.debug("id={}, length={:0.3f}{}, nodes={}".format(element.get('id'), self.svg.uutounit(str(stotal), so.unit), so.unit, nodes))
