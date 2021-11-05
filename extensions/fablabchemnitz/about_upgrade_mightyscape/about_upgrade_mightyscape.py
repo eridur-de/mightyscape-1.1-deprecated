@@ -101,6 +101,7 @@ class AboutUpgradeMightyScape(inkex.EffectExtension):
         remotes.append(["https://github.com/vmario89/mightyscape-1.X.git", "github"]) #copy/second remote
             
         gitDir = os.path.join(main_dir, ".git")
+        
         if not os.path.exists(gitDir):
             if so.convert_to_git is True:
                 local_repo = Repo.init(main_dir)
@@ -110,22 +111,16 @@ class AboutUpgradeMightyScape(inkex.EffectExtension):
                     localRemotes.append(local_repo.create_remote(remote[1], url=remote[0]))
                 localRemotes[0].update()
                 local_repo.index.commit('.')
-                if so.stash_untracked is True:
-                    local_repo.git.stash('save')
                 local_repo.git.checkout('origin/master')
-                #git init
-                #git add .
-                #git remote add origin https://gitea.fablabchemnitz.de/FabLab_Chemnitz/mightyscape-1.X.git
-                #git remote add github https://github.com/vmario89/mightyscape-1.X.git
-                #git remote update
-                #git commit -m "."
-                #git stash
-                #git checkout origin/master 
             else:
                 inkex.utils.debug("MightyScape .git directory was not found. It seems you installed MightyScape the traditional way (by downloading and extracting from archive). Please install MightyScape using the git clone method if you want to use the upgrade function. More details can be found in the official README.")
                 exit(1)
         
         local_repo = Repo(gitDir)
+      
+        #drop local changed. update might fail if file changes are present
+        if so.stash_untracked is True:
+            local_repo.git.stash('save')
         
         existingRemotes = [] #check for existing remotes. if one is missing, add it (or delete and recreate)
         for r in local_repo.remotes:
