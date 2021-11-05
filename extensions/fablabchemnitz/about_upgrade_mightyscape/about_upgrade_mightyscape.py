@@ -18,7 +18,7 @@ import inkex
 import os
 import warnings
 from datetime import datetime
-from pyqtgraph.examples.verlet_chain.relax import so
+
 try:
     import git
     from git import Repo #requires GitPython lib
