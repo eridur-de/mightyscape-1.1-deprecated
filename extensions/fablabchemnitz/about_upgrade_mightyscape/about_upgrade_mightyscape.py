@@ -7,7 +7,7 @@ Extension for InkScape 1.X
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 14.05.2021
-Last patch: 28.10.2021
+Last patch: 05.11.2021
 License: GNU GPL v3
 
 ToDo
@@ -18,6 +18,7 @@ import inkex
 import os
 import warnings
 from datetime import datetime
+from pyqtgraph.examples.verlet_chain.relax import so
 try:
     import git
     from git import Repo #requires GitPython lib
@@ -28,16 +29,16 @@ except:
 class AboutUpgradeMightyScape(inkex.EffectExtension):
 
     def update(self, local_repo, remote, localCommitCount):
-        self.msg("Chosen remote is: {}".format(remote))
+        inkex.utils.debug("Chosen remote is: {}".format(remote))
         try:
             localCommit = local_repo.head.commit
             remote_repo = git.remote.Remote(local_repo, remote)
             remoteCommit = remote_repo.fetch()[0].commit
-            self.msg("Latest remote commit is: " + str(remoteCommit)[:7])
+            inkex.utils.debug("Latest remote commit is: " + str(remoteCommit)[:7])
             remoteCommitCount = 0 
             for c in remote_repo.repo.iter_commits('origin/master'):
                 remoteCommitCount += 1
-            self.msg("Commits at remote: {}".format(remoteCommitCount))
+            inkex.utils.debug("Commits at remote: {}".format(remoteCommitCount))
                 
             if localCommit.hexsha != remoteCommit.hexsha:
                 ssh_executable = 'git'
@@ -57,8 +58,8 @@ class AboutUpgradeMightyScape(inkex.EffectExtension):
                 inkex.utils.debug("Nothing to do! MightyScape is already up to date!")  
                    
         except git.exc.GitCommandError as e:
-            self.msg("Error: ")
-            self.msg(e)
+            inkex.utils.debug("Error: ")
+            inkex.utils.debug(e)
             return False
         return True
 
@@ -66,10 +67,15 @@ class AboutUpgradeMightyScape(inkex.EffectExtension):
     def add_arguments(self, pars):
         pars.add_argument("--tab")
         pars.add_argument("--convert_to_git", type=inkex.Boolean, default=False, help="If you downloaded MightyScape as .zip or .tar.gz you cannot upgrade using this extension. But you can convert your downloaded directory to a .git one by enabling this option")
+        pars.add_argument("--recreate_remotes", type=inkex.Boolean, default=False, help="Update remotes in git config file (useful if you have an older version of MightyScape or if sth. changes)")
         pars.add_argument("--stash_untracked", type=inkex.Boolean, default=False, help="Stash untracked files and continue to upgrade")
-  
         
+    
     def effect(self):
+        
+        global so
+        so = self.options
+        
         warnings.simplefilter('ignore', ResourceWarning) #suppress "enable tracemalloc to get the object allocation traceback"
 
         #get the directory of mightyscape
@@ -96,15 +102,15 @@ class AboutUpgradeMightyScape(inkex.EffectExtension):
             
         gitDir = os.path.join(main_dir, ".git")
         if not os.path.exists(gitDir):
-            if self.options.convert_to_git is True:
+            if so.convert_to_git is True:
                 local_repo = Repo.init(main_dir)
                 local_repo.git.add(all=True)
                 localRemotes = []
                 for remote in remotes:
                     localRemotes.append(local_repo.create_remote(remote[1], url=remote[0]))
-                localRemotes[0].update()    
+                localRemotes[0].update()
                 local_repo.index.commit('.')
-                if self.options.stash_untracked is True:
+                if so.stash_untracked is True:
                     local_repo.git.stash('save')
                 local_repo.git.checkout('origin/master')
                 #git init
@@ -116,15 +122,26 @@ class AboutUpgradeMightyScape(inkex.EffectExtension):
                 #git stash
                 #git checkout origin/master 
             else:
-                self.msg("MightyScape .git directory was not found. It seems you installed MightyScape the traditional way (by downloading and extracting from archive). Please install MightyScape using the git clone method if you want to use the upgrade function. More details can be found in the official README.")
+                inkex.utils.debug("MightyScape .git directory was not found. It seems you installed MightyScape the traditional way (by downloading and extracting from archive). Please install MightyScape using the git clone method if you want to use the upgrade function. More details can be found in the official README.")
                 exit(1)
         
         local_repo = Repo(gitDir)
+        
+        existingRemotes = [] #check for existing remotes. if one is missing, add it (or delete and recreate)
+        for r in local_repo.remotes:
+            existingRemotes.append(str(r))
+        for remote in remotes:
+            if remote[1] not in existingRemotes:
+                local_repo.create_remote(remote[1], url=remote[0])
+            if so.recreate_remotes is True: #delete and then recreate
+                local_repo.delete_remote(remote[1])
+                local_repo.create_remote(remote[1], url=remote[0])
+                    
         #check if it is a non-empty git repository
         if local_repo.bare is False:
             if local_repo.is_dirty(untracked_files=True) is False:        
                 if len(local_repo.untracked_files) > 0:
-                    if self.options.stash_untracked is True:
+                    if so.stash_untracked is True:
                         local_repo.git.stash('save')
                     else:
                         inkex.utils.debug("There are some untracked files in your MightyScape directory. Still trying to pull recent files from git...")
@@ -132,31 +149,31 @@ class AboutUpgradeMightyScape(inkex.EffectExtension):
             localLatestCommit = local_repo.head.commit
             localCommits = list(local_repo.iter_commits("origin/master", skip=0))
             localCommitCount = len(localCommits)
-            self.msg("Local commit id is: " + str(localLatestCommit)[:7])
-            self.msg("There are {} local commits at the moment.".format(localCommitCount))
+            inkex.utils.debug("Local commit id is: " + str(localLatestCommit)[:7])
+            inkex.utils.debug("There are {} local commits at the moment.".format(localCommitCount))
             localCommits = localCommits[:10] #get only last ten commits
             localCommitList = []
             for localCommit in localCommits:
                 localCommitList.append(localCommit)
             #localCommitList.reverse()
-            self.msg("*"*40)
-            self.msg("Latest {} local commits are:".format(len(localCommits)))
+            inkex.utils.debug("*"*40)
+            inkex.utils.debug("Latest {} local commits are:".format(len(localCommits)))
             for i in range(0, len(localCommits)):
-                self.msg("{} | {} : {}".format(
+                inkex.utils.debug("{} | {} : {}".format(
                     datetime.utcfromtimestamp(localCommitList[i].committed_date).strftime('%Y-%m-%d %H:%M:%S'),
                     localCommitList[i].name_rev[:7],
                     localCommitList[i].message.strip())
                     )   
-                #self.msg(" - {}: {}".format(localCommitList[i].newhexsha[:7], localCommitList[i].message))   
-            self.msg("*"*40)
+                #inkex.utils.debug(" - {}: {}".format(localCommitList[i].newhexsha[:7], localCommitList[i].message))   
+            inkex.utils.debug("*"*40)
             
             #finally run the update
             success = self.update(local_repo, remotes[0][1], localCommitCount)
             if success is False: #try the second remote if first failed
-                self.msg("Error receiving latest remote commit from main git remote {}. Trying second remote ...".format(remotes[0][0]))
+                inkex.utils.debug("Error receiving latest remote commit from main git remote {}. Trying second remote ...".format(remotes[0][0]))
                 success = self.update(local_repo, remotes[1][1], localCommitCount)
             if success is False: #if still false:
-                self.msg("Error receiving latest remote commit from second git remote {}.\nAre you offline? Cannot continue!".format(remotes[0][0]))
+                inkex.utils.debug("Error receiving latest remote commit from second git remote {}.\nAre you offline? Cannot continue!".format(remotes[0][0]))
                 exit(1)
         
         else:

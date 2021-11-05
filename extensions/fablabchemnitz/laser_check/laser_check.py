@@ -13,6 +13,7 @@ class LaserCheck(inkex.EffectExtension):
     ToDos:
         - check for old styles which should be upgraded
         - self-intersecting paths
+        - angaben in %, wieviele der checks positiv, negativ oder skipped sind (total score der grafik)
         - number of parts to weed in total; number of parts which are smaller than vector grid
         - add some inkex.Desc to all elements which were checked and which have some issue. use special syntax to remove old stuff each time the check is applied again
         - this code is horrible ugly stuff
