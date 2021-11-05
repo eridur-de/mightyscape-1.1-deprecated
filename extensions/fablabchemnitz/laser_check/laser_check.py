@@ -11,19 +11,39 @@ class LaserCheck(inkex.EffectExtension):
     
     '''
     ToDos:
-        - check for old styles which should be upgraded
-        - self-intersecting paths
-        - angaben in %, wieviele der checks positiv, negativ oder skipped sind (total score der grafik)
-        - number of parts to weed in total; number of parts which are smaller than vector grid
-        - add some inkex.Desc to all elements which were checked and which have some issue. use special syntax to remove old stuff each time the check is applied again
-        - this code is horrible ugly stuff
-        - output time/cost estimations per stroke color
-        - add check for stroke colors -> make some useful predefinitions like (for default modes)
-            - black = cutting
-            - blue = cutting inside
-            - green = cutting outside
-            - pink = Vektorgravur
-            ...
+     - Handlungsempfehlungen einbauen
+        - verweisen auf diverse plugins, die man nutzen kann:
+            - migrate ungrouper
+            - pointy paths
+            - cleaner
+            - styles to layers
+            - apply transforms
+            - epilog bbox adjust
+        - wege zum Pfade fixen:
+            - cut slower ( > muss aber auch leistung reduzieren - inb welchem umfang?)
+            - sort
+            - chaining with touching neighbours
+            - remove path
+            - remove modes/simplify
+    - find duplicate lines
+    - visualize results as a nice SVG rendered check list page with 
+        - red/green/grey icons (failed, done, skipped) and calculate some scores
+        - preview image
+        - statistics
+        - export as PDF
+    - run as script to generate quick results for users
+    - check for old styles which should be upgraded
+    - self-intersecting paths
+    - number of parts (isles) to weed in total
+    - number of parts which are smaller than vector grid
+    - add some inkex.Desc to all elements which were checked and which have some issue. use special syntax to remove old stuff each time the check is applied again
+    - this code is horrible ugly stuff
+    - output time/cost estimations per stroke color
+    - add check for stroke colors -> make some useful predefinitions like (for default modes)
+        - black = general cutting
+        - blue = cutting inside
+        - green = cutting outside
+        - pink = vector engraving
     '''
     
     def add_arguments(self, pars):
