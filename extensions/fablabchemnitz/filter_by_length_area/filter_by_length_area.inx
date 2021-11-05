@@ -7,6 +7,7 @@
             <label appearance="header">General Settings</label>
             <param name="debug" type="bool" gui-text="Enable debug">false</param>
             <param name="apply_transformations" type="bool" gui-text="Apply transformations (requires separate extension)" gui-description="This will call the extension 'Apply Transformations'. Helps avoiding geometry shifting">false</param>
+            <param name="breakapart" type="bool" gui-text="Break apart output path(s) into segments" gui-description="Performs CTRL + SHIFT + K to break the new output path into it's parts. Recommended to enable because default break apart of Inkscape might produce pointy paths.">true</param>
             <hbox>
                 <vbox>
                     <label appearance="header">Threshold</label>

@@ -16,8 +16,9 @@ ToDo:
 
 import sys
 import colorsys
+import copy
 import inkex
-from inkex import Color
+from inkex import Color, CubicSuperPath
 from inkex.bezier import csplength, csparea
 
 sys.path.append("../remove_empty_groups")
@@ -29,6 +30,7 @@ class FilterByLengthArea(inkex.EffectExtension):
         pars.add_argument('--tab')
         pars.add_argument('--debug', type=inkex.Boolean, default=False)
         pars.add_argument("--apply_transformations", type=inkex.Boolean, default=False, help="Run 'Apply Transformations' extension before running vpype. Helps avoiding geometry shifting")
+        pars.add_argument("--breakapart", type=inkex.Boolean, default=True, help="Performs CTRL + SHIFT + K to break the new output path into it's parts. Recommended to enable because default break apart of Inkscape might produce pointy paths.")
         pars.add_argument("--cleanup", type=inkex.Boolean, default = True, help = "Cleanup all unused groups/layers (requires separate extension)")
         pars.add_argument('--unit')
         pars.add_argument('--min_filter_enable', type=inkex.Boolean, default=True, help='Enable filtering min.')
@@ -51,6 +53,38 @@ class FilterByLengthArea(inkex.EffectExtension):
         pars.add_argument('--set_labels', type=inkex.Boolean, default=False, help="Adds type and value to the element's label")    
         pars.add_argument('--remove_labels', type=inkex.Boolean, default=False, help="Remove labels (cleaning option for previous applications)")    
         pars.add_argument('--group', type=inkex.Boolean, default=False)    
+  
+    def breakContours(self, element, breakelements = None): #this does the same as "CTRL + SHIFT + K"
+        if breakelements == None:
+            breakelements = []
+        if element.tag == inkex.addNS('path','svg'):
+            parent = element.getparent()
+            idx = parent.index(element)
+            idSuffix = 0    
+            raw = element.path.to_arrays()
+            subPaths, prev = [], 0
+            for i in range(len(raw)): # Breaks compound paths into simple paths
+                if raw[i][0] == 'M' and i != 0:
+                    subPaths.append(raw[prev:i])
+                    prev = i
+            subPaths.append(raw[prev:])
+            for subpath in subPaths:
+                replacedelement = copy.copy(element)
+                oldId = replacedelement.get('id')
+                csp = CubicSuperPath(subpath)
+                if len(subpath) > 1 and csp[0][0] != csp[0][1]: #avoids pointy paths like M "31.4794 57.6024 Z"
+                    replacedelement.set('d', csp)
+                    if len(subPaths) == 1:
+                        replacedelement.set('id', oldId)
+                    else:
+                        replacedelement.set('id', oldId + str(idSuffix))
+                        idSuffix += 1
+                    parent.insert(idx, replacedelement)
+                    breakelements.append(replacedelement)
+            parent.remove(element)
+        for child in element.getchildren():
+            self.breakContours(child, breakelements)
+        return breakelements
         
     def effect(self):
         global to_sort, so
@@ -72,10 +106,14 @@ class FilterByLengthArea(inkex.EffectExtension):
             inkex.utils.debug("One or both tresholds are zero. Please adjust.")
             return
         
+        elements = []
         if len(self.svg.selected) > 0:
-            elements = self.svg.selection.filter().values()
+            for element in self.svg.selection.values():
+                elements.extend(self.breakContours(element, None))
         else:
-            elements = self.document.xpath("//svg:path", namespaces=inkex.NSS)
+            data = self.document.xpath("//svg:path", namespaces=inkex.NSS)
+            for element in data:
+                elements.extend(self.breakContours(element, None))
 
         if so.debug is True: 
             inkex.utils.debug("Collecting elements ...")
