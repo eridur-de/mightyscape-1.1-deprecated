@@ -5,12 +5,15 @@ from inkex.bezier import csplength, csparea
 from lxml import etree
 import re
 import math
+from math import log
 import datetime
 
 class LaserCheck(inkex.EffectExtension):
     
     '''
     ToDos:
+     - add some extra seconds for start, stop, removing parts, attaching material, ...
+     - maybe remove totalTravelLength and set manually ...
      - Handlungsempfehlungen einbauen
         - verweisen auf diverse plugins, die man nutzen kann:
             - migrate ungrouper
@@ -561,28 +564,62 @@ class LaserCheck(inkex.EffectExtension):
         have healthier stepper motor belts, etc.
         '''
         if so.checks == "check_all" or so.cutting_estimation is True:
-            inkex.utils.debug("\n---------- Cutting time estimation")
+            inkex.utils.debug("\n---------- Cutting time estimation (Epilog Lasers)")
             totalCuttingLength = 0
+            pathCount = 0
             for element in shapes:
                 if isinstance(element, inkex.PathElement):
                     slengths, stotal = csplength(element.path.transform(element.composed_transform()).to_superpath())
                     totalCuttingLength += stotal
-            extraTraveLength = (machineWidth / 3 + machineHeight / 3) * 2.0 #from top-left to the ~1/3 of the bed and back again
-            totalTravelLength = totalCuttingLength * (1.0 - so.cut_travel_factor) + extraTraveLength
+                    pathCount += 1 #each path has one start and one end (if open path) or start=end on closed path. For cutting the we calculate with 2 points because we enter and leave each path ALWAYS
+            totalTravelLength = totalCuttingLength * so.cut_travel_factor
             totalLength = totalCuttingLength + totalTravelLength
+            inkex.utils.debug("total paths={}".format(pathCount))
             inkex.utils.debug("(measured) cutting length (mm) = {:0.2f} mm".format(self.svg.uutounit(str(totalCuttingLength), "mm"), self.svg.uutounit(str(totalCuttingLength), "mm")))
             inkex.utils.debug("(estimated) travel length (mm) = {:0.2f} mm".format(self.svg.uutounit(str(totalTravelLength), "mm"), self.svg.uutounit(str(totalTravelLength), "mm")))
             inkex.utils.debug("(estimated) total length (mm) = {:0.2f} mm".format(self.svg.uutounit(str(totalLength), "mm"), self.svg.uutounit(str(totalLength), "mm")))
-            for speedFactor in [100,90,80,70,60,50,40,30,20,10,5]:
-                v_cut    = so.max_cutting_speed * speedFactor/100.0
+            ''' from https://www.epiloglaser.com/assets/downloads/fusion-material-settings.pdf
+            Speed Settings: The speed setting scale of 1% to 100% is not linear – 
+            i.e. 100% speed will not be twice as fast as 50% speed. This non-linear 
+            scale is very useful in compensating for the different factors that affect engraving time.
+            '''
+            for speedFactor in [100,90,80,70,60,50,40,30,20,10,9,8,7,6,5,4,3,2,1]:
+                speedFactorR = speedFactor / 100.0
+                adjusted_speed =  482.4000 / so.max_cutting_speed #empiric - found out by trying for hours ...
+                empiric_scale = 1 + (speedFactorR**2) / 19.0 #empiric - found out by trying for hours ...
+                v_cut    = so.max_cutting_speed * speedFactorR
                 v_travel = so.max_travel_speed #this is always at maximum
-                tsec_cut    = self.svg.uutounit(str(totalCuttingLength)) / v_cut
+                tsec_cut    = (self.svg.uutounit(str(totalCuttingLength)) / (adjusted_speed * so.max_cutting_speed * speedFactorR)) * empiric_scale
                 tsec_travel = self.svg.uutounit(str(totalTravelLength))  / v_travel
                 tsec_total = tsec_cut + tsec_travel
                 minutes, seconds = divmod(tsec_total, 60)  # split the seconds to minutes and seconds
                 partial_minutes = round(seconds/60 * 2) / 2
                 inkex.utils.debug("@{:03.0f}% (cut={:06.2f}mm/s | travel={:06.2f}mm/s) > {:03.0f}min {:02.0f}sec | cost={:02.0f}€".format(speedFactor, v_cut, v_travel, minutes, seconds, so.price_per_minute_gross * (minutes + partial_minutes)))
 
+        
+        ''' Measurements from Epilog Software Suite
+        We are using a huge SVG graphic with 100 meters (=100.000 mm) of lines.
+        The following speeds are getting precalculated (travel moves = 0mm): 
+            @ 100% = 13:45   = 825s   -> 121,21mm/s
+            @ 090% = 15:12   = 912s   -> 109,65mm/s
+            @ 080% = 17:01   = 1021s  ->  97,94mm/s
+            @ 070% = 19:21   = 1161s  ->  86,13mm/s
+            @ 060% = 22:28   = 1348s  ->  74,18mm/s
+            @ 050% = 26:49   = 1609s  ->  62,15mm/s
+            @ 040% = 33:21   = 2001s  ->  49,98mm/s
+            @ 030% = 44:13   = 2653s  ->  37,69mm/s
+            @ 020% = 65:51   = 3951s  ->  25,31mm/s
+            @ 010% = 130:52  = 7852s  ->  12,74mm/s
+            @ 009% = 145:21  = 8721s  ->  11,47mm/s
+            @ 008% = 163:27  = 9807s  ->  10,20mm/s
+            @ 007% = 186:44  = 11204s ->   8,93mm/s
+            @ 006% = 217:48  = 13068s ->   7,65mm/s
+            @ 005% = 261:18  = 15678s ->   6,38mm/s
+            @ 004% = 326:34  = 19594s ->   5,10mm/s
+            @ 003% = 435:21  = 26121s ->   3,83mm/s
+            @ 002% = 652:57  = 39177s ->   2,55mm/s
+            @ 001% = 1305:49 = 78349s ->   1,28mm/s
+        '''
         
         '''
         Paths with a high amount of nodes will cause issues because each node means slowing down/speeding up the laser mechanics
