@@ -7,6 +7,7 @@ import re
 import math
 from math import log
 import datetime
+from email.policy import default
 
 class LaserCheck(inkex.EffectExtension):
     
@@ -345,14 +346,12 @@ class LaserCheck(inkex.EffectExtension):
         if so.checks == "check_all" or so.stroke_colors is True:
             inkex.utils.debug("\n---------- Stroke colors ({} are allowed)".format(so.stroke_colors_max))
             strokeColors = []
-            for element in shapes:          
-                style = element.get('style')
-                if style is not None:
-                    stroke = re.search('(;|^)stroke:(.*?)(;|$)', style)
-                    if stroke is not None:
-                        strokeColor = stroke[0].split("stroke:")[1].split(";")[0]
-                        if strokeColor not in strokeColors:
-                            strokeColors.append(strokeColor)
+            for element in shapes:
+                strokeColor = element.style.get('stroke')
+                if strokeColor is None or strokeColor == "none":
+                    strokeColor = "none"
+                if strokeColor not in strokeColors:
+                    strokeColors.append(strokeColor)
             if so.show_issues_only is False:
                 inkex.utils.debug("{} different stroke colors in total".format(len(strokeColors)))
             if len(strokeColors) > so.stroke_colors_max:
@@ -367,14 +366,12 @@ class LaserCheck(inkex.EffectExtension):
         if so.checks == "check_all" or so.stroke_widths is True:              
             inkex.utils.debug("\n---------- Stroke widths ({} are allowed)".format(so.stroke_widths_max))
             strokeWidths = []
-            for element in shapes:          
-                style = element.get('style')
-                if style is not None:
-                    stroke_width = re.search('stroke-width:(.*?)(;|$)', style)
-                    if stroke_width is not None:
-                        strokeWidth = stroke_width[0].split("stroke-width:")[1].split(";")[0] #possibly w/o units. could contain units from css
-                        if strokeWidth not in strokeWidths:
-                            strokeWidths.append(strokeWidth)
+            for element in shapes:  
+                strokeWidth = element.style.get('stroke-width')
+                if strokeWidth is None or strokeWidth == "none":
+                    strokeWidth = "none"
+                if strokeWidth not in strokeWidths:
+                    strokeWidths.append(strokeWidth)
             if so.show_issues_only is False:
                 inkex.utils.debug("{} different stroke widths in total".format(len(strokeWidths)))
             if len(strokeWidths) > so.stroke_widths_max:
@@ -394,14 +391,12 @@ class LaserCheck(inkex.EffectExtension):
         if so.checks == "check_all" or so.cosmestic_dashes is True:   
             inkex.utils.debug("\n---------- Cosmetic dashes - should be converted to paths")
             strokeDasharrays = []
-            for element in shapes:          
-                style = element.get('style')
-                if style is not None:
-                    stroke_dasharray = re.search('stroke-dasharray:(.*?)(;|$)', style)
-                    if stroke_dasharray is not None:
-                        strokeDasharray = stroke_dasharray[0].split("stroke-dasharray:")[1].split(";")[0]
-                        if strokeDasharray not in strokeDasharrays:
-                            strokeDasharrays.append(strokeDasharray)
+            for element in shapes:  
+                strokeDasharray = element.style.get('stroke-dasharray')
+                if strokeDasharray is None or strokeDasharray == "none":
+                    strokeDasharray = "none"
+                if strokeDasharray not in strokeDasharrays:
+                    strokeDasharrays.append(strokeDasharray)
             if so.show_issues_only is False:
                 inkex.utils.debug("{} different stroke dash arrays in total".format(len(strokeDasharrays)))
             for strokeDasharray in strokeDasharrays:
@@ -412,63 +407,60 @@ class LaserCheck(inkex.EffectExtension):
         Shapes/paths with the same color like the background, 0% opacity, etc. lead to strange
         laser cutting results, like duplicated edges, enlarged laser times and more. Please double
         check for such occurences.
+        Please transfer styles from layers/groups level to element level! You can use "Cleanup Styles" extension to do that
         '''
         if so.checks == "check_all" or so.invisible_shapes is True:     
             inkex.utils.debug("\n---------- Invisible shapes")
             invisibles = []
             for element in shapes:
-                if element.tag not in (inkex.addNS('tspan','svg')):      
-                    style = element.get('style')
-                    if style is not None:              
-                        stroke = re.search('stroke:(.*?)(;|$)', style) #filter white on white (we guess the background color of the document is white too but we do not check)
-                        if stroke is None:
-                            strokeVis = 0
-                        elif stroke[0].split("stroke:")[1].split(";")[0] == 'none':
-                            strokeVis = 0
-                        elif stroke[0].split("stroke:")[1].split(";")[0] in ('#ffffff', 'white', 'rgb(255,255,255)'):
-                            strokeVis = 0
-                        else:
-                            strokeVis = 1
+                if element.tag not in (inkex.addNS('tspan','svg')) and element.get('inkscape:groupmode') != 'layer' and not isinstance(element, inkex.Group):                         
+                    stroke = element.style.get('stroke')
+                    if stroke is None or stroke == "none":
+                        strokeVis = 0
+                    elif stroke in ('#ffffff', 'white', 'rgb(255,255,255)'):
+                        strokeVis = 0
+                    else:
+                        strokeVis = 1
+                    
+                    stroke_width = element.style.get('stroke-width')
+                    if stroke_width is None or stroke_width == "none":
+                        widthVis = 0
+                    elif self.svg.unittouu(stroke_width) < 0.005: #really thin (0,005pc = 0,080px)
+                        widthVis = 0
+                    else:
+                        widthVis = 1
+  
+                    stroke_opacity = element.style.get('stroke-opacity')    
+                    if stroke_opacity is None or stroke_opacity == "none":
+                        strokeOpacityVis = 0
+                    elif float(stroke_opacity) < 0.05: #nearly invisible (<5% opacity)
+                        strokeOpacityVis = 0
+                    else:
+                        strokeOpacityVis = 1
+  
+                    if pagecolor == '#ffffff':
+                        invisColors = [pagecolor, 'white', 'rgb(255,255,255)']
+                    else:
+                        invisColors = [pagecolor] #we could add some parser to convert pagecolor to rgb/hsl/cmyk
                         
-                        stroke_width = re.search('stroke-width:(.*?)(;|$)', style)
-                        if stroke_width is None:
-                            widthVis = 0
-                        elif self.svg.unittouu(stroke_width[0].split("stroke-width:")[1].split(";")[0]) < 0.005: #really thin (0,005pc = 0,080px)
-                            widthVis = 0
-                        else:
-                            widthVis = 1
-      
-                        stroke_opacity = re.search('stroke-opacity:(.*?)(;|$)', style)
-                        if stroke_opacity is None:
-                            strokeOpacityVis = 0
-                        elif float(stroke_opacity[0].split("stroke-opacity:")[1].split(";")[0]) < 0.05: #nearly invisible (<5% opacity)
-                            strokeOpacityVis = 0
-                        else:
-                            strokeOpacityVis = 1
-      
-                        if pagecolor == '#ffffff':
-                            invisColors = [pagecolor, 'white', 'rgb(255,255,255)']
-                        else:
-                            invisColors = [pagecolor] #we could add some parser to convert pagecolor to rgb/hsl/cmyk
-                        fill = re.search('fill:(.*?)(;|$)', style)
-                        if fill is None:
-                            fillVis = 0
-                        elif fill[0].split("fill:")[1].split(";")[0] == 'none':
-                            fillVis = 0
-                        elif fill[0].split("fill:")[1].split(";")[0] in invisColors:
-                            fillVis = 0
-                        else:
-                            fillVis = 1
-                  
-                        fill_opacity = re.search('fill-opacity:(.*?)(;|$)', style)
-                        if fill_opacity is None:
-                            fillOpacityVis = 0
-                        elif float(fill_opacity[0].split("fill-opacity:")[1].split(";")[0]) < 0.05: #nearly invisible (<5% opacity)
-                            fillOpacityVis = 0
-                        else:
-                            fillOpacityVis = 1  
-                                  
-                        #inkex.utils.debug("strokeVis={}, widthVis={}, strokeOpacityVis={}, fillVis={}, fillOpacityVis={}".format(strokeVis, widthVis, strokeOpacityVis, fillVis, fillOpacityVis))
+                    fill = element.style.get('fill')
+                    if fill is None or fill == "none":
+                        fillVis = 0
+                    elif fill in invisColors:
+                        fillVis = 0
+                    else:
+                        fillVis = 1
+              
+                    fill_opacity = element.style.get('fill-opacity')
+                    if fill_opacity is None or fill_opacity == "none": #always is opaque if not set, so set to 1
+                        fillOpacityVis = 1
+                    elif float(fill_opacity) < 0.05: #nearly invisible (<5% opacity)
+                        fillOpacityVis = 0
+                    else:
+                        fillOpacityVis = 1  
+                              
+                    inkex.utils.debug("id={}, strokeVis={}, widthVis={}, strokeOpacityVis={}, fillVis={}, fillOpacityVis={}".format(element.get('id'), strokeVis, widthVis, strokeOpacityVis, fillVis, fillOpacityVis))
+                    if element.style is not None: #f if the style attribute is not set at all, the element will be visible with default black color fill and w/o stroke
                         if (strokeVis == 0 or widthVis == 0 or strokeOpacityVis == 0) and (fillVis == 0 or fillOpacityVis == 0):
                             if element not in invisibles:
                                 invisibles.append(element)
@@ -486,13 +478,11 @@ class LaserCheck(inkex.EffectExtension):
             inkex.utils.debug("\n---------- Objects with stroke transparencies < 1.0 - should be set to 1.0")
             transparencies = []
             for element in shapes:
-                  style = element.get('style')
-                  if style is not None:              
-                      stroke_opacity = re.search('stroke-opacity:(.*?)(;|$)', style)
-                      if stroke_opacity is not None:
-                          if float(stroke_opacity[0].split("stroke-opacity:")[1].split(";")[0]) < 1.0:
-                              if element not in transparencies:
-                                  transparencies.append(element)
+                stroke_opacity = element.style.get('stroke-opacity')
+                if stroke_opacity is None or stroke_opacity == "none":
+                    stroke_opacity = "none"
+                if stroke_opacity not in transparencies:
+                    transparencies.append(element)
             if so.show_issues_only is False:
                 inkex.utils.debug("{} objects with stroke transparencies < 1.0 in total".format(len(transparencies)))
             for transparency in transparencies:
