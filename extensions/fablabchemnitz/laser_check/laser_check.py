@@ -13,6 +13,14 @@ class LaserCheck(inkex.EffectExtension):
     
     '''
     ToDos:
+     - inx:
+         - set speed manually or pick machine (epilog) - travel and cut speed are prefilled then
+         - calculate cut estimation with linear or non-linear (epiloog) speeds > select formula or like this
+         - select time estimation for specific speed percentage for for all speeds (100,90, ...)
+         - select material (parameters -> how to???)
+         - select power of CO² source
+         - add fields for additional costs like configuring the machine or grabbing parts out of the machine (weeding), etc.
+         - add mode select: cut, engrave
      - look for lines especially containing id "travelLines-" and sum up travel lines
      - add some extra seconds for start, stop, removing parts, attaching material, ...
      - maybe remove totalTravelLength and set manually ...
@@ -41,7 +49,7 @@ class LaserCheck(inkex.EffectExtension):
     - check for elements which have no style attribute (should be created) -> (cleanup styles tool)
     - migrate styles from groups/layers to path styles (cleanup styles tool)
     - self-intersecting paths
-    - number of parts (isles) to weed in total
+    - number of parts (isles) to weed in total - this is an indicator for manually picking work; if we add bridges we have less work
     - number of parts which are smaller than vector grid
     - add some inkex.Desc to all elements which were checked and which have some issue. use special syntax to remove old stuff each time the check is applied again
     - this code is horrible ugly stuff
@@ -555,6 +563,11 @@ class LaserCheck(inkex.EffectExtension):
         '''
         Really short paths can cause issues with laser cutter mechanics and should be avoided to 
         have healthier stepper motor belts, etc.
+        
+        Peck Sidara from Epilog: 
+         "Most of the acceleration of speed occurs from the 1-20% range, there is a difference between say 30% and 90%speed 
+         but due to the many variables (length of nodes, shape and contour of nodes), you may not see a noticable difference in time. 
+         Additional variables include acceleration, deceleration and how our laser handles/translates the vector data."
         '''
         if so.checks == "check_all" or so.cutting_estimation is True:
             inkex.utils.debug("\n---------- Cutting time estimation (Epilog Lasers)")
