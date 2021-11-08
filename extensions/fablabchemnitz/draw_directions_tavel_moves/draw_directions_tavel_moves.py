@@ -10,15 +10,16 @@ from inkex.bezier import csplength
 '''
 ToDos
      - draw numbers for each travel lines next to the line
+     - option selection: add travel lines by color groups or add them at the index of the line -> this keeps the order in total (will need transform of start point and second transform of end point, if they are in different groups)
+     - option to just remove all generated travelLines/dots (especially hard to delete if they are inserted at element order)
 '''
 
 class DrawDirectionsTravelMoves(inkex.EffectExtension):
 
-    def drawCircle(self, transform, group, color, point):
+    def drawCircle(self, group, color, point):
         style = inkex.Style({'stroke': 'none', 'fill': color})
         startCircle = group.add(Circle(cx=str(point[0]), cy=str(point[1]), r=str(self.svg.unittouu(str(so.dotsize/2) + "px"))))
         startCircle.style = style
-        startCircle.transform = transform
 
     def find_group(self, groupId):
         ''' check if a group with a given id exists or not. Returns None if not found, else returns the group element '''
@@ -99,7 +100,8 @@ class DrawDirectionsTravelMoves(inkex.EffectExtension):
         #collect all different stroke colors to distinguish by groups      
         strokeColors = []
         strokeColorsAndCounts = {}
-      
+        startEndPath = [] #the container for all paths we will loop on
+   
         for element in selectedPaths:
             strokeColor = element.style.get('stroke')
             if strokeColor is None or strokeColor == "none":
@@ -116,34 +118,27 @@ class DrawDirectionsTravelMoves(inkex.EffectExtension):
                 for child in travelGroup:
                     child.delete()
 
-        for strokeColor in strokeColors:
-            if strokeColor in strokeColorsAndCounts:
-                strokeColorsAndCounts[strokeColor] = strokeColorsAndCounts[strokeColor] + 1
-            else:
-                strokeColorsAndCounts[strokeColor] = 1
-    
-        startEndPath = [] #the container for all paths we will loop on
-        for element in selectedPaths:
-            #points = list(element.path.end_points)
             p = element.path.transform(element.composed_transform())
             points = list(p.end_points)
             start = points[0]
             end = points[len(points) - 1]    
                  
             startEndPath.append([element, start, end])
-            
-            #if element.getparent() != self.document.getroot():
-            #    transform = element.getparent().composed_transform()
-            #else:
-            #    transform = None
-            transform = None
+
             if so.draw_dots is True:        
                 if start[0] == end[0] and start[1] == end[1]:
-                    self.drawCircle(transform, dot_group, '#00FF00', start) 
-                    self.drawCircle(transform, dot_group, '#FFFF00', points[1]) #draw one point which gives direction of the path
+                    self.drawCircle(dot_group, '#00FF00', start) 
+                    self.drawCircle(dot_group, '#FFFF00', points[1]) #draw one point which gives direction of the path
                 else: #open contour with start and end point
-                    self.drawCircle(transform, dot_group, '#FF0000', start)
-                    self.drawCircle(transform, dot_group, '#0000FF', end)
+                    self.drawCircle(dot_group, '#FF0000', start)
+                    self.drawCircle( dot_group, '#0000FF', end)
+
+        for strokeColor in strokeColors:
+            if strokeColor in strokeColorsAndCounts:
+                strokeColorsAndCounts[strokeColor] = strokeColorsAndCounts[strokeColor] + 1
+            else:
+                strokeColorsAndCounts[strokeColor] = 1
+    
 
         if so.draw_travel_moves is True:
             for sc in strokeColorsAndCounts: #loop through all unique stroke colors
