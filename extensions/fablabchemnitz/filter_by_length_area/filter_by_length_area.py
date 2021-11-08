@@ -161,7 +161,7 @@ class FilterByLengthArea(inkex.EffectExtension):
                 pass
             
         for i in range(0, len(to_sort)):
-            element = to_sort[i].get('element')      
+            element = to_sort[i].get('element')   
             if so.delete is True:
                 element.delete()
                 

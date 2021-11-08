@@ -13,6 +13,7 @@ class LaserCheck(inkex.EffectExtension):
     
     '''
     ToDos:
+     - look for lines especially containing id "travelLines-" and sum up travel lines
      - add some extra seconds for start, stop, removing parts, attaching material, ...
      - maybe remove totalTravelLength and set manually ...
      - Handlungsempfehlungen einbauen
@@ -36,7 +37,9 @@ class LaserCheck(inkex.EffectExtension):
         - statistics
         - export as PDF
     - run as script to generate quick results for users
-    - check for old styles which should be upgraded
+    - check for old styles which should be upgraded (cleanup styles tool)
+    - check for elements which have no style attribute (should be created) -> (cleanup styles tool)
+    - migrate styles from groups/layers to path styles (cleanup styles tool)
     - self-intersecting paths
     - number of parts (isles) to weed in total
     - number of parts which are smaller than vector grid
