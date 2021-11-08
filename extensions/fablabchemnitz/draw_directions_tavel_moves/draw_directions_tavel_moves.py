@@ -7,6 +7,11 @@ from inkex import Circle, Vector2d
 from inkex.paths import Path
 from inkex.bezier import csplength
 
+'''
+ToDos
+     - draw numbers for each travel lines next to the line
+'''
+
 class DrawDirectionsTravelMoves(inkex.EffectExtension):
 
     def drawCircle(self, transform, group, color, point):
