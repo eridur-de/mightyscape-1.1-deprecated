@@ -4,6 +4,12 @@
     <id>fablabchemnitz.de.draw_directions_tavel_moves</id>
     <param name="nb_main" type="notebook">
         <page name="tab_settings" gui-text="Settings">
+            <param name="order" type="optiongroup" appearance="combo" gui-text="Order">
+                <option value="separate_groups">To separate groups</option>
+                <option value="separate_layers">To separate layers</option>
+                <option value="element_index">At element's index</option>
+            </param>
+            <separator/>
             <param name="draw_dots" type="bool" gui-text="Draw dots" gui-description="Start and end point of opened (red + blue) and closed paths (green + yellow)">true</param>
             <param name="dotsize" type="int" min="1" max="9999" gui-text="Dot size (px)">10</param>
             <separator/>

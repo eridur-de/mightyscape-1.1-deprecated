@@ -32,7 +32,7 @@ class DrawDirectionsTravelMoves(inkex.EffectExtension):
 
     def add_arguments(self, pars):
         pars.add_argument("--nb_main")
-        
+        pars.add_argument("--order", default="separate_groups")
         pars.add_argument("--draw_dots", type=inkex.Boolean, default=True, help="Start and end point of opened (red + blue) and closed paths (green + yellow)")
         pars.add_argument("--dotsize", type=int, default=10, help="Dot size (px)")
         pars.add_argument("--draw_travel_moves", type=inkex.Boolean, default=False)
@@ -45,6 +45,7 @@ class DrawDirectionsTravelMoves(inkex.EffectExtension):
     def effect(self):
         global so
         so = self.options
+        dotPrefix = "dots-"
         linePrefix = "travelLine-"
         groupPrefix = "travelLines-"
         ignoreWord = "ignore"
@@ -70,7 +71,14 @@ class DrawDirectionsTravelMoves(inkex.EffectExtension):
             for element in self.svg.selected.values():
                 parseChildren(element)
             
-        dot_group = self.svg.add(inkex.Group())
+        dotGroup = self.svg.add(inkex.Group(id=self.svg.get_unique_id(dotPrefix)))
+        if so.order == "separate_layers":
+            dotGroup.set("inkscape:groupmode", "layer")
+            dotGroup.set("inkscape:label", dotPrefix + "layer")
+            if so.order == "separate_groups":
+                dotGroup.pop("inkscape:groupmode")
+                dotGroup.pop("inkscape:label")
+                dotGroup.style.pop("display") #if the group previously has been a layer (which was hidden), a display:none will be added. we don't want that
 
         if so.arrow_style is True:
             markerId = "travel_move_arrow"
@@ -112,11 +120,20 @@ class DrawDirectionsTravelMoves(inkex.EffectExtension):
             groupName = groupPrefix + strokeColor
             travelGroup = self.find_group(groupName)
             if travelGroup is None:
-                self.document.getroot().append(inkex.Group(id=groupName))
+                travelGroup = inkex.Group(id=groupName)
+                self.document.getroot().append(travelGroup)
             else: #exists
                 self.document.getroot().append(travelGroup)
                 for child in travelGroup:
                     child.delete()
+            if so.order == "separate_layers":
+                travelGroup.set("inkscape:groupmode", "layer")
+                travelGroup.set("inkscape:label", groupName + "-layer")
+            if so.order == "separate_groups":
+                travelGroup.pop("inkscape:groupmode")
+                travelGroup.pop("inkscape:label")
+                travelGroup.style.pop("display")
+
 
             p = element.path.transform(element.composed_transform())
             points = list(p.end_points)
@@ -127,11 +144,11 @@ class DrawDirectionsTravelMoves(inkex.EffectExtension):
 
             if so.draw_dots is True:        
                 if start[0] == end[0] and start[1] == end[1]:
-                    self.drawCircle(dot_group, '#00FF00', start) 
-                    self.drawCircle(dot_group, '#FFFF00', points[1]) #draw one point which gives direction of the path
+                    self.drawCircle(dotGroup, '#00FF00', start) 
+                    self.drawCircle(dotGroup, '#FFFF00', points[1]) #draw one point which gives direction of the path
                 else: #open contour with start and end point
-                    self.drawCircle(dot_group, '#FF0000', start)
-                    self.drawCircle( dot_group, '#0000FF', end)
+                    self.drawCircle(dotGroup, '#FF0000', start)
+                    self.drawCircle( dotGroup, '#0000FF', end)
 
         for strokeColor in strokeColors:
             if strokeColor in strokeColorsAndCounts:
@@ -203,8 +220,8 @@ class DrawDirectionsTravelMoves(inkex.EffectExtension):
                 if so.debug is True: inkex.utils.debug("-"*40)
                   
         #cleanup empty groups         
-        if len(dot_group) == 0:
-            dot_group.delete()
+        if len(dotGroup) == 0:
+            dotGroup.delete()
         travelGroups = self.document.xpath("//svg:g[starts-with(@id, 'travelLines-')]", namespaces=inkex.NSS)
         for travelGroup in travelGroups:
             if len(travelGroup) == 0:

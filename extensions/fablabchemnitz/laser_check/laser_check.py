@@ -13,6 +13,7 @@ class LaserCheck(inkex.EffectExtension):
     
     '''
     ToDos:
+     - check for elements which have the attribute "display:none" (some groups have this)
      - inx:
          - set speed manually or pick machine (epilog) - travel and cut speed are prefilled then
          - calculate cut estimation with linear or non-linear (epiloog) speeds > select formula or like this
