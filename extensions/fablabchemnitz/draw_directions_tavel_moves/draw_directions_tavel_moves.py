@@ -6,20 +6,21 @@ import inkex
 from inkex import Circle, Vector2d
 from inkex.paths import Path
 from inkex.bezier import csplength
+from debugpy.common.timestamp import current
 
 '''
 ToDos
      - draw numbers for each travel lines next to the line
-     - option selection: add travel lines by color groups or add them at the index of the line -> this keeps the order in total (will need transform of start point and second transform of end point, if they are in different groups)
-     - option to just remove all generated travelLines/dots (especially hard to delete if they are inserted at element order)
 '''
 
 class DrawDirectionsTravelMoves(inkex.EffectExtension):
+
 
     def drawCircle(self, group, color, point):
         style = inkex.Style({'stroke': 'none', 'fill': color})
         startCircle = group.add(Circle(cx=str(point[0]), cy=str(point[1]), r=str(self.svg.unittouu(str(so.dotsize/2) + "px"))))
         startCircle.style = style
+
 
     def find_group(self, groupId):
         ''' check if a group with a given id exists or not. Returns None if not found, else returns the group element '''
@@ -29,6 +30,32 @@ class DrawDirectionsTravelMoves(inkex.EffectExtension):
             if group.get('id') == groupId:
                 return group
         return None
+    
+    
+    def createTravelMarker(self, markerId):
+        #add new marker to defs (or overwrite if existent)
+        defs = self.svg.defs
+        for defi in defs:
+            if defi.tag == "{http://www.w3.org/2000/svg}marker" and defi.get('id') == markerId: #delete
+                defi.delete()
+        marker = inkex.Marker(id=markerId)
+        marker.set("inkscape:isstock", "true")
+        marker.set("inkscape:stockid", markerId)
+        marker.set("orient", "auto")  
+        marker.set("refY", "0.0")
+        marker.set("refX", "0.0")
+        marker.set("style", "overflow:visible;")
+        
+        markerPath = inkex.PathElement(id=self.svg.get_unique_id('markerId-'))
+        markerPath.style = {"fill-rule": "evenodd", "fill": "context-stroke", "stroke-width": str(self.svg.unittouu('1px'))}
+        markerPath.transform = "scale(1.0,1.0) rotate(0) translate(-6.0,0)"
+        arrowHeight = 6.0
+        markerPath.attrib["transform"] = "scale({},{}) rotate(0) translate(-{},0)".format(so.arrow_size, so.arrow_size, arrowHeight)
+        markerPath.path = "M {},0.0 L -3.0,5.0 L -3.0,-5.0 L {},0.0 z".format(arrowHeight, arrowHeight)
+        
+        marker.append(markerPath)       
+        defs.append(marker) #do not append before letting contain it one path. Otherwise Inkscape is going to crash immediately
+    
 
     def add_arguments(self, pars):
         pars.add_argument("--nb_main")
@@ -46,26 +73,46 @@ class DrawDirectionsTravelMoves(inkex.EffectExtension):
         global so
         so = self.options
         dotPrefix = "dots-"
-        linePrefix = "travelLine-"
+        lineSuffix = "-travelLine"
         groupPrefix = "travelLines-"
         ignoreWord = "ignore"
+          
+        if so.nb_main == "tab_remove":
+            #remove dots
+            dots = self.document.xpath("//svg:g[starts-with(@id, '" + dotPrefix + "')]", namespaces=inkex.NSS)
+            for dot in dots:
+                dot.delete()
+            
+            #remove travel lines
+            travelLines = self.document.xpath("//svg:path[contains(@id, '" + lineSuffix + "')]", namespaces=inkex.NSS)
+            for travelLine in travelLines:
+                travelLine.delete()
+                      
+            #remove travel groups/layers
+            travelGroups = self.document.xpath("//svg:g[starts-with(@id, '" + groupPrefix + "')]", namespaces=inkex.NSS)
+            for travelGroup in travelGroups:
+                if len(travelGroup) == 0:
+                    travelGroup.delete()
+            return
+        
+        #else ... 
           
         selectedPaths = [] #total list of elements to parse
      
         def parseChildren(element):
-            if isinstance(element, inkex.PathElement) and element not in selectedPaths and linePrefix not in element.get('id') and not isinstance(element.getparent(), inkex.Marker):
+            if isinstance(element, inkex.PathElement) and element not in selectedPaths and lineSuffix not in element.get('id') and not isinstance(element.getparent(), inkex.Marker):
                 selectedPaths.append(element)
             children = element.getchildren()
             if children is not None:
                 for child in children:
-                    if isinstance(child, inkex.PathElement) and child not in selectedPaths and linePrefix not in element.get('id') and not isinstance(element.getparent(), inkex.Marker):
+                    if isinstance(child, inkex.PathElement) and child not in selectedPaths and lineSuffix not in element.get('id') and not isinstance(element.getparent(), inkex.Marker):
                         selectedPaths.append(child)
                     parseChildren(child) #go deeper and deeper
         
         #check if we have selectedPaths elements or if we should parse the whole document instead
         if len(self.svg.selected) == 0:
             for element in self.document.getroot().iter(tag=etree.Element):
-                if isinstance(element, inkex.PathElement) and element != self.document.getroot() and linePrefix not in element.get('id') and not isinstance(element.getparent(), inkex.Marker):
+                if isinstance(element, inkex.PathElement) and element != self.document.getroot() and lineSuffix not in element.get('id') and not isinstance(element.getparent(), inkex.Marker):
                     selectedPaths.append(element)
         else:
             for element in self.svg.selected.values():
@@ -78,37 +125,23 @@ class DrawDirectionsTravelMoves(inkex.EffectExtension):
             if so.order == "separate_groups":
                 dotGroup.pop("inkscape:groupmode")
                 dotGroup.pop("inkscape:label")
-                dotGroup.style.pop("display") #if the group previously has been a layer (which was hidden), a display:none will be added. we don't want that
+                if dotGroup.style.get('display') is not None:
+                    dotGroup.style.pop("display") #if the group previously has been a layer (which was hidden), a display:none will be added. we don't want that
 
         if so.arrow_style is True:
             markerId = "travel_move_arrow"
-            #add new marker to defs (or overwrite if existent)
-            defs = self.svg.defs
-            for defi in defs:
-                if defi.tag == "{http://www.w3.org/2000/svg}marker" and defi.get('id') == markerId: #delete
-                    defi.delete()
-            marker = inkex.Marker(id=markerId)
-            marker.set("inkscape:isstock", "true")
-            marker.set("inkscape:stockid", markerId)
-            marker.set("orient", "auto")  
-            marker.set("refY", "0.0")
-            marker.set("refX", "0.0")
-            marker.set("style", "overflow:visible;")
+            self.createTravelMarker(markerId)        
             
-            markerPath = inkex.PathElement(id=self.svg.get_unique_id('markerId-'))
-            markerPath.style = {"fill-rule": "evenodd", "fill": "context-stroke", "stroke-width": str(self.svg.unittouu('1px'))}
-            markerPath.transform = "scale(1.0,1.0) rotate(0) translate(-6.0,0)"
-            arrowHeight = 6.0
-            markerPath.attrib["transform"] = "scale({},{}) rotate(0) translate(-{},0)".format(so.arrow_size, so.arrow_size, arrowHeight)
-            markerPath.path = "M {},0.0 L -3.0,5.0 L -3.0,-5.0 L {},0.0 z".format(arrowHeight, arrowHeight)
-            
-            marker.append(markerPath)       
-            defs.append(marker) #do not append before letting contain it one path. Otherwise Inkscape is going to crash immediately
-    
         #collect all different stroke colors to distinguish by groups      
         strokeColors = []
         strokeColorsAndCounts = {}
-        startEndPath = [] #the container for all paths we will loop on
+        '''
+        the container for all paths we will loop on. Index:
+         0 = element
+         1 = start point
+         2 = end point
+        '''
+        startEndPath = []
    
         for element in selectedPaths:
             strokeColor = element.style.get('stroke')
@@ -132,7 +165,8 @@ class DrawDirectionsTravelMoves(inkex.EffectExtension):
             if so.order == "separate_groups":
                 travelGroup.pop("inkscape:groupmode")
                 travelGroup.pop("inkscape:label")
-                travelGroup.style.pop("display")
+                if travelGroup.style.get('display') is not None:
+                    travelGroup.style.pop("display")
 
 
             p = element.path.transform(element.composed_transform())
@@ -166,8 +200,22 @@ class DrawDirectionsTravelMoves(inkex.EffectExtension):
                 for i in range(0, ran): #loop through the item selection. nested loop. so we loop over alle elements again for each color
                     if i < ran - 1:
                         elementStroke = startEndPath[i][0].style.get('stroke')
+                        currentElement = startEndPath[i][0]
+                        idx = currentElement.getparent().index(currentElement)
+                        travelLineId = currentElement.get('id') + lineSuffix + ("-begin" if firstOccurence is True else "") 
                     if i == ran or createdMoves == colorCount:
                         elementStroke = startEndPath[i-1][0].style.get('stroke')
+                        currentElement = startEndPath[i-1][0]
+                        idx = currentElement.getparent().index(currentElement) + 1   
+                        travelLineId = currentElement.get('id') + lineSuffix + "-end"
+                 
+                    if i < ran - 2:
+                        nextElement = startEndPath[i+1][0]
+                    elif i < ran - 1:
+                        nextElement = startEndPath[i][0]
+                    else:
+                        nextElement = None
+                          
                     if elementStroke is None or elementStroke == "none":
                         elementStroke = "none"
             
@@ -194,26 +242,53 @@ class DrawDirectionsTravelMoves(inkex.EffectExtension):
                             if i == ran - 1:
                                 inkex.utils.debug("segment={},{}".format(startEndPath[i-1][1], travelEnd))
 
-                        travelLine = inkex.PathElement(id=self.svg.get_unique_id(linePrefix) + element.get('id'))
+                        travelLine = inkex.PathElement(id=travelLineId)
                         #if some objects are at svg:svg level this may cause errors
                         #if element.getparent() != self.document.getroot():
                         #    travelLine.transform = element.getparent().composed_transform()
-                        travelLine.set('d', "M{:0.6f},{:0.6f} L{:0.6f},{:0.6f}".format(travelStart[0],travelStart[1],travelEnd[0],travelEnd[1]))
                         travelLine.style = {'stroke': ("#000000" if so.ignore_colors is True else sc), 'fill': 'none', 'stroke-width': str(self.svg.unittouu('1px')), 'marker-end': 'url(#marker1426)'}
                         if so.dashed_style is True:
                             travelLine.style['stroke-dasharray'] = '1,1'
                             travelLine.style['stroke-dashoffset'] = '0'
                         if so.arrow_style is True:
                             travelLine.style["marker-end"] = "url(#{})".format(markerId)
-                            
-                        #check the length. if zero we do not add
-                        slengths, stotal = csplength(travelLine.path.transform(element.composed_transform()).to_superpath()) #get segment lengths and total length of path in document's internal unit
-                        if stotal > 0:
-                            #finally add the line
-                            travelGroup = self.find_group(groupPrefix + sc)
-                            travelGroup.add(travelLine)
+                          
+                        #this is a really dirty block of code
+                        if so.order == "element_index":
+                            #adding the lines at element index requires to apply transformations for start point and end point (in case they are in different groups)
+                            pseudo1 = inkex.PathElement()
+                            pseudo1.set('d', "M{:0.6f},{:0.6f}".format(travelStart[0],travelStart[1]))
+                            pseudo2 = inkex.PathElement()
+                            pseudo2.set('d', "M{:0.6f},{:0.6f}".format(travelEnd[0],travelEnd[1]))
+                            if nextElement is not None:
+                                if currentElement.getparent() == nextElement.getparent():
+                                    pseudo1.path = pseudo1.path.transform(-currentElement.composed_transform()).to_superpath()
+                                    pseudo2.path = pseudo2.path.transform(-nextElement.composed_transform()).to_superpath()
+                                else:
+                                    pseudo1.path = pseudo1.path.transform(-currentElement.composed_transform()).to_superpath()
+                                    pseudo2.path = pseudo2.path.transform(-currentElement.composed_transform()).to_superpath()
+                            else:
+                                pseudo1.path = pseudo1.path.transform(-currentElement.composed_transform()).to_superpath()
+                                pseudo2.path = pseudo2.path.transform(-currentElement.composed_transform()).to_superpath()
+                            travelLine.path = pseudo1.path + pseudo2.get('d').replace("M", "L")
+                            if so.debug is True: self.msg("travelLine={}".format(travelLine.path))
+
+                            #check the length. if zero we do not add
+                            slengths, stotal = csplength(travelLine.path.transform(currentElement.composed_transform()).to_superpath()) #get segment lengths and total length of path in document's internal unit
+                            if stotal > 0:
+                                #finally add the line
+                                currentElement.getparent().insert(idx, travelLine)
+                            else:
+                                 if so.debug is True: inkex.utils.debug("Line has length of zero")
                         else:
-                             if so.debug is True: inkex.utils.debug("Line has length of zero")
+                            travelLine.set('d', "M{:0.6f},{:0.6f} L{:0.6f},{:0.6f}".format(travelStart[0],travelStart[1],travelEnd[0],travelEnd[1]))
+                            #check the length. if zero we do not add
+                            slengths, stotal = csplength(travelLine.path.transform(currentElement.composed_transform()).to_superpath()) #get segment lengths and total length of path in document's internal unit
+                            if stotal > 0:
+                                #finally add the line
+                                self.find_group(groupPrefix + sc).add(travelLine)
+                            else:
+                                 if so.debug is True: inkex.utils.debug("Line has length of zero")
 
                         createdMoves += 1 #each time we created a move we count up. we want to compare against the total count of that color
                         if so.debug is True: inkex.utils.debug("createdMoves={}".format(createdMoves))
