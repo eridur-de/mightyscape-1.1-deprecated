@@ -59,9 +59,8 @@
                 <option value="1016x711">1016 x 711 mm (Fusion M2 40)</option>
                 <option value="1219x914">1219 x 914 mm (Fusion Pro 48)</option>
             </param>
-            <param name="max_cutting_speed" type="float" min="1.000" max="9999.000" precision="2" gui-text="Max. cutting speed (mm/s)">120</param>
-            <param name="max_travel_speed" type="float" min="1.000" max="9999.000" precision="2" gui-text="Max. travel speed (mm/s)">500</param>
-            <param name="cut_travel_factor" type="float" min="0.001" max="10.00" precision="3"  gui-text="Factor between cutting/travel moves" gui-description="Usually ~60-80% are cutting time, rest is travel time. Set this factor to express the amount of travel time in relation to cutting time.">0.60</param>
+            <param name="max_cutting_speed" type="float" min="1.000" max="9999.000" precision="2" gui-text="Max. cutting speed (mm/s)">120.0</param>
+            <param name="max_travel_speed" type="float" min="1.000" max="9999.000" precision="2" gui-text="Max. travel speed (mm/s)">500.0</param>
             <param name="price_per_minute_gross" type="float" min="0.0" max="9999.0" precision="2" gui-text="Price/minute € (gross)">2.0</param>
             <param name="vector_grid_xy" type="float" min="0.0" max="9999.0" precision="2" gui-text="Vector grid (mm)">12.0</param>
         </page>
