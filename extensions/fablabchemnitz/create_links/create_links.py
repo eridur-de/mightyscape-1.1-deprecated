@@ -69,7 +69,7 @@ class LinksCreator(inkex.EffectExtension):
         if element.tag == inkex.addNS('path','svg'):
             parent = element.getparent()
             idx = parent.index(element)
-            idSuffix = 0    
+            idSuffix = 0  
             raw = element.path.to_arrays()
             subPaths, prev = [], 0
             for i in range(len(raw)): # Breaks compound paths into simple paths

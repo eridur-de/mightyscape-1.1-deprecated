@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-# coding=utf-8
+#!/usr/bin/env python3
 #
 # Copyright (C) 2021 roberta bennett repeatingshadow@protonmail.com
 #
@@ -18,15 +17,18 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #
 """
-Create svg path animation from frames.
+Create svg path animation as SMIL from frames.
 
 Place each frame of the animation in a layer named 'frame'.
 Each of these layers should have the same number of paths,
 and each path should have the same number of points as the corresponding
 path in other layers.
+Note if there are more than one path in the frames, the Z order of the paths
+must match. It helps to use the XML editor option to observe the z order.
 
 The animation is applied to the paths in the first layer in the sequence, so the
-properties of that layer are used. 
+properties of that layer are used. In particular, the first layer ought to be set 
+visible. 
 
 Animations with different numbers of frames can be put into different sequences, 
 named 'sequence', using sub-groups:
@@ -51,9 +53,9 @@ Layers:
   frame
   frame 
 
+Layer names must contain 'frame' and groups names contain 'sequence',
+eg, frame1 frame 2 frame 30, sequence 1, rythm sequence, rocket sequence  
 
-use layer named exactly 'frame' and groups named exactly 'sequence',
-not, eg, frame1 frame2 frame3 !
 
 """
 
@@ -70,36 +72,52 @@ class AnimateElement(inkex.BaseElement):
 class AnimationExtension(inkex.EffectExtension):
 
     def add_arguments(self, pars):
+        pars.add_argument("--delete", type=inkex.Boolean, help="Remove frames")
         pars.add_argument("--begin_str", default="0", help="begin string: eg 0;an2.end;an3.begin")
-        pars.add_argument("--repeat_str",  default="indefinite", help="indefinite or an integer")
-        pars.add_argument("--dur_str",  default="7.9", help="duration in seconds. Do not decorate with units")
-                       
+        pars.add_argument("--repeat_str", default="indefinite", help="indefinite or an integer")
+        pars.add_argument("--dur_str",  default="7.9", help="duration in seconds. Do not decorate with units")         
+          
+
+    def crunchFrames(self,frames):
+        if frames is None:
+            raise inkex.AbortExtension("layer named frame does not exist.")
+        frame0paths = frames[0].findall('svg:path')
+        Dlists = [p.get_path() for p in frame0paths]
+        for frame in frames[1:]:
+            paths = frame.findall("svg:path")
+            for i,p in enumerate(paths):
+                Dlists[i] += ";\n"+p.get_path()
+        for i,dl in enumerate(Dlists):    
+            animel = AnimateElement(
+                 attributeName="d",
+                attributeType="XML",
+                begin=self.options.begin_str,
+                dur=self.options.dur_str,
+                repeatCount=self.options.repeat_str,
+                values=dl)
+            frame0paths[i].append(animel)
+        for frame in frames[1:]:
+            if self.options.delete:
+                frame.delete()
+        return         
+
 
     def effect(self):
-        sequences = self.svg.findall("svg:g[@inkscape:label='sequence']")
-        if len(sequences) == 0:
-            raise inkex.AbortExtension("layer named sequence does not exist.")
+        sequences = [ elem for elem in self.svg.findall("svg:g[@inkscape:label]")
+                          if "sequence" in (elem.get('inkscape:label'))
+                    ]
+        if len(sequences)==0:
+            frames = [ elem for elem in self.svg.findall("svg:g[@inkscape:label]")
+                            if "frame" in (elem.get('inkscape:label'))
+                     ]
+            self.crunchFrames(frames)
+            return
         for sequence in sequences:
-            frames = sequence.findall("svg:g[@inkscape:label='frame']")
-            if len(frames) == 0:
-                 raise inkex.AbortExtension("layer named frame does not exist.")
-            frame0paths = frames[0].findall('svg:path')
-            Dlists = [p.get_path() for p in frame0paths]
-            for frame in frames[1:]:
-                paths = frame.findall("svg:path")
-                for i,p in enumerate(paths):
-                    Dlists[i] += ";\n"+p.get_path()
-            for i,dl in enumerate(Dlists):    
-                animel = AnimateElement(
-                	attributeName="d",
-                	attributeType="XML",
-                	begin=self.options.begin_str,
-                	dur=self.options.dur_str,
-                	repeatCount=self.options.repeat_str,
-                	values=dl)
-                frame0paths[i].append(animel)
-
+            frames = [ elem for elem in sequence.findall("svg:g[@inkscape:label]")
+                            if "frame" in (elem.get('inkscape:label'))
+                     ]
+            self.crunchFrames(frames)     
+     
+                    
 if __name__ == '__main__':
     AnimationExtension().run()
-    
-    

@@ -5,6 +5,7 @@
     <param name="begin_str" type="string" gui-text="begin_str:">0</param>
     <param name="repeat_str" type="string" gui-text="repeat_str:">indefinite</param>
     <param name="dur_str" type="string" gui-text="dur_str:">9.1</param>
+    <param name="delete" type="bool" gui-text="Remove frames">true</param>  
     <effect>
         <object-type>all</object-type>
         <effects-menu>

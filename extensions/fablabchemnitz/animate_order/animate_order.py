@@ -36,7 +36,7 @@ DETACHED_PROCESS = 0x00000008
 
 class AnimateOrder(inkex.EffectExtension):
 
-    def spawnIndependentProcess(self, args): #function to spawn non-blocking inkscape instance. the inkscape command is available because it is added to ENVIRONMENT when Inkscape main instance is started
+    def spawnIndependentProcess(self, args):
         warnings.simplefilter('ignore', ResourceWarning) #suppress "enable tracemalloc to get the object allocation traceback"
         if os.name == 'nt':
             subprocess.Popen(args, close_fds=True, creationflags=DETACHED_PROCESS)

@@ -30,7 +30,8 @@ class FilterByLengthArea(inkex.EffectExtension):
         pars.add_argument('--tab')
         pars.add_argument('--debug', type=inkex.Boolean, default=False)
         pars.add_argument("--apply_transformations", type=inkex.Boolean, default=False, help="Run 'Apply Transformations' extension before running vpype. Helps avoiding geometry shifting")
-        pars.add_argument("--breakapart", type=inkex.Boolean, default=True, help="Performs CTRL + SHIFT + K to break the new output path into it's parts. Recommended to enable because default break apart of Inkscape might produce pointy paths.")
+        pars.add_argument("--breakapart", type=inkex.Boolean, default=True, help="Break apart selected path(s) into segments")
+        pars.add_argument("--breakapart_total", type=inkex.Boolean, default=True, help="Gives the best results for nodes/<interval> filtering")
         pars.add_argument("--cleanup", type=inkex.Boolean, default = True, help = "Cleanup all unused groups/layers (requires separate extension)")
         pars.add_argument('--unit')
         pars.add_argument('--min_filter_enable', type=inkex.Boolean, default=True, help='Enable filtering min.')
@@ -63,21 +64,40 @@ class FilterByLengthArea(inkex.EffectExtension):
             idSuffix = 0    
             raw = element.path.to_arrays()
             subPaths, prev = [], 0
-            for i in range(len(raw)): # Breaks compound paths into simple paths
-                if raw[i][0] == 'M' and i != 0:
-                    subPaths.append(raw[prev:i])
-                    prev = i
-            subPaths.append(raw[prev:])
+            if self.options.breakapart_total is False:
+                for i in range(len(raw)): # Breaks compound paths into simple paths
+                    if raw[i][0] == 'M' and i != 0:
+                        subPaths.append(raw[prev:i])
+                        prev = i
+                subPaths.append(raw[prev:])
+            else:
+                rawCopy = element.path.to_arrays() #we need another set of the same path
+                for i in range(len(raw)): # Breaks compound paths into simple paths
+                    if i != 0:
+                        if raw[i][0]  == 'C': 
+                            rawCopy[i][1] = [raw[i][1][-2], raw[i][1][-1]]
+                        elif raw[i][0]  == 'L':
+                            rawCopy[i][1] = [raw[i][1][0], raw[i][1][1]]
+                        elif raw[i][0] == 'Z': #replace Z with another L command (which moves to the coordinates of the first M command in path) to have better overview
+                            raw[-1][0] = 'L'
+                            raw[-1][1] = raw[0][1]
+                        rawCopy[i][0] = 'M' #we really need M. Does not matter if 'L' or 'C'.
+                        #self.msg("s1={},s2={}".format(rawCopy[i-1], raw[i]))
+                        subPaths.append([rawCopy[i-1], raw[i]])
+                        prev = i
+                subPaths = subPaths[::-1]
+                    
             for subpath in subPaths:
+                #self.msg(subpath)
                 replacedelement = copy.copy(element)
                 oldId = replacedelement.get('id')
                 csp = CubicSuperPath(subpath)
                 if len(subpath) > 1 and csp[0][0] != csp[0][1]: #avoids pointy paths like M "31.4794 57.6024 Z"
                     replacedelement.set('d', csp)
                     if len(subPaths) == 1:
-                        replacedelement.set('id', oldId)
+                        replacedelement.set('id', "{}".format(oldId))
                     else:
-                        replacedelement.set('id', oldId + str(idSuffix))
+                        replacedelement.set('id', "{}-{}".format(oldId, str(idSuffix)))
                         idSuffix += 1
                     parent.insert(idx, replacedelement)
                     breakelements.append(replacedelement)
@@ -116,7 +136,7 @@ class FilterByLengthArea(inkex.EffectExtension):
                 elements.extend(self.breakContours(element, None))
 
         if so.debug is True: 
-            inkex.utils.debug("Collecting elements ...")
+            inkex.utils.debug("Collecting svg:path elements ...")
             
         for element in elements: 
             # additional option to apply transformations. As we clear up some groups to form new layers, we might lose translations, rotations, etc.
@@ -229,12 +249,15 @@ class FilterByLengthArea(inkex.EffectExtension):
             if so.group is True:
                 group.append(element)
                 
-            if so.cleanup == True:
-                try:
-                    import remove_empty_groups
-                    remove_empty_groups.RemoveEmptyGroups.effect(self)
-                except:
-                    self.msg("Calling 'Remove Empty Groups' extension failed. Maybe the extension is not installed. You can download it from official InkScape Gallery. Skipping ...")
+            #if len(group) == 0:
+            #    group.delete()    
+                
+        if so.cleanup is True:
+            try:
+                import remove_empty_groups
+                remove_empty_groups.RemoveEmptyGroups.effect(self)
+            except:
+                self.msg("Calling 'Remove Empty Groups' extension failed. Maybe the extension is not installed. You can download it from official InkScape Gallery. Skipping ...")
 
 if __name__ == '__main__':
     FilterByLengthArea().run()
