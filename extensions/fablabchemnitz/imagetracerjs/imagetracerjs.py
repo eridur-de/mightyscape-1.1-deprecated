@@ -105,7 +105,7 @@ class Imagetracerjs(inkex.EffectExtension):
                     nodeclipath = os.path.join("imagetracerjs-master", "nodecli", "nodecli.js")
                     
                     ## Build up imagetracerjs command according to your settings from extension GUI
-                    command = "node " # "node.exe" or "node" on Windows or just "node" on Linux
+                    command = "node --trace-deprecation " # "node.exe" or "node" on Windows or just "node" on Linux
                     if os.name=="nt": # your OS is Windows. We handle path separator as "\\" instead of unix-like "/"
                         command += str(nodeclipath).replace("\\", "\\\\")
                     else:
