@@ -71,9 +71,6 @@ class Primitive (inkex.EffectExtension):
   
     def effect(self):
     
-        # internal overwrite for scale:
-        self.options.scale = 1.0
-    
         if (self.options.ids):
             for node in self.svg.selected.values():
                 if node.tag == inkex.addNS('image', 'svg'):
@@ -146,6 +143,7 @@ class Primitive (inkex.EffectExtension):
  
                         # new parse the SVG file and insert it as new group into the current document tree
                         doc = etree.parse(exportfile + ".svg").getroot()
+                            
                         newGroup = self.document.getroot().add(inkex.Group())          
                         newGroup.attrib['transform'] = "matrix({:0.6f}, 0, 0, {:0.6f}, {:0.6f}, {:0.6f})".format(
                             float(node.get('width')) / float(doc.get('width')),
@@ -153,7 +151,9 @@ class Primitive (inkex.EffectExtension):
                             float(node.get('x')) + x_offset,
                             float(node.get('y')) + y_offset
                             )
-                        newGroup.append(doc)
+                        
+                        for children in doc:
+                            newGroup.append(children)
 
                         # Delete the temporary svg file
                         if os.path.exists(exportfile + ".svg"):
@@ -187,7 +187,7 @@ class Primitive (inkex.EffectExtension):
                                 }
                         etree.SubElement(clipPath, 'rect', clipBox)
                         #etree.SubElement(newGroup, 'g', {inkex.addNS('label','inkscape'):'imagetracerjs', 'clip-path':"url(#imagetracerClipPath)"})
-                        newGroup.getchildren()[0].set('clip-path','url(#imagetracerClipPath)')
+                        newGroup.set('clip-path','url(#imagetracerClipPath)')
         else:
             inkex.utils.debug("No image found for tracing. Please select an image first.")        
 
