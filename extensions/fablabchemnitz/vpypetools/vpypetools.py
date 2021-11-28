@@ -97,6 +97,11 @@ class vpypetools (inkex.EffectExtension):
         pars.add_argument("--plugin_occult_tolerance", type=float, default=0.01, help="Max distance between start and end point to consider a path closed (default 0.01 mm)")
         pars.add_argument("--plugin_occult_keepseparatelayer", type=inkex.Boolean, default=False, help="Put occulted lines to separate layer")
 
+        # Plugin Deduplicate
+        pars.add_argument("--plugin_deduplicate", type=inkex.Boolean, default=False)
+        pars.add_argument("--plugin_deduplicate_tolerance", type=float, default=0.01, help="Max distance between points to consider them equal (default 0.01 mm)")
+        pars.add_argument("--plugin_deduplicate_keepseparatelayer", type=inkex.Boolean, default=False, help="Put duplicate lines to separate layer")
+
         # Free Mode
         pars.add_argument("--tab")
         pars.add_argument("--freemode", type=inkex.Boolean, default=False)
@@ -269,6 +274,12 @@ class vpypetools (inkex.EffectExtension):
             command = "occult --tolerance " + str(self.options.plugin_occult_tolerance)
             if self.options.plugin_occult_keepseparatelayer is True:
                 command += " --keep-occulted"
+
+        # Plugin Deduplicate
+        if self.options.plugin_deduplicate is True:     
+            command = "deduplicate --tolerance " + str(self.options.plugin_deduplicate_tolerance)
+            if self.options.plugin_deduplicate_keepseparatelayer is True:
+                command += " --keep-duplicates"
 
         # Split All
         if self.options.splitall is True:     
