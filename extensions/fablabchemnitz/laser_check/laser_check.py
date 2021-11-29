@@ -468,7 +468,7 @@ class LaserCheck(inkex.EffectExtension):
                     else:
                         fillOpacityVis = 1  
                               
-                    inkex.utils.debug("id={}, strokeVis={}, widthVis={}, strokeOpacityVis={}, fillVis={}, fillOpacityVis={}".format(element.get('id'), strokeVis, widthVis, strokeOpacityVis, fillVis, fillOpacityVis))
+                    #inkex.utils.debug("id={}, strokeVis={}, widthVis={}, strokeOpacityVis={}, fillVis={}, fillOpacityVis={}".format(element.get('id'), strokeVis, widthVis, strokeOpacityVis, fillVis, fillOpacityVis))
                     if element.style is not None: #f if the style attribute is not set at all, the element will be visible with default black color fill and w/o stroke
                         if (strokeVis == 0 or widthVis == 0 or strokeOpacityVis == 0) and (fillVis == 0 or fillOpacityVis == 0):
                             if element not in invisibles:
@@ -491,11 +491,13 @@ class LaserCheck(inkex.EffectExtension):
                 if stroke_opacity is None or stroke_opacity == "none":
                     stroke_opacity = "none"
                 if stroke_opacity not in transparencies:
-                    transparencies.append(element)
+                    if stroke_opacity != "none":
+                        if float(stroke_opacity) < 1.0:
+                                transparencies.append([element, stroke_opacity])
             if so.show_issues_only is False:
                 inkex.utils.debug("{} objects with stroke transparencies < 1.0 in total".format(len(transparencies)))
             for transparency in transparencies:
-                inkex.utils.debug("id={}".format(transparency.get('id')))  
+                inkex.utils.debug("id={}, transparency={}".format(transparency[0].get('id'), transparency[1]))  
       
         '''
         We look for paths which are just points. Those are useless in case of lasercutting.
