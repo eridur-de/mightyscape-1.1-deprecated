@@ -927,7 +927,8 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
             isPoly = False         
             isBezier = False
             isPolyBezMixed = False
-            if ('c' in str(path) or 'C' in str(path)):
+            chars = set('aAcC')
+            if any((c in chars) for c in str(path)):
                 isBezier = True
             if ('l' in str(path) or 'L' in str(path)):
                 isPoly = True
@@ -980,7 +981,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
             for subPath in subPaths:                     
                 subPathData = CubicSuperPath(subPath)
 
-                #flatten bezier curves. If it was already a straight line do nothing! Otherwise we would split straight lines into a lot more straight lines
+                #flatten bezier curves. If it was already a straight line do nothing! Otherwise we would split straight lines into a lot more straight linesd)
                 if so.flattenbezier is True and (isBezier is True or isPolyBezMixed is True):
                     bezier.cspsubdiv(subPathData, so.flatness) #modifies the path
                     flattenedpath = []
