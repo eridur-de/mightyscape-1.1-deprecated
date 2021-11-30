@@ -47,7 +47,7 @@ class StylesToLayers(inkex.EffectExtension):
         pars.add_argument("--tab")
         pars.add_argument("--apply_transformations", type=inkex.Boolean, default=False, help="Run 'Apply Transformations' extension before running vpype. Helps avoiding geometry shifting")
         pars.add_argument("--separateby", default = "stroke", help = "Separate by")
-        pars.add_argument("--parsecolors",default = "hexval", help = "Sort colors by")
+        pars.add_argument("--sortcolorby", default = "hexval", help = "Sort colors by")
         pars.add_argument("--subdividethreshold", type=int, default = 1, help = "Threshold for splitting into sub layers")
         pars.add_argument("--decimals", type=int, default = 1, help = "Decimal tolerance")
         pars.add_argument("--cleanup", type=inkex.Boolean, default = True, help = "Cleanup all unused groups/layers (requires separate extension)")
@@ -57,13 +57,13 @@ class StylesToLayers(inkex.EffectExtension):
     def effect(self):
     
         def colorsort(stroke_value): #this function applies to stroke or fill (hex colors)
-            if self.options.parsecolors == "hexval":
+            if self.options.sortcolorby == "hexval":
                 return float(int(stroke_value[1:], 16))
-            elif self.options.parsecolors == "hue":
+            elif self.options.sortcolorby == "hue":
                 return float(Color(stroke_value).to_hsl()[0])
-            elif self.options.parsecolors == "saturation":
+            elif self.options.sortcolorby == "saturation":
                 return float(Color(stroke_value).to_hsl()[1])
-            elif self.options.parsecolors == "luminance":
+            elif self.options.sortcolorby == "luminance":
                 return float(Color(stroke_value).to_hsl()[2])
             return None
     
@@ -93,7 +93,7 @@ class StylesToLayers(inkex.EffectExtension):
         
             if isinstance(element, inkex.ShapeElement): # Elements which have a visible representation on the canvas (even without a style attribute but by their type); if we do not use that ifInstance Filter we provokate unkown InkScape fatal crashes
                            
-                style = element.get('style')
+                style = element.style
                 if style is not None:
                     #if no style attributes or stroke/fill are set as extra attribute
                     stroke         = element.get('stroke')
@@ -107,9 +107,9 @@ class StylesToLayers(inkex.EffectExtension):
                     neutral_value = None #we will use this value to slice the filter result into sub layers (threshold)
                    
                     if fill is not None:
-                        style = 'fill:'+ fill + ";"
+                        style['fill'] = fill
                     if stroke is not None:    
-                        style = style + 'stroke:' + stroke + ";"
+                        style['stroke'] = stroke
                         
                     #we don't want to destroy elements with gradients (they contain svg:stop elements which have a style too) and we don't want to mess with tspans (text)
                     #the Styles to Layers extension still might brick the gradients (some tests failed)
@@ -120,65 +120,59 @@ class StylesToLayers(inkex.EffectExtension):
                             layer_name = "element_tag-" + element.tag.replace("{http://www.w3.org/2000/svg}", "")
                                       
                         elif self.options.separateby == "stroke":
-                            stroke = re.search('(;|^)stroke:(.*?)(;|$)', style)
-                            if stroke is not None:
-                                stroke = stroke[0]
-                                stroke_value = stroke.split("stroke:")[1].split(";")[0]
-                                if stroke_value != "none":
-                                    stroke_converted = str(Color(stroke_value).to_rgb()) #the color can be hex code or clear name. we handle both the same
+                            stroke = style.get('stroke')
+                            if stroke is not None and stroke != "none":
+                                    stroke_converted = str(Color(stroke).to_rgb()) #the color can be hex code or clear name. we handle both the same
                                     neutral_value = colorsort(stroke_converted)
-                                    layer_name = "stroke-" + self.options.parsecolors + "-" + stroke_converted
+                                    layer_name = "stroke-{}-{}".format(self.options.sortcolorby, stroke_converted)
                             else:
-                                layer_name = "stroke-" + self.options.parsecolors + "-none"
+                                layer_name = "stroke-{}-none".format(self.options.sortcolorby)
                                 
                         elif self.options.separateby == "stroke_width":        
-                            stroke_width = re.search('stroke-width:(.*?)(;|$)', style)
+                            stroke_width = style.get('stroke-width')
                             if stroke_width is not None:
-                                stroke_width = stroke_width[0]
-                                neutral_value = self.svg.unittouu(stroke_width.split("stroke-width:")[1].split(";")[0])
-                                layer_name = stroke_width
+                                neutral_value = self.svg.unittouu(stroke_width)
+                                layer_name = "stroke-width-{}".format(neutral_value)
                             else:
                                 layer_name = "stroke-width-none"
                                 
                         elif self.options.separateby == "stroke_hairline":        
-                            stroke_hairline = re.search('-inkscape-stroke:hairline(;|$)', style)
-                            if stroke_hairline is not None:
+                            inkscape_stroke = style.get('-inkscape-stroke')
+                            if inkscape_stroke is not None and inkscape_stroke == "hairline":
                                 neutral_value = 1
                                 layer_name = "stroke-hairline-yes"
                             else:
                                 neutral_value = 0
                                 layer_name = "stroke-hairline-no"
                                 
-                        elif self.options.separateby == "stroke_opacity":        
-                            stroke_opacity = re.search('stroke-opacity:(.*?)(;|$)', style)
+                        elif self.options.separateby == "stroke_opacity":
+                            stroke_opacity = style.get('stroke-opacity')
                             if stroke_opacity is not None:
-                                stroke_opacity = stroke_opacity[0]
-                                neutral_value = float(stroke_opacity.split("stroke-opacity:")[1].split(";")[0])
-                                layer_name = stroke_opacity
+                                neutral_value = float(stroke_opacity)
+                                layer_name = "stroke-opacity-{}".format(neutral_value)
                             else:
                                 layer_name = "stroke-opacity-none"
                                 
-                        elif self.options.separateby == "fill":        
-                            fill = re.search('fill:(.*?)(;|$)', style)
+                        elif self.options.separateby == "fill":
+                            fill = style.get('fill')
                             if fill is not None:
-                                fill = fill[0]
-                                fill_value = fill.split("fill:")[1].split(";")[0]
                                 #check if the fill color is a real color or a gradient. if it's a gradient we skip the element
-                                if fill_value != "none" and "url" not in fill_value:
-                                    fill_converted = str(Color(fill_value).to_rgb()) #the color can be hex code or clear name. we handle both the same
+                                if fill != "none" and "url" not in fill:
+                                    fill_converted = str(Color(fill).to_rgb()) #the color can be hex code or clear name. we handle both the same
                                     neutral_value = colorsort(fill_converted)
-                                    layer_name = "fill-" + self.options.parsecolors + "-" + fill_converted 
-                                elif "url" in fill_value: #okay we found a gradient. we put it to some group
-                                    layer_name = "fill-" + self.options.parsecolors + "-gradient"
+                                    layer_name = "fill-{}-{}".format(self.options.sortcolorby,fill_converted)
+                                elif "url" in fill: #okay we found a gradient. we put it to some group
+                                    layer_name = "fill-{}-gradient".format(self.options.sortcolorby)
+                                else: #none
+                                    layer_name = "fill-" + self.options.sortcolorby + "-none" 
                             else:
-                                layer_name = "fill-" + self.options.parsecolors + "-none"
+                                layer_name = "fill-" + self.options.sortcolorby + "-none"
                                 
-                        elif self.options.separateby == "fill_opacity":               
-                            fill_opacity = re.search('fill-opacity:(.*?)(;|$)', style)
+                        elif self.options.separateby == "fill_opacity":
+                            fill_opacity = style.get('fill-opacity')           
                             if fill_opacity is not None:
-                                fill_opacity = fill_opacity[0]
-                                neutral_value = float(fill_opacity.split("fill-opacity:")[1].split(";")[0])
-                                layer_name = fill_opacity
+                                neutral_value = float(fill_opacity)
+                                layer_name = "fill-opacity-{}".format(neutral_value)
                             else:
                                 layer_name = "fill-opacity-none"
                                 
@@ -219,9 +213,8 @@ class StylesToLayers(inkex.EffectExtension):
                 continue
           
         # we do some cosmetics with layers. Sometimes it can happen that one layer includes another. We don't want that. We move all layers to the top level
-        for newLayerNode in layerNodeList:            
+        for newLayerNode in layerNodeList:
             self.document.getroot().append(newLayerNode[0])  
-             
           
         # Additionally if threshold was defined re-arrange the previously created layers by putting them into sub layers        
         if self.options.subdividethreshold > 1 and contentlength > 0: #check if we need to subdivide and if there are items we could rearrange into sub layers
@@ -294,6 +287,12 @@ class StylesToLayers(inkex.EffectExtension):
         #clean all empty layers from node list. Please note that the following remove_empty_groups 
         #call does not apply for this so we need to do it as PREVIOUS step before!
         for i in range(0, len(layerNodeList)):
+            deletes = []
+            for j in range(0, len(layerNodeList[i][0])):
+                if len(layerNodeList[i][0][j]) == 0 and isinstance(layerNodeList[i][0][j], inkex.Group):
+                    deletes.append(layerNodeList[i][0][j])
+            for delete in deletes:
+                    delete.getparent().remove(delete)
             if len(layerNodeList[i][0]) == 0:
                 if layerNodeList[i][0].getparent() is not None:
                     layerNodeList[i][0].getparent().remove(layerNodeList[i][0])
