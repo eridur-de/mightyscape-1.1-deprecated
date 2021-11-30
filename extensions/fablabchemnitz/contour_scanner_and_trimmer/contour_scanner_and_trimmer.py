@@ -927,7 +927,7 @@ class ContourScannerAndTrimmer(inkex.EffectExtension):
             isPoly = False         
             isBezier = False
             isPolyBezMixed = False
-            chars = set('aAcC')
+            chars = set('aAcCqQtTsS')
             if any((c in chars) for c in str(path)):
                 isBezier = True
             if ('l' in str(path) or 'L' in str(path)):
