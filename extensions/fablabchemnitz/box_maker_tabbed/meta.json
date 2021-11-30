@@ -1,8 +1,8 @@
 [
   {
     "name": "Box Maker - <various>",
-    "id": "fablabchemnitz.de.boxmaker_tabbed.<various>",
-    "path": "boxmaker_tabbed",
+    "id": "fablabchemnitz.de.box_maker_tabbed.<various>",
+    "path": "box_maker_tabbed",
     "dependent_extensions": null,
     "original_name": [
       "Schroff Box Maker",

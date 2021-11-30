@@ -7,6 +7,7 @@
 import copy
 import math
 from lxml import etree
+import re
 import inkex
 from inkex.paths import CubicSuperPath, Path
 from inkex.transforms import Transform
@@ -44,13 +45,11 @@ class ApplyTransformations(inkex.EffectExtension):
             update = False
             if 'stroke-width' in style:
                 try:
-                    #stroke_width = float(style.get('stroke-width').strip().replace("px", ""))
-                    stroke_width = self.svg.uutounit(style.get('stroke-width').strip())
-                    stroke_width *= math.sqrt(abs(transf.a * transf.d))
-                    #stroke_width *= math.sqrt(abs(transf.a * transf.d - transf.b * transf.c))
+                    stroke_width = self.svg.unittouu(style.get('stroke-width')) / self.svg.unittouu("1px")
+                    stroke_width *= math.sqrt(abs(transf.a * transf.d - transf.b * transf.c))
                     style['stroke-width'] = str(stroke_width)
                     update = True
-                except AttributeError:
+                except AttributeError as e:
                     pass
 
             if update:
