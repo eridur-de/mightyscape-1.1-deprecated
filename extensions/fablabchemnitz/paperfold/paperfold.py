@@ -2,7 +2,6 @@
 import math
 import inkex
 from inkex import Transform, TextElement, Tspan, Color, Circle, PathElement, CubicSuperPath
-import tempfile
 import os
 import random
 import numpy as np
