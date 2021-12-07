@@ -24,6 +24,7 @@
                     <param name="clippaths" type="bool" gui-text="Clippings">false</param>
                     <param name="images" type="bool" gui-text="Images">false</param>
                     <param name="texts" type="bool" gui-text="Texts">false</param>
+                    <param name="filters" type="bool" gui-text="Filters">false</param>
                     <param name="lowlevelstrokes" type="bool" gui-text="Low level strokes">false</param>
                     <separator/>
                     <param name="stroke_colors" type="bool" gui-text="Stroke colors">false</param>

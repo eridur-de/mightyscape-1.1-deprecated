@@ -80,6 +80,7 @@ class LaserCheck(inkex.EffectExtension):
         pars.add_argument('--clippaths', type=inkex.Boolean, default=False)
         pars.add_argument('--images', type=inkex.Boolean, default=False)
         pars.add_argument('--texts', type=inkex.Boolean, default=False)
+        pars.add_argument('--filters', type=inkex.Boolean, default=False)
         pars.add_argument('--lowlevelstrokes', type=inkex.Boolean, default=False)
         pars.add_argument('--stroke_colors', type=inkex.Boolean, default=False)
         pars.add_argument('--stroke_colors_max', type=int, default=3)
@@ -347,6 +348,34 @@ class LaserCheck(inkex.EffectExtension):
                 inkex.utils.debug("id={}".format(text.get('id')))
              
 
+        '''
+        Filters on elements let Epilog Software Suite always think vectors should get to raster image data. That might be good sometimes,
+        but not in usual case.
+        '''
+        if so.checks == "check_all" or so.filters is True:
+            inkex.utils.debug("\n---------- Filters (should be removed to keep vector characterism)") 
+
+            filter_elements = []
+            for element in selected:
+                if element.tag == inkex.addNS('filter','svg'):
+                    filter_elements.append(element)                    
+            filter_styles = []
+            if so.show_issues_only is False:
+                inkex.utils.debug("{} filters (as svg:filter) in total".format(len(filter_elements)))
+            for filter_element in filter_elements:
+                inkex.utils.debug("id={}".format(filter_element.get('id')))
+                
+            for element in selected:
+                filter_style = [element, element.style.get('filter')]
+                if filter_style[1] is None or filter_style[1]  == "none":
+                    filter_style[1] = "none"
+                if filter_style[1] != "none" and filter_style not in filter_styles:
+                    filter_styles.append(filter_style)
+            if so.show_issues_only is False:
+                inkex.utils.debug("{} filters (in styles) in total".format(len(filter_styles)))
+            for filter_style in filter_styles:
+                inkex.utils.debug("id={}, filter={}".format(filter_style[0].get('id'), filter_style[1]))
+            
         
         '''
         The more stroke colors the more laser job configuration is required. Reduce the SVG file
@@ -498,6 +527,7 @@ class LaserCheck(inkex.EffectExtension):
                 inkex.utils.debug("{} objects with stroke transparencies < 1.0 in total".format(len(transparencies)))
             for transparency in transparencies:
                 inkex.utils.debug("id={}, transparency={}".format(transparency[0].get('id'), transparency[1]))  
+      
       
         '''
         We look for paths which are just points. Those are useless in case of lasercutting.
