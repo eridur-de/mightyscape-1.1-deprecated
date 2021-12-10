@@ -61,7 +61,8 @@
                 <option value="1219x914">1219 x 914 mm (Fusion Pro 48)</option>
             </param>
             <param name="max_cutting_speed" type="float" min="1.000" max="9999.000" precision="2" gui-text="Max. cutting speed (mm/s)">120.0</param>
-            <param name="max_travel_speed" type="float" min="1.000" max="9999.000" precision="2" gui-text="Max. travel speed (mm/s)">500.0</param>
+            <param name="max_travel_speed" type="float" min="1.000" max="9999.000" precision="2" gui-text="Max. travel speed (mm/s)">450.0</param>
+            <param name="job_time_offset" type="float" min="0.000" max="9999.000" precision="2" gui-text="Job time offset" gui-description="The laser is not starting immediately. It has some delay.">2</param>
             <param name="price_per_minute_gross" type="float" min="0.0" max="9999.0" precision="2" gui-text="Price/minute € (gross)">2.0</param>
             <param name="vector_grid_xy" type="float" min="0.0" max="9999.0" precision="2" gui-text="Vector grid (mm)">12.0</param>
         </page>

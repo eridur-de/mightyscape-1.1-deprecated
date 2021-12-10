@@ -64,8 +64,9 @@ class LaserCheck(inkex.EffectExtension):
         pars.add_argument('--tab')
         
         pars.add_argument('--machine_size', default="812x508")
-        pars.add_argument('--max_cutting_speed', type=float, default=120)
-        pars.add_argument('--max_travel_speed', type=float, default=500)
+        pars.add_argument('--max_cutting_speed', type=float, default=120.0)
+        pars.add_argument('--max_travel_speed', type=float, default=450.0)
+        pars.add_argument('--job_time_offset', type=float, default=2.0)
         pars.add_argument('--price_per_minute_gross', type=float, default=2.0)
         pars.add_argument('--vector_grid_xy', type=float, default=12.0) #TODO
         
@@ -636,7 +637,7 @@ class LaserCheck(inkex.EffectExtension):
                 v_travel = so.max_travel_speed #this is always at maximum
                 tsec_cut    = (self.svg.uutounit(str(totalCuttingLength)) / (adjusted_speed * so.max_cutting_speed * speedFactorR)) * empiric_scale
                 tsec_travel = self.svg.uutounit(str(totalTravelLength))  / v_travel
-                tsec_total = tsec_cut + tsec_travel
+                tsec_total = so.job_time_offset + tsec_cut + tsec_travel
                 minutes, seconds = divmod(tsec_total, 60)  # split the seconds to minutes and seconds
                 partial_minutes = round(seconds/60 * 2) / 2
                 inkex.utils.debug("@{:03.0f}% (cut={:06.2f}mm/s | travel={:06.2f}mm/s) > {:03.0f}min {:02.0f}sec | cost={:02.0f}€".format(speedFactor, v_cut, v_travel, minutes, seconds, so.price_per_minute_gross * (minutes + partial_minutes)))
@@ -664,6 +665,11 @@ class LaserCheck(inkex.EffectExtension):
             @ 003% = 435:21  = 26121s ->   3,83mm/s
             @ 002% = 652:57  = 39177s ->   2,55mm/s
             @ 001% = 1305:49 = 78349s ->   1,28mm/s
+            
+        It does not matter how slow we configure the laser, the job time estimation always has the same amount of travel time
+        (if we have some travel moves to perform), so the travel speed is always constant. The max. travel speed of Fusion Pro 32 
+        is between 425mm/s and 460mm/s (measured by Mario by hand at different laser jobs).
+        If the laser is in X=0 Y=0 the jobs needs ~2 seconds to start moving and firing the laser. We use this as constant offset
         '''
         
         '''
