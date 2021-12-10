@@ -267,7 +267,7 @@ class ExportObject(inkex.EffectExtension):
             try:
                 img = Image.open(png_export)
             except Image.DecompressionBombError as e: #we could also increse PIL.Image.MAX_IMAGE_PIXELS = some large int
-                self.msg("Error. Image is too large. Reduce DPI and try again!")
+                self.msg("Error. Image is too large ({} x {} px). Reduce DPI and try again!".format(self.svg.uutounit(bbox.width), self.svg.uutounit(bbox.height)))
                 exit(1)
             output_buffer = BytesIO()
             img.save(output_buffer, format='PNG')
