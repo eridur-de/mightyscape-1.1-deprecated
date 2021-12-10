@@ -45,7 +45,6 @@ for GALLERY_EXTENSION in ${GALLERY_EXTENSIONS}; do
 	EXTENSION=$(echo ${AGGLOMERATED_JSON} | jq -r '.[]|select(.inkscape_gallery_url=="'$GALLERY_EXTENSION'")|{name}|.[]')
 done
 
-
 echo "--> Count of inx files:"
 INX=$(find ./ -type f -name "*.inx" | wc -l)
 echo INX: $INX
@@ -76,14 +75,15 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     for EXTENSION in */; do
         EXTENSION="${EXTENSION%/}" #strip trailing slash
         EXTRA=""
-        if [[ $EXTENSION == "styles_to_layers" ]] || [[  $EXTENSION == "ungrouper_and_element_migrator_filter" ]] || [[  $EXTENSION == "epilog_dashboard_bbox_adjust" ]]; then
-            EXTRA="${EXTRA} apply_transformations/"
-                elif [[ $EXTENSION == "styles_to_layers" ]] || [[  $EXTENSION == "ungrouper_and_element_migrator_filter" ]]; then
-                EXTRA="${EXTRA} remove_empty_groups/"
-            fi
-            ZIPFILE=$TARGETDIR/$EXTENSION.zip
-        zip -ru $ZIPFILE $EXTENSION/ 000_about_fablabchemnitz.svg $EXTRA > /dev/null 2>&1
+        DEPS=$(jq -r 'try .[]|.dependent_extensions|.[]' ${EXTENSION}/meta.json)
+        DEPS=$(echo $DEPS|tr -d '\n')
+        #if dependencies are not empty, then ...
+        if [[ ! -z $DEPS ]]; then
+            EXTRA="$DEPS"
+        fi
+        ZIPFILE=$TARGETDIR/$EXTENSION.zip
         echo "--> creating/updating $ZIPFILE"
+        zip -ru $ZIPFILE $EXTENSION/ 000_about_fablabchemnitz.svg $EXTRA > /dev/null 2>&1
     done
 fi
 
@@ -99,15 +99,16 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 	GALLERY_EXTENSIONS=$(echo $AGGLOMERATED_JSON | jq -r '.[]|{inkscape_gallery_url}|.[]' | sort | grep -v "null")
 	for GALLERY_EXTENSION in ${GALLERY_EXTENSIONS}; do
 		EXTENSION="$(echo ${AGGLOMERATED_JSON} | jq -r '.[]|select(.inkscape_gallery_url=="'$GALLERY_EXTENSION'")|{path}|.[]')"
-    	EXTRA=""
-    	if [[ $EXTENSION == "styles_to_layers" ]] || [[  $EXTENSION == "ungrouper_and_element_migrator_filter" ]] || [[  $EXTENSION == "epilog_dashboard_bbox_adjust" ]]; then
-    		EXTRA="${EXTRA} apply_transformations/"
-  		 	elif [[ $EXTENSION == "styles_to_layers" ]] || [[  $EXTENSION == "ungrouper_and_element_migrator_filter" ]]; then
-  	  		EXTRA="${EXTRA} remove_empty_groups/"
-  	  	fi
+        EXTRA=""
+        DEPS=$(jq -r 'try .[]|.dependent_extensions|.[]' ${EXTENSION}/meta.json)
+        DEPS=$(echo $DEPS|tr -d '\n')
+        #if dependencies are not empty, then ...
+        if [[ ! -z $DEPS ]]; then
+            EXTRA="$DEPS"
+        fi
   	    ZIPFILE=$TARGETDIR/$EXTENSION.zip
     	rm $ZIPFILE > /dev/null 2>&1
-		echo "--> creating $ZIPFILE"
-    	zip -ru $ZIPFILE $EXTENSION/ 000_about_fablabchemnitz.svg $EXTRA
+        echo "--> creating/updating $ZIPFILE"
+    	zip -ru $ZIPFILE $EXTENSION/ 000_about_fablabchemnitz.svg $EXTRA > /dev/null 2>&1
 	done
 fi
