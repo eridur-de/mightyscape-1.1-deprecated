@@ -2,6 +2,9 @@
 
 # We will use the inkex module with the predefined Effect base class.
 import inkex
+# The simplestyle module provides functions for style parsing.
+
+import simplestyle
 import math
 from lxml import etree
 
@@ -28,12 +31,16 @@ class th_inkscape_path:
         self.ymax = -self.offsetY
         self.x = 0
         self.y = 0
+        self.x_noff = 0
+        self.y_noff = 0
     
     def MoveTo(self, x, y):
     #Return string 'M X Y' where X and Y are updated values from parameters
         self.Path += ' M ' + str(round(x-self.offsetX, 3)) + ',' + str(round(y-self.offsetY, 3))
         self.x = x - self.offsetX
         self.y = y - self.offsetY
+        self.x_noff = x
+        self.y_noff = y
         self.xmin= min(self.x, self.xmin)
         self.xmax= max(self.x, self.xmax)
         self.ymin= min(self.y, self.ymin)
@@ -44,6 +51,8 @@ class th_inkscape_path:
         self.Path += ' L ' + str(round(x-self.offsetX, 3)) + ',' + str(round(y-self.offsetY, 3))
         self.x = x - self.offsetX
         self.y = y - self.offsetY
+        self.x_noff = x
+        self.y_noff = y
         self.xmin= min(self.x, self.xmin)
         self.xmax= max(self.x, self.xmax)
         self.ymin= min(self.y, self.ymin)
@@ -55,6 +64,8 @@ class th_inkscape_path:
         self.Path += ' l ' + str(round(x, 3)) + ',' + str(round(y, 3))
         self.x += x
         self.y += y
+        self.x_noff += x
+        self.y_noff += y
         self.xmin= min(self.x, self.xmin)
         self.xmax= max(self.x, self.xmax)
         self.ymin= min(self.y, self.ymin)
@@ -64,6 +75,7 @@ class th_inkscape_path:
     #Return string 'h X' where X are updated values from parameters
         self.Path += ' h ' + str(round(x, 3)) 
         self.x += x
+        self.x_noff += x
         self.xmin= min(self.x, self.xmin)
         self.xmax= max(self.x, self.xmax)
 
@@ -72,6 +84,7 @@ class th_inkscape_path:
     #Return string 'v Y' where X and Y are updated values from parameters
         self.Path += ' v ' + str(round(y, 3)) 
         self.y += y
+        self.y_noff += y
         self.ymin= min(self.y, self.ymin)
         self.ymax= max(self.y, self.ymax)
 
@@ -86,6 +99,8 @@ class th_inkscape_path:
         self.Path += ' M ' + str(round(x1-self.offsetX, 3)) + ',' + str(round(y1-self.offsetY, 3)) + ' L ' + str(round(x2-self.offsetX, 3)) + ',' + str(round(y2-self.offsetY, 3))
         self.x = x2 - self.offsetX
         self.y = y2 - self.offsetY        
+        self.x_noff = x2
+        self.y_noff = y2
         self.xmin= min(self.x, self.xmin)
         self.xmax= max(self.x, self.xmax)
         self.ymin= min(self.y, self.ymin)
@@ -94,6 +109,8 @@ class th_inkscape_path:
     def LineRel(self, x1, y1, x2, y2):
         self.x += x1
         self.y += y1
+        self.x_noff += x1
+        self.y_noff += y1
         self.xmin= min(self.x, self.xmin)
         self.xmax= max(self.x, self.xmax)
         self.ymin= min(self.y, self.ymin)
@@ -103,6 +120,8 @@ class th_inkscape_path:
         self.Path += ' m ' + str(round(x1, 3)) + ',' + str(round(y1, 3)) + ' l ' + str(round(x2, 3)) + ',' + str(round(y2, 3))
         self.x += x2
         self.y += y2
+        self.x_noff += x2
+        self.y_noff += y2
         self.xmin= min(self.x, self.xmin)
         self.xmax= max(self.x, self.xmax)
         self.ymin= min(self.y, self.ymin)
@@ -113,6 +132,8 @@ class th_inkscape_path:
         self.Path += ' C ' + str(round(xc1-self.offsetX, 3)) + ',' + str(round(yc1-self.offsetY, 3)) + ' ' + str(round(xc2-self.offsetX, 3)) + ',' + str(round(yc2-self.offsetY, 3))+ ' ' + str(round(x-self.offsetX, 3)) + ',' + str(round(y-self.offsetY, 3))
         self.x = x - self.offsetX
         self.y = y - self.offsetY
+        self.x_noff = x
+        self.y_noff = y
         self.xmin= min(self.x, self.xmin)
         self.xmax= max(self.x, self.xmax)
         self.ymin= min(self.y, self.ymin)
@@ -123,6 +144,8 @@ class th_inkscape_path:
         self.Path += ' c ' + str(round(xc1, 3)) + ',' + str(round(yc1, 3)) + ' ' + str(round(xc2, 3)) + ',' + str(round(yc2, 3))+ ' ' + str(round(x, 3)) + ',' + str(round(y, 3))
         self.x += x
         self.y += y
+        self.x_noff += x
+        self.y_noff += y
         self.xmin= min(self.x, self.xmin)
         self.xmax= max(self.x, self.xmax)
         self.ymin= min(self.y, self.ymin)
