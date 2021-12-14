@@ -7,7 +7,6 @@ import re
 import math
 from math import log
 import datetime
-from email.policy import default
 
 class LaserCheck(inkex.EffectExtension):
     
@@ -17,12 +16,11 @@ class LaserCheck(inkex.EffectExtension):
      - inx:
          - set speed manually or pick machine (epilog) - travel and cut speed are prefilled then
          - calculate cut estimation with linear or non-linear (epilog) speeds > select formula or like this
-         - select time estimation for specific speed percentage for for all speeds (100,90, ...)
+         - select time estimation for specific speed percentage or for all speeds (100,90, ...)
          - select material (parameters -> how to???)
          - select power of CO² source
          - add fields for additional costs like configuring the machine or grabbing parts out of the machine (weeding), etc.
          - add mode select: cut, engrave
-     - add some extra seconds for start, stop, removing parts, attaching material, ...
      - Handlungsempfehlungen einbauen
         - verweisen auf diverse plugins, die man nutzen kann:
             - migrate ungrouper
@@ -66,9 +64,10 @@ class LaserCheck(inkex.EffectExtension):
         pars.add_argument('--machine_size', default="812x508")
         pars.add_argument('--max_cutting_speed', type=float, default=120.0)
         pars.add_argument('--max_travel_speed', type=float, default=450.0)
-        pars.add_argument('--job_time_offset', type=float, default=2.0)
+        pars.add_argument('--job_time_offset', type=float, default=0.0)
         pars.add_argument('--price_per_minute_gross', type=float, default=2.0)
         pars.add_argument('--vector_grid_xy', type=float, default=12.0) #TODO
+        pars.add_argument('--round_times', type=inkex.Boolean, default=True)
         
         pars.add_argument('--show_issues_only', type=inkex.Boolean, default=False)  
         pars.add_argument('--checks', default="check_all")
@@ -452,61 +451,159 @@ class LaserCheck(inkex.EffectExtension):
             inkex.utils.debug("\n---------- Invisible shapes")
             invisibles = []
             for element in shapes:
-                if element.tag not in (inkex.addNS('tspan','svg')) and element.get('inkscape:groupmode') != 'layer' and not isinstance(element, inkex.Group):                         
-                    stroke = element.style.get('stroke')
-                    if stroke is None or stroke == "none":
+                if element.tag not in (inkex.addNS('tspan','svg')) and element.get('inkscape:groupmode') != 'layer' and not isinstance(element, inkex.Group):                             
+                    strokeAttr = element.get('stroke') #same information could be in regular attribute instead nested in style attribute
+                    if strokeAttr is None or strokeAttr == "none":
                         strokeVis = 0
-                    elif stroke in ('#ffffff', 'white', 'rgb(255,255,255)'):
+                    elif strokeAttr in ('#ffffff', 'white', 'rgb(255,255,255)'):
                         strokeVis = 0
                     else:
                         strokeVis = 1
+                    stroke = element.style.get('stroke')
+                    if stroke is not None:
+                        if stroke == "none":
+                            strokeVis = 0
+                        elif stroke in ('#ffffff', 'white', 'rgb(255,255,255)'):
+                            strokeVis = 0
+                        else:
+                            strokeVis = 1
                     
-                    stroke_width = element.style.get('stroke-width')
-                    if stroke_width is None or stroke_width == "none":
+                    
+                    strokeWidthAttr = element.get('stroke-width') #same information could be in regular attribute instead nested in style attribute
+                    if strokeWidthAttr == "none":
                         widthVis = 0
-                    elif self.svg.unittouu(stroke_width) < 0.005: #really thin (0,005pc = 0,080px)
+                    elif strokeWidthAttr is not None and self.svg.unittouu(strokeWidthAttr) < 0.005: #really thin (0,005pc = 0,080px)
                         widthVis = 0
                     else:
                         widthVis = 1
+                    stroke_width = element.style.get('stroke-width')
+                    if stroke_width is not None:
+                        if stroke_width == "none":
+                            widthVis = 0
+                        elif stroke_width is not None and self.svg.unittouu(stroke_width) < 0.005: #really thin (0,005pc = 0,080px)
+                            widthVis = 0
+                        else:
+                            widthVis = 1
   
-                    stroke_opacity = element.style.get('stroke-opacity')    
-                    if stroke_opacity is None or stroke_opacity == "none":
+  
+                    strokeOpacityAttr = element.get('stroke-opacity') #same information could be in regular attribute instead nested in style attribute
+                    if strokeOpacityAttr == "none":
                         strokeOpacityVis = 0
-                    elif float(stroke_opacity) < 0.05: #nearly invisible (<5% opacity)
+                    elif strokeOpacityAttr is not None and self.svg.unittouu(strokeOpacityAttr) < 0.05: #nearly invisible (<5% opacity)
                         strokeOpacityVis = 0
                     else:
                         strokeOpacityVis = 1
+                    stroke_opacity = element.style.get('stroke-opacity')
+                    if stroke_opacity is not None:
+                        if stroke_opacity == "none":
+                            strokeOpacityVis = 0
+                        elif stroke_opacity is not None and self.svg.unittouu(stroke_opacity) < 0.05: #nearly invisible (<5% opacity)
+                            strokeOpacityVis = 0
+                        else:
+                            strokeOpacityVis = 1
+  
   
                     if pagecolor == '#ffffff':
                         invisColors = [pagecolor, 'white', 'rgb(255,255,255)']
                     else:
                         invisColors = [pagecolor] #we could add some parser to convert pagecolor to rgb/hsl/cmyk
-                        
-                    fill = element.style.get('fill')
-                    if fill is None or fill == "none":
+                    fillAttr = element.get('fill') #same information could be in regular attribute instead nested in style attribute
+                    if fillAttr is None or fillAttr == "none":
                         fillVis = 0
                     elif fill in invisColors:
                         fillVis = 0
                     else:
                         fillVis = 1
+                    fill = element.style.get('fill')
+                    if fill is not None:
+                        if fill == "none":
+                            fillVis = 0
+                        elif fill in invisColors:
+                            fillVis = 0
+                        else:
+                            fillVis = 1
               
-                    fill_opacity = element.style.get('fill-opacity')
-                    if fill_opacity is None or fill_opacity == "none": #always is opaque if not set, so set to 1
-                        fillOpacityVis = 1
-                    elif float(fill_opacity) < 0.05: #nearly invisible (<5% opacity)
+
+                    fillOpacityAttr = element.get('fill-opacity') #same information could be in regular attribute instead nested in style attribute
+                    if fillOpacityAttr == "none":
+                        fillOpacityVis = 0
+                    elif strokeOpacityAttr is not None and self.svg.unittouu(fillOpacityAttr) < 0.05: #nearly invisible (<5% opacity)
                         fillOpacityVis = 0
                     else:
-                        fillOpacityVis = 1  
+                        fillOpacityVis = 1
+                    fill_opacity = element.style.get('fill-opacity')
+                    if fill_opacity is not None:
+                        if fill_opacity == "none":
+                            fillOpacityVis = 0
+                        elif fill_opacity is not None and self.svg.unittouu(fill_opacity) < 0.05: #nearly invisible (<5% opacity)
+                            fillOpacityVis = 0
+                        else:
+                            fillOpacityVis = 1
+
+
+                    display = element.style.get('display')
+                    if display == "none":
+                        displayVis = 0
+                    else:
+                        displayVis = 1
+                    displayAttr = element.get('display') #same information could be in regular attribute instead nested in style attribute
+                    if displayAttr == "none":
+                        displayAttrVis = 0
+                    else:
+                        displayAttrVis = 1
+                     
+                 
+                    #check for svg:path elements which have consistent slope (straight lines) and no a defined fill and no stroke. such (poly)lines are still not visible
+                    pathVis = 1
+                    if element.tag == inkex.addNS('path','svg') and fillVis == 1 and strokeVis == 0:
+                        segments = element.path.to_arrays()
+                        chars = set('aAcCqQtTsS')
+                        if not any((c in chars) for c in str(element.path)): #skip beziers (we only check for polylines)
+                            slopes = []
+                            for i in range(0, len(segments)):
+                                if i > 0:
+                                    x1, y1, x2, y2 = segments[i-1][1][0], segments[i-1][1][1], segments[i][1][0], segments[i][1][1]
+                                    if x1 < x2:
+                                        p0 = [x1, y1]
+                                        p1 = [x2, y2]
+                                    else:
+                                        p0 = [x2, y2]
+                                        p1 = [x1, y1]
+                                    dx = p1[0] - p0[0]
+                                    if dx == 0:
+                                        slope = sys.float_info.max #vertical
+                                    else:
+                                        slope = (p1[1] - p0[1]) / dx
+                                    slope = round(slope, 6)
+                                    if slope not in slopes:
+                                        slopes.append(slope)
+                            if len(slopes) < 2:
+                                pathVis = 0
                               
-                    #inkex.utils.debug("id={}, strokeVis={}, widthVis={}, strokeOpacityVis={}, fillVis={}, fillOpacityVis={}".format(element.get('id'), strokeVis, widthVis, strokeOpacityVis, fillVis, fillOpacityVis))
+                    flags = "id={}, strokeVis={}, widthVis={}, strokeOpacityVis={} | fillVis={}, fillOpacityVis={} | displayVis={}, displayAttrVis = {} | pathVis = {}"\
+                    .format(element.get('id'), strokeVis, widthVis, strokeOpacityVis, fillVis, fillOpacityVis, displayVis, displayAttrVis, pathVis)
                     if element.style is not None: #f if the style attribute is not set at all, the element will be visible with default black color fill and w/o stroke
-                        if (strokeVis == 0 or widthVis == 0 or strokeOpacityVis == 0) and (fillVis == 0 or fillOpacityVis == 0):
+                        if (strokeVis == 0 or widthVis == 0 or strokeOpacityVis == 0):
+                            strokeInvis = True
+                        else:
+                            strokeInvis = False
+                        if (fillVis == 0 or fillOpacityVis == 0):
+                            fillInvis = True
+                        else:
+                            fillInvis = False    
+                        if strokeInvis is True and fillInvis is True:
                             if element not in invisibles:
-                                invisibles.append(element)
+                                invisibles.append(flags)
+                        if displayVis == 0 or displayAttrVis == 0:
+                            if element not in invisibles:
+                                invisibles.append(flags)
+                        if pathVis == 0:
+                            if element not in invisibles:
+                                invisibles.append(flags) 
             if so.show_issues_only is False:
                 inkex.utils.debug("{} invisible shapes in total".format(len(invisibles)))
             for invisible in invisibles:
-                inkex.utils.debug("id={}".format(invisible.get('id')))
+                inkex.utils.debug(invisible)
           
                 
         '''
@@ -639,8 +736,20 @@ class LaserCheck(inkex.EffectExtension):
                 tsec_travel = self.svg.uutounit(str(totalTravelLength))  / v_travel
                 tsec_total = so.job_time_offset + tsec_cut + tsec_travel
                 minutes, seconds = divmod(tsec_total, 60)  # split the seconds to minutes and seconds
-                partial_minutes = round(seconds/60 * 2) / 2
-                inkex.utils.debug("@{:03.0f}% (cut={:06.2f}mm/s | travel={:06.2f}mm/s) > {:03.0f}min {:02.0f}sec | cost={:02.0f}€".format(speedFactor, v_cut, v_travel, minutes, seconds, so.price_per_minute_gross * (minutes + partial_minutes)))
+                seconds_for_price = seconds
+                #round seconds up to 30 or 60
+                if so.round_times is True:
+                    if seconds_for_price < 30:
+                        seconds_for_price = 30
+                    if seconds_for_price > 30 and seconds_for_price != 60:
+                        seconds_for_price = 60
+                
+                partial_minutes = round(seconds_for_price/60 * 2) / 2    
+                costs = so.price_per_minute_gross * (minutes + partial_minutes)
+                if "{:02.0f}".format(seconds) == "60": #for formatting reasons
+                    seconds = 0
+                    minutes += 1         
+                inkex.utils.debug("@{:03.0f}% (cut={:06.2f}mm/s | travel={:06.2f}mm/s) > {:03.0f}min {:02.0f}sec | cost={:02.0f}€".format(speedFactor, v_cut, v_travel, minutes, seconds, costs))
 
         
         ''' Measurements from Epilog Software Suite
