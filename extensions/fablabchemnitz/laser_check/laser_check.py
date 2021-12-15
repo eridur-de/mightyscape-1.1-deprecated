@@ -12,13 +12,10 @@ class LaserCheck(inkex.EffectExtension):
     
     '''
     ToDos:
-     - check for elements which have the attribute "display:none" (some groups have this)
      - inx:
          - set speed manually or pick machine (epilog) - travel and cut speed are prefilled then
          - calculate cut estimation with linear or non-linear (epilog) speeds > select formula or like this
-         - select time estimation for specific speed percentage or for all speeds (100,90, ...)
          - select material (parameters -> how to???)
-         - select power of CO² source
          - add fields for additional costs like configuring the machine or grabbing parts out of the machine (weeding), etc.
          - add mode select: cut, engrave
      - Handlungsempfehlungen einbauen
@@ -44,7 +41,6 @@ class LaserCheck(inkex.EffectExtension):
     - run as script to generate quick results for users
     - check for old styles which should be upgraded (cleanup styles tool)
     - check for elements which have no style attribute (should be created) -> (cleanup styles tool)
-    - migrate styles from groups/layers to path styles (cleanup styles tool)
     - self-intersecting paths
     - number of parts (isles) to weed in total - this is an indicator for manually picking work; if we add bridges we have less work
     - number of parts which are smaller than vector grid
@@ -67,6 +63,7 @@ class LaserCheck(inkex.EffectExtension):
         pars.add_argument('--job_time_offset', type=float, default=0.0)
         pars.add_argument('--price_per_minute_gross', type=float, default=2.0)
         pars.add_argument('--vector_grid_xy', type=float, default=12.0) #TODO
+        pars.add_argument('--co2_power', type=float, default=60.0) #TODO
         pars.add_argument('--round_times', type=inkex.Boolean, default=True)
         
         pars.add_argument('--show_issues_only', type=inkex.Boolean, default=False)  
@@ -74,8 +71,10 @@ class LaserCheck(inkex.EffectExtension):
         pars.add_argument('--bbox', type=inkex.Boolean, default=False)
         pars.add_argument('--bbox_offset', type=float, default=5.000)
         pars.add_argument('--cutting_estimation', type=inkex.Boolean, default=False)
+        pars.add_argument('--cutting_speedfactors', default="100 90 80 70 60 50 40 30 20 10 9 8 7 6 5 4 3 2 1")
         pars.add_argument('--elements_outside_canvas', type=inkex.Boolean, default=False)
         pars.add_argument('--groups_and_layers', type=inkex.Boolean, default=False)
+        pars.add_argument('--nest_depth_max', type=int, default=2)
         pars.add_argument('--clones', type=inkex.Boolean, default=False)
         pars.add_argument('--clippaths', type=inkex.Boolean, default=False)
         pars.add_argument('--images', type=inkex.Boolean, default=False)
@@ -140,7 +139,7 @@ class LaserCheck(inkex.EffectExtension):
         like svg:defs, svg:desc, gradients, etc.
         '''
         nonShapes = []
-        shapes = []
+        shapes = [] #this may contains paths, rectangles, circles, groups and more
         for element in selected:       
             if not isinstance(element, inkex.ShapeElement):
                 nonShapes.append(element)
@@ -232,6 +231,11 @@ class LaserCheck(inkex.EffectExtension):
                 inkex.utils.debug("page height... fail: {:0.3f} mm".format(bb_height))
              
         
+        '''
+        We check for possible deep nested groups/layers, empty groups/layers or groups/layers with styles.
+        We want to avoid styles at groups. Its better to style the elements like svg:path directly. 
+        We can use "Cleanup Styles" extension to change this.
+        '''
         if so.checks == "check_all" or so.groups_and_layers is True:
             inkex.utils.debug("\n---------- Groups and layers")
             global md
@@ -245,19 +249,23 @@ class LaserCheck(inkex.EffectExtension):
             maxDepth(self.document.getroot(), -1)
             if so.show_issues_only is False:        
                inkex.utils.debug("Maximum group depth={}".format(md - 1))
-            if md - 1 > 2:
-                self.msg("Warning: this group depth might cause issues!")
+            if md - 1 > so.nest_depth_max:
+                inkex.utils.debug("Warning: maximum allowed group depth reached: {}".format(so.nest_depth_max))
             groups = []
             layers = []
+            styles = []
             for element in selected:
                 if element.tag == inkex.addNS('g','svg'):
                     if element.get('inkscape:groupmode') == 'layer':
                         layers.append(element)
                     else:
                         groups.append(element)
+                    if element.style is not None:
+                        styles.append(element)
             if so.show_issues_only is False:  
                 inkex.utils.debug("{} groups in total".format(len(groups)))
                 inkex.utils.debug("{} layers in total".format(len(layers)))
+                inkex.utils.debug("{} groups/layers with style in total".format(len(styles)))
     
             #check for empty groups
             for group in groups:
@@ -268,6 +276,10 @@ class LaserCheck(inkex.EffectExtension):
             for layer in layers:
                 if len(layer) == 0:
                     inkex.utils.debug("id={} is empty layer".format(layer.get('id')))
+
+            #check for groups/layers which have a style
+            for style in styles:
+                inkex.utils.debug("id={} has style".format(style.get('id')))
 
         '''
         Clones should be unlinked because they cause similar issues like transformations
@@ -386,9 +398,7 @@ class LaserCheck(inkex.EffectExtension):
             strokeColors = []
             for element in shapes:
                 strokeColor = element.style.get('stroke')
-                if strokeColor is None or strokeColor == "none":
-                    strokeColor = "none"
-                if strokeColor not in strokeColors:
+                if  strokeColor is not None and strokeColor not in strokeColors:
                     strokeColors.append(strokeColor)
             if so.show_issues_only is False:
                 inkex.utils.debug("{} different stroke colors in total".format(len(strokeColors)))
@@ -406,15 +416,13 @@ class LaserCheck(inkex.EffectExtension):
             strokeWidths = []
             for element in shapes:  
                 strokeWidth = element.style.get('stroke-width')
-                if strokeWidth is None or strokeWidth == "none":
-                    strokeWidth = "none"
-                if strokeWidth not in strokeWidths:
+                if strokeWidth is not None and strokeWidth not in strokeWidths:
                     strokeWidths.append(strokeWidth)
             if so.show_issues_only is False:
                 inkex.utils.debug("{} different stroke widths in total".format(len(strokeWidths)))
             if len(strokeWidths) > so.stroke_widths_max:
                 for strokeWidth in strokeWidths:
-                    swConverted = self.svg.uutounit(float(self.svg.unittouu(strokeWidth))) #possibly w/o units. we unify to some internal float
+                    swConverted = self.svg.uutounit(float(self.svg.unittouu(strokeWidth))) #possibly w/o units. we unify to some internal float. The value "none" converts to 0.0
                     inkex.utils.debug("stroke width {}px ({}mm)".format(
                         round(self.svg.uutounit(swConverted, "px"),4),
                         round(self.svg.uutounit(swConverted, "mm"),4),
@@ -431,9 +439,7 @@ class LaserCheck(inkex.EffectExtension):
             strokeDasharrays = []
             for element in shapes:  
                 strokeDasharray = element.style.get('stroke-dasharray')
-                if strokeDasharray is None or strokeDasharray == "none":
-                    strokeDasharray = "none"
-                if strokeDasharray not in strokeDasharrays:
+                if strokeDasharray is not None and strokeDasharray not in strokeDasharrays:
                     strokeDasharrays.append(strokeDasharray)
             if so.show_issues_only is False:
                 inkex.utils.debug("{} different stroke dash arrays in total".format(len(strokeDasharrays)))
@@ -615,9 +621,7 @@ class LaserCheck(inkex.EffectExtension):
             transparencies = []
             for element in shapes:
                 stroke_opacity = element.style.get('stroke-opacity')
-                if stroke_opacity is None or stroke_opacity == "none":
-                    stroke_opacity = "none"
-                if stroke_opacity not in transparencies:
+                if stroke_opacity is not stroke_opacity and stroke_opacity not in transparencies:
                     if stroke_opacity != "none":
                         if float(stroke_opacity) < 1.0:
                                 transparencies.append([element, stroke_opacity])
@@ -716,22 +720,32 @@ class LaserCheck(inkex.EffectExtension):
                         totalCuttingLength += stotal
                         cuttingPathCount += 1
             totalLength = totalCuttingLength + totalTravelLength
+            v_travel = so.max_travel_speed #this is always at maximum
             inkex.utils.debug("total cutting paths={}".format(cuttingPathCount))
             inkex.utils.debug("total travel paths={}".format(travelPathCount))
             inkex.utils.debug("(measured) cutting length (mm) = {:0.2f} mm".format(self.svg.uutounit(str(totalCuttingLength), "mm"), self.svg.uutounit(str(totalCuttingLength), "mm")))
             inkex.utils.debug("(measured) travel length (mm) = {:0.2f} mm".format(self.svg.uutounit(str(totalTravelLength), "mm"), self.svg.uutounit(str(totalTravelLength), "mm")))
             inkex.utils.debug("(measured) total length (mm) = {:0.2f} mm".format(self.svg.uutounit(str(totalLength), "mm"), self.svg.uutounit(str(totalLength), "mm")))
+            inkex.utils.debug("travel speed={:06.2f}mm/s".format(v_travel))
             ''' from https://www.epiloglaser.com/assets/downloads/fusion-material-settings.pdf
             "Speed Settings: The speed setting scale of 1% to 100% is not linear – 
             i.e. 100% speed will not be twice as fast as 50% speed. This non-linear 
             scale is very useful in compensating for the different factors that affect engraving time."
             '''
-            for speedFactor in [100,90,80,70,60,50,40,30,20,10,9,8,7,6,5,4,3,2,1]:
+            speedFactors = []
+            try:
+                for speed in re.findall(r"[+]?\d*\.\d+|\d+", self.options.cutting_speedfactors): #allow only positive values
+                    if float(speed) > 0:
+                        speedFactors.append(float(speed))
+                speedFactors = sorted(speedFactors)[::-1]
+            except:
+                inkex.utils.debug("Error parsing cutting estimation speeds. Please try again!")
+                exit(1)            
+            for speedFactor in speedFactors:
                 speedFactorR = speedFactor / 100.0
                 adjusted_speed =  480.0 / so.max_cutting_speed #empiric - found out by trying for hours ...
                 empiric_scale = 1 + (speedFactorR**2) / 15.25 #empiric - found out by trying for hours ...
                 v_cut    = so.max_cutting_speed * speedFactorR
-                v_travel = so.max_travel_speed #this is always at maximum
                 tsec_cut    = (self.svg.uutounit(str(totalCuttingLength)) / (adjusted_speed * so.max_cutting_speed * speedFactorR)) * empiric_scale
                 tsec_travel = self.svg.uutounit(str(totalTravelLength))  / v_travel
                 tsec_total = so.job_time_offset + tsec_cut + tsec_travel
@@ -749,7 +763,7 @@ class LaserCheck(inkex.EffectExtension):
                 if "{:02.0f}".format(seconds) == "60": #for formatting reasons
                     seconds = 0
                     minutes += 1         
-                inkex.utils.debug("@{:03.0f}% (cut={:06.2f}mm/s | travel={:06.2f}mm/s) > {:03.0f}min {:02.0f}sec | cost={:02.0f}€".format(speedFactor, v_cut, v_travel, minutes, seconds, costs))
+                inkex.utils.debug("@{:05.1f}% (cut={:06.2f}mm/s > {:03.0f}min {:02.0f}sec | cost={:02.0f}€".format(speedFactor, v_cut, minutes, seconds, costs))
 
         
         ''' Measurements from Epilog Software Suite
