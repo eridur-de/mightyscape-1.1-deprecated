@@ -98,6 +98,7 @@ class SlicerSTLInput(inkex.EffectExtension):
         pars.add_argument("--use_stroke_color", type=inkex.Boolean, default=True, help="Use stroke color")
         pars.add_argument('--stroke_color', type=Color, default='879076607', help="Stroke color")
         
+        pars.add_argument("--stroke_units", default="mm", help="Stroke width units")
         pars.add_argument("--min_stroke_width", type=float, default=1.0, help="Min stroke width")
         pars.add_argument("--max_stroke_width", type=float, default=1.0, help="Max stroke width")
         pars.add_argument("--diffuse_stroke_width",  default="regular", help="Diffuse stroke width per layer")
@@ -255,8 +256,10 @@ class SlicerSTLInput(inkex.EffectExtension):
             elif args.diffuse_stroke_width == "no_diffuse":
                 stroke_width = args.max_stroke_width
             else:
-                inkex.utils.debug("Error: unkown diffuse fill opacity option")
+                inkex.utils.debug("Error: unkown diffuse stroke width option")
                 exit(1)
+            if self.options.stroke_units != "hairline":
+                stroke_width = self.svg.unittouu(str(stroke_width) + self.options.stroke_units)
           
             if args.diffuse_stroke_opacity == "front_to_back":
                 stroke_opacity =  (args.max_stroke_opacity - (polygoncount / totalPolygoncount) * (args.max_stroke_opacity - args.min_stroke_opacity)) + args.min_stroke_opacity
@@ -265,7 +268,7 @@ class SlicerSTLInput(inkex.EffectExtension):
             elif args.diffuse_stroke_opacity == "no_diffuse":
                 stroke_opacity = args.max_stroke_opacity
             else:
-                inkex.utils.debug("Error: unkown diffuse fill opacity option")
+                inkex.utils.debug("Error: unkown diffuse stroke opacity option")
                 exit(1)
                 
             if args.use_stroke_color is False:
@@ -278,6 +281,8 @@ class SlicerSTLInput(inkex.EffectExtension):
             e.attrib['id'] = 'polygon%d' % polygoncount
             e.attrib['{http://www.inkscape.org/namespaces/inkscape}connector-curvature'] = '0'
             e.attrib['style'] = 'fill:{};fill-opacity:{};{};stroke-opacity:{};stroke-width:{}'.format(fill, fill_opacity, stroke, stroke_opacity, stroke_width)
+            if self.options.stroke_units == "hairline":
+                e.attrib['style'] = e.attrib.get('style') + ";vector-effect:non-scaling-stroke;-inkscape-stroke:hairline;"
             e.attrib['d'] = 'M ' + re.sub(' ', ' L ', scale_points(e.attrib['points'], 1/scale)) + ' Z'
 
             if args.mirrorx is True:
