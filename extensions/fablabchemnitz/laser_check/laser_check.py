@@ -422,12 +422,14 @@ class LaserCheck(inkex.EffectExtension):
                 inkex.utils.debug("{} different stroke widths in total".format(len(strokeWidths)))
             if len(strokeWidths) > so.stroke_widths_max:
                 for strokeWidth in strokeWidths:
-                    swConverted = self.svg.uutounit(float(self.svg.unittouu(strokeWidth))) #possibly w/o units. we unify to some internal float. The value "none" converts to 0.0
-                    inkex.utils.debug("stroke width {}px ({}mm)".format(
-                        round(self.svg.uutounit(swConverted, "px"),4),
-                        round(self.svg.uutounit(swConverted, "mm"),4),
-                        )
-                    )
+                    if strokeWidth != "none":
+                        swConverted = self.svg.uutounit(float(self.svg.unittouu(strokeWidth))) #possibly w/o units. we unify to some internal float. The value "none" converts to 0.0
+                        inkex.utils.debug("stroke width {}px ({}mm)".format(
+                            round(self.svg.uutounit(swConverted, "px"),4),
+                            round(self.svg.uutounit(swConverted, "mm"),4),
+                            ))
+                    else:
+                        inkex.utils.debug("stroke width none")
                 
                 
         '''
@@ -501,8 +503,8 @@ class LaserCheck(inkex.EffectExtension):
                         strokeOpacityVis = 1
                     stroke_opacity = element.style.get('stroke-opacity')
                     if stroke_opacity is not None:
-                        if stroke_opacity == "none":
-                            strokeOpacityVis = 0
+                        if stroke_opacity == "none": #none means visible!
+                            strokeOpacityVis = 1
                         elif stroke_opacity is not None and self.svg.unittouu(stroke_opacity) < 0.05: #nearly invisible (<5% opacity)
                             strokeOpacityVis = 0
                         else:
@@ -522,7 +524,7 @@ class LaserCheck(inkex.EffectExtension):
                         fillVis = 1
                     fill = element.style.get('fill')
                     if fill is not None:
-                        if fill == "none":
+                        if fill == "none": #none means invisible! (opposite of stroke behaviour)
                             fillVis = 0
                         elif fill in invisColors:
                             fillVis = 0
@@ -586,8 +588,6 @@ class LaserCheck(inkex.EffectExtension):
                             if len(slopes) < 2:
                                 pathVis = 0
                               
-                    flags = "id={}, strokeVis={}, widthVis={}, strokeOpacityVis={} | fillVis={}, fillOpacityVis={} | displayVis={}, displayAttrVis = {} | pathVis = {}"\
-                    .format(element.get('id'), strokeVis, widthVis, strokeOpacityVis, fillVis, fillOpacityVis, displayVis, displayAttrVis, pathVis)
                     if element.style is not None: #f if the style attribute is not set at all, the element will be visible with default black color fill and w/o stroke
                         if (strokeVis == 0 or widthVis == 0 or strokeOpacityVis == 0):
                             strokeInvis = True
@@ -596,7 +596,9 @@ class LaserCheck(inkex.EffectExtension):
                         if (fillVis == 0 or fillOpacityVis == 0):
                             fillInvis = True
                         else:
-                            fillInvis = False    
+                            fillInvis = False
+                        flags = "id={},strokeVis={},widthVis={},strokeOpacityVis={}=>strokeInvisble:{}|fillVis={},fillOpacityVis={}=>fillInvisble:{}|displayVis={},displayAttrVis=, {}|pathVis={}"\
+                        .format(element.get('id'), strokeVis, widthVis, strokeOpacityVis, strokeInvis, fillVis, fillOpacityVis, fillInvis, displayVis, displayAttrVis, pathVis)
                         if strokeInvis is True and fillInvis is True:
                             if element not in invisibles:
                                 invisibles.append(flags)
