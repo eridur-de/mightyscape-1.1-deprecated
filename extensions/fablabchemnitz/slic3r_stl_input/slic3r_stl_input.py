@@ -168,7 +168,7 @@ class SlicerSTLInput(inkex.EffectExtension):
             '--no-gui', 
             '--scale', str(scale), 
             '--rotate-x', str(args.rx),
-            '--rotate-y', str(args.ry), 
+            '--rotate-y', str(180+args.ry), #we import the style like PrusaSlicer would import on the plate
             '--rotate', str(args.rz), 
             '--first-layer-height', '0.1mm', 
             '--export-svg', '-o', svgfile, args.inputfile]
@@ -338,11 +338,15 @@ class SlicerSTLInput(inkex.EffectExtension):
         #inkex.utils.debug("{0}: {1} polygons in {2} layers converted to paths.".format(svgfile, polygoncount, layercount))
 
         if self.options.layer_number != 0:
-            for element in doc.xpath("//svg:g", namespaces=inkex.NSS):
+            groups = doc.xpath("//svg:g", namespaces=inkex.NSS)
+            for element in groups:
             #for element in doc.getroot().iter("{http://www.w3.org/2000/svg}g"):
-                if element.get('id').split('stl-layer')[1] != str(self.options.layer_number):
-                    element.getparent().remove(element) #element.delete() does not work. why?
-
+                if self.options.layer_number > 0:
+                    if element.get('id').split('stl-layer')[1] != str(self.options.layer_number):
+                        element.getparent().remove(element) #element.delete() does not work. why?
+                else:
+                    if element.get('id').split('stl-layer')[1] != str(len(groups) + self.options.layer_number):
+                        element.getparent().remove(element) #element.delete() does not work. why?
         if layercount == 0:
             inkex.utils.debug("No layers imported. Try to lower your layer height")
             exit(1)
