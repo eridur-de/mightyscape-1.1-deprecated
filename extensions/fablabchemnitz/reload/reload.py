@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 import inkex
 from lxml import etree
 
@@ -22,10 +23,16 @@ class Reload(inkex.EffectExtension):
         originalDefs = originalRoot.find("{http://www.w3.org/2000/svg}defs")
         originalRoot.clear() #drop all children and attributes from root
 
-        stream = open(self.document_path(), 'r')
-        p = etree.XMLParser(huge_tree=True)
-        doc = etree.parse(stream, parser=etree.XMLParser(huge_tree=True))
-        stream.close()
+        if not os.path.exists(currentDoc):
+            self.msg("The input file does not exist (anymore). Please check and try again.")
+            exit(1)
+
+        with open(currentDoc, 'r') as stream:
+            try:
+                doc = etree.parse(stream, parser=etree.XMLParser(huge_tree=True))
+            except Exception as e:
+                inkex.utils.debug("Malformed file: {}".format(e))
+                exit(1)
       
         copyRoot = doc.getroot()
         copyNamedview = copyRoot.find(inkex.addNS('namedview', 'sodipodi'))
