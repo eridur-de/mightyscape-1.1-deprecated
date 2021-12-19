@@ -37,6 +37,7 @@ class OffsetPaths(inkex.EffectExtension):
         pars.add_argument("--clipperscale", type=int, default=1024, help="Scaling factor. Should be a multiplicator of 2, like 2^4=16 or 2^10=1024. The higher the scale factor the higher the quality.")
         pars.add_argument("--copy_org", type=inkex.Boolean, default=True, help="copy original path")
         pars.add_argument("--individual", type=inkex.Boolean, default=True, help="Separate into individual paths")
+        pars.add_argument("--group", type=inkex.Boolean, default=True, help="Put all offset paths into group")
         pars.add_argument("--path_types", default="both", help="Process open, closed or all paths!")
         
         
@@ -125,8 +126,8 @@ class OffsetPaths(inkex.EffectExtension):
                         newPaths.append(sol_p)
 
             if self.options.individual is True:
-                parentGroup = pathElement.getparent().add(inkex.Group(id="g-offset-{}".format(pathElement.attrib["id"])))
                 parent = pathElement.getparent()
+                if self.options.group is True: parentGroup = parent.add(inkex.Group(id="g-offset-{}".format(pathElement.attrib["id"])))
                 idx = parent.index(pathElement) + 1
                 idSuffix = 0
                 for newPath in newPaths:
@@ -134,9 +135,12 @@ class OffsetPaths(inkex.EffectExtension):
                     elementId = copyElement.get('id')
                     copyElement.path = CubicSuperPath(newPath)
                     copyElement.set('id', elementId + str(idSuffix))
-                    parentGroup.append(copyElement)
+                    if self.options.group is True:
+                        parentGroup.append(copyElement)
+                    else:
+                        parent.append(copyElement)
                     idSuffix += 1
-                parent.insert(idx, parentGroup)
+                if self.options.group is True: parent.insert(idx, parentGroup)
                 if self.options.copy_org is False:
                     pathElement.delete()
             else:

@@ -32,6 +32,7 @@
 		</param>
 		<param name="copy_org" type="bool" gui-text="Keep original path" gui-description="If enabled, keeps original path as a copy">false</param>
         <param name="individual" type="bool" gui-text="Separate into individual paths" gui-description="If enabled, each offset curve will be an individual svg element">false</param>
+        <param name="group" type="bool" gui-text="Put all offset paths into group">true</param>
         <param name="path_types" type="optiongroup" appearance="combo" gui-text="Path types to apply" gui-description="Process open, closed or all paths!">
             <option value="both">all paths</option>
             <option value="open_paths">open paths</option>
