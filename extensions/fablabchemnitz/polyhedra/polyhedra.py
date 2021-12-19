@@ -34,32 +34,13 @@ def points_to_svgd(p):
         svgd += 'L%.3f,%.3f' % x
     return svgd
 
-# these are designed to be 100px wide - they have to be scaled
-no_tab = { 'cut' : ['m 0,0 100,0'], 'perf' : []}
-
-notab = {0 : no_tab}
-simpletab = {0: {'cut': ['m 0,0 20,19 60,0 l 20,-19'], 'perf' : ['m 0,0 100,0']}}
-# tab array - 0 = slot/tab, 1 = two tabs, 2 = single tab (alternate tab and nothing), 3 = none
-tabStyle = [{ \
-    50 : {'cut': ['m 0,0 35,0 0,2 -6,0 c 0,0 1,8 6,12 8,6 22,6 30,0 5,-4 6,-12 6,-12 l -6,0 0,-2 35,0'], 'perf' : ['M 42,0 58,0']}, \
-    24 : {'cut': ['m 0,0 55,0 0,2 -6,0 c 0,0 1,3 6,6 8,3 19,6 27,8 5,-4 9,-14 9,-14 l -6,0 0,-2 15,0'], 'perf' : ['M 62,0 78,0']}, \
-    18 : {'cut' : ['m 0,0 65,0 0,2 -6,0 c 0,0 1,3 6,6 8,2 11,2 19,3 5,-4 9,-10 7,-9 l -6,0 0,-2 15,0'], 'perf' : ['m 72,0 6,0']}, \
-    6 : {'cut': ['m 0,0 70,0 2,7 10,1 5,-6 -2,0 0,-2 15,0'], 'perf' : ['m 74,0 7,0']}, 
-    0 : { 'cut' : ['m 0,0 100,0'], 'perf' : []}}, simpletab, simpletab, notab]
-slotStyle = [{\
-    50: {'cut': ['m 0,0 20,19 60,0 l 20,-19','m 28,-3 4,5 36,0 4,-5'], 'perf' : ['M 0,0 28,0','M 100,0 72,0']}, \
-    24 : {'cut': ['M 100,0 90,18 30,11 20,0 0,0', 'm 92,-3 -4,5 -36,0 -4,-5'], 'perf' : ['M 100,0 92,0', 'M 20,0 48,0']}, \
-    18 : {'cut' : ['M 100,0 90,16 40,9 35,0 0,0', 'm 92,-3 -4,5 -26,0 -4,-5'], 'perf' : ['M 100,0 92,0', 'M 35,0 58,0']}, \
-    6 : {'cut' : ['M 100,0 98,10 88,9 84,2 86,2 86,0 0,0'], 'perf' : ['m 96,0 -6,0']},
-    0 : { 'cut' : ['m 0,0 100,0'], 'perf' : [] }}, simpletab, notab, notab]
-
-
 class Polyhedra(inkex.EffectExtension):
     
     def add_arguments(self, pars):
-        pars.add_argument("-p", "--poly", default='Cube', help="Polygon net to render")
+        pars.add_argument("-p", "--poly", default="Cube", help="Polygon net to render")
         pars.add_argument("-s", "--size", type=float, default=100.0, help="Size of first edge")
-        pars.add_argument("-u", "--unit", default= 'mm', help="Units")
+        pars.add_argument("-u", "--unit", default="mm", help="Units")
+        pars.add_argument("-m", "--material_thickness", type=float, default=1.0, help="Material thickness")
         pars.add_argument("-t", "--tabs", type=int, default=0, help="Tab style")
 
     def get_tab(self, limitAngle):
@@ -67,6 +48,28 @@ class Polyhedra(inkex.EffectExtension):
 
     def get_slot(self, limitAngle):
         return(self.get_connector('slot', limitAngle))
+
+    def get_slot_tab_style(self):
+        # these are designed to be 100px wide - they have to be scaled
+        no_tab = { 'cut' : ['m 0,0 100,0'], 'perf' : []}
+        
+        notab = {0 : no_tab}
+        simpletab = {0: {'cut': ['m 0,0 20,19 60,0 l 20,-19'], 'perf' : ['m 0,0 100,0']}}
+        # tab array - 0 = slot/tab, 1 = two tabs, 2 = single tab (alternate tab and nothing), 3 = none
+        mt = self.options.material_thickness
+        tabStyle = [{ \
+            50 : {'cut': ['m 0,0 35,0 0,{} -6,0 c 0,0 1,8 6,12 8,6 22,6 30,0 5,-4 6,-12 6,-12 l -6,0 0,{} 35,0'.format(mt,-mt)], 'perf' : ['M 42,0 58,0']}, \
+            24 : {'cut': ['m 0,0 55,0 0,{} -6,0 c 0,0 1,3 6,6  8,3 19,6 27,8 5,-4 9,-14 9,-14 l -6,0 0,{} 15,0'.format(mt,-mt)], 'perf' : ['M 62,0 78,0']}, \
+            18 : {'cut': ['m 0,0 65,0 0,{} -6,0 c 0,0 1,3 6,6  8,2 11,2 19,3 5,-4 9,-10 7,-9  l -6,0 0,{} 15,0'.format(mt,-mt)], 'perf' : ['m 72,0 6,0']}, \
+            6  : {'cut': ['m 0,0 70,0 {},7 10,1 5,-6 -2,0 0,{} 15,0'.format(mt,-mt)], 'perf' : ['m 74,0 7,0']}, 
+            0  : {'cut': ['m 0,0 100,0'], 'perf' : []}}, simpletab, simpletab, notab]
+        slotStyle = [{\
+            50 : {'cut': ['m 0,0 20,19 60,0 l 20,-19', 'm 28,{} 4,{} 36,0 4,{}'.format(-mt, mt, -(mt))], 'perf' : ['M 0,0 28,0','M 100,0 72,0']}, \
+            24 : {'cut': ['M 100,0 90,18 30,11 20,0 0,0', 'm 92,{} -4,{} -36,0 -4,{}'.format(-mt, mt, -(mt))], 'perf' : ['M 100,0 92,0', 'M 20,0 48,0']}, \
+            18 : {'cut': ['M 100,0 90,16 40,9 35,0 0,0', 'm 92,{} -4,{} -26,0 -4,{}'.format(-mt, mt, -(mt))], 'perf' : ['M 100,0 92,0', 'M 35,0 58,0']}, \
+            6  : {'cut': ['M 100,0 98,10 88,9 84,2 86,2 86,0 0,0'], 'perf' : ['m 96,0 -6,0']},
+            0  : {'cut': ['m 0,0 100,0'], 'perf' : [] }}, simpletab, notab, notab]
+        return [tabStyle, slotStyle]
 
     def get_connector(self, type, limitAngle):
         if(self.options.tabs == 1):    # two tabs
@@ -84,9 +87,9 @@ class Polyhedra(inkex.EffectExtension):
         # otherwise, get stuff from the array of specially modified tab/slots 
 
         if(type == 'tab'):
-            source = tabStyle
+            source = self.get_slot_tab_style()[0]
         else:
-            source = slotStyle
+            source = self.get_slot_tab_style()[1]
 
         cuttable = source[self.options.tabs].keys()
         sorted(cuttable)            # sorts in-place.  Ugh.
@@ -132,6 +135,7 @@ class Polyhedra(inkex.EffectExtension):
         return({'cut' : [points_to_svgd(tab_cut)], 'perf' : [points_to_svgd(tab_perf)]})
     
     def effect(self):
+                
         poly = self.options.poly
         size = self.svg.unittouu(str(self.options.size) + self.options.unit)
 
@@ -151,8 +155,8 @@ class Polyhedra(inkex.EffectExtension):
         gsub = etree.SubElement(g, 'g', gsub_attribs)
 
         # Create SVG Path
-        cutStyle = { 'stroke': '#0000FF', 'stroke-width': '1px', 'fill': 'none' }
-        perfStyle = { 'stroke': '#FF0000', 'stroke-width': '1px', 'fill': 'none' }
+        cutStyle = { 'stroke': '#0000FF', 'stroke-width': self.svg.unittouu("1px"), 'fill': 'none' }
+        perfStyle = { 'stroke': '#FF0000', 'stroke-width': self.svg.unittouu("1px"), 'fill': 'none' }
         textStyle = {
               'font-size': str( size/4 ),
               'font-family': 'arial',

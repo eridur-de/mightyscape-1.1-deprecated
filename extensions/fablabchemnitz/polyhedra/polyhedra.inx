@@ -52,6 +52,8 @@
         <option value="2">Single Tabs</option>
         <option value="3">None</option>
     </param>
+    <param name="material_thickness" type="float" min="0.01" max="1000.0" gui-text="material thickness">1.0</param>
+    <label>Hint: Stroke widths within the generated output may differ. Please adjust manually (reason: scale transforms)</label>
     <effect>
         <object-type>all</object-type>
         <effects-menu>
