@@ -260,7 +260,7 @@ class LaserCheck(inkex.EffectExtension):
                         layers.append(element)
                     else:
                         groups.append(element)
-                    if element.style is not None:
+                    if element.style is not None and element.style != "": #style may also be just empty (weird, but was validated on 21.12.2021)
                         styles.append(element)
             if so.show_issues_only is False:  
                 inkex.utils.debug("{} groups in total".format(len(groups)))
