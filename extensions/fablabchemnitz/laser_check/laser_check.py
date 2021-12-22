@@ -391,14 +391,14 @@ class LaserCheck(inkex.EffectExtension):
         
         '''
         The more stroke colors the more laser job configuration is required. Reduce the SVG file
-        to a minimum of stroke colors to be quicker
+        to a minimum of stroke colors to be quicker. Note that a None stroke might be same like #000000 but thats not guaranteed
         '''
         if so.checks == "check_all" or so.stroke_colors is True:
             inkex.utils.debug("\n---------- Stroke colors ({} are allowed)".format(so.stroke_colors_max))
             strokeColors = []
             for element in shapes:
                 strokeColor = element.style.get('stroke')
-                if  strokeColor is not None and strokeColor not in strokeColors:
+                if  strokeColor not in strokeColors: #we also add None (default value is #000000 then) and "none" values. 
                     strokeColors.append(strokeColor)
             if so.show_issues_only is False:
                 inkex.utils.debug("{} different stroke colors in total".format(len(strokeColors)))
@@ -416,20 +416,22 @@ class LaserCheck(inkex.EffectExtension):
             strokeWidths = []
             for element in shapes:  
                 strokeWidth = element.style.get('stroke-width')
-                if strokeWidth is not None and strokeWidth not in strokeWidths:
+                if strokeWidth not in strokeWidths: #we also add None and "none" values. Default width for None value seems to be 1px
                     strokeWidths.append(strokeWidth)
             if so.show_issues_only is False:
                 inkex.utils.debug("{} different stroke widths in total".format(len(strokeWidths)))
             if len(strokeWidths) > so.stroke_widths_max:
                 for strokeWidth in strokeWidths:
-                    if strokeWidth != "none":
+                    if strokeWidth is None:
+                        inkex.utils.debug("stroke width default (system standard value)")
+                    elif strokeWidth == "none":
+                        inkex.utils.debug("stroke width none (invisible)")
+                    else:
                         swConverted = self.svg.uutounit(float(self.svg.unittouu(strokeWidth))) #possibly w/o units. we unify to some internal float. The value "none" converts to 0.0
                         inkex.utils.debug("stroke width {}px ({}mm)".format(
                             round(self.svg.uutounit(swConverted, "px"),4),
                             round(self.svg.uutounit(swConverted, "mm"),4),
                             ))
-                    else:
-                        inkex.utils.debug("stroke width none")
                 
                 
         '''
