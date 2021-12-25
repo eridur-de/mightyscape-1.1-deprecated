@@ -18,7 +18,6 @@
 
 import os
 import re
-from distutils.spawn import find_executable
 import subprocess
 import math
 import inkex
@@ -173,10 +172,10 @@ class JPEGExport(inkex.EffectExtension):
         if os.name == 'nt':
 	        outfile = outfile.replace("\\","\\\\")
         # set the ImageMagick command to run based on what's installed
-        if find_executable('magick'):
+        if shutil.which('magick'):
             command = "magick \"%sjpinkexp.png\" -sampling-factor 4:4:4 -strip -interlace JPEG -colorspace RGB -quality %s -density %s \"%s\" " % (tmp, self.options.quality, self.options.density, outfile)
             # inkex.utils.debug(command)
-        elif find_executable('convert'):
+        elif shutil.which('convert'):
             command = "convert \"%sjpinkexp.png\" -sampling-factor 4:4:4 -strip -interlace JPEG -colorspace RGB -quality %s -density %s \"%s\" " % (tmp, self.options.quality, self.options.density, outfile)
             # inkex.utils.debug(command)
         else:
