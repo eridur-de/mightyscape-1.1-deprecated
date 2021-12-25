@@ -4,11 +4,11 @@ import sys
 import os
 import argparse
 import inkex
+import shutil
 from inkex import Rectangle
 from PIL import Image
 import base64
 from io import BytesIO, StringIO
-from distutils.spawn import find_executable
 import subprocess
 from lxml import etree
 
@@ -23,9 +23,9 @@ class WebpImport(inkex.InputExtension):
         else:
             tmp = '/tmp/'
         convertfile = os.path.join(tmp, "webp.png")
-        if find_executable('magick'):
+        if shutil.which('magick'):
             command = "magick \"%s\" \"%s\" " % (self.options.inputfile, convertfile)
-        elif find_executable('convert'):
+        elif shutil.which('convert'):
             command = "convert \"%s\" \"%s\" " % (self.options.inputfile, convertfile)
         else:
             inkex.errormsg('ImageMagick does not appear to be installed.')
