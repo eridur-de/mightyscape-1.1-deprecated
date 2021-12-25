@@ -1413,6 +1413,7 @@ module chamfer_sphere(rad=chamfer, res=chamfer_fn)
                 try:
                     with subprocess.Popen(cmd, shell=True, stdin=tty, stdout=tty, stderr=tty) as proc:
                         proc.wait()
+                        tty.close()
                 except OSError as e:
                     raise OSError("%s failed: errno=%d %s" % (cmd, e.errno, e.strerror))
                 try:
