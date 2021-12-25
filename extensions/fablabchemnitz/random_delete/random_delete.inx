@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">
+    <name>Random Delete</name>
+    <id>fablabchemnitz.de.random_delete</id>
+    <param name="prob" type="float" gui-text="Probability of deletion (%):" min="0.0" max="100.0">100.0</param>
+    <param name="title" type="description">This extension allows to delete with a certain probability each of the selected objects.</param>
+    <effect>
+        <object-type>all</object-type>
+        <effects-menu>
+            <submenu name="Render" />
+        </effects-menu>
+    </effect>
+    <script>
+        <command location="inx" interpreter="python">random_delete.py</command>
+    </script>
+</inkscape-extension>
