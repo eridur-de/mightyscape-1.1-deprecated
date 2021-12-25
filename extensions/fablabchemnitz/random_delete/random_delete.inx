@@ -3,11 +3,13 @@
     <name>Random Delete</name>
     <id>fablabchemnitz.de.random_delete</id>
     <param name="prob" type="float" gui-text="Probability of deletion (%):" min="0.0" max="100.0">100.0</param>
-    <param name="title" type="description">This extension allows to delete with a certain probability each of the selected objects.</param>
+    <label>This extension allows to delete with a certain probability each of the selected objects.</label>
     <effect>
         <object-type>all</object-type>
         <effects-menu>
-            <submenu name="Render" />
+            <submenu name="FabLab Chemnitz">
+                <submenu name="Various"/>
+            </submenu>
         </effects-menu>
     </effect>
     <script>
