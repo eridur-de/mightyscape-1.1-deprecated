@@ -25,6 +25,7 @@ import os
 import sys
 import inkex
 import importlib
+import shutil
 import subprocess
 from lxml import etree
 from inkcut import convert_objects_to_paths
@@ -49,6 +50,10 @@ class InkscapeInkcutPlugin(inkex.Effect):
             cmd = [python, inkcut]
         else:
             cmd = ['inkcut']
+
+        if shutil.which('inkcut') is None:
+            inkex.errormsg("Error: inkcut executable not found!")
+            return
 
         document = convert_objects_to_paths(self.options.input_file, self.document)
 

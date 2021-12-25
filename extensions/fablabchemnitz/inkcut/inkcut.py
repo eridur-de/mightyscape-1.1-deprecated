@@ -25,7 +25,6 @@ import inkex
 from lxml import etree
 from subprocess import Popen, PIPE
 from shutil import copy2
-from distutils.spawn import find_executable
 
 def contains_text(nodes):
     for node in nodes:
@@ -42,7 +41,7 @@ def convert_objects_to_paths(file, document):
 
     command = "inkscape " + tempfile + ' --actions="EditSelectAllInAllLayers;EditUnlinkClone;ObjectToPath;FileSave;FileQuit"'
 
-    if find_executable('xvfb-run'):
+    if shutil.which('xvfb-run'):
         command = 'xvfb-run -a ' + command
 
     p = Popen(command, shell=True, stdout=PIPE, stderr=PIPE)

@@ -24,6 +24,7 @@ import os
 import sys
 
 import inkex
+import shutil
 from lxml import etree
 import subprocess
 from inkcut import contains_text, convert_objects_to_paths
@@ -58,6 +59,10 @@ class InkscapeInkcutPlugin(inkex.Effect):
             cmd = [python, inkcut]
         else:
             cmd = ['inkcut']
+            
+        if shutil.which('inkcut') is None:
+            inkex.errormsg("Error: inkcut executable not found!")
+            return
 
         cmd += ['open', '-',
                '--nodes']+[str(k) for k in nodes.keys()]
