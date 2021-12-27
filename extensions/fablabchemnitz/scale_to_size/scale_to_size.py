@@ -17,6 +17,7 @@ class ScaleToSize(inkex.EffectExtension):
     
     def add_arguments(self, pars):
         pars.add_argument('--unit')
+        pars.add_argument("--keep_aspect", type=inkex.Boolean, default=True, help="Does not apply for uniform scaling")
         pars.add_argument("--expected_size", type=float, default=1.0, help="The expected size of the object")
         pars.add_argument("--scale_type", default="Horizontal", help="Scale type (Uniform, Horizontal, Vertical)")
         pars.add_argument("--description")
@@ -37,11 +38,16 @@ class ScaleToSize(inkex.EffectExtension):
                 bbox = element.bounding_box()
                 new_horiz_scale = self.options.expected_size * unit_factor / bbox.width
                 new_vert_scale = self.options.expected_size * unit_factor / bbox.height
-			
             if self.options.scale_type == "Horizontal":
-                translation_matrix = [[new_horiz_scale, 0.0, 0.0], [0.0, 1.0, 0.0]]
+                if self.options.keep_aspect is False:
+                    translation_matrix = [[new_horiz_scale, 0.0, 0.0], [0.0, 1.0, 0.0]]
+                else:
+                    translation_matrix = [[new_horiz_scale, 0.0, 0.0], [0.0, new_horiz_scale, 0.0]]
             elif self.options.scale_type == "Vertical":
-                translation_matrix = [[1.0, 0.0, 0.0], [0.0, new_vert_scale, 0.0]]
+                if self.options.keep_aspect is False:
+                    translation_matrix = [[1.0, 0.0, 0.0], [0.0, new_vert_scale, 0.0]]
+                else:
+                    translation_matrix = [[new_vert_scale, 0.0, 0.0], [0.0, new_vert_scale, 0.0]]
             else: #Uniform
                 translation_matrix = [[new_horiz_scale, 0.0, 0.0], [0.0, new_vert_scale, 0.0]]			
             element.transform = Transform(translation_matrix) * element.composed_transform()
