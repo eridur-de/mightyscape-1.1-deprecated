@@ -25,7 +25,8 @@ ToDos:
 """
 import copy
 import inkex
-from inkex import Color, bezier, Path, CubicSuperPath
+from inkex import Color, bezier, Path, CubicSuperPath, TextElement, Tspan
+from inkex.bezier import csplength
 from lxml import etree
 import math
 import random
@@ -45,9 +46,11 @@ class UnwindPaths(inkex.EffectExtension):
         pars.add_argument('--colorize', type=inkex.Boolean, default=False, help="Colorize original paths and glue pairs")
         pars.add_argument('--color_increment', type=int, default=10000, help="For each segment we count up n colors. Does not apply if 'Randomize colors' is enabled.")
         pars.add_argument('--randomize_colors', type=inkex.Boolean, default=False, help="Randomize colors")
+        pars.add_argument('--number', type=inkex.Boolean, default=False, help="Number segments")
+        pars.add_argument('--unit', default="mm")
+        pars.add_argument('--thickness_offset', type=float, default=0.000, help="Allows to add/subtract extra offset length for each curve segment.")
         pars.add_argument('--extrude', type=inkex.Boolean, default=False)
         pars.add_argument('--extrude_height', type=float, default=10.000)
-        pars.add_argument('--unit', default="mm")
         pars.add_argument('--render_vertical_dividers', type=inkex.Boolean, default=False)
         pars.add_argument('--render_with_dashes', type=inkex.Boolean, default=False)
         
@@ -97,6 +100,7 @@ class UnwindPaths(inkex.EffectExtension):
 
     def effect(self):
         shifting = self.svg.unittouu(str(self.options.extrude_height) + self.options.unit)
+        to = self.svg.unittouu(str(self.options.thickness_offset) + self.options.unit)
 
         #some mode handling
         if self.options.colorize is True:
@@ -133,6 +137,9 @@ class UnwindPaths(inkex.EffectExtension):
                             for i in range(subCount):
                                 colorSet.append(Color(self.rgb(0, i+self.options.color_increment, 1*i)))        
                     
+                    slengths, stotal = csplength(csp) #get segment lengths and total length of path in document's internal unit
+                    #self.msg(stotal) #total length of the path
+                    
                     for sub in csp:
                         #generate new horizontal line data by measuring each segment
                         new = []
@@ -154,27 +161,51 @@ class UnwindPaths(inkex.EffectExtension):
                         if self.options.extrude is True:
                             vlinesGroup = self.svg.get_current_layer().add(inkex.Group(id="vlines-" + element.get('id')))
                             elemGroup.append(vlinesGroup)
-                        
-                        
+                                               
                         if self.options.break_only is False:
                             while i <= len(sub) - 1:
                                 stroke_color = '#000000'
                                 if self.options.colorize is True and self.options.break_apart is True:
                                     stroke_color =colorSet[i-1]
         
-                                horizontal_line_style = {'stroke':stroke_color,'stroke-width':'1px','fill':'none'}
+                                horizontal_line_style = {'stroke':stroke_color,'stroke-width':self.svg.unittouu('1px'),'fill':'none'}
         
-                                length = bezier.cspseglength(new[-1][-1], sub[i]) #sub path length
+                                length = bezier.cspseglength(new[-1][-1], sub[i]) + to #sub path length
+                                #if length <= 0:
+                                #   inkex.utils.debug("Warning: path id={}, segment={} might overlap with previous and/or next segment. Maybe check for negative thickness offset.".format(element.get('id'), i))
                                 segment = "h {:0.6f} ".format(length)
                                 topPathData += segment
                                 bottomPathData += segment
                                 new[-1].append(sub[i]) #important line!
+                                          
+                                mid_coord_x = xmin + sum([length for length in lengths]) + length/2
+                                font_size = 5
+                                font_y_offset = font_size + 1
+                                
+                                if self.options.number is True:
+                                    text = topLineGroup.add(TextElement(id=element.get('id') + "_TextNr{}".format(i)))
+                                    text.set("x", "{:0.6f}".format(mid_coord_x))
+                                    text.set("y", "{:0.6f}".format(ymax - font_y_offset))
+                                    text.set("font-size", "{:0.6f}".format(font_size))
+                                    text.set("style", "text-anchor:middle;text-align:center;fill:{}".format(stroke_color))
+                              
+                                    tspan = text.add(Tspan(id=element.get('id') + "_TSpanNr{}".format(i)))
+                                    tspan.set("x", "{:0.6f}".format(mid_coord_x))
+                                    if length <= 0:
+                                        tspan.set("y", "{:0.6f}".format(ymax - font_y_offset - i))
+                                    else:
+                                        tspan.set("y", "{:0.6f}".format(ymax - font_y_offset))        
+                                    tspan.text = str(i)
+                                
                                 if self.options.break_apart is True:
-                                    self.drawline("m {:0.6f},{:0.0f} ".format(xmin + sum([length for length in lengths]), ymax) + segment, 
+                                    self.drawline("m {:0.6f},{:0.6f} ".format(xmin + sum([length for length in lengths]), ymax) + segment, 
                                                   "segmented-top-{}-{}".format(element.get('id'), i), topLineGroup, horizontal_line_style)
+                                    if length <= 0:
+                                        self.drawline("m {:0.6f},{:0.6f} ".format(mid_coord_x, ymax) + "v {} ".format(-5-i), 
+                                                      "segmented-top-overlap-{}-{}".format(element.get('id'), i), topLineGroup, horizontal_line_style)        
                                     if self.options.extrude is True:
-                                        self.drawline("m {:0.6f},{:0.0f} ".format(xmin + sum([length for length in lengths]), ymax + shifting) + segment, 
-                                                      "segmented-bottom-{}-{}".format(element.get('id'), i), bottomLineGroup, horizontal_line_style)
+                                        self.drawline("m {:0.6f},{:0.6f} ".format(xmin + sum([length for length in lengths]), ymax + shifting) + segment, 
+                                                      "segmented-bottom-{}-{}".format(element.get('id'), i), bottomLineGroup, horizontal_line_style) 
                                 lengths.append(length) 
                                 i += 1
                          
@@ -184,15 +215,15 @@ class UnwindPaths(inkex.EffectExtension):
                                     self.drawline(bottomPathData, "combined-bottom-{0}".format(element.get('id')), elemGroup, horizontal_line_style)
         
                             #draw as much vertical lines as segments in bezier + start + end vertical line
-                            vertical_end_lines_style = {'stroke':'#000000','stroke-width':'1px','fill':'none'}
+                            vertical_end_lines_style = {'stroke':'#000000','stroke-width':self.svg.unittouu('1px'),'fill':'none'}
                             if self.options.extrude is True:
                                 #render start line
                                 self.drawline("m {:0.6f},{:0.6f} v {:0.6f}".format(xmin, ymax, shifting),"vline-{}-start".format(element.get('id')), vlinesGroup, vertical_end_lines_style)
                                 #render divider lines
                                 if self.options.render_vertical_dividers is True:
-                                    vertical_mid_lines_style = {'stroke':'#000000','stroke-width':'1px','fill':'none'}
+                                    vertical_mid_lines_style = {'stroke':'#000000','stroke-width':self.svg.unittouu('1px'),'fill':'none'}
                                     if self.options.render_with_dashes is True:
-                                        vertical_mid_lines_style = {'stroke':'#000000','stroke-width':'1px',"stroke-dasharray":"2 2", 'fill':'none'}
+                                        vertical_mid_lines_style = {'stroke':'#000000','stroke-width':self.svg.unittouu('1px'),"stroke-dasharray":"2 2", 'fill':'none'}
                                     x = 0
                                     for n in range(0, i-2):           
                                         x += lengths[n]
@@ -227,7 +258,7 @@ class UnwindPaths(inkex.EffectExtension):
                                 stroke_color = '#000000'
                                 if self.options.colorize is True:
                                     stroke_color =colorSet[i-1]
-                                new_original_line_style = {'stroke':stroke_color,'stroke-width':'1px','fill':'none'}
+                                new_original_line_style = {'stroke':stroke_color,'stroke-width':self.svg.unittouu('1px'),'fill':'none'}
                                 self.drawline(d, "segmented-" + element.get('id'), newOriginalPathGroup, new_original_line_style)
     
                     if self.options.keep_original is False:
