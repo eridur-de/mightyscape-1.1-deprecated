@@ -437,16 +437,8 @@ class BuxtronixLivingHinges(inkex.EffectExtension):
         if self.options.swatch or not self.svg.selected:
             draw_one(0, 0)
         else:
-            unit_factor = 1.0 / self.svg.uutounit(1.0,self.options.unit)
-            scale_factor = self.svg.unittouu("1px")
             for elem in self.svg.selected.values():
-                # Determine width and height based on the selected object's bounding box.
-                if isinstance (elem, inkex.Rectangle) or \
-                   isinstance (elem, inkex.Circle) or \
-                   isinstance (elem, inkex.Ellipse):
-                    bbox = elem.bounding_box()
-                else:
-                    bbox = elem.bounding_box() * (unit_factor / scale_factor)
+                bbox = elem.bounding_box()
                 self.options.width = self.svg.unittouu(bbox.width)
                 self.options.height = self.svg.unittouu(bbox.height)
                 x = self.svg.unittouu(bbox.x.minimum)
