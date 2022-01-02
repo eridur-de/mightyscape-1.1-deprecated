@@ -134,6 +134,32 @@ class LaserCheck(inkex.EffectExtension):
         inkex.utils.debug("User units: {}".format(user_units))
         
         '''
+        Check for scalings
+            > Page size is determined by SVG root 'width' and 'height'.
+            > 'viewBox' defined in 'user units' with the values: (x offset, y-offset, width, height).
+            > Document scale is determined by ratio of 'width'/'height' to 'viewBox'.
+        '''
+        docScale = self.svg.scale
+        docWidth = self.svg.width
+        docHeight = self.svg.height
+        #inkex.utils.debug("Document scale (x/y)={:0.3f}".format(docScale))
+        #inkex.utils.debug("Document width={:0.3f}".format(docWidth))
+        vxMin, vyMin, vxMax, vyMax = self.svg.get_viewbox()
+        vxTotal = vxMax - vxMin
+        vyTotal = vyMax - vyMin
+        vScaleX = vxTotal / docWidth
+        #vScaleY = vyTotal / docHeight #should/must be the same as vScaleX value
+        #inkex.utils.debug(vxTotal)
+        #inkex.utils.debug(vyTotal)
+        #inkex.utils.debug(vScaleY)
+        inkex.utils.debug("Document scale (x/y): {:0.5f}".format(vScaleX))
+        if round(vScaleX, 5) != 1.0:
+            inkex.utils.debug("WARNING: Document not 100%!")
+        scaleX = namedView.get('scale-x')
+        if scaleX is not None:
+            inkex.utils.debug("WARNING: Document has scale-x attribute with value={}".format(scaleX)) 
+        
+        '''
         The SVG format is highly complex and offers a lot of possibilities. Most things of SVG we do not
         need for a laser cutter. Usually we need svg:path and maybe svg:image; we can drop a lot of stuff
         like svg:defs, svg:desc, gradients, etc.
