@@ -470,7 +470,7 @@ class LaserCheck(inkex.EffectExtension):
             strokeDasharrays = []
             for element in shapes:  
                 strokeDasharray = element.style.get('stroke-dasharray')
-                if strokeDasharray is not None and strokeDasharray not in strokeDasharrays:
+                if strokeDasharray is not None and strokeDasharray != 'none' and strokeDasharray not in strokeDasharrays:
                     strokeDasharrays.append(strokeDasharray)
             if so.show_issues_only is False:
                 inkex.utils.debug("{} different stroke dash arrays in total".format(len(strokeDasharrays)))
@@ -859,11 +859,15 @@ class LaserCheck(inkex.EffectExtension):
             elementsOutside = []
             for element in shapes:
                 if element.tag != inkex.addNS('g', 'svg'):
-                    ebbox = element.bounding_box()
+                    ebbox = element.bounding_box(element.composed_transform())
                     precision = 3
                     #inkex.utils.debug("{} | bbox: left = {:0.3f} right = {:0.3f} top = {:0.3f} bottom = {:0.3f}".format(element.get('id'), ebbox.left, ebbox.right, ebbox.top, ebbox.bottom))
-                    pagew = round(self.svg.unittouu(self.svg.get('width')), precision)
-                    pageh = round(self.svg.unittouu(self.svg.get('height')), precision)
+                    #pagew = round(self.svg.unittouu(self.svg.get('width')), precision)
+                    #pageh = round(self.svg.unittouu(self.svg.get('height')), precision)   
+                    vxMin, vyMin, vxMax, vyMax = self.svg.get_viewbox()
+                    pagew = round(vxMax - vxMin, precision)
+                    pageh = round(vyMax - vyMin, precision)  
+                    
                     if round(ebbox.right,  precision) == 0 or \
                        round(ebbox.left,   precision) == pagew or \
                        round(ebbox.top,    precision) == 0 or \
