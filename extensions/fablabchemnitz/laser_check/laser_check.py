@@ -153,7 +153,7 @@ class LaserCheck(inkex.EffectExtension):
         #inkex.utils.debug(vxTotal)
         #inkex.utils.debug(vyTotal)
         #inkex.utils.debug(vScaleY)
-        inkex.utils.debug("Document scale (x/y): {:0.5f}".format(vScaleX))
+        inkex.utils.debug("Document scale (x/y): {:0.5f}{} ({:0.5f}px)".format(self.svg.unittouu(str(vScaleX) + doc_units), doc_units, vScaleX))
         if round(vScaleX, 5) != 1.0:
             inkex.utils.debug("WARNING: Document not 100%!")
         scaleX = namedView.get('scale-x')
