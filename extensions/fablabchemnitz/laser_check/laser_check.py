@@ -599,6 +599,8 @@ class LaserCheck(inkex.EffectExtension):
                             slopes = []
                             for i in range(0, len(segments)):
                                 if i > 0:
+                                    if segments[i][0].lower() == 'z' or segments[i-1][0].lower() == 'z':
+                                        continue #skip closed contours in combined path
                                     x1, y1, x2, y2 = segments[i-1][1][0], segments[i-1][1][1], segments[i][1][0], segments[i][1][1]
                                     if x1 < x2:
                                         p0 = [x1, y1]
