@@ -5,6 +5,7 @@ from inkex.bezier import csplength, csparea
 from lxml import etree
 import re
 import math
+import sys
 from math import log
 import datetime
 
