@@ -148,12 +148,13 @@ class LaserCheck(inkex.EffectExtension):
         vxMin, vyMin, vxMax, vyMax = self.svg.get_viewbox()
         vxTotal = vxMax - vxMin
         vyTotal = vyMax - vyMin
-        vScaleX = vxTotal / docWidth
+        vScaleX = self.svg.unittouu(str(vxTotal / docWidth) + doc_units)
+        vScaleXpx = self.svg.unittouu(str(vxTotal / docWidth) + "px")
         #vScaleY = vyTotal / docHeight #should/must be the same as vScaleX value
         #inkex.utils.debug(vxTotal)
         #inkex.utils.debug(vyTotal)
         #inkex.utils.debug(vScaleY)
-        inkex.utils.debug("Document scale (x/y): {:0.5f}{} ({:0.5f}px)".format(self.svg.unittouu(str(vScaleX) + doc_units), doc_units, vScaleX))
+        inkex.utils.debug("Document scale (x/y): {:0.5f}{} ({:0.5f}px)".format(vScaleX, doc_units, vScaleXpx))
         if round(vScaleX, 5) != 1.0:
             inkex.utils.debug("WARNING: Document not 100%!")
         scaleX = namedView.get('scale-x')
