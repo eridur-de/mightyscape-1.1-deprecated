@@ -20,7 +20,7 @@ At least this repo will help to bring alife some good things and will show hidde
    * All plugins are open source licensed and are GNU GPL compatible. See https://www.gnu.org/licenses/license-list.html#GPLCompatibleLicenses for more details.
    * All plugins were taken from each git repo's master branch (if git/svn available). There might exist some development branches, fork branches or issue comments which might resolve some issues or enhance functionality of provided plugins. To check for recent github forks use https://techgaun.github.io
    * A lot of plugins were fixed by ourselves in countless hours
-   * If you find bugs or have ideas please push them directly to the corresponding root repository of the developer or put it to https://github.com/vmario89/mightyscape-1.X/issues
+   * If you find bugs or have ideas please push them directly to the corresponding root repository of the developer or put it to https://github.com/eridur-de/mightyscape-1.X/issues
    * Credits for creation of this big package: Mario Voigt / FabLab Chemnitz
 
 # Used software for development
@@ -33,7 +33,7 @@ At least this repo will help to bring alife some good things and will show hidde
 
    * tested with Inkscape
        * Windows portable Version (Inkscape 1.2-dev (25cba68, 2021-05-16)) @ Windows 10
-       * Linux dev trunk (https://inkscape.org/de/release/inkscape-master/gnulinux/ubuntu/ppa/dl/) @ Fedora 33
+       * Linux dev trunk (https://inkscape.org/de/release/inkscape-master/gnulinux/ubuntu/ppa/dl/) @ Fedora 35
    * tested using Python 3.8.5 64 Bit and 3.9.4 64 Bit
    * some extensions require custom Python installation/modules. See documentation at our FabLab Chemnitz Wiki (see below).
    * some extensions require additional commands, packages or other installers (see documentation too).
@@ -63,10 +63,10 @@ https://y.stadtfabrikanten.org/donate
 
 This repo has two remotes:
 * https://gitea.fablabchemnitz.de/FabLab_Chemnitz/mightyscape-1.X (root repo origin)
-* https://github.com/vmario89/mightyscape-1.X (repo for collaboration. You can create your issues here. Active since May 2021)
+* https://github.com/eridur-de/mightyscape-1.X (repo for collaboration. You can create your issues here. Acti e since May 2021)
 
 # Zip Archives Mirrors
 
 If you only want to download single parts of MightyScape, use one of the following mirrors:
 * https://gitea.fablabchemnitz.de/FabLab_Chemnitz/mightyscape-1.X-zipmirror
-* https://github.com/vmario89/mightyscape-1.X-zipmirror
+* https://github.com/eridur-de/mightyscape-1.X-zipmirror
