@@ -8,6 +8,7 @@ class NormalizeDrawingScale(inkex.EffectExtension):
     
     def add_arguments(self, pars):
         pars.add_argument('--remove_viewbox', type=inkex.Boolean, default=True)
+        pars.add_argument('--target_scale', type=float, default=100.0)
     
     def effect(self):
         namedView = self.document.getroot().find(inkex.addNS('namedview', 'sodipodi'))
@@ -18,11 +19,17 @@ class NormalizeDrawingScale(inkex.EffectExtension):
         vxMin, vyMin, vxMax, vyMax = self.svg.get_viewbox()
         vxTotal = vxMax - vxMin
         vScaleX = self.svg.unittouu(str(vxTotal / self.svg.width) + doc_units)
-        if round(vScaleX, 5) != 1.0 or self.options.remove_viewbox is True:
+        if vScaleX == 0.0: #seems there is no viewBox attribute, then ...
+            #self.msg("viewBox attribute is missing in svg:svg. Applying new one ...")
+            vScaleX = 1.0 #this is the case we deal with px as display unit and we removed the viewBox
+            self.svg.set('viewBox', '0 0 {} {}'.format(targetScale * docWidth, targetScale * docHeight))
+
+        targetScale = self.options.target_scale / 100
+        if round(vScaleX, 5) != targetScale or self.options.remove_viewbox is True:
             
             #set scale to 100% (we adjust viewBox)
             if self.options.remove_viewbox is False:
-                self.svg.set('viewBox', '0 0 {} {}'.format(docWidth, docHeight))
+                self.svg.set('viewBox', '0 0 {} {}'.format(targetScale * docWidth, targetScale * docHeight))
             else:
                 self.svg.pop('viewBox')
                 self.document.getroot().set('inkscape:document-units', 'px')
@@ -30,7 +37,7 @@ class NormalizeDrawingScale(inkex.EffectExtension):
                 self.svg.set('height', docHeight)
 
                 namedView.attrib[inkex.addNS('document-units', 'inkscape')] = 'px'
-            translation_matrix = [[1/vScaleX, 0.0, 0.0], [0.0, 1/vScaleX, 0.0]]
+            translation_matrix = [[targetScale / vScaleX, 0.0, 0.0], [0.0, targetScale / vScaleX, 0.0]]
 
             #select each top layer and apply the transformation to scale
             processed = []
