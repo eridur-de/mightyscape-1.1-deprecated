@@ -37,6 +37,7 @@
                 </vbox>
                 <separator/>    
                 <vbox>
+                    <param name="style_types" type="bool" gui-text="Style types">false</param>
                     <param name="stroke_widths" type="bool" gui-text="Stroke widths">false</param>
                     <param name="stroke_widths_max" type="int" min="0" max="9999" gui-text="Max. allowed">1</param>
                     <separator/>

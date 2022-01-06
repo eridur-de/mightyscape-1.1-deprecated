@@ -48,11 +48,6 @@ class LaserCheck(inkex.EffectExtension):
     - add some inkex.Desc to all elements which were checked and which have some issue. use special syntax to remove old stuff each time the check is applied again
     - this code is horrible ugly stuff
     - output time/cost estimations per stroke color
-    - add check for stroke colors -> make some useful predefinitions like (for default modes)
-        - black = general cutting
-        - blue = cutting inside
-        - green = cutting outside
-        - pink = vector engraving
     '''
     
     def add_arguments(self, pars):
@@ -82,6 +77,7 @@ class LaserCheck(inkex.EffectExtension):
         pars.add_argument('--texts', type=inkex.Boolean, default=False)
         pars.add_argument('--filters', type=inkex.Boolean, default=False)
         pars.add_argument('--lowlevelstrokes', type=inkex.Boolean, default=False)
+        pars.add_argument('--style_types', type=inkex.Boolean, default=False)
         pars.add_argument('--stroke_colors', type=inkex.Boolean, default=False)
         pars.add_argument('--stroke_colors_max', type=int, default=3)
         pars.add_argument('--stroke_widths', type=inkex.Boolean, default=False)
@@ -261,8 +257,6 @@ class LaserCheck(inkex.EffectExtension):
         
         '''
         We check for possible deep nested groups/layers, empty groups/layers or groups/layers with styles.
-        We want to avoid styles at groups. Its better to style the elements like svg:path directly. 
-        We can use "Cleanup Styles" extension to change this.
         '''
         if so.checks == "check_all" or so.groups_and_layers is True:
             inkex.utils.debug("\n---------- Groups and layers")
@@ -281,19 +275,16 @@ class LaserCheck(inkex.EffectExtension):
                 inkex.utils.debug("Warning: maximum allowed group depth reached: {}".format(so.nest_depth_max))
             groups = []
             layers = []
-            styles = []
             for element in selected:
                 if element.tag == inkex.addNS('g','svg'):
                     if element.get('inkscape:groupmode') == 'layer':
                         layers.append(element)
                     else:
                         groups.append(element)
-                    if element.style is not None and element.style != "": #style may also be just empty (weird, but was validated on 21.12.2021)
-                        styles.append(element)
+
             if so.show_issues_only is False:  
                 inkex.utils.debug("{} groups in total".format(len(groups)))
                 inkex.utils.debug("{} layers in total".format(len(layers)))
-                inkex.utils.debug("{} groups/layers with style in total".format(len(styles)))
     
             #check for empty groups
             for group in groups:
@@ -305,10 +296,53 @@ class LaserCheck(inkex.EffectExtension):
                 if len(layer) == 0:
                     inkex.utils.debug("id={} is empty layer".format(layer.get('id')))
 
-            #check for groups/layers which have a style
-            for style in styles:
-                inkex.utils.debug("id={} has style".format(style.get('id')))
+        '''
+        Style scheme in svg. We can style elements by ...
+        - "style" attribute for elements like svg:path
+        - dedicated attributes for elements like svg:path
+        - "style" attributes or dedicated attributes at group level
+        - css class together with svg:style elements
+        For a cleaner file we should avoid to mess up. Best is to define styles 
+        at svg:path level or using properly defined css classes
+        We can use "Cleanup Styles" and "Styles To Layers" extension to change this behaviour.
+        '''
+        if so.checks == "check_all" or so.style_types is True: 
+            inkex.utils.debug("\n---------- Style types")
+            groupStyles = []
+            svgStyleElements = []
+            styleInNonGroupLayerShapes = []
+            dedicatedStylesInNonGroupLayerShapes = []
+            dedicatedStyleDict = []
+            dedicatedStyleDict.extend(['opacity', 'stroke', 'stroke-opacity', 'stroke-width', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'fill', 'fill-opacity'])
 
+            for element in selected:
+                if element.tag == inkex.addNS('g','svg'):
+                    if element.style is not None and element.style != "": #style may also be just empty (weird, but was validated on 21.12.2021)
+                        groupStyles.append(element)
+                if element.tag == inkex.addNS('style', 'svg'):
+                    svgStyleElements.append(element)
+            for element in shapes:
+                if element.tag != inkex.addNS('g','svg'):
+                    if element.style is not None:
+                        styleInNonGroupLayerShapes.append(element)
+                    for dedicatedStyleItem in dedicatedStyleDict:
+                        if element.attrib.has_key(str(dedicatedStyleItem)):
+                            dedicatedStylesInNonGroupLayerShapes.append(element)           
+            if so.show_issues_only is False:
+                inkex.utils.debug("{} groups/layers with style in total".format(len(groupStyles)))
+                inkex.utils.debug("{} svg:style elements in total".format(len(svgStyleElements)))
+                inkex.utils.debug("{} shapes using style attribute in total".format(len(svgStyleElements)))
+                inkex.utils.debug("{} shapes using dedicated style attributes in total".format(len(dedicatedStylesInNonGroupLayerShapes)))
+            for groupStyle in groupStyles:
+                inkex.utils.debug("group id={} has style".format(groupStyle.get('id')))
+            for svgStyleElement in svgStyleElements:
+                inkex.utils.debug("id={} is svg:style element".format(svgStyleElement.get('id')))
+            for styleInNonGroupLayerShape in styleInNonGroupLayerShapes:
+                inkex.utils.debug("id={} has style attribute".format(styleInNonGroupLayerShape.get('id')))
+            for dedicatedStylesInNonGroupLayerShape in dedicatedStylesInNonGroupLayerShapes:
+                inkex.utils.debug("id={} used dedicated style attribute(s)".format(dedicatedStylesInNonGroupLayerShape.get('id')))
+                
+                       
         '''
         Clones should be unlinked because they cause similar issues like transformations
         '''
