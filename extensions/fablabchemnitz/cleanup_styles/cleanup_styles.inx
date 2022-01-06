@@ -20,12 +20,15 @@
 			</param>
 			<param name="stroke_opacity_override" type="bool" gui-text="Override stroke opacity">false</param>
 			<param name="stroke_opacity" type="float" precision="1" min="0.0" max="100.0" gui-text="Stroke opacity (%)">100.0</param>
-            <param name="reset_opacity" type="bool" gui-text="Reset opacity value in style attributes" gui-description="Reset stroke style attribute 'opacity'. Do not mix up with 'fill-opacity' and 'stroke-opacity'">true</param>
-			<param name="reset_stroke_attributes" type="bool" gui-text="Reset stroke* values in style attributes" gui-description="Remove stroke style attributes 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linejoin', 'stroke-linecap', 'stroke-miterlimit'">true</param>
-			<param name="reset_fill_attributes" type="bool" gui-text="Reset fill* value style attributes" gui-description="Sets 'fill:none;fill-opacity:1;' to style attribute">true</param>
-			<param name="apply_hairlines" type="bool" gui-text="Add additional hairline style" gui-description="Adds 'vector-effect:non-scaling-stroke;' and '-inkscape-stroke:hairline;' Hint: stroke-width is kept in background. All hairlines still have a valued width.">true</param>
+            <param name="reset_opacity" type="bool" gui-text="Reset opacity value in style attribute" gui-description="Reset stroke style attribute 'opacity'. Do not mix up with 'fill-opacity' and 'stroke-opacity'">true</param>
+			<param name="reset_stroke_attributes" type="bool" gui-text="Reset stroke* values in style attribute" gui-description="Remove 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linejoin', 'stroke-linecap', 'stroke-miterlimit' from style attribute">true</param>
+			<param name="reset_fill_attributes" type="bool" gui-text="Reset fill* values style attribute" gui-description="Sets 'fill:none;fill-opacity:1;' to style attribute">true</param>
+			<param name="apply_hairlines" type="bool" gui-text="Add additional hairline definition to style" gui-description="Adds 'vector-effect:non-scaling-stroke;' and '-inkscape-stroke:hairline;' Hint: stroke-width is kept in background. All hairlines still have a valued width.">true</param>
 			<param name="apply_black_strokes" type="bool" gui-text="Apply black strokes where strokes missing" gui-description="Adds 'stroke:#000000;' to style attribute">true</param>
 			<param name="remove_group_styles" type="bool" gui-text="Remove styles from groups" gui-description="Remove style attributes from parent groups. So we have styles directly at the level of visivle nodes!">false</param>
+            <param name="harmonize_colors" type="bool" gui-text="Harmonize colors" gui-description="Round up colors to the next 'full color'. Example: make rgb(253,0,0) to rgb(255,0,0) to receive clear red color.">false</param>
+            <param name="allow_half_tones" type="bool" gui-text="Allow half-tone colors" gui-description="Allow rounding up to half-tone colors">false</param>
+			<separator/>
 			<label>This extension works on current selection or for complete document</label>
         </page>
         <page name="tab_about" gui-text="About">

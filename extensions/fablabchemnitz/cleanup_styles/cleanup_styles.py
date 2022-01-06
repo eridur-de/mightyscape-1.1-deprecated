@@ -31,10 +31,28 @@ Notes:
 
 import inkex
 import re
+import numpy as np
 
 class CleanupStyles(inkex.EffectExtension):
 
     groups = []
+    roundUpColors = []
+    roundUpColors = [
+            [  0,   0,   0], #black       | eri1
+            [  0,   0, 255], #blue        | eri2
+            [  0, 255,   0], #green       | eri3
+            [255,   0,   0], #red         | eri4
+            [255,   0, 255], #magenta     | eri5
+            [  0, 255, 255], #cyan        | eri6
+            [255, 255,   0], #yellow      | eri7
+            #half tones
+            [128,   0, 255], #violet      | eri8
+            [0  , 128, 255], #light blue  | eri9
+            [255, 128,   0], #orange      | eri10
+            [255,   0, 128], #pink        | eri11
+            [128, 255,   0], #light green | eri12
+            [0  , 255, 128], #mint        | eri13 
+        ]
     
     def add_arguments(self, pars):
         pars.add_argument("--tab")
@@ -46,13 +64,43 @@ class CleanupStyles(inkex.EffectExtension):
         pars.add_argument("--stroke_opacity_override", type=inkex.Boolean, default=False, help="Override stroke opacity")
         pars.add_argument("--stroke_opacity", type=float, default="100.0", help="Stroke opacity (%)")
         pars.add_argument("--reset_opacity", type=inkex.Boolean, default=True, help="Reset stroke style attribute 'opacity'. Do not mix up with 'fill-opacity' and 'stroke-opacity'")
-        pars.add_argument("--reset_stroke_attributes", type=inkex.Boolean, default=True, help="Remove stroke style attributes 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linejoin', 'stroke-linecap', 'stroke-miterlimit'")
+        pars.add_argument("--reset_stroke_attributes", type=inkex.Boolean, default=True, help="Remove 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linejoin', 'stroke-linecap', 'stroke-miterlimit' from style attribute")
         pars.add_argument("--reset_fill_attributes", type=inkex.Boolean, default=True, help="Sets 'fill:none;fill-opacity:1;' to style attribute")
         pars.add_argument("--apply_hairlines", type=inkex.Boolean, default=True, help="Adds 'vector-effect:non-scaling-stroke;' and '-inkscape-stroke:hairline;' Hint: stroke-width is kept in background. All hairlines still have a valued width.")
         pars.add_argument("--apply_black_strokes", type=inkex.Boolean, default=True, help="Adds 'stroke:#000000;' to style attribute")
         pars.add_argument("--remove_group_styles", type=inkex.Boolean, default=False, help="Remove styles from groups")
-        
+        pars.add_argument("--harmonize_colors", type=inkex.Boolean, default=False, help="Round up colors to the next 'full color'. Example: make rgb(253,0,0) to rgb(255,0,0) to receive clear red color.")
+        pars.add_argument("--allow_half_tones", type=inkex.Boolean, default=False, help="Allow rounding up to half-tone colors")
+ 
+    
+    def closestColor(self, colors, color):
+        colors = np.array(colors)
+        color = np.array(color)
+        distances = np.sqrt(np.sum((colors-color)**2, axis=1))
+        index_of_smallest = np.where(distances==np.amin(distances))
+        smallest_distance = colors[index_of_smallest]
+        return smallest_distance
+    
     def effect(self):
+        self.roundUpColors = [
+                [  0,   0,   0], #black       | eri1
+                [  0,   0, 255], #blue        | eri2
+                [  0, 255,   0], #green       | eri3
+                [255,   0,   0], #red         | eri4
+                [255,   0, 255], #magenta     | eri5
+                [  0, 255, 255], #cyan        | eri6
+                [255, 255,   0], #yellow      | eri7
+            ]
+        if self.options.allow_half_tones is True:
+            self.roundUpColors.extend([
+            [128,   0, 255], #violet      | eri8
+            [0  , 128, 255], #light blue  | eri9
+            [255, 128,   0], #orange      | eri10
+            [255,   0, 128], #pink        | eri11
+            [128, 255,   0], #light green | eri12
+            [0  , 255, 128], #mint        | eri13 
+        ])
+        
         if len(self.svg.selected) == 0:
             self.getAttribs(self.document.getroot())
         else:
@@ -71,7 +119,6 @@ class CleanupStyles(inkex.EffectExtension):
 
     #stroke and fill styles can be included in style attribute or they can exist separately (can occure in older SVG files). We do not parse other attributes than style
     def changeStyle(self, node):
-    
         #we check/modify the style of all shapes (not groups)
         if isinstance(node, inkex.ShapeElement) and not isinstance(node, inkex.Group):
             # the final styles applied to this element (with influence from top level elements like groups)
@@ -163,6 +210,16 @@ class CleanupStyles(inkex.EffectExtension):
                             if val == 'none':
                                 new_val = '#000000'
                                 declarations[i] = prop + ':' + new_val
+                    if self.options.harmonize_colors is True:
+                        if prop == 'stroke' or prop == 'fill':
+                            rgb = inkex.Color(val).to_rgb()    
+                            closest_color = self.closestColor(self.roundUpColors, [rgb[0], rgb[1], rgb[2]])
+                            rgbNew = inkex.Color((
+                                int(closest_color[0][0]), 
+                                int(closest_color[0][1]), 
+                                int(closest_color[0][2])
+                                ), space='rgb')
+                            declarations[i] = prop + ':' + str(inkex.Color(rgbNew).to_named())
                     if self.options.reset_fill_attributes is True:
                         if prop == 'fill':
                                 new_val = 'none'
