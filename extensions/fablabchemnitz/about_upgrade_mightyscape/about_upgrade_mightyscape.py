@@ -98,7 +98,7 @@ class AboutUpgradeMightyScape(inkex.EffectExtension):
 
         remotes = []
         remotes.append(["https://gitea.fablabchemnitz.de/FabLab_Chemnitz/mightyscape-1.X.git", "origin"]) #main
-        remotes.append(["https://github.com/vmario89/mightyscape-1.X.git", "github"]) #copy/second remote
+        remotes.append(["https://github.com/eridur-de/mightyscape-1.X.git", "github"]) #copy/second remote
             
         gitDir = os.path.join(main_dir, ".git")
         
