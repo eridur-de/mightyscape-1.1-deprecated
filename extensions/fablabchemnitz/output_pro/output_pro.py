@@ -223,6 +223,26 @@ class OutputPro(inkex.EffectExtension):
                     self.general_options_panel_jpeg = QtWidgets.QWidget(parent=self.general_options_panel)
                     self.general_options_panel_jpeg.setVisible(False)
     
+                    self.icc_dir_textbox_label = QtWidgets.QLabel(parent=self.general_options_panel_jpeg)
+                    self.icc_dir_textbox_label.setText(_(u"ICC profile folder"))
+                    self.icc_dir_textbox_label.setGeometry(10, 280, 120, 25)
+    
+                    self.icc_dir_textbox = QtWidgets.QLineEdit(parent=self.general_options_panel_jpeg)
+                    self.icc_dir_textbox.setReadOnly(True)
+                    self.icc_dir_textbox.setGeometry(130, 280, 140, 25)
+                    self.icc_dir_textbox.setText(icc_dir)
+
+                    self.icc_dir_button = QtWidgets.QPushButton(_("Change"), parent=self.general_options_panel_jpeg)
+                    self.icc_dir_button.setGeometry(283, 280, 50, 25)
+                    self.icc_dir_button.clicked.connect(self.change_icc_dir)
+    
+    
+                    #self.icc_select = QtWidgets.QFileDialog()
+                    #self.icc_select.setFileMode(QtGui.QFileDialog.DirectoryOnly)
+                    #self.icc_select.setSidebarUrls([QtCore.QUrl.fromLocalFile(place)])
+                    #icc_dir = self.icc_select.getExistingDirectory(self, 'ICC profile folder')
+                    #inkex.utils.debug(icc_dir)
+
                     self.color_mode_title_jpeg = QtWidgets.QLabel(parent=self.general_options_panel_jpeg)
                     self.color_mode_title_jpeg.setText(_(u"Color mode").upper())
                     self.color_mode_title_jpeg.setGeometry(10, 10, 260, 15)
@@ -243,8 +263,9 @@ class OutputPro(inkex.EffectExtension):
                     self.quality_title_jpeg.setGeometry(285, 10, 100, 15)
                     self.quality_title_jpeg.setFont(QtGui.QFont('Ubuntu', 8))
     
+                    jpeg_quality = 90
                     self.quality_percent_title_jpeg = QtWidgets.QLabel(parent=self.general_options_panel_jpeg)
-                    self.quality_percent_title_jpeg.setText('50%')
+                    self.quality_percent_title_jpeg.setText('{}%'.format(jpeg_quality))
                     self.quality_percent_title_jpeg.setGeometry(505, 10, 100, 40)
                     self.quality_percent_title_jpeg.setFont(QtGui.QFont('Ubuntu', 12, 75))
                     self.quality_percent_title_jpeg.setAlignment(QtCore.Qt.AlignRight)
@@ -265,7 +286,7 @@ class OutputPro(inkex.EffectExtension):
                     self.quality_choice_dial_jpeg.setRange(1,100)
                     self.quality_choice_dial_jpeg.setGeometry(415, 10, 60, 60)
                     self.quality_choice_dial_jpeg.setNotchesVisible(True)
-                    self.quality_choice_dial_jpeg.setValue(50)
+                    self.quality_choice_dial_jpeg.setValue(jpeg_quality)
                     self.quality_choice_dial_jpeg.sliderReleased.connect(self.generate_preview)
                     self.quality_choice_dial_jpeg.valueChanged.connect(self.change_quality_live_jpeg)
     
@@ -1059,6 +1080,9 @@ class OutputPro(inkex.EffectExtension):
                             inkex.utils.debug(os.listdir(dirpathTempFolder.name))                   
                         else:
                             shutil.copy2(result_imp, target_imp)    
+    
+                def change_icc_dir(self):
+                    inkex.utils.debug("change_icc_dir")
     
             app = QtWidgets.QApplication(sys.argv)
             app.main = mainWindow()
