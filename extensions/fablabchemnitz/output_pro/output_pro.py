@@ -39,6 +39,11 @@ def unittouu(string):
 class OutputPro(inkex.EffectExtension):
     
     def effect(self):
+        if "nt" in os.name:
+            icc_dir = 'C:\\Windows\\System32\\spool\\drivers\\color'
+        else:
+            icc_dir = '/usr/share/color/icc/colord/'
+            
         try:
             with open(os.path.join(os.path.abspath(inkex.utils.get_user_directory() + "/../"), "preferences.xml"), 'r') as f:
                 inkscape_config = f.read()
@@ -53,10 +58,8 @@ class OutputPro(inkex.EffectExtension):
             list_of_area_to_export = [_(u"Page"), _(u"Drawing"), _(u"Object")]#,  _(u"Área definida")]
             
             if "nt" in os.name:
-                icc_dir = 'C:\\Windows\\System32\\spool\\drivers\\color'
                 shell = True
             else:
-                 icc_dir = '/usr/share/color/icc/colord/'
                  shell = False
             list_of_profiles = os.listdir(icc_dir)
             #inkex.utils.debug(list_of_profiles)
@@ -229,19 +232,12 @@ class OutputPro(inkex.EffectExtension):
     
                     self.icc_dir_textbox = QtWidgets.QLineEdit(parent=self.general_options_panel_jpeg)
                     self.icc_dir_textbox.setReadOnly(True)
-                    self.icc_dir_textbox.setGeometry(130, 280, 140, 25)
+                    self.icc_dir_textbox.setGeometry(130, 280, 260, 25)
                     self.icc_dir_textbox.setText(icc_dir)
 
                     self.icc_dir_button = QtWidgets.QPushButton(_("Change"), parent=self.general_options_panel_jpeg)
-                    self.icc_dir_button.setGeometry(283, 280, 50, 25)
+                    self.icc_dir_button.setGeometry(403, 280, 70, 25)
                     self.icc_dir_button.clicked.connect(self.change_icc_dir)
-    
-    
-                    #self.icc_select = QtWidgets.QFileDialog()
-                    #self.icc_select.setFileMode(QtGui.QFileDialog.DirectoryOnly)
-                    #self.icc_select.setSidebarUrls([QtCore.QUrl.fromLocalFile(place)])
-                    #icc_dir = self.icc_select.getExistingDirectory(self, 'ICC profile folder')
-                    #inkex.utils.debug(icc_dir)
 
                     self.color_mode_title_jpeg = QtWidgets.QLabel(parent=self.general_options_panel_jpeg)
                     self.color_mode_title_jpeg.setText(_(u"Color mode").upper())
@@ -272,13 +268,13 @@ class OutputPro(inkex.EffectExtension):
     
                     self.quality_percent_title_left_jpeg = QtWidgets.QLabel(parent=self.general_options_panel_jpeg)
                     self.quality_percent_title_left_jpeg.setText('Lower quality\nSmaller file')
-                    self.quality_percent_title_left_jpeg.setGeometry(285, 40, 160, 25)
+                    self.quality_percent_title_left_jpeg.setGeometry(285, 40, 160, 35)
                     self.quality_percent_title_left_jpeg.setFont(QtGui.QFont('Ubuntu', 7))
                     self.quality_percent_title_left_jpeg.setAlignment(QtCore.Qt.AlignLeft)
     
                     self.quality_percent_title_right_jpeg = QtWidgets.QLabel(parent=self.general_options_panel_jpeg)
                     self.quality_percent_title_right_jpeg.setText('Higher quality<br>Larger file')
-                    self.quality_percent_title_right_jpeg.setGeometry(445, 40, 160, 25)
+                    self.quality_percent_title_right_jpeg.setGeometry(445, 40, 160, 35)
                     self.quality_percent_title_right_jpeg.setFont(QtGui.QFont('Ubuntu', 7))
                     self.quality_percent_title_right_jpeg.setAlignment(QtCore.Qt.AlignRight)
     
@@ -335,7 +331,7 @@ class OutputPro(inkex.EffectExtension):
                     self.jpeg_noise_choice_jpeg.activated.connect(self.generate_preview)
     
                     self.jpeg_noise_ammount_jpeg = QtWidgets.QSlider(QtCore.Qt.Horizontal, parent=self.general_options_panel_jpeg)
-                    self.jpeg_noise_ammount_jpeg.setGeometry(15, 175, 260, 25)
+                    self.jpeg_noise_ammount_jpeg.setGeometry(10, 170, 260, 25)
                     self.jpeg_noise_ammount_jpeg.setRange(0,100)
                     self.jpeg_noise_ammount_jpeg.setEnabled(False)
                     self.jpeg_noise_ammount_jpeg.setValue(0)
@@ -577,7 +573,7 @@ class OutputPro(inkex.EffectExtension):
     
                             if self.color_profile_choice_jpeg.isChecked():
                                 final_command.append('-profile')
-                                final_command.append(os.path.join(icc_dir, selected_screen_profile))
+                                final_command.append(os.path.join(self.icc_dir_textbox.getText(), selected_screen_profile))
     
                             final_command.append(os.path.join(dirpathTempFolder.name, 'result.png'))
                             subprocess.Popen(final_command, shell=shell).wait()
@@ -672,9 +668,9 @@ class OutputPro(inkex.EffectExtension):
                             if list_of_color_modes_jpeg[self.color_mode_choice_jpeg.currentIndex()] == 'CMYK' or list_of_color_modes_jpeg[self.color_mode_choice_jpeg.currentIndex()] == 'RGB':
                                 if self.color_profile_choice_jpeg.isChecked():
                                     pre_command.append('-profile')
-                                    pre_command.append(os.path.join(icc_dir, selected_screen_profile))
+                                    pre_command.append(os.path.join(self.icc_dir_textbox.getText(), selected_screen_profile))
                                     pre_command.append('-profile')
-                                    pre_command.append(os.path.join(icc_dir, selected_screen_profile))
+                                    pre_command.append(os.path.join(self.icc_dir_textbox.getText(), selected_screen_profile))
     
                                 if list_of_color_modes_jpeg[self.color_mode_choice_jpeg.currentIndex()] == 'RGB':
                                     pre_command.append(os.path.join(dirpathTempFolder.name, 'result.tiff'))
@@ -683,7 +679,7 @@ class OutputPro(inkex.EffectExtension):
                                     pre_command.append('convert')
                                     pre_command.append(os.path.join(dirpathTempFolder.name, 'result.tiff'))
                                     pre_command.append('-profile')
-                                    pre_command.append(os.path.join(icc_dir, selected_screen_profile))
+                                    pre_command.append(os.path.join(self.icc_dir_textbox.getText(), selected_screen_profile))
     
                             pre_command.append(os.path.join(dirpathTempFolder.name, 'result.tiff'))
                             subprocess.Popen(pre_command, shell=shell).wait()
@@ -695,7 +691,7 @@ class OutputPro(inkex.EffectExtension):
                                 pre_command = ['convert']
                                 pre_command.append(os.path.join(dirpathTempFolder.name, 'result.tiff'))
                                 pre_command.append('-profile')
-                                pre_command.append(os.path.join(icc_dir, selected_screen_profile))
+                                pre_command.append(os.path.join(self.icc_dir_textbox.getText(), selected_screen_profile))
                                 pre_command.append(os.path.join(dirpathTempFolder.name, 'result.tiff'))
                                 subprocess.Popen(pre_command, shell=shell).wait()
     
@@ -1082,7 +1078,7 @@ class OutputPro(inkex.EffectExtension):
                             shutil.copy2(result_imp, target_imp)    
     
                 def change_icc_dir(self):
-                    inkex.utils.debug("change_icc_dir")
+                    self.icc_dir_textbox.setText(QtWidgets.QFileDialog.getExistingDirectory(self, 'Select Folder'))
     
             app = QtWidgets.QApplication(sys.argv)
             app.main = mainWindow()
