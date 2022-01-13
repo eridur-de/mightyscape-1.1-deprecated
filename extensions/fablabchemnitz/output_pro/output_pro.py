@@ -16,7 +16,13 @@ import tempfile
 
 dirpathTempFolder = tempfile.TemporaryDirectory(suffix=str(random.randint(0,9)), prefix="output-")
 dirpathSoftware = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'outputpro')
-uuconv = {'in':90.0, 'pt':1.25, 'px':1, 'mm':3.5433070866, 'cm':35.433070866, 'pc':15.0}
+uuconv = { #those values might be old/incorrect
+    'in':90.0, 
+    'pt':1.25, 
+    'px':1, 
+    'mm':3.5433070866, 
+    'cm':35.433070866, 
+    'pc':15.0}
 
 def unittouu(string):
     '''Returns userunits given a string representation of units in another system'''
@@ -61,17 +67,12 @@ class OutputPro(inkex.EffectExtension):
                 shell = True
             else:
                  shell = False
-            list_of_profiles = os.listdir(icc_dir)
-            #inkex.utils.debug(list_of_profiles)
-    
+
             selected_screen_profile = inkscape_config.split('id="displayprofile"')[1].split('uri="')[1].split('" />')[0].split('/')[-1]
             #if selected_screen_profile == '':
             #    inkex.utils.debug("Configured icc color profile (Inkscape) is not set. Configure it in preferences and restart Inkscape to apply changes.")
             selected_print_profile = inkscape_config.split('id="softproof"')[1].split('uri="')[1].split('" />')[0].split('/')[-1]
-            
-            rgb_profile = '"' + inkscape_config.split('id="displayprofile"')[1].split('uri="')[1].split('" />')[0] + '"'
-            #cmyk_profile = '"' + inkscape_config.split('id="softproof"')[1].split('uri="')[1].split('" />')[0] + '"'
-        
+                    
             list_of_selected_objects = []
             for id, node in self.svg.selected.items():
                 list_of_selected_objects.append(node.get('id'))
@@ -89,6 +90,8 @@ class OutputPro(inkex.EffectExtension):
             page_height = unittouu(svg.attrib['height'])
     
             class mainWindow(QtWidgets.QWidget):
+                
+                
                 def __init__(self, parent=None):
                     QtWidgets.QWidget.__init__(self, parent)
                     self.resize(950, 600)
@@ -186,13 +189,6 @@ class OutputPro(inkex.EffectExtension):
                     self.view_image_info.setWordWrap(True)
                     self.view_image_info.setAlignment(QtCore.Qt.AlignTop)
     
-                    #self.main_title = QtWidgets.QLabel(parent=self)
-                    #self.main_title.setText(_(u"BITMAPS").upper())
-                    #self.main_title.setGeometry(640, 30, 150, 30)
-                    #self.main_title.setFont(QtWidgets.QFont('Ubuntu', 16, 75))
-                    #self.main_title.setAlignment(QtCore.Qt.AlignRight)
-                    #self.main_title.setForegroundRole(QtWidgets.QPalette.ColorRole(2))
-    
                     self.format_title = QtWidgets.QLabel(parent=self)
                     self.format_title.setText(_(u"Format").upper())
                     self.format_title.setGeometry(320, 70, 200, 15)
@@ -252,7 +248,6 @@ class OutputPro(inkex.EffectExtension):
                     self.color_mode_title_tip_jpeg = QtWidgets.QLabel(parent=self.general_options_panel_jpeg)
                     self.color_mode_title_tip_jpeg.setGeometry(10, 50, 260, 15)
                     self.color_mode_title_tip_jpeg.setFont(QtGui.QFont('Ubuntu', 7))
-                    #self.color_mode_title_tip.setAlignment(QtCore.Qt.AlignLeft)
     
                     self.quality_title_jpeg = QtWidgets.QLabel(parent=self.general_options_panel_jpeg)
                     self.quality_title_jpeg.setText(_(u"Quality").upper())
