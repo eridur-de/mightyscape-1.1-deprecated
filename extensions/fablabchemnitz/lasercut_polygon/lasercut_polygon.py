@@ -24,16 +24,16 @@ from lxml import etree
 from inkex import Color
 
 
-def drawS(XYstring,color):         # Draw lines from a list
+def drawS(s, XYstring, color):         # Draw lines from a list
     name='part'
-    style = { 'stroke': color, 'fill': 'none' }
+    style = { 'stroke': color, 'stroke-width': s.svg.unittouu("1px"), 'fill': 'none' }
     drw = {'style':str(inkex.Style(style)),inkex.addNS('label','inkscape'):name,'d':XYstring}
     etree.SubElement(parent, inkex.addNS('path','svg'), drw )
     return
   
-def groupdraw(XYstrings,colors)  :
-    if len(XYstrings)==1:
-        drawS(XYstrings[0],colors[0])
+def groupdraw(s, XYstrings, colors)  :
+    if len(XYstrings) == 1:
+        drawS(s, XYstrings[0], colors[0])
         return
     grp_name = 'Group'
     grp_attribs = {inkex.addNS('label','inkscape'):grp_name}
@@ -158,7 +158,7 @@ class LasercutPolygon(inkex.EffectExtension):
             for i in range(i_edges):
                 points+=[(math.sin(i_offset+stepsize*i)*(i_radius+kerf),math.cos(i_offset+stepsize*i)*(i_radius+kerf))]
             s+=[svg_from_points(points,(o_radius+spacing,o_radius+spacing))]
-        groupdraw(s,[color1,color2])
+        groupdraw(self, s,[color1,color2])
         
         if self.options.displaylasertag:
             # Create a new layer.
