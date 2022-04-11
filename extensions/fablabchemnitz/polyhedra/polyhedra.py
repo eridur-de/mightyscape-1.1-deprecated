@@ -36,6 +36,8 @@ def points_to_svgd(p):
 
 class Polyhedra(inkex.EffectExtension):
     
+    no_tab = { 'cut' : ['m 0,0 100,0'], 'perf' : []}
+    
     def add_arguments(self, pars):
         pars.add_argument("-p", "--poly", default="Cube", help="Polygon net to render")
         pars.add_argument("-s", "--size", type=float, default=100.0, help="Size of first edge")
@@ -51,7 +53,6 @@ class Polyhedra(inkex.EffectExtension):
 
     def get_slot_tab_style(self):
         # these are designed to be 100px wide - they have to be scaled
-        no_tab = { 'cut' : ['m 0,0 100,0'], 'perf' : []}
         
         notab = {0 : no_tab}
         simpletab = {0: {'cut': ['m 0,0 20,19 60,0 l 20,-19'], 'perf' : ['m 0,0 100,0']}}
@@ -79,10 +80,10 @@ class Polyhedra(inkex.EffectExtension):
             if(type == 'tab'):
                 return(self.gen_tab(limitAngle))
             else:
-                return(no_tab)
+                return(self.no_tab)
 
         if(self.options.tabs == 3):    # no tabs or slots
-            return(no_tab)
+            return(self.no_tab)
             
         # otherwise, get stuff from the array of specially modified tab/slots 
 
