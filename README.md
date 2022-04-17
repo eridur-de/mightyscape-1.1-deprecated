@@ -46,7 +46,7 @@ At least this repo will help to bring alife some good things and will show hidde
 
 # Installation, documentation and examples
 
-The structure of this repo is intended the be easy. Just copy the complete MightyScape folder or the folders you want to your Inkscape's extension directory. You will find redundancies in this repo like node.exe (NodeJS). We did it this way to give easy possibilty to only pick the extensions you want (instead creating ~200 repositories). MightyScape does not work with any releases or feature branches. Just use "git clone" to get the recent commit from master branch. Please see at https://y.stadtfabrikanten.org/mightyscape-overview for installation tips like required python modules, file locations and other adjustments.
+To install the extension, just copy the this MightyScape folder or the folders all extension you need into your [Inkscape's extension directory](https://inkscape.org/gallery/=extension/), e.g.: ```C:\Program Files\Inkscape\share\inkscape\extensions```. You will find redundancies in this repo like node.exe (NodeJS). We did it this way to give easy possibilty to only pick the extensions you want (instead creating ~200 repositories). MightyScape does not work with any releases or feature branches. Just use "git clone" to get the recent commit from master branch. Please see at https://y.stadtfabrikanten.org/mightyscape-overview for installation tips like required python modules, file locations and other adjustments.
 
 # Donate
 
