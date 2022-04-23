@@ -10,7 +10,7 @@ This extension is totally minimal. It will just clean the whole document from gr
 Author: Mario Voigt / FabLab Chemnitz
 Mail: mario.voigt@stadtfabrikanten.org
 Date: 19.08.2020
-Last Patch: 18.04.2022
+Last Patch: 23.04.2022
 License: GNU GPL v3
 
 Thanks to Cyrille
@@ -25,9 +25,6 @@ class RemoveEmptyGroups(inkex.EffectExtension):
         # end if there are no groups
         if len(groups) == 0:
             return
-
-        # used to track if we make changes
-        made_changes = False
 
         # loop through groups
         for group in groups:
