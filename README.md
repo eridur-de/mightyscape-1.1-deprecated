@@ -1,5 +1,7 @@
 # MightyScape for Inkscape 1.0+
 
+# From now (15.02.2023) on this repository is deprecated and continued by https://github.com/eridur-de/mightyscape-1.2
+
 In short: A maintained extension collection for Inkscape 1.0+, working on Windows and Linux. There are **238 extension folders** with **412 .inx files** inside. We also take part at https://inkscape.org/gallery/=extension/ (with single extension uploads).
 
 # About MightyScape
